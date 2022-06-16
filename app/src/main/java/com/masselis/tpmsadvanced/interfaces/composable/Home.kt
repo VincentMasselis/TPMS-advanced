@@ -15,6 +15,10 @@ fun Home() {
         topBar = { TopAppBar(title = { Text(text = "My car") }) },
         content = {
             Car(
+                {},
+                {},
+                {},
+                {},
                 Modifier
                     .fillMaxSize()
                     .padding(it)
