@@ -1,14 +1,15 @@
 package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -97,18 +98,4 @@ fun Car(
             bottomRightData()
         }
     }
-}
-
-@Preview
-@Composable
-private fun CarPreview() {
-    Car(
-        { Text(text = "Top left") },
-        { Text(text = "Top right") },
-        { Text(text = "Bottom left") },
-        { Text(text = "Bottom right") },
-        Modifier
-            .height(732.dp)
-            .width(421.dp)
-    )
 }
