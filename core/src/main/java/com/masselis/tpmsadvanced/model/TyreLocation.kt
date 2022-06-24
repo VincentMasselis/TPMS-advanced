@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.model
 
+import com.masselis.tpmsadvanced.interfaces.mainComponent
 import javax.inject.Qualifier as DaggerQualifier
 
 enum class TyreLocation(val byte: UByte) {
@@ -11,4 +12,6 @@ enum class TyreLocation(val byte: UByte) {
     @DaggerQualifier
     @Retention(AnnotationRetention.RUNTIME)
     annotation class Qualifier(val location: TyreLocation)
+
+    val component get() = mainComponent.findTyreComponent.find(this)
 }

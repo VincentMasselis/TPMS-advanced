@@ -17,13 +17,7 @@ import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.model.TyreLocation
 
 @Composable
-fun Car(
-    frontLeftData: @Composable () -> Unit,
-    frontRightData: @Composable () -> Unit,
-    bottomLeftData: @Composable () -> Unit,
-    bottomRightData: @Composable () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun Car(modifier: Modifier = Modifier) {
     ConstraintLayout(modifier = modifier) {
         val (car, tyreBox, topLeft, topRight, bottomLeft, bottomRight) = createRefs()
         Image(
@@ -77,25 +71,25 @@ fun Car(
             top.linkTo(tyreBox.top)
             end.linkTo(tyreBox.start, 8.dp)
         }) {
-            frontLeftData()
+            TyreStat(location = TyreLocation.FRONT_LEFT)
         }
         Box(Modifier.constrainAs(topRight) {
             top.linkTo(tyreBox.top)
             start.linkTo(tyreBox.end, 8.dp)
         }) {
-            frontRightData()
+            TyreStat(location = TyreLocation.FRONT_RIGHT)
         }
         Box(Modifier.constrainAs(bottomLeft) {
             bottom.linkTo(tyreBox.bottom)
             end.linkTo(tyreBox.start, 8.dp)
         }) {
-            bottomLeftData()
+            TyreStat(location = TyreLocation.REAR_LEFT)
         }
         Box(Modifier.constrainAs(bottomRight) {
             bottom.linkTo(tyreBox.bottom)
             start.linkTo(tyreBox.end, 8.dp)
         }) {
-            bottomRightData()
+            TyreStat(location = TyreLocation.REAR_RIGHT)
         }
     }
 }

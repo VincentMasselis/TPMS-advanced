@@ -5,8 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.model.Fraction
-import com.masselis.tpmsadvanced.model.Temperature
 import com.masselis.tpmsadvanced.tools.asMutableStateFlow
+import com.masselis.tpmsadvanced.usecase.AtmosphereRangeUseCase
 import com.masselis.tpmsadvanced.usecase.TyreAtmosphereUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -23,6 +23,7 @@ import kotlin.time.toKotlinDuration
 @OptIn(ExperimentalCoroutinesApi::class)
 class TyreViewModel @AssistedInject constructor(
     atmosphereUseCase: TyreAtmosphereUseCase,
+    ranges: AtmosphereRangeUseCase,
     @Assisted obsoleteTimeout: Duration,
     @Assisted savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -74,25 +75,25 @@ class TyreViewModel @AssistedInject constructor(
                             State.Alerting
                         else
                             when (atmosphere.temperature.celsius) {
-                                in Float.MIN_VALUE..LOW_TEMP.celsius ->
+                                in Float.MIN_VALUE..ranges.lowTemp.celsius ->
                                     State.Normal.BlueToGreen(Fraction(0f))
-                                in LOW_TEMP.celsius..NORMAL_TEMP.celsius ->
+                                in ranges.lowTemp..ranges.normalTemp ->
                                     State.Normal.BlueToGreen(
                                         Fraction(
                                             atmosphere.temperature.celsius
-                                                .minus(LOW_TEMP.celsius)
-                                                .div(NORMAL_TEMP.celsius - LOW_TEMP.celsius)
+                                                .minus(ranges.lowTemp.celsius)
+                                                .div(ranges.normalTemp.celsius - ranges.lowTemp.celsius)
                                         )
                                     )
-                                in NORMAL_TEMP.celsius..HIGH_TEMP.celsius ->
+                                in ranges.normalTemp..ranges.highTemp ->
                                     State.Normal.GreenToRed(
                                         Fraction(
                                             atmosphere.temperature.celsius
-                                                .minus(NORMAL_TEMP.celsius)
-                                                .div(HIGH_TEMP.celsius - NORMAL_TEMP.celsius)
+                                                .minus(ranges.normalTemp.celsius)
+                                                .div(ranges.highTemp.celsius - ranges.normalTemp.celsius)
                                         )
                                     )
-                                in HIGH_TEMP.celsius..Float.MAX_VALUE ->
+                                in ranges.highTemp.celsius..Float.MAX_VALUE ->
                                     State.Alerting
                                 else ->
                                     throw IllegalArgumentException()
@@ -106,9 +107,5 @@ class TyreViewModel @AssistedInject constructor(
             .launchIn(viewModelScope)
     }
 
-    companion object {
-        private val HIGH_TEMP = Temperature(90f)
-        private val NORMAL_TEMP = Temperature(45f)
-        private val LOW_TEMP = Temperature(20f)
-    }
+    companion object
 }

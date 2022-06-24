@@ -38,7 +38,7 @@ fun Tyre(
     location: TyreLocation,
     modifier: Modifier = Modifier,
     viewModel: TyreViewModel = savedStateViewModel(key = "TyreViewModel_${location.name}") {
-        mainComponent.findTyreComponent.find(location).tyreViewModelFactory.build(it)
+        location.component.tyreViewModelFactory.build(it)
     },
 ) {
     val state by viewModel.stateFlow.collectAsState()
