@@ -5,6 +5,12 @@ import android.os.Parcelable
 
 @JvmInline
 value class Fraction(val value: Float) : Parcelable {
+
+    init {
+        if (value !in 0f..1f)
+            throw IllegalArgumentException()
+    }
+
     private constructor(parcel: Parcel) : this(parcel.readFloat())
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

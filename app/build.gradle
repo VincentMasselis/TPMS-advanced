@@ -7,7 +7,7 @@ android {
     compileSdk 32
     defaultConfig {
         applicationId "com.masselis.tpmsadvanced"
-        minSdk 21
+        minSdk 23
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -51,6 +51,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
     // Integration with activities
     implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation "androidx.fragment:fragment:1.4.1"
     // Layout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 

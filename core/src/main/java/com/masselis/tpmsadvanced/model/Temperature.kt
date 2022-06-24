@@ -6,6 +6,11 @@ import android.os.Parcelable
 /* Cannot use @Parcelize here: https://issuetracker.google.com/issues/177856519 */
 @JvmInline
 value class Temperature(val celsius: Float) : Parcelable {
+
+    operator fun compareTo(other: Temperature) = celsius.compareTo(other.celsius)
+
+    operator fun rangeTo(other: Temperature) = celsius.rangeTo(other.celsius)
+
     private constructor(parcel: Parcel) : this(parcel.readFloat())
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

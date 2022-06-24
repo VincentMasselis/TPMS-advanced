@@ -33,4 +33,5 @@ dependencies {
     api(project(":core"))
     //implementation 'org.mockito:mockito-inline:4.6.1'
     implementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
+    implementation "androidx.compose.ui:ui-tooling:$composeVersion"
 }

@@ -1,40 +1,33 @@
 package com.masselis.tpmsadvanced.interfaces
 
-import android.Manifest.permission.BLUETOOTH_SCAN
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
-import android.bluetooth.le.ScanSettings.*
+import android.bluetooth.le.ScanSettings.MATCH_MODE_AGGRESSIVE
+import android.bluetooth.le.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT
 import android.content.Context
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.ParcelUuid
 import androidx.annotation.RequiresPermission
-import androidx.core.app.ActivityCompat
 import androidx.core.content.getSystemService
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.UUID.fromString
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
-@SuppressLint("InlinedApi")
+@SuppressLint("MissingPermission")
 class BluetoothLeScanner @Inject constructor(
     private val context: Context
 ) {
-    @SuppressLint("MissingPermission")
-    @RequiresPermission(BLUETOOTH_SCAN)
-    val scanFlow = callbackFlow {
-        if (ActivityCompat.checkSelfPermission(context, BLUETOOTH_SCAN) != PERMISSION_GRANTED)
-            close(MissingPermissionException(BLUETOOTH_SCAN))
 
+    @SuppressLint("InlinedApi")
+    @RequiresPermission("android.permission.BLUETOOTH_SCAN")
+    fun scan(mode: Int) = callbackFlow {
         val callback = object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
                 launch { send(result) }
@@ -56,12 +49,12 @@ class BluetoothLeScanner @Inject constructor(
             listOf(
                 ScanFilter
                     .Builder()
-                    .setServiceUuid(ParcelUuid(SYSGRATION_SERVICE_UUID))
+                    .setServiceUuid(SYSGRATION_SERVICE_UUID)
                     .build()
             ),
             ScanSettings
                 .Builder()
-                .setScanMode(SCAN_MODE_LOW_LATENCY)
+                .setScanMode(mode)
                 .setMatchMode(MATCH_MODE_AGGRESSIVE)
                 .setNumOfMatches(MATCH_NUM_ONE_ADVERTISEMENT)
                 .build(),
@@ -71,16 +64,12 @@ class BluetoothLeScanner @Inject constructor(
             leScanner.flushPendingScanResults(callback)
             leScanner.stopScan(callback)
         }
-    }.shareIn(
-        CoroutineScope(Dispatchers.Main),
-        SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds, 0)
-    )
+    }.flowOn(Dispatchers.Main) // System's BluetoothLeScanner class as issues if called on a background thread
 
-    class MissingPermissionException(val permission: String) : Exception()
     class ScanFailed(val reason: Int) : Exception()
 
     companion object {
-        // TODO Replace randomUUID by the right value
-        val SYSGRATION_SERVICE_UUID = UUID.randomUUID()!!
+        private val SYSGRATION_SERVICE_UUID =
+            ParcelUuid(fromString("0000fbb0-0000-1000-8000-00805f9b34fb"))
     }
 }
