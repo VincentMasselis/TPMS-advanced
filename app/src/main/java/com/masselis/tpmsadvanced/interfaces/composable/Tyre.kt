@@ -95,15 +95,17 @@ fun Tyre(
 @Preview(showBackground = true)
 @Composable
 fun TyrePreview() {
-    LazyColumn {
-        items(TyreViewModel.mocks) { viewModel ->
-            Tyre(
-                location = TyreLocation.FRONT_RIGHT,
-                modifier = Modifier
-                    .height(150.dp)
-                    .width(40.dp),
-                viewModel = viewModel
-            )
+    TpmsAdvancedTheme {
+        LazyColumn {
+            items(TyreViewModel.mocks) { viewModel ->
+                Tyre(
+                    location = TyreLocation.FRONT_RIGHT,
+                    modifier = Modifier
+                        .height(150.dp)
+                        .width(40.dp),
+                    viewModel = viewModel
+                )
+            }
         }
     }
 }
