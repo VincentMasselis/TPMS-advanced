@@ -7,6 +7,7 @@ import com.masselis.tpmsadvanced.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.model.Temperature
 import com.masselis.tpmsadvanced.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.tools.ObservableStateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,11 +21,15 @@ class AtmosphereRangeUseCase @Inject constructor(
         Context.MODE_PRIVATE
     )
 
-    val highTempFlow = temperatureSharedPreference(HIGH_TEMP_KEY, 90f.celsius)
-    val normalTempFlow = temperatureSharedPreference(NORMAL_TEMP_KEY, 45f.celsius)
-    val lowTempFlow = temperatureSharedPreference(LOW_TEMP_KEY, 20f.celsius)
+    val highTempFlow: MutableStateFlow<Temperature> =
+        temperatureSharedPreference(HIGH_TEMP_KEY, 90f.celsius)
+    val normalTempFlow: MutableStateFlow<Temperature> =
+        temperatureSharedPreference(NORMAL_TEMP_KEY, 45f.celsius)
+    val lowTempFlow: MutableStateFlow<Temperature> =
+        temperatureSharedPreference(LOW_TEMP_KEY, 20f.celsius)
 
-    val lowPressureFlow = pressureSharedPreference(LOW_PRESSURE_KEY, 1f.bar)
+    val lowPressureFlow: MutableStateFlow<Pressure> =
+        pressureSharedPreference(LOW_PRESSURE_KEY, 1f.bar)
 
     private fun temperatureSharedPreference(key: String, defaultValue: Temperature) =
         ObservableStateFlow(

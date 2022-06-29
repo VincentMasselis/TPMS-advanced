@@ -4,11 +4,15 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.model.Pressure
+import com.masselis.tpmsadvanced.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.model.Temperature
+import com.masselis.tpmsadvanced.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.model.TyreAtmosphere
+import com.masselis.tpmsadvanced.usecase.AtmosphereRangeUseCase
 import com.masselis.tpmsadvanced.usecase.TyreAtmosphereUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -31,25 +35,33 @@ class TyreViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var atmosphereUseCase: TyreAtmosphereUseCase
+    private lateinit var tyreAtmosphereUseCase: TyreAtmosphereUseCase
+    private lateinit var atmosphereRangeUseCase: AtmosphereRangeUseCase
     private lateinit var savedStateHandle: SavedStateHandle
 
     @Before
     fun setup() {
-        atmosphereUseCase = mock {
+        tyreAtmosphereUseCase = mock {
             on { mock.listen() } doReturn emptyFlow()
+        }
+        atmosphereRangeUseCase = mock {
+            on { mock.lowTempFlow } doReturn MutableStateFlow(20f.celsius)
+            on { mock.normalTempFlow } doReturn MutableStateFlow(45f.celsius)
+            on { mock.highTempFlow } doReturn MutableStateFlow(90f.celsius)
+            on { mock.lowPressureFlow } doReturn MutableStateFlow(1f.bar)
         }
         savedStateHandle = SavedStateHandle()
     }
 
     private fun test() = TyreViewModel(
-        atmosphereUseCase,
+        tyreAtmosphereUseCase,
+        atmosphereRangeUseCase,
         100.milliseconds.toJavaDuration(),
         savedStateHandle
     )
 
     private fun setAtmosphere(pressure: Float, temperature: Float) =
-        whenever(atmosphereUseCase.listen())
+        whenever(tyreAtmosphereUseCase.listen())
             .doReturn(flowOf(TyreAtmosphere(Pressure(pressure), Temperature(temperature))))
 
     @Test
