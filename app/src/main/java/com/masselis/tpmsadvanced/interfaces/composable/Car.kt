@@ -25,7 +25,7 @@ fun Car(modifier: Modifier = Modifier) {
         val (car, tyreBox, topLeft, topRight, bottomLeft, bottomRight) = createRefs()
         Image(
             bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
             contentDescription = null,
             modifier = Modifier
                 .aspectRatio(208f / 462f)

@@ -69,7 +69,7 @@ fun TyreStat(
             .alpha(if (isVisible.value) 1f else 0f)
     ) {
         Text(
-            pressure?.bar?.let { "%.2f bar".format(it) } ?: "-.--",
+            pressure?.asBar()?.let { "%.2f bar".format(it) } ?: "-.--",
             modifier = Modifier
                 .align(alignment),
             maxLines = 1,

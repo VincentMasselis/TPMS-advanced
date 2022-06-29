@@ -7,9 +7,11 @@ import android.os.Parcelable
 @JvmInline
 value class Pressure(val kpa: Float) : Parcelable {
 
-    val bar get() = kpa.div(100f)
+    fun asBar() = kpa.div(100f)
 
     fun hasPressure() = kpa > 0f
+
+    operator fun compareTo(other: Pressure) = kpa.compareTo(other.kpa)
 
     private constructor(parcel: Parcel) : this(parcel.readFloat())
 
@@ -20,6 +22,11 @@ value class Pressure(val kpa: Float) : Parcelable {
     override fun describeContents(): Int = 0
 
     companion object CREATOR : Parcelable.Creator<Pressure> {
+
+        val Float.kpa get() = Pressure(this)
+
+        val Float.bar get() = Pressure(this.div(100))
+
         override fun createFromParcel(parcel: Parcel): Pressure {
             return Pressure(parcel)
         }

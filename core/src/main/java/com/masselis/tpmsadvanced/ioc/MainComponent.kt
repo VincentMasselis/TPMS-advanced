@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.ioc
 
 import android.content.Context
+import com.masselis.tpmsadvanced.interfaces.viewmodel.AlertViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.usecase.FindTyreComponentUseCase
 import dagger.BindsInstance
@@ -21,5 +22,6 @@ interface MainComponent {
     }
 
     val preconditionsViewModel: PreconditionsViewModel.Factory
-    val findTyreComponent: FindTyreComponentUseCase
+    val alertViewModel: AlertViewModel.Factory
+    val findTyreComponentUseCase: FindTyreComponentUseCase
 }

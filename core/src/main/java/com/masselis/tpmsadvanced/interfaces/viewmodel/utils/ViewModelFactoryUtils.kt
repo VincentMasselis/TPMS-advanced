@@ -2,11 +2,10 @@ package com.masselis.tpmsadvanced.interfaces.viewmodel.utils
 
 import android.os.Bundle
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.savedstate.SavedStateRegistryOwner
-import androidx.savedstate.findViewTreeSavedStateRegistryOwner
 
 // Originally inspired by https://proandroiddev.com/dagger-tips-leveraging-assistedinjection-to-inject-viewmodels-with-savedstatehandle-and-93fe009ad874
 
@@ -48,6 +47,6 @@ inline fun <reified T : ViewModel> savedStateViewModel(
     key,
     defaultArgs,
     LocalViewModelStoreOwner.current!!,
-    LocalView.current.findViewTreeSavedStateRegistryOwner()!!,
+    LocalSavedStateRegistryOwner.current,
     creator
 )

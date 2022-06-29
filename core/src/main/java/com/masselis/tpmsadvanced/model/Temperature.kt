@@ -20,6 +20,9 @@ value class Temperature(val celsius: Float) : Parcelable {
     override fun describeContents(): Int = 0
 
     companion object CREATOR : Parcelable.Creator<Temperature> {
+
+        val Float.celsius get() = Temperature(this)
+
         override fun createFromParcel(parcel: Parcel): Temperature {
             return Temperature(parcel)
         }

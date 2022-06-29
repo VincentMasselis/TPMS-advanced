@@ -24,7 +24,7 @@ import kotlin.time.toKotlinDuration
 @OptIn(ExperimentalCoroutinesApi::class)
 class TyreStatsViewModel @AssistedInject constructor(
     tyreAtmosphereUseCase: TyreAtmosphereUseCase,
-    ranges: AtmosphereRangeUseCase,
+    rangeUSeCase: AtmosphereRangeUseCase,
     @Assisted obsoleteTimeout: Duration,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -61,18 +61,17 @@ class TyreStatsViewModel @AssistedInject constructor(
     val stateFlow = state.asStateFlow()
 
     init {
-        tyreAtmosphereUseCase
-            .listen()
-            .flatMapLatest { atmosphere ->
+        combine(tyreAtmosphereUseCase.listen(), rangeUSeCase.highTempFlow) { a, b -> a to b }
+            .flatMapLatest { (atmosphere, highTemp) ->
                 flow {
                     emit(
                         if (atmosphere.pressure.hasPressure().not())
                             State.Alerting(atmosphere.pressure, atmosphere.temperature)
                         else
                             when (atmosphere.temperature.celsius) {
-                                in Float.MIN_VALUE..ranges.highTemp.celsius ->
+                                in Float.MIN_VALUE..highTemp.celsius ->
                                     State.Normal(atmosphere.pressure, atmosphere.temperature)
-                                in ranges.highTemp.celsius..Float.MAX_VALUE ->
+                                in highTemp.celsius..Float.MAX_VALUE ->
                                     State.Alerting(atmosphere.pressure, atmosphere.temperature)
                                 else ->
                                     throw IllegalArgumentException()

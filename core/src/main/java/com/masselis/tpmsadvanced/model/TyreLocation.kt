@@ -13,5 +13,5 @@ enum class TyreLocation(val byte: UByte) {
     @Retention(AnnotationRetention.RUNTIME)
     annotation class Qualifier(val location: TyreLocation)
 
-    val component get() = mainComponent.findTyreComponent.find(this)
+    val component get() = mainComponent.findTyreComponentUseCase.find(this)
 }

@@ -64,7 +64,7 @@ fun Tyre(
                         .background(Color.Transparent)
                         .border(
                             2.dp,
-                            MaterialTheme.colorScheme.onSurface,
+                            MaterialTheme.colorScheme.onBackground,
                             RoundedCornerShape(percent = 20)
                         )
                     is TyreViewModel.State.Normal ->
@@ -84,7 +84,7 @@ fun Tyre(
                             )
                         )
                     is TyreViewModel.State.Obsolete ->
-                        background(MaterialTheme.colorScheme.onSurface)
+                        background(MaterialTheme.colorScheme.onBackground)
                     is TyreViewModel.State.Alerting ->
                         background(MaterialTheme.colorScheme.error)
                 }
