@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,9 +41,8 @@ fun TyreStat(
         is State.Obsolete -> state.pressure to state.temperature
     }
     val color = when (state) {
-        State.NotDetected, is State.Obsolete -> Color.DarkGray
-        is State.Alerting -> Color.Red
-        is State.Normal -> Color.Black
+        State.NotDetected, is State.Obsolete, is State.Normal -> MaterialTheme.colorScheme.onSurface
+        is State.Alerting -> MaterialTheme.colorScheme.error
     }
     val isVisible = remember { mutableStateOf(true) }
     if (state is State.Alerting) {
@@ -70,14 +69,14 @@ fun TyreStat(
             .alpha(if (isVisible.value) 1f else 0f)
     ) {
         Text(
-            pressure?.bar?.let { "%.2f bar".format(it) } ?: "-",
+            pressure?.bar?.let { "%.2f bar".format(it) } ?: "-.--",
             modifier = Modifier
                 .align(alignment),
             maxLines = 1,
             color = color,
         )
         Text(
-            temperature?.celsius?.let { "%.1f°C".format(it) } ?: "-",
+            temperature?.celsius?.let { "%.1f°C".format(it) } ?: "-.-",
             modifier = Modifier
                 .align(alignment),
             maxLines = 1,

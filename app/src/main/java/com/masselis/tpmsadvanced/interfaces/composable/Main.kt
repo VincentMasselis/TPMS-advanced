@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.masselis.tpmsadvanced.interfaces.composable
 
 import android.app.Activity
@@ -9,9 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,34 +61,36 @@ fun MissingPermission(
         if (granted.not()) hasRefusedGrant.value = true
         else trigger()
     }
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            if (hasRefusedGrant.value)
-                "Failed to obtain permission, please update this in the app's system settings"
-            else
-                "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
-            Modifier.fillMaxWidth(0.7f)
-        )
-        TextButton(onClick = {
-            if (hasRefusedGrant.value)
-                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    .apply { addCategory(CATEGORY_DEFAULT) }
-                    .apply { data = "package:${activity.packageName}".toUri() }
-                    .apply { addFlags(FLAG_ACTIVITY_NEW_TASK) }
-                    .apply { addFlags(FLAG_ACTIVITY_NO_HISTORY) }
-                    .apply { addFlags(FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
-                    .also { activity.startActivity(it) }
-            else
-                launcher.launch(missingPermission.permission)
-        }) {
+    Scaffold {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
-                text = if (hasRefusedGrant.value) "Open settings"
-                else "Grant permission"
+                if (hasRefusedGrant.value)
+                    "Failed to obtain permission, please update this in the app's system settings"
+                else
+                    "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
+                Modifier.fillMaxWidth(0.7f)
             )
+            TextButton(onClick = {
+                if (hasRefusedGrant.value)
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        .apply { addCategory(CATEGORY_DEFAULT) }
+                        .apply { data = "package:${activity.packageName}".toUri() }
+                        .apply { addFlags(FLAG_ACTIVITY_NEW_TASK) }
+                        .apply { addFlags(FLAG_ACTIVITY_NO_HISTORY) }
+                        .apply { addFlags(FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
+                        .also { activity.startActivity(it) }
+                else
+                    launcher.launch(missingPermission.permission)
+            }) {
+                Text(
+                    text = if (hasRefusedGrant.value) "Open settings"
+                    else "Grant permission"
+                )
+            }
         }
     }
 }

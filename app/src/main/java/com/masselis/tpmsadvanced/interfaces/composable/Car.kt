@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
@@ -21,9 +24,10 @@ fun Car(modifier: Modifier = Modifier) {
     ConstraintLayout(modifier = modifier) {
         val (car, tyreBox, topLeft, topRight, bottomLeft, bottomRight) = createRefs()
         Image(
-            ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
-            null,
-            Modifier
+            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+            contentDescription = null,
+            modifier = Modifier
                 .aspectRatio(208f / 462f)
                 .constrainAs(car) {
                     centerTo(parent)

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -20,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.interfaces.mainComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State.Normal.BlueToGreen
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State.Normal.GreenToRed
@@ -62,27 +62,31 @@ fun Tyre(
                 when (val state = state) {
                     TyreViewModel.State.NotDetected -> this
                         .background(Color.Transparent)
-                        .border(2.dp, Color.Gray, RoundedCornerShape(percent = 20))
+                        .border(
+                            2.dp,
+                            MaterialTheme.colorScheme.onSurface,
+                            RoundedCornerShape(percent = 20)
+                        )
                     is TyreViewModel.State.Normal ->
                         background(
                             Color(
                                 evaluator.evaluate(
                                     state.fraction.value,
                                     when (state) {
-                                        is BlueToGreen -> Color.Blue.toArgb()
-                                        is GreenToRed -> Color.Green.toArgb()
+                                        is BlueToGreen -> MaterialTheme.colorScheme.tertiary.toArgb()
+                                        is GreenToRed -> MaterialTheme.colorScheme.primary.toArgb()
                                     },
                                     when (state) {
-                                        is BlueToGreen -> Color.Green.toArgb()
-                                        is GreenToRed -> Color.Red.toArgb()
+                                        is BlueToGreen -> MaterialTheme.colorScheme.primary.toArgb()
+                                        is GreenToRed -> MaterialTheme.colorScheme.error.toArgb()
                                     },
                                 ) as Int
                             )
                         )
                     is TyreViewModel.State.Obsolete ->
-                        background(Color.Gray)
+                        background(MaterialTheme.colorScheme.onSurface)
                     is TyreViewModel.State.Alerting ->
-                        background(Color.Red)
+                        background(MaterialTheme.colorScheme.error)
                 }
             }
     )

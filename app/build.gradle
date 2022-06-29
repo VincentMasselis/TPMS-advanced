@@ -7,7 +7,7 @@ android {
     compileSdk 32
     defaultConfig {
         applicationId "com.masselis.tpmsadvanced"
-        minSdk 23
+        minSdk 27
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -47,7 +47,7 @@ dependencies {
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     implementation "androidx.compose.foundation:foundation:$composeVersion"
     // Material Design
-    implementation "androidx.compose.material:material:$composeVersion"
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha13'
     implementation 'com.google.android.material:material:1.6.1'
     // Integration with activities
     implementation 'androidx.activity:activity-compose:1.4.0'
