@@ -101,7 +101,7 @@ class TyreViewModel @AssistedInject constructor(
                                     Fraction(
                                         atmosphere.temperature.celsius
                                             .minus(normalTemp.celsius)
-                                            .div(highTemp.celsius - highTemp.celsius)
+                                            .div(highTemp.celsius - normalTemp.celsius)
                                     )
                                 )
                             in highTemp.celsius..Float.MAX_VALUE ->
