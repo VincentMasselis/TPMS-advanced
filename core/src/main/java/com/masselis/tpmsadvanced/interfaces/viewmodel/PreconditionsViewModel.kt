@@ -33,7 +33,7 @@ class PreconditionsViewModel @AssistedInject constructor(
         object Ready : State()
 
         @Parcelize
-        data class MissingPermission(val permission: String) : State()
+        data class MissingPermission(val permissions: List<String>) : State()
 
         @Parcelize
         object BluetoothChipTurnedOff : State()
@@ -51,10 +51,10 @@ class PreconditionsViewModel @AssistedInject constructor(
                 combine(
                     bleScanUseCase.isChipTurnedOn(),
                     flowOf(bleScanUseCase.missingPermission())
-                ) { isOn, permission ->
+                ) { isOn, permissions ->
                     when {
+                        permissions.isNotEmpty() -> State.MissingPermission(permissions)
                         isOn.not() -> State.BluetoothChipTurnedOff
-                        permission != null -> State.MissingPermission(permission)
                         else -> State.Ready
                     }
                 }

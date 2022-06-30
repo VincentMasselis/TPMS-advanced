@@ -3,11 +3,12 @@
 package com.masselis.tpmsadvanced.interfaces.composable
 
 import android.app.Activity
+import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.Intent.*
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -38,14 +40,16 @@ fun Main(
             viewModel.trigger()
     }
     val state by viewModel.stateFlow.collectAsState()
-    when (val state = state) {
-        State.Loading -> Text("Loading")
-        State.BluetoothChipTurnedOff -> ChipIsOff()
-        is State.MissingPermission -> MissingPermission(
-            modifier = Modifier.fillMaxSize(),
-            state
-        ) { viewModel.trigger() }
-        State.Ready -> Home()
+    Scaffold {
+        when (val state = state) {
+            State.Loading -> Text("Loading")
+            State.BluetoothChipTurnedOff -> ChipIsOff(modifier = Modifier.fillMaxSize())
+            is State.MissingPermission -> MissingPermission(
+                modifier = Modifier.fillMaxSize(),
+                state
+            ) { viewModel.trigger() }
+            State.Ready -> Home()
+        }
     }
 }
 
@@ -57,56 +61,68 @@ fun MissingPermission(
 ) {
     val activity = LocalContext.current as Activity
     val hasRefusedGrant = remember { mutableStateOf(false) }
-    val launcher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
-        if (granted.not()) hasRefusedGrant.value = true
+    val launcher = rememberLauncherForActivityResult(RequestMultiplePermissions()) { granted ->
+        if (granted.values.any { it.not() }) hasRefusedGrant.value = true
         else trigger()
     }
-    Scaffold {
-        Column(
-            modifier = modifier,
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            if (hasRefusedGrant.value)
+                "Failed to obtain permission, please update this in the app's system settings"
+            else
+                "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .padding(bottom = 8.dp)
+        )
+        FilledTonalButton(onClick = {
+            if (hasRefusedGrant.value)
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    .apply { addCategory(CATEGORY_DEFAULT) }
+                    .apply { data = "package:${activity.packageName}".toUri() }
+                    .apply { addFlags(FLAG_ACTIVITY_NEW_TASK) }
+                    .apply { addFlags(FLAG_ACTIVITY_NO_HISTORY) }
+                    .apply { addFlags(FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
+                    .also { activity.startActivity(it) }
+            else
+                launcher.launch(missingPermission.permissions.toTypedArray())
+        }) {
             Text(
-                if (hasRefusedGrant.value)
-                    "Failed to obtain permission, please update this in the app's system settings"
-                else
-                    "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
-                Modifier.fillMaxWidth(0.7f)
+                text = if (hasRefusedGrant.value) "Open settings"
+                else "Grant permission"
             )
-            TextButton(onClick = {
-                if (hasRefusedGrant.value)
-                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        .apply { addCategory(CATEGORY_DEFAULT) }
-                        .apply { data = "package:${activity.packageName}".toUri() }
-                        .apply { addFlags(FLAG_ACTIVITY_NEW_TASK) }
-                        .apply { addFlags(FLAG_ACTIVITY_NO_HISTORY) }
-                        .apply { addFlags(FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
-                        .also { activity.startActivity(it) }
-                else
-                    launcher.launch(missingPermission.permission)
-            }) {
-                Text(
-                    text = if (hasRefusedGrant.value) "Open settings"
-                    else "Grant permission"
-                )
-            }
         }
     }
 }
 
 @Composable
-fun ChipIsOff() {
+fun ChipIsOff(
+    modifier: Modifier = Modifier
+) {
     val activity = LocalContext.current as Activity
-    AlertDialog(
-        title = { Text(text = "Bluetooth is off") },
-        text = { Text(text = "To continue you must turn on the bluetooth chip") },
-        onDismissRequest = { },
-        confirmButton = {
-            TextButton(onClick = { activity.finishAndRemoveTask() })
-            { Text(text = "Quit") }
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            "TPMS Advanced needs you to enable the bluetooth chip.\nThis is required by the system in order to make BLE scan",
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .padding(bottom = 8.dp)
+        )
+        FilledTonalButton(onClick = {
+            activity.startActivity(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+        }) {
+            Text("Enable bluetooth")
         }
-    )
+    }
 }
 
 @Preview(showBackground = true)

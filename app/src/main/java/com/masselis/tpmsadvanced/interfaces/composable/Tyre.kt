@@ -21,9 +21,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.masselis.tpmsadvanced.interfaces.viewmodel.RealTyreViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State.Normal.BlueToGreen
-import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State.Normal.GreenToRed
+import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.interfaces.viewmodel.utils.savedStateViewModel
 import com.masselis.tpmsadvanced.mock.mocks
 import com.masselis.tpmsadvanced.model.TyreLocation
@@ -38,12 +38,12 @@ fun Tyre(
     location: TyreLocation,
     modifier: Modifier = Modifier,
     viewModel: TyreViewModel = savedStateViewModel(key = "TyreViewModel_${location.name}") {
-        location.component.tyreViewModelFactory.build(it)
+        location.component.realTyreViewModelFactory.build(it)
     },
 ) {
     val state by viewModel.stateFlow.collectAsState()
     val isVisible = remember { mutableStateOf(true) }
-    if (state is TyreViewModel.State.Alerting) {
+    if (state is State.Alerting) {
         LaunchedEffect(key1 = isVisible) {
             launch {
                 repeat(Int.MAX_VALUE) {
@@ -60,32 +60,32 @@ fun Tyre(
             .aspectRatio(15f / 40f)
             .run {
                 when (val state = state) {
-                    TyreViewModel.State.NotDetected -> this
+                    State.NotDetected -> this
                         .background(Color.Transparent)
                         .border(
                             2.dp,
                             MaterialTheme.colorScheme.onBackground,
                             RoundedCornerShape(percent = 20)
                         )
-                    is TyreViewModel.State.Normal ->
+                    is State.Normal ->
                         background(
                             Color(
                                 evaluator.evaluate(
                                     state.fraction.value,
                                     when (state) {
-                                        is BlueToGreen -> MaterialTheme.colorScheme.tertiary.toArgb()
-                                        is GreenToRed -> MaterialTheme.colorScheme.primary.toArgb()
+                                        is State.Normal.BlueToGreen -> MaterialTheme.colorScheme.tertiary.toArgb()
+                                        is State.Normal.GreenToRed -> MaterialTheme.colorScheme.primary.toArgb()
                                     },
                                     when (state) {
-                                        is BlueToGreen -> MaterialTheme.colorScheme.primary.toArgb()
-                                        is GreenToRed -> MaterialTheme.colorScheme.error.toArgb()
+                                        is State.Normal.BlueToGreen -> MaterialTheme.colorScheme.primary.toArgb()
+                                        is State.Normal.GreenToRed -> MaterialTheme.colorScheme.error.toArgb()
                                     },
                                 ) as Int
                             )
                         )
-                    is TyreViewModel.State.Obsolete ->
+                    is State.Obsolete ->
                         background(MaterialTheme.colorScheme.onBackground)
-                    is TyreViewModel.State.Alerting ->
+                    is State.Alerting ->
                         background(MaterialTheme.colorScheme.error)
                 }
             }
@@ -97,7 +97,7 @@ fun Tyre(
 fun TyrePreview() {
     TpmsAdvancedTheme {
         LazyColumn {
-            items(TyreViewModel.mocks) { viewModel ->
+            items(RealTyreViewModel.mocks) { viewModel ->
                 Tyre(
                     location = TyreLocation.FRONT_RIGHT,
                     modifier = Modifier

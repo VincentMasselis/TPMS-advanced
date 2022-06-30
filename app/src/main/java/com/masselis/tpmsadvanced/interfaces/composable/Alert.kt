@@ -2,24 +2,18 @@ package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.interfaces.mainComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.AlertViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.utils.savedStateViewModel
-import com.masselis.tpmsadvanced.model.Pressure
-import com.masselis.tpmsadvanced.model.Temperature
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlin.math.roundToInt
+import com.masselis.tpmsadvanced.mock.mocks
+import com.masselis.tpmsadvanced.model.Fraction
 
 @Composable
 fun Alert(
@@ -29,14 +23,30 @@ fun Alert(
     val highTempFlow = viewModel.highTemp
     val normalTempFlow = viewModel.normalTemp
     val lowTempFlow = viewModel.lowTemp
-    LazyColumn(modifier = modifier.padding(end = 16.dp, start = 16.dp)) {
+    var showLowPressureDialog by remember { mutableStateOf(false) }
+    var showLowTempDialog by remember { mutableStateOf(false) }
+    var showNormalTempDialog by remember { mutableStateOf(false) }
+    var showHighTempDialog by remember { mutableStateOf(false) }
+    LazyColumn(
+        contentPadding = PaddingValues(vertical = 16.dp),
+        modifier = modifier.padding(end = 16.dp, start = 16.dp)
+    ) {
         item {
-            LowPressureSlider(viewModel.lowPressure)
+            LowPressureSlider(
+                { showLowPressureDialog = true },
+                viewModel.lowPressure
+            )
+        }
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
+            Divider(thickness = Dp.Hairline)
+            Spacer(modifier = Modifier.height(24.dp))
         }
         item {
             Column {
                 val normalTemp by normalTempFlow.collectAsState()
                 TemperatureSlider(
+                    { showHighTempDialog = true },
                     "Max temperature:",
                     mutableStateFlow = highTempFlow,
                     valueRange = normalTemp.celsius..150f
@@ -48,6 +58,7 @@ fun Alert(
                 val lowTemp by lowTempFlow.collectAsState()
                 val highTemp by highTempFlow.collectAsState()
                 TemperatureSlider(
+                    { showNormalTempDialog = true },
                     "Normal temperature:",
                     mutableStateFlow = normalTempFlow,
                     valueRange = lowTemp.celsius..highTemp.celsius
@@ -57,90 +68,44 @@ fun Alert(
         item {
             val normalTemp by normalTempFlow.collectAsState()
             TemperatureSlider(
+                { showLowTempDialog = true },
                 "Low temperature:",
                 mutableStateFlow = lowTempFlow,
                 valueRange = 5f..normalTemp.celsius
             )
         }
     }
+    if (showLowPressureDialog)
+        LowPressureInfo(viewModel.lowPressure) { showLowPressureDialog = false }
+    if (showLowTempDialog)
+        TemperatureInfo(
+            text = "When the temperature is close to %.1f°C, the tyre is colored in blue",
+            state = TyreViewModel.State.Normal.BlueToGreen(Fraction(0f)),
+            temperatureStateFlow = lowTempFlow,
+        ) { showLowTempDialog = false }
+    if (showNormalTempDialog)
+        TemperatureInfo(
+            text = "When the temperature is close to %.1f°C, the tyre is colored in green",
+            state = TyreViewModel.State.Normal.BlueToGreen(Fraction(1f)),
+            temperatureStateFlow = normalTempFlow
+        ) { showNormalTempDialog = false }
+    if (showHighTempDialog)
+        TemperatureInfo(
+            text = "When the temperature is equals or superior to %.1f°C, the tyre starts to blink in red to alert you",
+            state = TyreViewModel.State.Alerting,
+            temperatureStateFlow = highTempFlow
+        ) { showHighTempDialog = false }
 }
 
+@Preview
 @Composable
-private fun LowPressureSlider(
-    mutableStateFlow: MutableStateFlow<Pressure>
-) {
-    val pressure by mutableStateFlow.collectAsState()
-    Column {
-        Row {
-            Text(
-                text = "Low pressure: ",
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                text = "%.2f bar".format(pressure.asBar()),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
+fun AlertPreview() {
+    TpmsAdvancedTheme {
+        AlertViewModel.mocks().forEach { mock ->
+            Alert(
+                viewModel = mock,
+                modifier = Modifier.fillMaxSize()
             )
         }
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                "%.2f bar".format(0.5f),
-                Modifier.align(Alignment.TopStart)
-            )
-            Text(
-                "%.2f bar".format(3f),
-                Modifier.align(Alignment.TopEnd)
-            )
-        }
-        Slider(
-            value = pressure.asBar(),
-            valueRange = 0.5f..3f,
-            onValueChange = {
-                mutableStateFlow.value = Pressure(it.times(100f).div(10f).roundToInt().times(10f))
-            }
-        )
-        Spacer(modifier = Modifier.height(36.dp))
-        Divider(thickness = Dp.Hairline)
-        Spacer(modifier = Modifier.height(36.dp))
-    }
-}
-
-@Composable
-private fun TemperatureSlider(
-    title: String,
-    mutableStateFlow: MutableStateFlow<Temperature>,
-    valueRange: ClosedFloatingPointRange<Float>
-) {
-    val temp by mutableStateFlow.collectAsState()
-    Column {
-        Row {
-            Text(
-                text = "$title ",
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                text = "%.1f°C".format(temp.celsius),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                "%.1f°C".format(valueRange.start),
-                Modifier.align(Alignment.TopStart)
-            )
-            Text(
-                "%.1f°C".format(valueRange.endInclusive),
-                Modifier.align(Alignment.TopEnd)
-            )
-        }
-        Slider(
-            value = temp.celsius,
-            valueRange = valueRange,
-            onValueChange = { mutableStateFlow.value = Temperature(it.roundToInt().toFloat()) }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }

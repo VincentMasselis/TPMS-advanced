@@ -31,12 +31,12 @@ class BleScanUseCase @Inject constructor(
     private val bluetoothAdapter = context.getSystemService<BluetoothManager>()!!.adapter
 
     @SuppressLint("InlinedApi")
-    fun missingPermission(): String? = when (Build.VERSION.SDK_INT) {
-        in Int.MIN_VALUE..28 -> ACCESS_COARSE_LOCATION
-        in 29..30 -> ACCESS_FINE_LOCATION
-        in 31..Int.MAX_VALUE -> BLUETOOTH_SCAN
+    fun missingPermission(): List<String> = when (Build.VERSION.SDK_INT) {
+        in Int.MIN_VALUE..28 -> listOf(ACCESS_COARSE_LOCATION)
+        in 29..30 -> listOf(ACCESS_FINE_LOCATION)
+        in 31..Int.MAX_VALUE -> listOf(BLUETOOTH_CONNECT, BLUETOOTH_SCAN)
         else -> throw IllegalArgumentException()
-    }.takeIf { checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
+    }.filter { checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
 
     fun isChipTurnedOn(): Flow<Boolean> = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         .asFlow()

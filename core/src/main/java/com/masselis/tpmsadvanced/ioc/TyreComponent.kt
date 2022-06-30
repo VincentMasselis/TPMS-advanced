@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.ioc
 
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreStatsViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.RealTyreViewModel
 import com.masselis.tpmsadvanced.model.TyreLocation
 import dagger.BindsInstance
 import dagger.Subcomponent
@@ -14,6 +14,6 @@ interface TyreComponent {
         fun build(@BindsInstance location: TyreLocation): TyreComponent
     }
 
-    val tyreViewModelFactory: TyreViewModel.Factory
+    val realTyreViewModelFactory: RealTyreViewModel.Factory
     val tyreStatViewModelFactory: TyreStatsViewModel.Factory
 }

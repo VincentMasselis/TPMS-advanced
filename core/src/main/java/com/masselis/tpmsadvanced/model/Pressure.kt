@@ -25,7 +25,7 @@ value class Pressure(val kpa: Float) : Parcelable {
 
         val Float.kpa get() = Pressure(this)
 
-        val Float.bar get() = Pressure(this.div(100))
+        val Float.bar get() = Pressure(this.times(100))
 
         override fun createFromParcel(parcel: Parcel): Pressure {
             return Pressure(parcel)
