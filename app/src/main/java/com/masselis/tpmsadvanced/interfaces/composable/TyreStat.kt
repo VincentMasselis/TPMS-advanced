@@ -1,7 +1,6 @@
 package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,24 +64,22 @@ fun TyreStat(
         }
     }
     Column(
-        modifier = modifier
-            .requiredWidthIn(0.dp, 75.dp)
-            .alpha(if (isVisible.value) 1f else 0f)
+        modifier = modifier.alpha(if (isVisible.value) 1f else 0f)
     ) {
         Text(
             pressure?.asBar()?.let { "%.2f bar".format(it) } ?: "-.--",
-            modifier = Modifier
-                .align(alignment),
+            fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             color = color,
+            modifier = Modifier.align(alignment),
         )
         Text(
             temperature?.celsius?.let { "%.1f°C".format(it) } ?: "-.-",
-            modifier = Modifier
-                .align(alignment),
+            fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             fontSize = 16.sp,
-            color = color
+            color = color,
+            modifier = Modifier.align(alignment),
         )
     }
 }
