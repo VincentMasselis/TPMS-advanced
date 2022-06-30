@@ -1,15 +1,11 @@
 package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
@@ -21,6 +17,7 @@ import com.masselis.tpmsadvanced.model.TyreLocation
 
 @Composable
 fun Car(modifier: Modifier = Modifier) {
+    KeepScreenOn()
     ConstraintLayout(modifier = modifier) {
         val (car, tyreBox, topLeft, topRight, bottomLeft, bottomRight) = createRefs()
         Image(
@@ -71,29 +68,53 @@ fun Car(modifier: Modifier = Modifier) {
                     .fillMaxWidth(.12f)
             )
         }
-        Box(Modifier.constrainAs(topLeft) {
-            top.linkTo(tyreBox.top)
-            end.linkTo(tyreBox.start, 8.dp)
-        }) {
-            TyreStat(location = TyreLocation.FRONT_LEFT)
+        Box(Modifier
+            .constrainAs(topLeft) {
+                top.linkTo(tyreBox.top)
+                end.linkTo(tyreBox.start, 8.dp)
+            }
+            .width(100.dp)
+        ) {
+            TyreStat(
+                location = TyreLocation.FRONT_LEFT,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
         }
-        Box(Modifier.constrainAs(topRight) {
-            top.linkTo(tyreBox.top)
-            start.linkTo(tyreBox.end, 8.dp)
-        }) {
-            TyreStat(location = TyreLocation.FRONT_RIGHT)
+        Box(Modifier
+            .constrainAs(topRight) {
+                top.linkTo(tyreBox.top)
+                start.linkTo(tyreBox.end, 8.dp)
+            }
+            .width(100.dp)
+        ) {
+            TyreStat(
+                location = TyreLocation.FRONT_RIGHT,
+                modifier = Modifier.align(Alignment.TopStart)
+            )
         }
-        Box(Modifier.constrainAs(bottomLeft) {
-            bottom.linkTo(tyreBox.bottom)
-            end.linkTo(tyreBox.start, 8.dp)
-        }) {
-            TyreStat(location = TyreLocation.REAR_LEFT)
+        Box(Modifier
+            .constrainAs(bottomLeft) {
+                bottom.linkTo(tyreBox.bottom)
+                end.linkTo(tyreBox.start, 8.dp)
+            }
+            .width(100.dp)
+        ) {
+            TyreStat(
+                location = TyreLocation.REAR_LEFT,
+                modifier = Modifier.align(Alignment.BottomEnd)
+            )
         }
-        Box(Modifier.constrainAs(bottomRight) {
-            bottom.linkTo(tyreBox.bottom)
-            start.linkTo(tyreBox.end, 8.dp)
-        }) {
-            TyreStat(location = TyreLocation.REAR_RIGHT)
+        Box(Modifier
+            .constrainAs(bottomRight) {
+                bottom.linkTo(tyreBox.bottom)
+                start.linkTo(tyreBox.end, 8.dp)
+            }
+            .width(100.dp)
+        ) {
+            TyreStat(
+                location = TyreLocation.REAR_RIGHT,
+                modifier = Modifier.align(Alignment.TopStart)
+            )
         }
     }
 }
