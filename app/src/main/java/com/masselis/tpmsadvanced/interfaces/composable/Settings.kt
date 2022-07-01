@@ -2,23 +2,23 @@ package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.*
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.interfaces.mainComponent
-import com.masselis.tpmsadvanced.interfaces.viewmodel.AlertViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.utils.savedStateViewModel
 import com.masselis.tpmsadvanced.mock.mocks
 import com.masselis.tpmsadvanced.model.Fraction
 
 @Composable
-fun Alert(
+fun Settings(
     modifier: Modifier = Modifier,
-    viewModel: AlertViewModel = savedStateViewModel { mainComponent.alertViewModel.build(it) }
+    viewModel: SettingsViewModel = savedStateViewModel { mainComponent.settingsViewModel.build(it) }
 ) {
     val highTempFlow = viewModel.highTemp
     val normalTempFlow = viewModel.normalTemp
@@ -28,7 +28,6 @@ fun Alert(
     var showNormalTempDialog by remember { mutableStateOf(false) }
     var showHighTempDialog by remember { mutableStateOf(false) }
     LazyColumn(
-        contentPadding = PaddingValues(vertical = 16.dp),
         modifier = modifier.padding(end = 16.dp, start = 16.dp)
     ) {
         item {
@@ -38,9 +37,11 @@ fun Alert(
             )
         }
         item {
-            Spacer(modifier = Modifier.height(24.dp))
-            Divider(thickness = Dp.Hairline)
-            Spacer(modifier = Modifier.height(24.dp))
+            Column {
+                Spacer(modifier = Modifier.height(24.dp))
+                Divider(thickness = Dp.Hairline)
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
         item {
             Column {
@@ -74,6 +75,16 @@ fun Alert(
                 valueRange = 5f..normalTemp.celsius
             )
         }
+        item {
+            Column {
+                Spacer(modifier = Modifier.height(24.dp))
+                Divider(thickness = Dp.Hairline)
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+        item {
+            ClearFavourites(Modifier.fillMaxWidth())
+        }
     }
     if (showLowPressureDialog)
         LowPressureInfo(viewModel.lowPressure) { showLowPressureDialog = false }
@@ -99,10 +110,10 @@ fun Alert(
 
 @Preview
 @Composable
-fun AlertPreview() {
+fun SettingsPreview() {
     TpmsAdvancedTheme {
-        AlertViewModel.mocks().forEach { mock ->
-            Alert(
+        SettingsViewModel.mocks().forEach { mock ->
+            Settings(
                 viewModel = mock,
                 modifier = Modifier.fillMaxSize()
             )

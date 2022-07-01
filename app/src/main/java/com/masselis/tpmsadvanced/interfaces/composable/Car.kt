@@ -19,7 +19,7 @@ import com.masselis.tpmsadvanced.model.TyreLocation
 fun Car(modifier: Modifier = Modifier) {
     KeepScreenOn()
     ConstraintLayout(modifier = modifier) {
-        val (car, tyreBox, topLeft, topRight, bottomLeft, bottomRight) = createRefs()
+        val (car, tyreBox, topLeftStats, topLeftFav, topRightStats, topRightFav, bottomLeftStats, bottomLeftFav, bottomRightStats, bottomRightFav) = createRefs()
         Image(
             bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
@@ -69,7 +69,7 @@ fun Car(modifier: Modifier = Modifier) {
             )
         }
         Box(Modifier
-            .constrainAs(topLeft) {
+            .constrainAs(topLeftStats) {
                 top.linkTo(tyreBox.top)
                 end.linkTo(tyreBox.start, 8.dp)
             }
@@ -80,8 +80,14 @@ fun Car(modifier: Modifier = Modifier) {
                 modifier = Modifier.align(Alignment.TopEnd)
             )
         }
+        Box(Modifier.constrainAs(topLeftFav) {
+            top.linkTo(tyreBox.top)
+            start.linkTo(tyreBox.start, 12.dp)
+        }) {
+            FavouriteButton(TyreLocation.FRONT_LEFT)
+        }
         Box(Modifier
-            .constrainAs(topRight) {
+            .constrainAs(topRightStats) {
                 top.linkTo(tyreBox.top)
                 start.linkTo(tyreBox.end, 8.dp)
             }
@@ -92,8 +98,14 @@ fun Car(modifier: Modifier = Modifier) {
                 modifier = Modifier.align(Alignment.TopStart)
             )
         }
+        Box(Modifier.constrainAs(topRightFav) {
+            top.linkTo(tyreBox.top)
+            end.linkTo(tyreBox.end, 12.dp)
+        }) {
+            FavouriteButton(TyreLocation.FRONT_RIGHT)
+        }
         Box(Modifier
-            .constrainAs(bottomLeft) {
+            .constrainAs(bottomLeftStats) {
                 bottom.linkTo(tyreBox.bottom)
                 end.linkTo(tyreBox.start, 8.dp)
             }
@@ -104,8 +116,14 @@ fun Car(modifier: Modifier = Modifier) {
                 modifier = Modifier.align(Alignment.BottomEnd)
             )
         }
+        Box(Modifier.constrainAs(bottomLeftFav) {
+            bottom.linkTo(tyreBox.bottom)
+            start.linkTo(tyreBox.start, 16.dp)
+        }) {
+            FavouriteButton(TyreLocation.REAR_LEFT)
+        }
         Box(Modifier
-            .constrainAs(bottomRight) {
+            .constrainAs(bottomRightStats) {
                 bottom.linkTo(tyreBox.bottom)
                 start.linkTo(tyreBox.end, 8.dp)
             }
@@ -115,6 +133,12 @@ fun Car(modifier: Modifier = Modifier) {
                 location = TyreLocation.REAR_RIGHT,
                 modifier = Modifier.align(Alignment.TopStart)
             )
+        }
+        Box(Modifier.constrainAs(bottomRightFav) {
+            bottom.linkTo(tyreBox.bottom)
+            end.linkTo(tyreBox.end, 16.dp)
+        }) {
+            FavouriteButton(TyreLocation.REAR_RIGHT)
         }
     }
 }

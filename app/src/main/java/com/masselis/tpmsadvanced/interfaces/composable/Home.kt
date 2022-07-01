@@ -26,17 +26,17 @@ fun Home() {
         content = { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = Paths.HOME.name
+                startDestination = Paths.Home.path
             ) {
-                composable(Paths.HOME.name) {
+                composable(Paths.Home.path) {
                     Car(
                         modifier = Modifier
                             .padding(paddingValues)
                             .fillMaxSize()
                     )
                 }
-                composable(Paths.ALERT.name) {
-                    Alert(
+                composable(Paths.Settings.path) {
+                    Settings(
                         modifier = Modifier
                             .padding(paddingValues)
                             .fillMaxSize()
@@ -50,20 +50,20 @@ fun Home() {
 @Composable
 private fun TopAppBar(navController: NavHostController) {
     val currentEntry by navController.currentBackStackEntryAsState()
-    val currentPath = currentEntry?.destination?.route?.let { Paths.valueOf(it) }
+    val currentPath = currentEntry?.destination?.route?.let { Paths.from(it) }
     CenterAlignedTopAppBar(
         title = {
             Text(
                 text = when (currentPath) {
-                    Paths.HOME -> "My car"
-                    Paths.ALERT -> "Alerts"
+                    Paths.Home -> "My car"
+                    Paths.Settings -> "Settings"
                     else -> ""
                 }
             )
         },
         navigationIcon = {
             when (currentPath) {
-                Paths.ALERT -> {
+                Paths.Settings -> {
                     IconButton(
                         onClick = { navController.popBackStack() },
                         content = {
@@ -74,27 +74,35 @@ private fun TopAppBar(navController: NavHostController) {
                         }
                     )
                 }
-                Paths.HOME, null -> {}
+                Paths.Home, null -> {}
             }
         },
         actions = {
             when (currentPath) {
-                Paths.HOME ->
+                Paths.Home ->
                     IconButton(onClick = {
-                        navController.navigate(Paths.ALERT.name)
+                        navController.navigate(Paths.Settings.path)
                     }) {
                         Icon(
                             bitmap = ImageBitmap.imageResource(R.drawable.ic_car_cog_black_24dp),
                             contentDescription = null,
                         )
                     }
-                Paths.ALERT, null -> {}
+                Paths.Settings, null -> {}
             }
         }
     )
 }
 
-enum class Paths {
-    HOME,
-    ALERT;
+sealed class Paths(val path: String) {
+    object Home : Paths("home")
+    object Settings : Paths("home/settings")
+
+    companion object {
+        fun from(string: String) = when (string) {
+            "home" -> Home
+            "home/settings" -> Settings
+            else -> throw IllegalArgumentException()
+        }
+    }
 }

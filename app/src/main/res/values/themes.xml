@@ -1,6 +1,16 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Theme.TPMSAdvanced" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="android:windowSplashScreenBackground" tools:ignore="NewApi">
+            @color/md_theme_light_surface
+        </item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:ignore="NewApi">
+            @mipmap/ic_launcher
+        </item>
+        <item name="android:windowSplashScreenAnimationDuration" tools:ignore="NewApi">700</item>
+
+        <item name="android:windowBackground">@color/md_theme_light_surface</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">@color/md_theme_light_surface</item>
         <item name="android:windowLightNavigationBar">true</item>

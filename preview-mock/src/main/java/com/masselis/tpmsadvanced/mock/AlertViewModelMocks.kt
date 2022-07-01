@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.mock
 
-import com.masselis.tpmsadvanced.interfaces.viewmodel.AlertViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.model.Pressure
 import com.masselis.tpmsadvanced.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.model.Temperature
@@ -13,14 +13,14 @@ private fun mock(
     lowTemp: MutableStateFlow<Temperature>,
     normalTemp: MutableStateFlow<Temperature>,
     highTemp: MutableStateFlow<Temperature>
-) = Mockito.mock(AlertViewModel::class.java).also {
+) = Mockito.mock(SettingsViewModel::class.java).also {
     Mockito.`when`(it.lowPressure).thenReturn(lowPressure)
     Mockito.`when`(it.lowTemp).thenReturn(lowTemp)
     Mockito.`when`(it.normalTemp).thenReturn(normalTemp)
     Mockito.`when`(it.highTemp).thenReturn(highTemp)
 }
 
-fun AlertViewModel.Companion.mocks() = listOf(
+fun SettingsViewModel.Companion.mocks() = listOf(
     mock(
         MutableStateFlow(1f.bar),
         MutableStateFlow(20f.celsius),

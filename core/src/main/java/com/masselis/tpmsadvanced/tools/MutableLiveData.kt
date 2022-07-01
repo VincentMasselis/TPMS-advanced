@@ -12,24 +12,24 @@ private class LiveDataFlow<T : Any> private constructor(
     constructor(liveData: MutableLiveData<T>) : this(liveData, MutableStateFlow(liveData.value!!))
 
     override var value: T
-        get() = liveData.value!!
+        get() = stateFlow.value
         set(value) {
-            liveData.value = value
+            liveData.postValue(value)
             stateFlow.value = value
         }
 
     override fun compareAndSet(expect: T, update: T): Boolean {
-        liveData.value = update
+        liveData.postValue(update)
         return stateFlow.compareAndSet(expect, update)
     }
 
     override suspend fun emit(value: T) {
-        liveData.value = value
+        liveData.postValue(value)
         stateFlow.emit(value)
     }
 
     override fun tryEmit(value: T): Boolean {
-        liveData.value = value
+        liveData.postValue(value)
         return stateFlow.tryEmit(value)
     }
 }

@@ -15,14 +15,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
-class AlertViewModel @AssistedInject constructor(
+class SettingsViewModel @AssistedInject constructor(
     private val atmosphereRangeUseCase: AtmosphereRangeUseCase,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun build(savedStateHandle: SavedStateHandle): AlertViewModel
+        fun build(savedStateHandle: SavedStateHandle): SettingsViewModel
     }
 
     val lowPressure = savedStateHandle
