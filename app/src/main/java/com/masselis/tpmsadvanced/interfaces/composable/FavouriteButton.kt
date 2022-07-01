@@ -19,7 +19,7 @@ import com.masselis.tpmsadvanced.model.TyreLocation
 fun FavouriteButton(
     tyreLocation: TyreLocation,
     modifier: Modifier = Modifier,
-    viewModel: SensorFavouriteViewModel = savedStateViewModel {
+    viewModel: SensorFavouriteViewModel = savedStateViewModel(key = "SensorFavouriteViewModel_${tyreLocation.name}") {
         tyreLocation.component.sensorFavouriteViewModel.build(it)
     }
 ) {

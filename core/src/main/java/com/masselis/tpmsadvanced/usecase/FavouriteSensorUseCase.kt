@@ -5,6 +5,7 @@ import androidx.core.content.edit
 import com.masselis.tpmsadvanced.ioc.SingleInstance
 import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.tools.ObservableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import java.nio.ByteBuffer
@@ -28,6 +29,7 @@ class FavouriteSensorUseCase @Inject constructor(
     val foundIds = sensorByteArrayUseCaseImpl
         .listen()
         .map { it.id() }
+        .distinctUntilChanged()
 
     val savedId = ObservableStateFlow(
         sharedPreferences

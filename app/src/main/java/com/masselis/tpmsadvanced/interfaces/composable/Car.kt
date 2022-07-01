@@ -82,9 +82,12 @@ fun Car(modifier: Modifier = Modifier) {
         }
         Box(Modifier.constrainAs(topLeftFav) {
             top.linkTo(tyreBox.top)
-            start.linkTo(tyreBox.start, 12.dp)
+            start.linkTo(tyreBox.start)
         }) {
-            FavouriteButton(TyreLocation.FRONT_LEFT)
+            FavouriteButton(
+                TyreLocation.FRONT_LEFT,
+                modifier = Modifier.padding(start = 24.dp)
+            )
         }
         Box(Modifier
             .constrainAs(topRightStats) {
@@ -100,9 +103,12 @@ fun Car(modifier: Modifier = Modifier) {
         }
         Box(Modifier.constrainAs(topRightFav) {
             top.linkTo(tyreBox.top)
-            end.linkTo(tyreBox.end, 12.dp)
+            end.linkTo(tyreBox.end)
         }) {
-            FavouriteButton(TyreLocation.FRONT_RIGHT)
+            FavouriteButton(
+                TyreLocation.FRONT_RIGHT,
+                modifier = Modifier.padding(end = 24.dp)
+            )
         }
         Box(Modifier
             .constrainAs(bottomLeftStats) {
@@ -118,9 +124,12 @@ fun Car(modifier: Modifier = Modifier) {
         }
         Box(Modifier.constrainAs(bottomLeftFav) {
             bottom.linkTo(tyreBox.bottom)
-            start.linkTo(tyreBox.start, 16.dp)
+            start.linkTo(tyreBox.start)
         }) {
-            FavouriteButton(TyreLocation.REAR_LEFT)
+            FavouriteButton(
+                TyreLocation.REAR_LEFT,
+                modifier = Modifier.padding(start = 28.dp)
+            )
         }
         Box(Modifier
             .constrainAs(bottomRightStats) {
@@ -136,9 +145,12 @@ fun Car(modifier: Modifier = Modifier) {
         }
         Box(Modifier.constrainAs(bottomRightFav) {
             bottom.linkTo(tyreBox.bottom)
-            end.linkTo(tyreBox.end, 16.dp)
+            end.linkTo(tyreBox.end)
         }) {
-            FavouriteButton(TyreLocation.REAR_RIGHT)
+            FavouriteButton(
+                TyreLocation.REAR_RIGHT,
+                modifier = Modifier.padding(end = 28.dp)
+            )
         }
     }
 }
