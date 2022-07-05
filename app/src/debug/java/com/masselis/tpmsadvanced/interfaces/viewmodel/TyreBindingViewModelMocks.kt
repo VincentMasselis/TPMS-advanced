@@ -1,6 +1,5 @@
-package com.masselis.tpmsadvanced.mock
+package com.masselis.tpmsadvanced.interfaces.viewmodel
 
-import com.masselis.tpmsadvanced.interfaces.viewmodel.SensorFavouriteViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.mockito.Mockito
 import org.mockito.Mockito.mock

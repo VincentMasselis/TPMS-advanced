@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.usecase
 import android.content.Context
 import androidx.core.content.edit
 import com.masselis.tpmsadvanced.ioc.SingleInstance
+import com.masselis.tpmsadvanced.model.Record
 import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.tools.ObservableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -16,8 +17,8 @@ import javax.inject.Inject
 class FavouriteSensorUseCase @Inject constructor(
     tyreLocation: TyreLocation,
     context: Context,
-    private val sensorByteArrayUseCaseImpl: SensorByteArrayUseCaseImpl,
-) : SensorByteArrayUseCase {
+    private val sensorByteArrayUseCaseImpl: RecordUseCaseImpl,
+) : RecordUseCase {
 
     private val key = "${tyreLocation.name}_ID"
 
@@ -28,14 +29,13 @@ class FavouriteSensorUseCase @Inject constructor(
 
     val foundIds = sensorByteArrayUseCaseImpl
         .listen()
-        .map { it.id() }
+        .map { it.intId() }
         .distinctUntilChanged()
 
     val savedId = ObservableStateFlow(
         sharedPreferences
             .getInt(key, Int.MIN_VALUE)
             .takeIf { it != Int.MIN_VALUE }
-            ?.toShort()
     ) { _, newValue ->
         sharedPreferences.edit {
             if (newValue != null) putInt(key, newValue.toInt())
@@ -45,12 +45,12 @@ class FavouriteSensorUseCase @Inject constructor(
 
     override fun listen() = sensorByteArrayUseCaseImpl.listen().filter {
         val favId = savedId.value
-        if (favId != null) it.id() == favId
+        if (favId != null) it.intId() == favId
         else true
     }
 
-    private fun ByteArray.id() = ByteBuffer
-        .wrap(copyOfRange(1, 3))
+    private fun Record.intId() = ByteBuffer
+        .wrap(this.id())
         .order(ByteOrder.LITTLE_ENDIAN)
-        .short
+        .int
 }

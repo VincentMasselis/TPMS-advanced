@@ -4,6 +4,7 @@ import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
+import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.IntentFilter
@@ -12,6 +13,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.content.getSystemService
 import com.masselis.tpmsadvanced.interfaces.BluetoothLeScanner
+import com.masselis.tpmsadvanced.model.Record.Companion.asRawRecord
 import com.masselis.tpmsadvanced.tools.asFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
@@ -54,8 +56,8 @@ class BleScanUseCase @Inject constructor(
 
     fun normalScan() = balancedScanFlow
 
-    private fun <T> Flow<T>.shared() = shareIn(
+    private fun Flow<ScanResult>.shared() = shareIn(
         CoroutineScope(EmptyCoroutineContext),
         SharingStarted.WhileSubscribed(5.seconds, Duration.ZERO)
-    )
+    ).asRawRecord()
 }

@@ -24,7 +24,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "$composeVersion"
+        kotlinCompilerExtensionVersion = "$composeCompilerVersion"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -40,22 +40,22 @@ dependencies {
 
     implementation "androidx.compose.ui:ui:$composeVersion"
     // Tooling support (Previews, etc.)
+    debugImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
     debugImplementation "androidx.compose.ui:ui-tooling:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
-    debugImplementation(project(":preview-mock"))
     implementation "androidx.compose.ui:ui-tooling-preview:$composeVersion"
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     implementation "androidx.compose.foundation:foundation:$composeVersion"
     // Material Design
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha13'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha14'
     implementation 'com.google.android.material:material:1.6.1'
     // Integration with activities
-    implementation 'androidx.activity:activity-compose:1.4.0'
-    implementation "androidx.fragment:fragment:1.4.1"
+    implementation 'androidx.activity:activity-compose:1.5.0'
+    implementation "androidx.fragment:fragment:1.5.0"
     // Layout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     // Navigation
-    implementation "androidx.navigation:navigation-compose:2.4.2"
+    implementation "androidx.navigation:navigation-compose:2.5.0"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"

@@ -5,20 +5,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.interfaces.mainComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.utils.savedStateViewModel
-import com.masselis.tpmsadvanced.mock.mocks
 import com.masselis.tpmsadvanced.model.Fraction
 
 @Composable
 fun Settings(
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = savedStateViewModel { mainComponent.settingsViewModel.build(it) }
+    viewModel: SettingsViewModel = viewModel {
+        mainComponent.settingsViewModel.build(createSavedStateHandle())
+    }
 ) {
     val highTempFlow = viewModel.highTemp
     val normalTempFlow = viewModel.normalTemp
@@ -82,9 +83,9 @@ fun Settings(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-        item {
-            ClearFavourites(Modifier.fillMaxWidth())
-        }
+        item { Units() }
+        item { Spacer(modifier = Modifier.height(24.dp)) }
+        item { ClearFavourites(Modifier.fillMaxWidth()) }
     }
     if (showLowPressureDialog)
         LowPressureInfo(viewModel.lowPressure) { showLowPressureDialog = false }
@@ -106,17 +107,4 @@ fun Settings(
             state = TyreViewModel.State.Alerting,
             temperatureStateFlow = highTempFlow
         ) { showHighTempDialog = false }
-}
-
-@Preview
-@Composable
-fun SettingsPreview() {
-    TpmsAdvancedTheme {
-        SettingsViewModel.mocks().forEach { mock ->
-            Settings(
-                viewModel = mock,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-    }
 }

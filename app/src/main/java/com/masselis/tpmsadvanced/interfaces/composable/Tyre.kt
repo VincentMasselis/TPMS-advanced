@@ -7,10 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -19,13 +15,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.interfaces.viewmodel.RealTyreViewModel
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.interfaces.viewmodel.utils.savedStateViewModel
-import com.masselis.tpmsadvanced.mock.mocks
 import com.masselis.tpmsadvanced.model.TyreLocation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,25 +31,25 @@ private val evaluator = ArgbEvaluator()
 fun Tyre(
     location: TyreLocation,
     modifier: Modifier = Modifier,
-    viewModel: TyreViewModel = savedStateViewModel(key = "TyreViewModel_${location.name}") {
-        location.component.realTyreViewModelFactory.build(it)
+    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${location.name}") {
+        location.component.tyreViewModelFactory.build(createSavedStateHandle())
     },
 ) {
     val state by viewModel.stateFlow.collectAsState()
-    val isVisible = remember { mutableStateOf(true) }
+    var isVisible by remember { mutableStateOf(true) }
     if (state is State.Alerting) {
         LaunchedEffect(key1 = isVisible) {
             launch {
                 repeat(Int.MAX_VALUE) {
                     delay(300.milliseconds)
-                    isVisible.value = !isVisible.value
+                    isVisible = !isVisible
                 }
             }
         }
     }
     Box(
         modifier
-            .alpha(if (isVisible.value) 1f else 0f)
+            .alpha(if (isVisible) 1f else 0f)
             .clip(RoundedCornerShape(percent = 20))
             .aspectRatio(15f / 40f)
             .run {
@@ -83,29 +77,9 @@ fun Tyre(
                                 ) as Int
                             )
                         )
-                    is State.Obsolete ->
-                        background(MaterialTheme.colorScheme.onBackground)
                     is State.Alerting ->
                         background(MaterialTheme.colorScheme.error)
                 }
             }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TyrePreview() {
-    TpmsAdvancedTheme {
-        LazyColumn {
-            items(RealTyreViewModel.mocks) { viewModel ->
-                Tyre(
-                    location = TyreLocation.FRONT_RIGHT,
-                    modifier = Modifier
-                        .height(150.dp)
-                        .width(40.dp),
-                    viewModel = viewModel
-                )
-            }
-        }
-    }
 }

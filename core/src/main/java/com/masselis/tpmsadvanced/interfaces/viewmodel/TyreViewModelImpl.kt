@@ -19,14 +19,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import java.time.Duration
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class RealTyreViewModel @AssistedInject constructor(
+class TyreViewModelImpl @AssistedInject constructor(
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: AtmosphereRangeUseCase,
-    @Assisted obsoleteTimeout: Duration,
+    @Assisted obsoleteTimeoutJava: Duration,
     @Assisted savedStateHandle: SavedStateHandle,
 ) : ViewModel(), TyreViewModel {
 
@@ -35,13 +36,15 @@ class RealTyreViewModel @AssistedInject constructor(
         fun build(
             savedStateHandle: SavedStateHandle,
             obsoleteTimeout: Duration = 2.minutes.toJavaDuration()
-        ): RealTyreViewModel
+        ): TyreViewModelImpl
     }
 
     private val state = savedStateHandle
         .getLiveData<State>("STATE", State.NotDetected)
         .asMutableStateFlow()
     override val stateFlow = state.asStateFlow()
+
+    private val obsoleteTimeout = obsoleteTimeoutJava.toKotlinDuration()
 
     init {
         combine(
@@ -84,8 +87,12 @@ class RealTyreViewModel @AssistedInject constructor(
                                 throw IllegalArgumentException()
                         }
                 )
-                delay(obsoleteTimeout.toKotlinDuration())
-                emit(State.Obsolete)
+                atmosphere.timestamp
+                    .plus(obsoleteTimeout.inWholeSeconds)
+                    .let { System.currentTimeMillis().div(1000.0).minus(it) }
+                    .seconds
+                    .also { delay(it) }
+                emit(State.NotDetected)
             }
         }
             .onEach { state.value = it }

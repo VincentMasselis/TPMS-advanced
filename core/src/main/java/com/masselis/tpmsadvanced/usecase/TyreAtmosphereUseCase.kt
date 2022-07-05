@@ -10,23 +10,24 @@ import java.nio.ByteOrder
 import javax.inject.Inject
 
 class TyreAtmosphereUseCase @Inject constructor(
-    private val sensorByteArrayUseCaseImpl: SensorByteArrayUseCase
+    private val recordUseCaseImpl: RecordUseCase
 ) {
 
-    fun listen(): Flow<TyreAtmosphere> = sensorByteArrayUseCaseImpl
+    fun listen(): Flow<TyreAtmosphere> = recordUseCaseImpl
         .listen()
-        .map { bytes ->
+        .map { record ->
             TyreAtmosphere(
-                if (bytes[15].toInt() != PRESSURE_ALERT_BYTE)
+                record.timestamp,
+                if (record.alarm() != PRESSURE_ALARM_BYTE)
                     ByteBuffer
-                        .wrap(bytes.copyOfRange(6, 10))
+                        .wrap(record.pressure())
                         .order(ByteOrder.LITTLE_ENDIAN)
                         .int
                         .let { Pressure(it.div(1000f)) }
                 else
                     Pressure(0f),
                 ByteBuffer
-                    .wrap(bytes.copyOfRange(10, 14))
+                    .wrap(record.temperature())
                     .order(ByteOrder.LITTLE_ENDIAN)
                     .int
                     .let { Temperature(it.div(100f)) }
@@ -34,6 +35,6 @@ class TyreAtmosphereUseCase @Inject constructor(
         }
 
     companion object {
-        private const val PRESSURE_ALERT_BYTE = 0x01
+        private const val PRESSURE_ALARM_BYTE = 0x01.toByte()
     }
 }

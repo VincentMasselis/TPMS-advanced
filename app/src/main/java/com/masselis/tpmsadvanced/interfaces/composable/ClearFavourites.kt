@@ -14,16 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.interfaces.mainComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.ClearFavouritesViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.utils.savedStateViewModel
 
 @Composable
 fun ClearFavourites(
     modifier: Modifier = Modifier,
-    viewModel: ClearFavouritesViewModel = savedStateViewModel {
-        mainComponent.clearFavouritesViewModel.build(it)
+    viewModel: ClearFavouritesViewModel = viewModel {
+        mainComponent.clearFavouritesViewModel.build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()

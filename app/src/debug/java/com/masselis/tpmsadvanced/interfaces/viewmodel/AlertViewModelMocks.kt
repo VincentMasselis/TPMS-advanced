@@ -1,6 +1,5 @@
-package com.masselis.tpmsadvanced.mock
+package com.masselis.tpmsadvanced.interfaces.viewmodel
 
-import com.masselis.tpmsadvanced.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.model.Pressure
 import com.masselis.tpmsadvanced.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.model.Temperature

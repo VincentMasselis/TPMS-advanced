@@ -15,4 +15,3 @@ dependencyResolutionManagement {
 rootProject.name = "TPMS Advanced"
 include ':app'
 include ':core'
-include ':preview-mock'

@@ -1,9 +1,8 @@
-package com.masselis.tpmsadvanced.mock
+package com.masselis.tpmsadvanced.interfaces.viewmodel
 
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
 import android.annotation.SuppressLint
-import com.masselis.tpmsadvanced.interfaces.viewmodel.PreconditionsViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.mockito.Mockito
 import org.mockito.Mockito.mock

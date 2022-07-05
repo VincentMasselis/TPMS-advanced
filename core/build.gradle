@@ -25,7 +25,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "$composeVersion"
+        kotlinCompilerExtensionVersion = "$composeCompilerVersion"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -43,7 +43,7 @@ dependencies {
     api "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
     api "androidx.startup:startup-runtime:1.1.1"
-    api "androidx.savedstate:savedstate-ktx:1.2.0-rc01"
+    api "androidx.savedstate:savedstate-ktx:1.2.0"
     api "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     api "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     api "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"

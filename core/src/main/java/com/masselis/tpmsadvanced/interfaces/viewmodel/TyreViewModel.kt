@@ -12,10 +12,6 @@ interface TyreViewModel {
         @Parcelize
         object NotDetected : State()
 
-        // Shows a grey tyre
-        @Parcelize
-        object Obsolete : State()
-
         // Shows a blue/green/red tyre
         sealed class Normal : State() {
             abstract val fraction: Fraction

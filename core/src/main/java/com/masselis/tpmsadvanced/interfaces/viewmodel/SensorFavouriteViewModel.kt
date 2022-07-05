@@ -28,7 +28,7 @@ class SensorFavouriteViewModel @AssistedInject constructor(
         object Empty : State()
 
         @Parcelize
-        data class RequestBond(val id: Short) : State()
+        data class RequestBond(val id: Int) : State()
     }
 
     private val mutableStateFlow = savedStateHandle

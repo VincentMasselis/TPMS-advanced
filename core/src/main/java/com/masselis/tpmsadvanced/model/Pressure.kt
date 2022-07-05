@@ -7,7 +7,15 @@ import android.os.Parcelable
 @JvmInline
 value class Pressure(val kpa: Float) : Parcelable {
 
-    fun asBar() = kpa.div(100f)
+    fun asBar() = to(Unit.BAR)
+
+    fun asPsi() = to(Unit.PSI)
+
+    fun to(unit: Unit) = when (unit) {
+        Unit.KILO_PASCAL -> kpa
+        Unit.BAR -> kpa.div(100f)
+        Unit.PSI -> kpa.div(6.895f)
+    }
 
     fun hasPressure() = kpa > 0f
 
@@ -33,6 +41,18 @@ value class Pressure(val kpa: Float) : Parcelable {
 
         override fun newArray(size: Int): Array<Pressure?> {
             return arrayOfNulls(size)
+        }
+    }
+
+    enum class Unit {
+        KILO_PASCAL,
+        BAR,
+        PSI;
+
+        fun string() = when (this) {
+            KILO_PASCAL -> "kpa"
+            BAR -> "bar"
+            PSI -> "psi"
         }
     }
 }

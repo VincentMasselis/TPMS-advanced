@@ -1,9 +1,6 @@
 package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -11,13 +8,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreStatsViewModel.State
-import com.masselis.tpmsadvanced.interfaces.viewmodel.utils.savedStateViewModel
-import com.masselis.tpmsadvanced.mock.mocks
 import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.model.TyreLocation.*
 import kotlinx.coroutines.delay
@@ -29,8 +24,8 @@ import kotlin.time.Duration.Companion.milliseconds
 fun TyreStat(
     modifier: Modifier = Modifier,
     location: TyreLocation,
-    viewModel: TyreStatsViewModel = savedStateViewModel(key = "TyreStatsViewModel_${location.name}") {
-        location.component.tyreStatViewModelFactory.build(it)
+    viewModel: TyreStatsViewModel = viewModel(key = "TyreStatsViewModel_${location.name}") {
+        location.component.tyreStatViewModelFactory.build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()
@@ -38,19 +33,18 @@ fun TyreStat(
         State.NotDetected -> null to null
         is State.Normal -> state.pressure to state.temperature
         is State.Alerting -> state.pressure to state.temperature
-        is State.Obsolete -> state.pressure to state.temperature
     }
     val color = when (state) {
-        State.NotDetected, is State.Obsolete, is State.Normal -> MaterialTheme.colorScheme.onSurface
+        State.NotDetected, is State.Normal -> MaterialTheme.colorScheme.onSurface
         is State.Alerting -> MaterialTheme.colorScheme.error
     }
-    val isVisible = remember { mutableStateOf(true) }
+    var isVisible by remember { mutableStateOf(true) }
     if (state is State.Alerting) {
         LaunchedEffect(key1 = isVisible) {
             launch {
                 repeat(Int.MAX_VALUE) {
                     delay(300.milliseconds)
-                    isVisible.value = !isVisible.value
+                    isVisible = !isVisible
                 }
             }
         }
@@ -64,7 +58,7 @@ fun TyreStat(
         }
     }
     Column(
-        modifier = modifier.alpha(if (isVisible.value) 1f else 0f)
+        modifier = modifier.alpha(if (isVisible) 1f else 0f)
     ) {
         Text(
             pressure?.asBar()?.let { "%.2f bar".format(it) } ?: "-.--",
@@ -81,19 +75,5 @@ fun TyreStat(
             color = color,
             modifier = Modifier.align(alignment),
         )
-    }
-}
-
-@Preview
-@Composable
-fun TyreStatPreview() {
-    LazyColumn {
-        items(TyreStatsViewModel.mocks) {
-            TyreStat(
-                location = FRONT_LEFT,
-                modifier = Modifier.width(350.dp),
-                viewModel = it
-            )
-        }
     }
 }

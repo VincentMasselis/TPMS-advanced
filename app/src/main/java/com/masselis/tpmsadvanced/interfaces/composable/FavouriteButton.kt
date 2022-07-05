@@ -1,26 +1,23 @@
 package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.interfaces.viewmodel.SensorFavouriteViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.utils.savedStateViewModel
-import com.masselis.tpmsadvanced.mock.mocks
 import com.masselis.tpmsadvanced.model.TyreLocation
 
 @Composable
 fun FavouriteButton(
     tyreLocation: TyreLocation,
     modifier: Modifier = Modifier,
-    viewModel: SensorFavouriteViewModel = savedStateViewModel(key = "SensorFavouriteViewModel_${tyreLocation.name}") {
-        tyreLocation.component.sensorFavouriteViewModel.build(it)
+    viewModel: SensorFavouriteViewModel = viewModel(key = "SensorFavouriteViewModel_${tyreLocation.name}") {
+        tyreLocation.component.sensorFavouriteViewModelFactory.build(createSavedStateHandle())
     }
 ) {
     var isDialogDisplayed by remember { mutableStateOf(false) }
@@ -65,17 +62,4 @@ private fun FavouriteAlertDialog(
             }
         }
     )
-}
-
-@Preview
-@Composable
-fun PreviewBinding() {
-    LazyColumn {
-        items(SensorFavouriteViewModel.mocks()) {
-            FavouriteButton(
-                tyreLocation = TyreLocation.FRONT_LEFT,
-                viewModel = it
-            )
-        }
-    }
 }

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class SensorBatteryUseCase @Inject constructor(
-    private val sensorByteArrayUseCaseImpl: SensorByteArrayUseCase
+    private val recordUseCaseImpl: RecordUseCase
 ) {
-    fun listen() = sensorByteArrayUseCaseImpl.listen().map { it[14].toInt() }
+    fun listen() = recordUseCaseImpl.listen().map { it.battery().toInt() }
 }

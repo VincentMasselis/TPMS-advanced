@@ -1,8 +1,8 @@
 package com.masselis.tpmsadvanced.ioc
 
-import com.masselis.tpmsadvanced.interfaces.viewmodel.RealTyreViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.SensorFavouriteViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreStatsViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModelImpl
 import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.usecase.FavouriteSensorUseCase
 import dagger.BindsInstance
@@ -23,7 +23,7 @@ interface TyreComponent {
 
     val favouriteSensorUseCase: FavouriteSensorUseCase
 
-    val realTyreViewModelFactory: RealTyreViewModel.Factory
+    val tyreViewModelFactory: TyreViewModelImpl.Factory
     val tyreStatViewModelFactory: TyreStatsViewModel.Factory
-    val sensorFavouriteViewModel: SensorFavouriteViewModel.Factory
+    val sensorFavouriteViewModelFactory: SensorFavouriteViewModel.Factory
 }

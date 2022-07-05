@@ -31,4 +31,14 @@ value class Temperature(val celsius: Float) : Parcelable {
             return arrayOfNulls(size)
         }
     }
+
+    enum class Unit {
+        CELSIUS,
+        FAHRENHEIT;
+
+        fun string() = when (this) {
+            CELSIUS -> "celsius"
+            FAHRENHEIT -> "fahrenheit"
+        }
+    }
 }

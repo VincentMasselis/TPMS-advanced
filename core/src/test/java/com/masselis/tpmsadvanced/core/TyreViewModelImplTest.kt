@@ -2,7 +2,8 @@ package com.masselis.tpmsadvanced.core
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
-import com.masselis.tpmsadvanced.interfaces.viewmodel.RealTyreViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State
+import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModelImpl
 import com.masselis.tpmsadvanced.model.Pressure
 import com.masselis.tpmsadvanced.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.model.Temperature
@@ -27,7 +28,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class RealTyreViewModelTest {
+class TyreViewModelImplTest {
 
     @get:Rule
     val mainCoroutineRule = MainCoroutineRule()
@@ -53,7 +54,7 @@ class RealTyreViewModelTest {
         savedStateHandle = SavedStateHandle()
     }
 
-    private fun test() = RealTyreViewModel(
+    private fun test() = TyreViewModelImpl(
         tyreAtmosphereUseCase,
         atmosphereRangeUseCase,
         100.milliseconds.toJavaDuration(),
@@ -61,50 +62,57 @@ class RealTyreViewModelTest {
     )
 
     private fun setAtmosphere(pressure: Float, temperature: Float) =
-        whenever(tyreAtmosphereUseCase.listen())
-            .doReturn(flowOf(TyreAtmosphere(Pressure(pressure), Temperature(temperature))))
+        whenever(tyreAtmosphereUseCase.listen()).doReturn(
+            flowOf(
+                TyreAtmosphere(
+                    System.currentTimeMillis().div(1000.0),
+                    Pressure(pressure),
+                    Temperature(temperature)
+                )
+            )
+        )
 
     @Test
     fun notDetected() = runTest {
-        Assert.assertEquals(RealTyreViewModel.State.NotDetected, test().stateFlow.value)
+        Assert.assertEquals(State.NotDetected, test().stateFlow.value)
     }
 
     @Test
     fun belowRangeTemperature() = runTest {
         setAtmosphere(200f, 15f)
-        assert(test().stateFlow.value is RealTyreViewModel.State.Normal.BlueToGreen)
+        assert(test().stateFlow.value is State.Normal.BlueToGreen)
     }
 
     @Test
     fun normalTemperature() = runTest {
         setAtmosphere(200f, 25f)
-        assert(test().stateFlow.value is RealTyreViewModel.State.Normal.BlueToGreen)
+        assert(test().stateFlow.value is State.Normal.BlueToGreen)
     }
 
     @Test
     fun highTemperature() = runTest {
         setAtmosphere(200f, 60f)
-        assert(test().stateFlow.value is RealTyreViewModel.State.Normal.GreenToRed)
+        assert(test().stateFlow.value is State.Normal.GreenToRed)
     }
 
     @Test
     fun ultraHighTemperature() = runTest {
         setAtmosphere(200f, 115f)
-        assert(test().stateFlow.value is RealTyreViewModel.State.Alerting)
+        assert(test().stateFlow.value is State.Alerting)
     }
 
     @Test
     fun noPressure() = runTest {
         setAtmosphere(0f, 45f)
-        assert(test().stateFlow.value is RealTyreViewModel.State.Alerting)
+        assert(test().stateFlow.value is State.Alerting)
     }
 
     @Test
     fun obsolete() = runTest {
         setAtmosphere(200f, 35f)
         val vm = test()
-        assert(vm.stateFlow.value is RealTyreViewModel.State.Normal.BlueToGreen)
+        assert(vm.stateFlow.value is State.Normal.BlueToGreen)
         delay(200.milliseconds)
-        assert(vm.stateFlow.value is RealTyreViewModel.State.Obsolete)
+        assert(vm.stateFlow.value is State.NotDetected)
     }
 }
