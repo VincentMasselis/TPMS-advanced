@@ -31,8 +31,14 @@ fun TyreStat(
     val state by viewModel.stateFlow.collectAsState()
     val (pressure, temperature) = when (val state = state) {
         State.NotDetected -> null to null
-        is State.Normal -> state.pressure to state.temperature
-        is State.Alerting -> state.pressure to state.temperature
+        is State.Normal -> Pair(
+            Pair(state.pressure, state.pressureUnit),
+            Pair(state.temperature, state.temperatureUnit)
+        )
+        is State.Alerting -> Pair(
+            Pair(state.pressure, state.pressureUnit),
+            Pair(state.temperature, state.temperatureUnit)
+        )
     }
     val color = when (state) {
         State.NotDetected, is State.Normal -> MaterialTheme.colorScheme.onSurface
@@ -61,14 +67,14 @@ fun TyreStat(
         modifier = modifier.alpha(if (isVisible) 1f else 0f)
     ) {
         Text(
-            pressure?.asBar()?.let { "%.2f bar".format(it) } ?: "-.--",
+            pressure?.let { (value, unit) -> value.string(unit) } ?: "-.--",
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             color = color,
             modifier = Modifier.align(alignment),
         )
         Text(
-            temperature?.celsius?.let { "%.1f°C".format(it) } ?: "-.-",
+            temperature?.let { (value, unit) -> value.string(unit) } ?: "-.-",
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             fontSize = 16.sp,

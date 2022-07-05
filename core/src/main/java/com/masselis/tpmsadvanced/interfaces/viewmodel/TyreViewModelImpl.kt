@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.*
 import java.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
 
@@ -62,8 +63,8 @@ class TyreViewModelImpl @AssistedInject constructor(
                         || atmosphere.pressure < lowPressure
                     ) State.Alerting
                     else
-                        when (atmosphere.temperature.celsius) {
-                            in Float.MIN_VALUE..lowTemp.celsius ->
+                        when (atmosphere.temperature) {
+                            in Temperature(Float.MIN_VALUE)..lowTemp ->
                                 State.Normal.BlueToGreen(Fraction(0f))
                             in lowTemp..normalTemp ->
                                 State.Normal.BlueToGreen(
@@ -81,15 +82,15 @@ class TyreViewModelImpl @AssistedInject constructor(
                                             .div(highTemp.celsius - normalTemp.celsius)
                                     )
                                 )
-                            in highTemp.celsius..Float.MAX_VALUE ->
+                            in highTemp..Temperature(Float.MAX_VALUE) ->
                                 State.Alerting
                             else ->
                                 throw IllegalArgumentException()
                         }
                 )
                 atmosphere.timestamp
-                    .plus(obsoleteTimeout.inWholeSeconds)
-                    .let { System.currentTimeMillis().div(1000.0).minus(it) }
+                    .plus(obsoleteTimeout.toDouble(DurationUnit.SECONDS))
+                    .let { it - System.currentTimeMillis().div(1000.0) }
                     .seconds
                     .also { delay(it) }
                 emit(State.NotDetected)

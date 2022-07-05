@@ -13,6 +13,7 @@ import com.masselis.tpmsadvanced.interfaces.mainComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.model.Fraction
+import com.masselis.tpmsadvanced.model.Temperature.CREATOR.celsius
 
 @Composable
 fun Settings(
@@ -31,10 +32,17 @@ fun Settings(
     LazyColumn(
         modifier = modifier.padding(end = 16.dp, start = 16.dp)
     ) {
+        item { Units() }
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
+            Divider(thickness = Dp.Hairline)
+            Spacer(modifier = Modifier.height(24.dp))
+        }
         item {
             LowPressureSlider(
                 { showLowPressureDialog = true },
-                viewModel.lowPressure
+                viewModel.lowPressure,
+                viewModel.pressureUnit
             )
         }
         item {
@@ -51,7 +59,8 @@ fun Settings(
                     { showHighTempDialog = true },
                     "Max temperature:",
                     mutableStateFlow = highTempFlow,
-                    valueRange = normalTemp.celsius..150f
+                    unitFlow = viewModel.temperatureUnit,
+                    valueRange = normalTemp..(150f.celsius),
                 )
             }
         }
@@ -63,7 +72,8 @@ fun Settings(
                     { showNormalTempDialog = true },
                     "Normal temperature:",
                     mutableStateFlow = normalTempFlow,
-                    valueRange = lowTemp.celsius..highTemp.celsius
+                    unitFlow = viewModel.temperatureUnit,
+                    valueRange = lowTemp..highTemp
                 )
             }
         }
@@ -73,7 +83,8 @@ fun Settings(
                 { showLowTempDialog = true },
                 "Low temperature:",
                 mutableStateFlow = lowTempFlow,
-                valueRange = 5f..normalTemp.celsius
+                unitFlow = viewModel.temperatureUnit,
+                valueRange = 5f.celsius..normalTemp
             )
         }
         item {
@@ -83,28 +94,31 @@ fun Settings(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-        item { Units() }
-        item { Spacer(modifier = Modifier.height(24.dp)) }
         item { ClearFavourites(Modifier.fillMaxWidth()) }
     }
     if (showLowPressureDialog)
-        LowPressureInfo(viewModel.lowPressure) { showLowPressureDialog = false }
+        LowPressureInfo(viewModel.lowPressure, viewModel.pressureUnit) {
+            showLowPressureDialog = false
+        }
     if (showLowTempDialog)
         TemperatureInfo(
-            text = "When the temperature is close to %.1f°C, the tyre is colored in blue",
+            text = "When the temperature is close to %s, the tyre is colored in blue",
             state = TyreViewModel.State.Normal.BlueToGreen(Fraction(0f)),
             temperatureStateFlow = lowTempFlow,
+            temperatureUnit = viewModel.temperatureUnit,
         ) { showLowTempDialog = false }
     if (showNormalTempDialog)
         TemperatureInfo(
-            text = "When the temperature is close to %.1f°C, the tyre is colored in green",
+            text = "When the temperature is close to %s, the tyre is colored in green",
             state = TyreViewModel.State.Normal.BlueToGreen(Fraction(1f)),
-            temperatureStateFlow = normalTempFlow
+            temperatureStateFlow = normalTempFlow,
+            temperatureUnit = viewModel.temperatureUnit,
         ) { showNormalTempDialog = false }
     if (showHighTempDialog)
         TemperatureInfo(
-            text = "When the temperature is equals or superior to %.1f°C, the tyre starts to blink in red to alert you",
+            text = "When the temperature is equals or superior to %s, the tyre starts to blink in red to alert you",
             state = TyreViewModel.State.Alerting,
-            temperatureStateFlow = highTempFlow
+            temperatureStateFlow = highTempFlow,
+            temperatureUnit = viewModel.temperatureUnit,
         ) { showHighTempDialog = false }
 }

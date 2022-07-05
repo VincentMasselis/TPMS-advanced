@@ -50,7 +50,7 @@ class FavouriteSensorUseCase @Inject constructor(
     }
 
     private fun Record.intId() = ByteBuffer
-        .wrap(this.id())
+        .wrap(byteArrayOf(0x00) + this.id())
         .order(ByteOrder.LITTLE_ENDIAN)
         .int
 }

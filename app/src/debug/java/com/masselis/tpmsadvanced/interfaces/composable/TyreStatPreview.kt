@@ -8,14 +8,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreStatsViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.mocks
+import com.masselis.tpmsadvanced.model.Pressure
+import com.masselis.tpmsadvanced.model.Temperature
 import com.masselis.tpmsadvanced.model.TyreLocation
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.mockito.Mockito
 
 @Preview
 @Composable
 fun TyreStatPreview() {
     LazyColumn {
-        items(TyreStatsViewModel.mocks) {
+        items(
+            listOf(
+                mock(TyreStatsViewModel.State.NotDetected),
+                mock(
+                    TyreStatsViewModel.State.Normal(
+                        Pressure(200.978f),
+                        Pressure.Unit.BAR,
+                        Temperature(25.78f),
+                        Temperature.Unit.CELSIUS
+                    )
+                ),
+                mock(
+                    TyreStatsViewModel.State.Alerting(
+                        Pressure(0f),
+                        Pressure.Unit.BAR,
+                        Temperature(25f),
+                        Temperature.Unit.CELSIUS
+                    )
+                )
+            )
+        ) {
             TyreStat(
                 location = TyreLocation.FRONT_LEFT,
                 modifier = Modifier.width(350.dp),
@@ -24,3 +47,8 @@ fun TyreStatPreview() {
         }
     }
 }
+
+private fun mock(state: TyreStatsViewModel.State) = Mockito
+    .mock(TyreStatsViewModel::class.java).also {
+        Mockito.`when`(it.stateFlow).thenReturn(MutableStateFlow(state))
+    }

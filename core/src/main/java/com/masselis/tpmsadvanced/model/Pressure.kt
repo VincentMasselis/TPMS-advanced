@@ -7,14 +7,20 @@ import android.os.Parcelable
 @JvmInline
 value class Pressure(val kpa: Float) : Parcelable {
 
-    fun asBar() = to(Unit.BAR)
+    fun asBar() = convert(Unit.BAR)
 
-    fun asPsi() = to(Unit.PSI)
+    fun asPsi() = convert(Unit.PSI)
 
-    fun to(unit: Unit) = when (unit) {
+    fun convert(unit: Unit) = when (unit) {
         Unit.KILO_PASCAL -> kpa
-        Unit.BAR -> kpa.div(100f)
-        Unit.PSI -> kpa.div(6.895f)
+        Unit.BAR -> kpa / 100f
+        Unit.PSI -> kpa / 6.895f
+    }
+
+    fun string(unit: Unit) = when (unit) {
+        Unit.KILO_PASCAL -> "%.0f kpa".format(kpa)
+        Unit.BAR -> "%.2f bar".format(asBar())
+        Unit.PSI -> "%.0f psi".format(asPsi())
     }
 
     fun hasPressure() = kpa > 0f
@@ -34,6 +40,8 @@ value class Pressure(val kpa: Float) : Parcelable {
         val Float.kpa get() = Pressure(this)
 
         val Float.bar get() = Pressure(this.times(100))
+
+        val Float.psi get() = Pressure(this * 6.895f)
 
         override fun createFromParcel(parcel: Parcel): Pressure {
             return Pressure(parcel)

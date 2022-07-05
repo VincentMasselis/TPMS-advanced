@@ -25,6 +25,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -57,7 +58,7 @@ class TyreViewModelImplTest {
     private fun test() = TyreViewModelImpl(
         tyreAtmosphereUseCase,
         atmosphereRangeUseCase,
-        100.milliseconds.toJavaDuration(),
+        200.milliseconds.toJavaDuration(),
         savedStateHandle
     )
 
@@ -112,7 +113,7 @@ class TyreViewModelImplTest {
         setAtmosphere(200f, 35f)
         val vm = test()
         assert(vm.stateFlow.value is State.Normal.BlueToGreen)
-        delay(200.milliseconds)
+        delay(400.milliseconds)
         assert(vm.stateFlow.value is State.NotDetected)
     }
 }

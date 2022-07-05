@@ -5,10 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.tools.asMutableStateFlow
 import com.masselis.tpmsadvanced.usecase.AtmosphereRangeUseCase
+import com.masselis.tpmsadvanced.usecase.UnitUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -17,6 +19,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @OptIn(FlowPreview::class)
 class SettingsViewModel @AssistedInject constructor(
     private val atmosphereRangeUseCase: AtmosphereRangeUseCase,
+    unitUseCase: UnitUseCase,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -29,6 +32,8 @@ class SettingsViewModel @AssistedInject constructor(
         .getLiveData("LOW_PRESSURE", atmosphereRangeUseCase.lowPressureFlow.value)
         .asMutableStateFlow()
 
+    val pressureUnit = unitUseCase.pressure.asStateFlow()
+
     val highTemp = savedStateHandle
         .getLiveData("HIGH_TEMP", atmosphereRangeUseCase.highTempFlow.value)
         .asMutableStateFlow()
@@ -40,6 +45,8 @@ class SettingsViewModel @AssistedInject constructor(
     val lowTemp = savedStateHandle
         .getLiveData("LOW_TEMP", atmosphereRangeUseCase.lowTempFlow.value)
         .asMutableStateFlow()
+
+    val temperatureUnit = unitUseCase.temperature.asStateFlow()
 
     init {
         lowPressure

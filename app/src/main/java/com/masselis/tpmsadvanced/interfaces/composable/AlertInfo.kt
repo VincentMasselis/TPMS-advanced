@@ -17,11 +17,12 @@ import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.model.Pressure
 import com.masselis.tpmsadvanced.model.Temperature
 import com.masselis.tpmsadvanced.model.TyreLocation
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun LowPressureInfo(
-    lowPressureStateFlow: MutableStateFlow<Pressure>,
+    lowPressureStateFlow: StateFlow<Pressure>,
+    pressureUnitFlow: StateFlow<Pressure.Unit>,
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(
@@ -31,14 +32,15 @@ fun LowPressureInfo(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 val pressure by lowPressureStateFlow.collectAsState()
+                val unit by pressureUnitFlow.collectAsState()
                 Tyre(
                     location = TyreLocation.FRONT_LEFT,
                     modifier = Modifier.height(150.dp),
                     viewModel = DemoTyreViewModel(TyreViewModel.State.Alerting),
                 )
                 Text(
-                    "When the pressure is < to %.2f bar, the tyre starts to blink in red to alert you"
-                        .format(pressure.asBar())
+                    "When the pressure is < to %s, the tyre starts to blink in red to alert you"
+                        .format(pressure.string(unit))
                 )
             }
         },
@@ -51,7 +53,8 @@ fun LowPressureInfo(
 fun TemperatureInfo(
     text: String,
     state: TyreViewModel.State,
-    temperatureStateFlow: MutableStateFlow<Temperature>,
+    temperatureStateFlow: StateFlow<Temperature>,
+    temperatureUnit: StateFlow<Temperature.Unit>,
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(
@@ -61,12 +64,13 @@ fun TemperatureInfo(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 val temperature by temperatureStateFlow.collectAsState()
+                val unit by temperatureUnit.collectAsState()
                 Tyre(
                     location = TyreLocation.FRONT_LEFT,
                     modifier = Modifier.height(150.dp),
                     viewModel = DemoTyreViewModel(state),
                 )
-                Text(text.format(temperature.celsius))
+                Text(text.format(temperature.string(unit)))
             }
         },
         onDismissRequest = onDismissRequest,

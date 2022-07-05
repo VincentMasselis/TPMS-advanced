@@ -17,16 +17,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.masselis.tpmsadvanced.model.Pressure
+import com.masselis.tpmsadvanced.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.model.Pressure.CREATOR.kpa
+import com.masselis.tpmsadvanced.model.Pressure.CREATOR.psi
 import com.masselis.tpmsadvanced.model.Temperature
+import com.masselis.tpmsadvanced.model.Temperature.CREATOR.celsius
+import com.masselis.tpmsadvanced.model.Temperature.CREATOR.fahrenheit
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlin.math.roundToInt
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun LowPressureSlider(
     onInfo: () -> Unit,
-    mutableStateFlow: MutableStateFlow<Pressure>
+    mutableStateFlow: MutableStateFlow<Pressure>,
+    unitFlow: StateFlow<Pressure.Unit>
 ) {
     val pressure by mutableStateFlow.collectAsState()
+    val unit by unitFlow.collectAsState()
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -34,7 +41,7 @@ fun LowPressureSlider(
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "%.2f bar".format(pressure.asBar()),
+                text = pressure.string(unit),
                 fontWeight = FontWeight.Bold,
             )
             IconButton(
@@ -49,19 +56,23 @@ fun LowPressureSlider(
         }
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                "%.2f bar".format(0.5f),
+                0.5f.bar.string(unit),
                 Modifier.align(Alignment.TopStart)
             )
             Text(
-                "%.2f bar".format(3f),
+                5f.bar.string(unit),
                 Modifier.align(Alignment.TopEnd)
             )
         }
         Slider(
-            value = pressure.asBar(),
-            valueRange = 0.5f..3f,
+            value = pressure.convert(unit),
+            valueRange = 0.5f.bar.convert(unit)..5f.bar.convert(unit),
             onValueChange = {
-                mutableStateFlow.value = Pressure(it.times(100f).div(10f).roundToInt().times(10f))
+                mutableStateFlow.value = when (unit) {
+                    Pressure.Unit.KILO_PASCAL -> it.kpa
+                    Pressure.Unit.BAR -> it.bar
+                    Pressure.Unit.PSI -> it.psi
+                }
             }
         )
     }
@@ -72,9 +83,11 @@ fun TemperatureSlider(
     onInfo: () -> Unit,
     title: String,
     mutableStateFlow: MutableStateFlow<Temperature>,
-    valueRange: ClosedFloatingPointRange<Float>
+    unitFlow: StateFlow<Temperature.Unit>,
+    valueRange: ClosedFloatingPointRange<Temperature>
 ) {
     val temp by mutableStateFlow.collectAsState()
+    val unit by unitFlow.collectAsState()
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -82,7 +95,7 @@ fun TemperatureSlider(
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "%.1f°C".format(temp.celsius),
+                text = temp.string(unit),
                 fontWeight = FontWeight.Bold,
             )
             IconButton(
@@ -97,18 +110,24 @@ fun TemperatureSlider(
         }
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                "%.1f°C".format(valueRange.start),
+                valueRange.start.string(unit),
                 Modifier.align(Alignment.TopStart)
             )
             Text(
-                "%.1f°C".format(valueRange.endInclusive),
+                valueRange.endInclusive.string(unit),
                 Modifier.align(Alignment.TopEnd)
             )
         }
         Slider(
-            value = temp.celsius,
-            valueRange = valueRange,
-            onValueChange = { mutableStateFlow.value = Temperature(it.roundToInt().toFloat()) }
+            value = temp.convert(unit),
+            valueRange = valueRange.start.convert(unit)..valueRange.endInclusive.convert(unit),
+            onValueChange = {
+                mutableStateFlow.value =
+                    when (unit) {
+                        Temperature.Unit.CELSIUS -> it.celsius
+                        Temperature.Unit.FAHRENHEIT -> it.fahrenheit
+                    }
+            }
         )
     }
 }
