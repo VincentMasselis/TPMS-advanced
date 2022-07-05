@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State
@@ -17,7 +16,6 @@ import com.masselis.tpmsadvanced.model.TyreLocation
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-
 
 @Preview(showBackground = true)
 @Composable
@@ -33,7 +31,6 @@ fun TyrePreview() {
                     mock(Alerting)
                 )
             ) { viewModel ->
-                LocalInspectionMode
                 Tyre(
                     location = TyreLocation.FRONT_RIGHT,
                     modifier = Modifier

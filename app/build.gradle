@@ -14,9 +14,21 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        if (isDecrypted)
+            release {
+                keyAlias APP_KEY_ALIAS
+                keyPassword APP_KEY_STORE_PWD
+                storeFile file(APP_KEYSTORE_LOCATION)
+                storePassword APP_KEY_STORE_PWD
+            }
+    }
     buildTypes {
         release {
-            minifyEnabled false
+            if (signingConfigs.any { it.name == 'release' }) signingConfig signingConfigs.release
+            else signingConfig signingConfigs.debug
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -55,7 +67,7 @@ dependencies {
 
     // Tooling support (Previews, etc.)
     debugImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
-    debugImplementation('org.mockito.kotlin:mockito-kotlin:4.0.0')  {
+    debugImplementation('org.mockito.kotlin:mockito-kotlin:4.0.0') {
         exclude group: 'org.mockito', module: 'mockito-core'
     }
     debugImplementation "androidx.compose.ui:ui-tooling:$composeVersion"
