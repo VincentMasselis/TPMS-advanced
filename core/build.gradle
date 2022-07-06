@@ -48,6 +48,7 @@ dependencies {
     api "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     api "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
     api "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion"
+    api "com.google.firebase:firebase-crashlytics-ktx:18.2.11"
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"

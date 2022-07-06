@@ -3,13 +3,26 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+if (isDecrypted) {
+    // Needs the google-services.json file to work
+    apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'com.google.firebase.crashlytics'
+
+    // Needs the publisher-service-account.json file to work
+    apply plugin: 'com.github.triplet.play'
+    play {
+        serviceAccountCredentials.set(file("../secrets/publisher-service-account.json"))
+        defaultToAppBundles.set(true)
+    }
+}
+
 android {
     compileSdk 32
     defaultConfig {
         applicationId "com.masselis.tpmsadvanced"
         minSdk 27
         targetSdk 32
-        versionCode 1
+        versionCode commitCount()
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
