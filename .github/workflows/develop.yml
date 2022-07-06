@@ -3,7 +3,7 @@ name: Develop
 on:
   push:
     branches:
-      - android
+      - develop
 
 concurrency:
   group: ${{ github.ref }}
