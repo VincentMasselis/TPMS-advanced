@@ -4,7 +4,7 @@ task fetchAllTags(type: Exec) {
 }
 
 task gitTagVersion(type: Exec, dependsOn: fetchAllTags) {
-    commandLine 'git', 'tag', "$commitCount"
+    commandLine 'git', 'tag', "vc${tpmsAdvancedVersionCode()}"
 }
 
 task gitPushTag(type: Exec, dependsOn: gitTagVersion) {
@@ -12,7 +12,9 @@ task gitPushTag(type: Exec, dependsOn: gitTagVersion) {
     args "--tags"
 }
 
-rootProject.allprojects {
-    if (it.plugins.hasPlugin("com.github.triplet.play"))
-        tasks.publishApps.dependsOn gitPushTag
+subprojects {
+    afterEvaluate {
+        if (it.plugins.hasPlugin("com.github.triplet.play"))
+            tasks.publishApps.dependsOn gitPushTag
+    }
 }
