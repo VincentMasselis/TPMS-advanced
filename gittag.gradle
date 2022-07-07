@@ -12,7 +12,7 @@ task gitPushTag(type: Exec, dependsOn: gitTagVersion) {
     args "--tags"
 }
 
-rootProject.subprojects {
+rootProject.allprojects {
     if (it.plugins.hasPlugin("com.github.triplet.play"))
         tasks.publishApps.dependsOn gitPushTag
 }
