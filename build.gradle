@@ -9,6 +9,7 @@ buildscript {
         return Integer.parseInt(stdout.toString().trim())
     }
 }
+
 plugins {
     id 'com.android.application' version "$agpVersion" apply false
     id 'com.android.library' version "$agpVersion" apply false
@@ -29,3 +30,5 @@ try {
 } catch (Exception ignored) {
     ext.isDecrypted = false
 }
+
+apply from: 'gittag.gradle'

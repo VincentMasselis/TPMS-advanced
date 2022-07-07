@@ -1,0 +1,18 @@
+task fetchAllTags(type: Exec) {
+    commandLine 'git', 'fetch'
+    args "--all", "--tags"
+}
+
+task gitTagVersion(type: Exec, dependsOn: fetchAllTags) {
+    commandLine 'git', 'tag', "$commitCount"
+}
+
+task gitPushTag(type: Exec, dependsOn: gitTagVersion) {
+    commandLine 'git', 'push'
+    args "--tags"
+}
+
+rootProject.subprojects {
+    if (it.plugins.hasPlugin("com.github.triplet.play"))
+        tasks.publishApps.dependsOn gitPushTag
+}
