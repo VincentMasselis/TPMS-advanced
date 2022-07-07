@@ -1,12 +1,12 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.commitCount = { ->
+    ext.tpmsAdvancedVersionCode = { ->
         def stdout = new ByteArrayOutputStream()
         exec {
             commandLine 'git', 'rev-list', '--first-parent', '--count', 'origin/main'
             standardOutput = stdout
         }
-        return Integer.parseInt(stdout.toString().trim())
+        return Integer.parseInt(stdout.toString().trim()) + 1000
     }
 }
 
