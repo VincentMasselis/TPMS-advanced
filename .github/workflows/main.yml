@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   build:
-    name: Release to the
+    name: Publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
@@ -29,7 +29,7 @@ jobs:
           java-version: 11
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2
-      - name: Upload to the Play Store
+      - name: Upload bundle to the Play Store
         uses: gradle/gradle-build-action@v2
         with:
           arguments: publishApps

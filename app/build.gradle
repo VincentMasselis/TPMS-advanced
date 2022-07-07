@@ -23,7 +23,7 @@ android {
         applicationId "com.masselis.tpmsadvanced"
         minSdk 27
         targetSdk 32
-        versionCode commitCount()
+        versionCode commitCount() + 1000
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
