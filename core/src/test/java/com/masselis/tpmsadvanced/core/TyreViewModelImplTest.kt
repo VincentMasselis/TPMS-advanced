@@ -58,17 +58,17 @@ class TyreViewModelImplTest {
     private fun test() = TyreViewModelImpl(
         tyreAtmosphereUseCase,
         atmosphereRangeUseCase,
-        200.milliseconds.toJavaDuration(),
+        500.milliseconds.toJavaDuration(),
         savedStateHandle
     )
 
-    private fun setAtmosphere(pressure: Float, temperature: Float) =
+    private fun setAtmosphere(pressure: Pressure, temperature: Temperature) =
         whenever(tyreAtmosphereUseCase.listen()).doReturn(
             flowOf(
                 TyreAtmosphere(
                     System.currentTimeMillis().div(1000.0),
-                    Pressure(pressure),
-                    Temperature(temperature)
+                    pressure,
+                    temperature
                 )
             )
         )
@@ -80,40 +80,40 @@ class TyreViewModelImplTest {
 
     @Test
     fun belowRangeTemperature() = runTest {
-        setAtmosphere(200f, 15f)
+        setAtmosphere(2f.bar, 15f.celsius)
         assert(test().stateFlow.value is State.Normal.BlueToGreen)
     }
 
     @Test
     fun normalTemperature() = runTest {
-        setAtmosphere(200f, 25f)
+        setAtmosphere(2f.bar, 25f.celsius)
         assert(test().stateFlow.value is State.Normal.BlueToGreen)
     }
 
     @Test
     fun highTemperature() = runTest {
-        setAtmosphere(200f, 60f)
+        setAtmosphere(2f.bar, 60f.celsius)
         assert(test().stateFlow.value is State.Normal.GreenToRed)
     }
 
     @Test
     fun ultraHighTemperature() = runTest {
-        setAtmosphere(200f, 115f)
+        setAtmosphere(2f.bar, 115f.celsius)
         assert(test().stateFlow.value is State.Alerting)
     }
 
     @Test
     fun noPressure() = runTest {
-        setAtmosphere(0f, 45f)
+        setAtmosphere(0f.bar, 45f.celsius)
         assert(test().stateFlow.value is State.Alerting)
     }
 
     @Test
     fun obsolete() = runTest {
-        setAtmosphere(200f, 35f)
+        setAtmosphere(2f.bar, 35f.celsius)
         val vm = test()
         assert(vm.stateFlow.value is State.Normal.BlueToGreen)
-        delay(400.milliseconds)
+        delay(1.seconds)
         assert(vm.stateFlow.value is State.NotDetected)
     }
 }

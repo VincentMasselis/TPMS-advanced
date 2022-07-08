@@ -22,6 +22,8 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.bluetooth_le" />
 
     <application>
@@ -34,5 +36,9 @@
                 android:name="com.masselis.tpmsadvanced.interfaces.StartInitializer"
                 android:value="androidx.startup" />
         </provider>
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode" />
+
     </application>
 </manifest>

@@ -54,6 +54,4 @@ class SensorFavouriteViewModel @AssistedInject constructor(
         if (state is State.RequestBond)
             favouriteSensorUseCase.savedId.value = state.id
     }
-
-    companion object
 }
