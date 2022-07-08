@@ -3,20 +3,18 @@ package com.masselis.tpmsadvanced.usecase
 import android.content.Context
 import androidx.core.content.edit
 import com.masselis.tpmsadvanced.ioc.SingleInstance
-import com.masselis.tpmsadvanced.model.Record
 import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.tools.ObservableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import javax.inject.Inject
 
 @SingleInstance
 class FavouriteSensorUseCase @Inject constructor(
     tyreLocation: TyreLocation,
     context: Context,
+    private val sensorIdUseCase: SensorIdUseCase,
     private val sensorByteArrayUseCaseImpl: RecordUseCaseImpl,
 ) : RecordUseCase {
 
@@ -29,7 +27,7 @@ class FavouriteSensorUseCase @Inject constructor(
 
     val foundIds = sensorByteArrayUseCaseImpl
         .listen()
-        .map { it.intId() }
+        .map { sensorIdUseCase.asInt(it.id()) }
         .distinctUntilChanged()
 
     val savedId = ObservableStateFlow(
@@ -45,12 +43,7 @@ class FavouriteSensorUseCase @Inject constructor(
 
     override fun listen() = sensorByteArrayUseCaseImpl.listen().filter {
         val favId = savedId.value
-        if (favId != null) it.intId() == favId
+        if (favId != null) sensorIdUseCase.asInt(it.id()) == favId
         else true
     }
-
-    private fun Record.intId() = ByteBuffer
-        .wrap(byteArrayOf(0x00) + this.id())
-        .order(ByteOrder.LITTLE_ENDIAN)
-        .int
 }

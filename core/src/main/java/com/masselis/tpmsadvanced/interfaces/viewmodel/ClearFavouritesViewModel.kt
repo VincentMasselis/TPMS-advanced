@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.interfaces.viewmodel.ClearFavouritesViewModel.State.AlreadyCleared
 import com.masselis.tpmsadvanced.interfaces.viewmodel.ClearFavouritesViewModel.State.ClearingPossible
-import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.tools.asMutableStateFlow
+import com.masselis.tpmsadvanced.usecase.FavouriteSensorUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 
 class ClearFavouritesViewModel @AssistedInject constructor(
+    private val useCases: List<FavouriteSensorUseCase>,
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -36,8 +37,6 @@ class ClearFavouritesViewModel @AssistedInject constructor(
         .asMutableStateFlow()
     val stateFlow = mutableStateFlow.asStateFlow()
 
-    private val useCases = TyreLocation.values().map { it.component.favouriteSensorUseCase }
-
     init {
         combine(useCases.map { it.savedId }) { ids -> ids.any { it != null } }
             .distinctUntilChanged()
@@ -48,9 +47,5 @@ class ClearFavouritesViewModel @AssistedInject constructor(
 
     fun clear() {
         useCases.forEach { it.savedId.value = null }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
     }
 }

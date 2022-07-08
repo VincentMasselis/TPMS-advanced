@@ -99,6 +99,4 @@ class TyreStatsViewModel @AssistedInject constructor(
         val pressureUnit: Pressure.Unit,
         val temperature: Temperature.Unit
     )
-
-    companion object
 }

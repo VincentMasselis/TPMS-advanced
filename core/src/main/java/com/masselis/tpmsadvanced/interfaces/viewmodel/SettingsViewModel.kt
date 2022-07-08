@@ -69,6 +69,4 @@ class SettingsViewModel @AssistedInject constructor(
             .onEach { atmosphereRangeUseCase.lowTempFlow.value = it }
             .launchIn(viewModelScope)
     }
-
-    companion object
 }

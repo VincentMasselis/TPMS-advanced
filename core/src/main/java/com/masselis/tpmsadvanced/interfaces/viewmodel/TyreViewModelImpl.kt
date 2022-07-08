@@ -107,6 +107,4 @@ class TyreViewModelImpl @AssistedInject constructor(
         val lowTemp: Temperature,
         val lowPressure: Pressure
     )
-
-    companion object
 }
