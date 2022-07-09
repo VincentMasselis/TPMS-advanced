@@ -35,7 +35,15 @@
             <meta-data
                 android:name="com.masselis.tpmsadvanced.interfaces.StartInitializer"
                 android:value="androidx.startup" />
+            <meta-data
+                android:name="com.masselis.tpmsadvanced.interfaces.FirebaseInitializer"
+                android:value="androidx.startup" />
         </provider>
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            android:authorities="${applicationId}.firebaseperfprovider"
+            tools:node="remove" />
+
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode" />
