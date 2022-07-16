@@ -15,22 +15,10 @@ android {
 }
 
 dependencies {
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutineVersion"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-guava:$coroutineVersion"
-    api 'androidx.core:core-ktx:1.8.0'
-    implementation 'com.squareup.okio:okio:3.2.0'
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
-    api "androidx.startup:startup-runtime:1.1.1"
-    api "androidx.savedstate:savedstate-ktx:1.2.0"
-    api "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
-    api "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
-    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
-    api "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion"
-    api "com.google.firebase:firebase-crashlytics-ktx:18.2.11"
+    implementation(project(":ui-common"))
+    implementation(project(":common"))
     // Use this dependency to use the dynamically downloaded model in Google Play Services
-    implementation 'com.google.mlkit:barcode-scanning:17.0.2'
+    api 'com.google.mlkit:barcode-scanning:17.0.2'
     api 'androidx.camera:camera-camera2:1.2.0-alpha03'
     api 'androidx.camera:camera-lifecycle:1.2.0-alpha03'
     api 'androidx.camera:camera-mlkit-vision:1.2.0-alpha03'

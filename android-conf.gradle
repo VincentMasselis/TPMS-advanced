@@ -18,7 +18,7 @@ subprojects {
                 if (plugins.hasPlugin("org.jetbrains.kotlin.android"))
                     kotlinOptions {
                         jvmTarget = '1.8'
-                        freeCompilerArgs += ['-Xexplicit-api=strict', '-opt-in=kotlin.RequiresOptIn']
+                        freeCompilerArgs += [/*'-Xexplicit-api=strict', */'-opt-in=kotlin.RequiresOptIn']
                     }
             }
         if (plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
