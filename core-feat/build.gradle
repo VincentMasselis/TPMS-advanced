@@ -17,11 +17,6 @@ android {
 dependencies {
     implementation(project(":ui-common"))
     implementation(project(":common"))
-    // Use this dependency to use the dynamically downloaded model in Google Play Services
-    api 'com.google.mlkit:barcode-scanning:17.0.2'
-    api 'androidx.camera:camera-camera2:1.2.0-alpha03'
-    api 'androidx.camera:camera-lifecycle:1.2.0-alpha03'
-    api 'androidx.camera:camera-mlkit-vision:1.2.0-alpha03'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"

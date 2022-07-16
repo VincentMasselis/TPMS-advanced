@@ -53,8 +53,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":core-feat"))
+    implementation(project(":common"))
     implementation(project(":ui-common"))
+    implementation(project(":core-feat"))
+    implementation(project(":qrcode-feat"))
     debugImplementation(project(":debug-ui-common"))
 
     // Tooling support (Previews, etc.)

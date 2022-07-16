@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.interfaces.composable
+package com.masselis.tpmsadvanced.qrcode.interfaces
 
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
@@ -16,15 +16,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.interfaces.mainComponent
-import com.masselis.tpmsadvanced.interfaces.viewmodel.CameraPreconditionsViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.QRCodeViewModel
+import com.masselis.tpmsadvanced.uicommon.HomeNavController
+import com.masselis.tpmsadvanced.uicommon.MissingPermission
+import com.masselis.tpmsadvanced.uicommon.OnLifecycleEvent
 
 @Suppress("NAME_SHADOWING")
 @Composable
 fun QrCodeScan(
     modifier: Modifier = Modifier,
     viewModel: CameraPreconditionsViewModel = viewModel {
-        mainComponent.cameraPreconditionsViewModel.build(createSavedStateHandle())
+        qrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle())
     }
 ) {
     OnLifecycleEvent { _, event ->
@@ -72,7 +73,7 @@ private fun Preview(
         modifier = modifier
     )
 
-    val viewModel = remember { mainComponent.qrCodeViewModel.build(controller) }
+    val viewModel = remember { qrCodeComponent.qrCodeViewModel.build(controller) }
     val state by viewModel.stateFlow.collectAsState()
     when (val state = state) {
         QRCodeViewModel.State.Scanning -> {}

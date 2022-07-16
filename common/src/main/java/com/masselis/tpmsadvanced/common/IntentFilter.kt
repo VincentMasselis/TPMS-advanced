@@ -1,10 +1,9 @@
-package com.masselis.tpmsadvanced.tools
+package com.masselis.tpmsadvanced.common
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import com.masselis.tpmsadvanced.interfaces.appContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch

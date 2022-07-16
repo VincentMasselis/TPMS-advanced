@@ -1,11 +1,11 @@
-package com.masselis.tpmsadvanced.interfaces.viewmodel
+package com.masselis.tpmsadvanced.qrcode.interfaces
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.masselis.tpmsadvanced.qrcode.usecase.QrCodeAnalyserUseCase
 import com.masselis.tpmsadvanced.tools.asMutableStateFlow
-import com.masselis.tpmsadvanced.usecase.QrCodeAnalyserUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

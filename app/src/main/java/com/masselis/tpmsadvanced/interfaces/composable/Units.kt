@@ -2,7 +2,6 @@ package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +11,7 @@ import com.masselis.tpmsadvanced.interfaces.mainComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.UnitsViewModel
 import com.masselis.tpmsadvanced.model.Pressure
 import com.masselis.tpmsadvanced.model.Temperature
+import com.masselis.tpmsadvanced.uicommon.EnumDropdown
 
 @Suppress("DEPRECATION")
 @Composable

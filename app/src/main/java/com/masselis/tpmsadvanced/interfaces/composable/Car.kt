@@ -14,6 +14,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.model.TyreLocation
+import com.masselis.tpmsadvanced.uicommon.KeepScreenOn
 
 @Composable
 fun Car(modifier: Modifier = Modifier) {

@@ -14,7 +14,7 @@ import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.content.getSystemService
 import com.masselis.tpmsadvanced.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.model.Record.Companion.asRawRecord
-import com.masselis.tpmsadvanced.tools.asFlow
+import com.masselis.tpmsadvanced.common.asFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject

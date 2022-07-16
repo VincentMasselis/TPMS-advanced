@@ -1,7 +1,6 @@
-package com.masselis.tpmsadvanced.usecase
+package com.masselis.tpmsadvanced.qrcode.usecase
 
 import android.Manifest.permission.CAMERA
-import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.camera.mlkit.vision.MlKitAnalyzer
 import androidx.camera.view.CameraController
@@ -10,7 +9,9 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.masselis.tpmsadvanced.model.SensorIds
+import com.masselis.tpmsadvanced.common.appContext
+import com.masselis.tpmsadvanced.qrcode.model.SensorIds
+import com.masselis.tpmsadvanced.usecase.SensorIdUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
@@ -22,7 +23,6 @@ import javax.inject.Inject
 
 class QrCodeAnalyserUseCase @Inject constructor(
     private val sensorIdUseCase: SensorIdUseCase,
-    private val context: Context,
 ) {
 
     private val scanner = BarcodeScannerOptions.Builder()
@@ -53,7 +53,7 @@ class QrCodeAnalyserUseCase @Inject constructor(
         .map { intIds -> SensorIds(intIds[0], intIds[1], intIds[2], intIds[3]) }
 
     fun missingPermission() = CAMERA
-        .takeIf { checkSelfPermission(context, CAMERA) != PERMISSION_GRANTED }
+        .takeIf { checkSelfPermission(appContext, CAMERA) != PERMISSION_GRANTED }
 
     companion object {
         // Test available here: https://regex101.com/r/c2xslp/1

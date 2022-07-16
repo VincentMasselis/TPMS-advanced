@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.interfaces.composable
+package com.masselis.tpmsadvanced.uicommon
 
 import android.app.Activity
 import android.content.Intent

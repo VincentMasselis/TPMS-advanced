@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.model
+package com.masselis.tpmsadvanced.qrcode.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

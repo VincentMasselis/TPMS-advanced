@@ -18,6 +18,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.interfaces.mainComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.PreconditionsViewModel.State
+import com.masselis.tpmsadvanced.uicommon.MissingPermission
+import com.masselis.tpmsadvanced.uicommon.OnLifecycleEvent
 
 @Suppress("NAME_SHADOWING")
 @Composable

@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.interfaces.composable
+package com.masselis.tpmsadvanced.uicommon
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

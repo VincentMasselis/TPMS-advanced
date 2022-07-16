@@ -16,5 +16,6 @@ rootProject.name = "TPMS Advanced"
 include ':common'
 include ':ui-common'
 include ':debug-ui-common'
-include ':app'
 include ':core-feat'
+include ':qrcode-feat'
+include ':app'

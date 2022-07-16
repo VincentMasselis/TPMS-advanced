@@ -25,8 +25,6 @@ interface MainComponent {
     val settingsViewModel: SettingsViewModel.Factory
     val clearFavouritesViewModel: ClearFavouritesViewModel.Factory
     val unitsViewModel: UnitsViewModel
-    val cameraPreconditionsViewModel: CameraPreconditionsViewModel.Factory
-    val qrCodeViewModel: QRCodeViewModel.Factory
 
     val findTyreComponentUseCase: FindTyreComponentUseCase
 }

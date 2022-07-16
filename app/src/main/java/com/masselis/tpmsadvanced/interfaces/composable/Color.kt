@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.ui.graphics.Color
 import com.masselis.tpmsadvanced.R
-import com.masselis.tpmsadvanced.interfaces.appContext
+import com.masselis.tpmsadvanced.common.appContext
 
 val md_theme_light_primary = Color(0xFF0E6E14)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)

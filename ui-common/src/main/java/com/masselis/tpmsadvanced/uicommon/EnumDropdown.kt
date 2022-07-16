@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.interfaces.composable
+package com.masselis.tpmsadvanced.uicommon
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*

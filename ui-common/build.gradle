@@ -3,6 +3,15 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+android {
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "$composeCompilerVersion"
+    }
+}
+
 dependencies {
     api "androidx.savedstate:savedstate-ktx:1.2.0"
     api "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"

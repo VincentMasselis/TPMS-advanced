@@ -7,23 +7,19 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.masselis.tpmsadvanced.R
-
-val HomeNavController = compositionLocalOf<NavController> {
-    error("Nav controller not available")
-}
+import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
+import com.masselis.tpmsadvanced.uicommon.HomeNavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
