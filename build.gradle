@@ -32,3 +32,4 @@ try {
 }
 
 apply from: 'gittag.gradle'
+apply from: 'android-conf.gradle'

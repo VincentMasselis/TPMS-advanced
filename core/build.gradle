@@ -6,34 +6,11 @@ plugins {
 }
 
 android {
-    compileSdk 32
-
-    defaultConfig {
-        minSdk 23
-        targetSdk 32
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
     buildFeatures {
         compose true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "$composeCompilerVersion"
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 }
 
@@ -45,7 +22,7 @@ dependencies {
     implementation 'com.squareup.okio:okio:3.2.0'
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
-    implementation "androidx.startup:startup-runtime:1.1.1"
+    api "androidx.startup:startup-runtime:1.1.1"
     api "androidx.savedstate:savedstate-ktx:1.2.0"
     api "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     api "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"

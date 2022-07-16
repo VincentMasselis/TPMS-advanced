@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
+    id 'org.jetbrains.kotlin.kapt'
 }
 
 if (isDecrypted) {
@@ -18,11 +20,8 @@ if (isDecrypted) {
 }
 
 android {
-    compileSdk 32
     defaultConfig {
         applicationId "com.masselis.tpmsadvanced"
-        minSdk 27
-        targetSdk 32
         versionCode tpmsAdvancedVersionCode()
         versionName "1.0"
 
@@ -39,8 +38,7 @@ android {
     }
     buildTypes {
         release {
-            if (signingConfigs.any { it.name == 'release' }) signingConfig signingConfigs.release
-            else signingConfig signingConfigs.debug
+            signingConfig signingConfigs.findByName('release') ?: signingConfigs.debug
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -51,13 +49,6 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "$composeCompilerVersion"
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
     }
 }
 
