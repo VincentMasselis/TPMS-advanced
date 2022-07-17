@@ -6,15 +6,15 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
-import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.content.getSystemService
+import com.masselis.tpmsadvanced.common.appContext
+import com.masselis.tpmsadvanced.common.asFlow
 import com.masselis.tpmsadvanced.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.model.Record.Companion.asRawRecord
-import com.masselis.tpmsadvanced.common.asFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -25,12 +25,9 @@ import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
 @Singleton
-class BleScanUseCase @Inject constructor(
-    bleScanner: BluetoothLeScanner,
-    private val context: Context
-) {
+class BleScanUseCase @Inject constructor(bleScanner: BluetoothLeScanner) {
 
-    private val bluetoothAdapter = context.getSystemService<BluetoothManager>()!!.adapter
+    private val bluetoothAdapter = appContext.getSystemService<BluetoothManager>()!!.adapter
 
     @SuppressLint("InlinedApi")
     fun missingPermission(): List<String> = when (Build.VERSION.SDK_INT) {
@@ -38,7 +35,7 @@ class BleScanUseCase @Inject constructor(
         in 29..30 -> listOf(ACCESS_FINE_LOCATION)
         in 31..Int.MAX_VALUE -> listOf(BLUETOOTH_CONNECT, BLUETOOTH_SCAN)
         else -> throw IllegalArgumentException()
-    }.filter { checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
+    }.filter { checkSelfPermission(appContext, it) != PackageManager.PERMISSION_GRANTED }
 
     fun isChipTurnedOn(): Flow<Boolean> = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         .asFlow()

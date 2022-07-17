@@ -15,7 +15,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.interfaces.mainComponent
 import com.masselis.tpmsadvanced.uicommon.HomeNavController
 import com.masselis.tpmsadvanced.uicommon.MissingPermission
 import com.masselis.tpmsadvanced.uicommon.OnLifecycleEvent

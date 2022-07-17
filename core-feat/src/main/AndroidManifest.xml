@@ -33,10 +33,7 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="com.masselis.tpmsadvanced.interfaces.StartInitializer"
-                android:value="androidx.startup" />
-            <meta-data
-                android:name="com.masselis.tpmsadvanced.interfaces.FirebaseInitializer"
+                android:name="com.masselis.tpmsadvanced.interfaces.CoreInitializer"
                 android:value="androidx.startup" />
         </provider>
         <provider

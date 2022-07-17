@@ -8,10 +8,10 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.bluetooth.le.ScanSettings.MATCH_MODE_AGGRESSIVE
 import android.bluetooth.le.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT
-import android.content.Context
 import android.os.ParcelUuid
 import androidx.annotation.RequiresPermission
 import androidx.core.content.getSystemService
+import com.masselis.tpmsadvanced.common.appContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -21,9 +21,7 @@ import java.util.UUID.fromString
 import javax.inject.Inject
 
 @SuppressLint("MissingPermission")
-class BluetoothLeScanner @Inject constructor(
-    private val context: Context
-) {
+class BluetoothLeScanner @Inject constructor() {
 
     @SuppressLint("InlinedApi")
     @RequiresPermission("android.permission.BLUETOOTH_SCAN")
@@ -41,7 +39,7 @@ class BluetoothLeScanner @Inject constructor(
                 close(ScanFailed(errorCode))
             }
         }
-        val leScanner = context
+        val leScanner = appContext
             .getSystemService<BluetoothManager>()!!
             .adapter
             .bluetoothLeScanner

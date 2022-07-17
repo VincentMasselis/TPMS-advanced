@@ -1,24 +1,26 @@
 package com.masselis.tpmsadvanced.ioc
 
-import android.content.Context
-import com.masselis.tpmsadvanced.interfaces.viewmodel.*
+import com.masselis.tpmsadvanced.common.FirebaseModule
+import com.masselis.tpmsadvanced.interfaces.viewmodel.ClearFavouritesViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.PreconditionsViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.SettingsViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.UnitsViewModel
 import com.masselis.tpmsadvanced.usecase.FindTyreComponentUseCase
-import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
 @Component(
     modules = [
-        MainComponentModule::class,
+        FirebaseModule::class,
         TyreComponentFactoryModule::class
     ]
 )
-interface MainComponent {
+interface CoreComponent {
 
     @Component.Factory
     interface Factory {
-        fun build(@BindsInstance context: Context): MainComponent
+        fun build(): CoreComponent
     }
 
     val preconditionsViewModel: PreconditionsViewModel.Factory

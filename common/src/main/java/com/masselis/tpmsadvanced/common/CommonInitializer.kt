@@ -3,6 +3,9 @@ package com.masselis.tpmsadvanced.common
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.startup.Initializer
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 
 @SuppressLint("StaticFieldLeak")
 private lateinit var privateContext: Context

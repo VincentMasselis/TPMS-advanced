@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.usecase
 
 import android.content.Context
 import androidx.core.content.edit
+import com.masselis.tpmsadvanced.common.appContext
 import com.masselis.tpmsadvanced.model.Pressure
 import com.masselis.tpmsadvanced.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.model.Temperature
@@ -12,11 +13,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AtmosphereRangeUseCase @Inject constructor(
-    context: Context
-) {
+class AtmosphereRangeUseCase @Inject constructor() {
 
-    private val sharedPreferences = context.getSharedPreferences(
+    private val sharedPreferences = appContext.getSharedPreferences(
         "ATMOSPHERE_ALERTS",
         Context.MODE_PRIVATE
     )

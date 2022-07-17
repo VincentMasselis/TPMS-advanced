@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.interfaces.viewmodel.ClearFavouritesViewModel.State.AlreadyCleared
 import com.masselis.tpmsadvanced.interfaces.viewmodel.ClearFavouritesViewModel.State.ClearingPossible
+import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.tools.asMutableStateFlow
 import com.masselis.tpmsadvanced.usecase.FavouriteSensorUseCase
 import dagger.assisted.Assisted
@@ -15,7 +16,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 
 class ClearFavouritesViewModel @AssistedInject constructor(
-    private val useCases: List<FavouriteSensorUseCase>,
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -31,6 +31,10 @@ class ClearFavouritesViewModel @AssistedInject constructor(
         @Parcelize
         object AlreadyCleared : State()
     }
+
+    private val useCases: List<FavouriteSensorUseCase> = TyreLocation
+        .values()
+        .map { it.component.favouriteSensorUseCase }
 
     private val mutableStateFlow = savedStateHandle
         .getLiveData<State>("STATE", AlreadyCleared)

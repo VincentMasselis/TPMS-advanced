@@ -12,7 +12,6 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.uicommon.KeepScreenOn
 
@@ -22,7 +21,7 @@ fun Car(modifier: Modifier = Modifier) {
     ConstraintLayout(modifier = modifier) {
         val (car, tyreBox, topLeftStats, topLeftFav, topRightStats, topRightFav, bottomLeftStats, bottomLeftFav, bottomRightStats, bottomRightFav) = createRefs()
         Image(
-            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
+            bitmap = ImageBitmap.imageResource(id = com.masselis.tpmsadvanced.core.R.drawable.schema_car_top_view),
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
             contentDescription = null,
             modifier = Modifier

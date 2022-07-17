@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.interfaces.mainComponent
+import com.masselis.tpmsadvanced.interfaces.coreComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.model.Fraction
@@ -19,7 +19,7 @@ import com.masselis.tpmsadvanced.model.Temperature.CREATOR.celsius
 fun Settings(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = viewModel {
-        mainComponent.settingsViewModel.build(createSavedStateHandle())
+        coreComponent.settingsViewModel.build(createSavedStateHandle())
     }
 ) {
     val highTempFlow = viewModel.highTemp

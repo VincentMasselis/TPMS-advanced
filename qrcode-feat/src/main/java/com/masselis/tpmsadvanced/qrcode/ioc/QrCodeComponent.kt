@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.qrcode.ioc
 
-import com.masselis.tpmsadvanced.ioc.MainComponent
+import com.masselis.tpmsadvanced.ioc.CoreComponent
 import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel
 import dagger.Component
@@ -8,13 +8,13 @@ import dagger.Component
 @SingleInstance
 @Component(
     dependencies = [
-        MainComponent::class
+        CoreComponent::class
     ]
 )
 interface QrCodeComponent {
     @Component.Factory
     interface Factory {
-        fun build(mainComponent: MainComponent): QrCodeComponent
+        fun build(coreComponent: CoreComponent): QrCodeComponent
     }
 
     val cameraPreconditionsViewModel: CameraPreconditionsViewModel.Factory

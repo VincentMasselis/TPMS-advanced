@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.usecase
 
 import android.content.Context
 import androidx.core.content.edit
+import com.masselis.tpmsadvanced.common.appContext
 import com.masselis.tpmsadvanced.ioc.SingleInstance
 import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.tools.ObservableStateFlow
@@ -13,14 +14,13 @@ import javax.inject.Inject
 @SingleInstance
 class FavouriteSensorUseCase @Inject constructor(
     tyreLocation: TyreLocation,
-    context: Context,
     private val sensorIdUseCase: SensorIdUseCase,
     private val sensorByteArrayUseCaseImpl: RecordUseCaseImpl,
 ) : RecordUseCase {
 
     private val key = "${tyreLocation.name}_ID"
 
-    private val sharedPreferences = context.getSharedPreferences(
+    private val sharedPreferences = appContext.getSharedPreferences(
         "SENSOR_IDS",
         Context.MODE_PRIVATE
     )

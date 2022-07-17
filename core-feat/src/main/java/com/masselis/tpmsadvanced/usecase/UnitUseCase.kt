@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.usecase
 
 import android.content.Context
 import androidx.core.content.edit
+import com.masselis.tpmsadvanced.common.appContext
 import com.masselis.tpmsadvanced.model.Pressure
 import com.masselis.tpmsadvanced.model.Temperature
 import com.masselis.tpmsadvanced.tools.ObservableStateFlow
@@ -10,11 +11,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UnitUseCase @Inject constructor(
-    context: Context
-) {
+class UnitUseCase @Inject constructor() {
 
-    private val sharedPreferences = context.getSharedPreferences(
+    private val sharedPreferences = appContext.getSharedPreferences(
         "UNITS",
         Context.MODE_PRIVATE
     )

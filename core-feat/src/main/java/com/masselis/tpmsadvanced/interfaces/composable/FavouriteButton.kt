@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.R
+import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.interfaces.viewmodel.SensorFavouriteViewModel
 import com.masselis.tpmsadvanced.model.TyreLocation
 
