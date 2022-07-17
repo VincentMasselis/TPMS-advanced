@@ -2,8 +2,8 @@ package com.masselis.tpmsadvanced.qrcode.interfaces
 
 import android.content.Context
 import androidx.startup.Initializer
-import com.masselis.tpmsadvanced.interfaces.CoreInitializer
-import com.masselis.tpmsadvanced.interfaces.coreComponent
+import com.masselis.tpmsadvanced.core.interfaces.CoreInitializer
+import com.masselis.tpmsadvanced.core.interfaces.coreComponent
 import com.masselis.tpmsadvanced.qrcode.ioc.DaggerQrCodeComponent
 import com.masselis.tpmsadvanced.qrcode.ioc.QrCodeComponent
 

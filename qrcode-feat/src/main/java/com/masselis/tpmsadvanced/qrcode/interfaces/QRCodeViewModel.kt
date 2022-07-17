@@ -3,8 +3,8 @@ package com.masselis.tpmsadvanced.qrcode.interfaces
 import androidx.camera.view.CameraController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.masselis.tpmsadvanced.core.model.TyreLocation
 import com.masselis.tpmsadvanced.qrcode.model.SensorIds
-import com.masselis.tpmsadvanced.model.TyreLocation
 import com.masselis.tpmsadvanced.qrcode.usecase.QrCodeAnalyserUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

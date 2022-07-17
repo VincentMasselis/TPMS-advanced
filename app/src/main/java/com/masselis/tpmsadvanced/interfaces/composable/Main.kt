@@ -15,9 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.interfaces.coreComponent
-import com.masselis.tpmsadvanced.interfaces.viewmodel.PreconditionsViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.PreconditionsViewModel.State
+import com.masselis.tpmsadvanced.core.interfaces.coreComponent
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.PreconditionsViewModel
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.PreconditionsViewModel.State
 import com.masselis.tpmsadvanced.uicommon.MissingPermission
 import com.masselis.tpmsadvanced.uicommon.OnLifecycleEvent
 

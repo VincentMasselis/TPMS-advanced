@@ -1,28 +1,28 @@
-package com.masselis.tpmsadvanced.qrcode.interfaces
+package com.masselis.tpmsadvanced.core.interfaces.viewmodel
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.tools.asMutableStateFlow
-import com.masselis.tpmsadvanced.qrcode.usecase.QrCodeAnalyserUseCase
+import com.masselis.tpmsadvanced.core.usecase.BleScanUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
-class CameraPreconditionsViewModel @AssistedInject constructor(
-    private val qrCodeAnalyserUseCase: QrCodeAnalyserUseCase,
+@OptIn(ExperimentalCoroutinesApi::class)
+class PreconditionsViewModel @AssistedInject constructor(
+    bleScanUseCase: BleScanUseCase,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
     @AssistedFactory
     interface Factory {
-        fun build(savedStateHandle: SavedStateHandle): CameraPreconditionsViewModel
+        fun build(savedStateHandle: SavedStateHandle): PreconditionsViewModel
     }
 
     sealed class State : Parcelable {
@@ -33,21 +33,31 @@ class CameraPreconditionsViewModel @AssistedInject constructor(
         object Ready : State()
 
         @Parcelize
-        data class MissingPermission(val permission: String) : State()
+        data class MissingPermission(val permissions: List<String>) : State()
+
+        @Parcelize
+        object BluetoothChipTurnedOff : State()
     }
 
     private val mutableStateFlow = savedStateHandle
         .getLiveData<State>("STATE", State.Loading)
         .asMutableStateFlow()
-    val stateFlow = mutableStateFlow
+    val stateFlow = mutableStateFlow.asStateFlow()
     private val trigger = MutableSharedFlow<Unit>(1).also { it.tryEmit(Unit) }
 
     init {
         trigger
-            .map {
-                qrCodeAnalyserUseCase.missingPermission()
-                    ?.let { State.MissingPermission(it) }
-                    ?: State.Ready
+            .flatMapLatest {
+                combine(
+                    bleScanUseCase.isChipTurnedOn(),
+                    flowOf(bleScanUseCase.missingPermission())
+                ) { isOn, permissions ->
+                    when {
+                        permissions.isNotEmpty() -> State.MissingPermission(permissions)
+                        isOn.not() -> State.BluetoothChipTurnedOff
+                        else -> State.Ready
+                    }
+                }
             }
             .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)

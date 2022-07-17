@@ -4,11 +4,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.masselis.tpmsadvanced.interfaces.viewmodel.SettingsViewModel
-import com.masselis.tpmsadvanced.model.Pressure
-import com.masselis.tpmsadvanced.model.Pressure.CREATOR.bar
-import com.masselis.tpmsadvanced.model.Temperature
-import com.masselis.tpmsadvanced.model.Temperature.CREATOR.celsius
+import com.masselis.tpmsadvanced.core.interfaces.composable.Settings
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.SettingsViewModel
+import com.masselis.tpmsadvanced.core.model.Pressure
+import com.masselis.tpmsadvanced.core.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.core.model.Temperature
+import com.masselis.tpmsadvanced.core.model.Temperature.CREATOR.celsius
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.mockito.Mockito
 

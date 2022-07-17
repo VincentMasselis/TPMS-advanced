@@ -18,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.masselis.tpmsadvanced.R
+import com.masselis.tpmsadvanced.core.interfaces.composable.Car
+import com.masselis.tpmsadvanced.core.interfaces.composable.Settings
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
 import com.masselis.tpmsadvanced.uicommon.HomeNavController
 

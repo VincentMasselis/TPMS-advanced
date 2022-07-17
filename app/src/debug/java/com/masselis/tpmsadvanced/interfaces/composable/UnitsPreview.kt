@@ -2,9 +2,10 @@ package com.masselis.tpmsadvanced.interfaces.composable
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.masselis.tpmsadvanced.interfaces.viewmodel.UnitsViewModel
-import com.masselis.tpmsadvanced.model.Pressure.Unit.BAR
-import com.masselis.tpmsadvanced.model.Temperature.Unit.CELSIUS
+import com.masselis.tpmsadvanced.core.interfaces.composable.Units
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.UnitsViewModel
+import com.masselis.tpmsadvanced.core.model.Pressure.Unit.BAR
+import com.masselis.tpmsadvanced.core.model.Temperature.Unit.CELSIUS
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.mockito.Mockito
 

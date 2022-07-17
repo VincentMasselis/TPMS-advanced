@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.interfaces.viewmodel.PreconditionsViewModel
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.PreconditionsViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.mockito.Mockito
 

@@ -10,8 +10,8 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.masselis.tpmsadvanced.common.appContext
+import com.masselis.tpmsadvanced.core.usecase.SensorIdUseCase
 import com.masselis.tpmsadvanced.qrcode.model.SensorIds
-import com.masselis.tpmsadvanced.usecase.SensorIdUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose

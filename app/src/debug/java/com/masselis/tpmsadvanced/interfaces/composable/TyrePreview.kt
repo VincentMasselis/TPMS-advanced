@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State.*
-import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModelImpl
-import com.masselis.tpmsadvanced.model.Fraction
-import com.masselis.tpmsadvanced.model.TyreLocation
+import com.masselis.tpmsadvanced.core.interfaces.composable.Tyre
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.TyreViewModel.State
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.TyreViewModel.State.*
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.TyreViewModelImpl
+import com.masselis.tpmsadvanced.core.model.Fraction
+import com.masselis.tpmsadvanced.core.model.TyreLocation
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock

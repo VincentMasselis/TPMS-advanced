@@ -7,10 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreStatsViewModel
-import com.masselis.tpmsadvanced.model.Pressure
-import com.masselis.tpmsadvanced.model.Temperature
-import com.masselis.tpmsadvanced.model.TyreLocation
+import com.masselis.tpmsadvanced.core.interfaces.composable.TyreStat
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.TyreStatsViewModel
+import com.masselis.tpmsadvanced.core.model.Pressure
+import com.masselis.tpmsadvanced.core.model.Temperature
+import com.masselis.tpmsadvanced.core.model.TyreLocation
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.mockito.Mockito
 
