@@ -11,12 +11,12 @@ import dagger.Component
         CoreComponent::class
     ]
 )
-interface QrCodeComponent {
+public abstract class QrCodeComponent {
     @Component.Factory
-    interface Factory {
-        fun build(coreComponent: CoreComponent): QrCodeComponent
+    internal abstract class Factory {
+        abstract fun build(coreComponent: CoreComponent): QrCodeComponent
     }
 
-    val cameraPreconditionsViewModel: CameraPreconditionsViewModel.Factory
-    val qrCodeViewModel: QRCodeViewModel.Factory
+    internal abstract val cameraPreconditionsViewModel: CameraPreconditionsViewModel.Factory
+    internal abstract val qrCodeViewModel: QRCodeViewModel.Factory
 }

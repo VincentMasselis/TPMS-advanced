@@ -33,7 +33,7 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="com.masselis.tpmsadvanced.interfaces.CoreInitializer"
+                android:name="com.masselis.tpmsadvanced.core.interfaces.CoreInitializer"
                 android:value="androidx.startup" />
         </provider>
         <provider

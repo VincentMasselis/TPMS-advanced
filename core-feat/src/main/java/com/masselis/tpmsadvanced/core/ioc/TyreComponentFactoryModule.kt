@@ -3,7 +3,6 @@ package com.masselis.tpmsadvanced.core.ioc
 import com.masselis.tpmsadvanced.core.model.TyreLocation.*
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 @Module(
     subcomponents = [
@@ -12,22 +11,22 @@ import javax.inject.Singleton
 )
 internal object TyreComponentFactoryModule {
     @Provides
-    @Singleton
+    @CoreSingleton
     @Qualifier(FRONT_LEFT)
     fun frontLeftTyreComponent(factory: TyreComponent.Factory) = factory.build(FRONT_LEFT)
 
     @Provides
-    @Singleton
+    @CoreSingleton
     @Qualifier(FRONT_RIGHT)
     fun frontRightTyreComponent(factory: TyreComponent.Factory) = factory.build(FRONT_RIGHT)
 
     @Provides
-    @Singleton
+    @CoreSingleton
     @Qualifier(REAR_LEFT)
     fun rearLeftTyreComponent(factory: TyreComponent.Factory) = factory.build(REAR_LEFT)
 
     @Provides
-    @Singleton
+    @CoreSingleton
     @Qualifier(REAR_RIGHT)
     fun rearRightTyreComponent(factory: TyreComponent.Factory) = factory.build(REAR_RIGHT)
 }

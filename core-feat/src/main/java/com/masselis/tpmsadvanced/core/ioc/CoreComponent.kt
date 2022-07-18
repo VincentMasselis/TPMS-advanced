@@ -6,24 +6,27 @@ import com.masselis.tpmsadvanced.core.interfaces.viewmodel.PreconditionsViewMode
 import com.masselis.tpmsadvanced.core.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.core.interfaces.viewmodel.UnitsViewModel
 import com.masselis.tpmsadvanced.core.usecase.FindTyreComponentUseCase
+import com.masselis.tpmsadvanced.unit.ioc.UnitComponent
 import dagger.Component
-import javax.inject.Singleton
 
-@Singleton
+@CoreSingleton
 @Component(
     modules = [
         FirebaseModule::class,
         TyreComponentFactoryModule::class
+    ],
+    dependencies = [
+        UnitComponent::class
     ]
 )
 public abstract class CoreComponent {
 
     @Component.Factory
     internal abstract class Factory {
-        abstract fun build(): CoreComponent
+        abstract fun build(unitComponent: UnitComponent): CoreComponent
     }
 
-    public abstract val findTyreComponentUseCase: FindTyreComponentUseCase
+    internal abstract val findTyreComponentUseCase: FindTyreComponentUseCase
 
     abstract val preconditionsViewModel: PreconditionsViewModel.Factory
     internal abstract val settingsViewModel: SettingsViewModel.Factory

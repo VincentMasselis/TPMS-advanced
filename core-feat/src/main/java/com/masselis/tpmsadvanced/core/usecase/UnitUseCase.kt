@@ -3,6 +3,8 @@ package com.masselis.tpmsadvanced.core.usecase
 import android.content.Context
 import androidx.core.content.edit
 import com.masselis.tpmsadvanced.common.appContext
+import com.masselis.tpmsadvanced.core.ioc.CoreSingleton
+import com.masselis.tpmsadvanced.core.ioc.SingleInstance
 import com.masselis.tpmsadvanced.core.model.Pressure
 import com.masselis.tpmsadvanced.core.model.Temperature
 import com.masselis.tpmsadvanced.core.tools.ObservableStateFlow
@@ -10,7 +12,7 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
+@CoreSingleton
 class UnitUseCase @Inject constructor() {
 
     private val sharedPreferences = appContext.getSharedPreferences(

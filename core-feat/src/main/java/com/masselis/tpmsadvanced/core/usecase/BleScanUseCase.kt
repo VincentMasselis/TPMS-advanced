@@ -14,17 +14,17 @@ import androidx.core.content.getSystemService
 import com.masselis.tpmsadvanced.common.appContext
 import com.masselis.tpmsadvanced.common.asFlow
 import com.masselis.tpmsadvanced.core.interfaces.BluetoothLeScanner
+import com.masselis.tpmsadvanced.core.ioc.CoreSingleton
 import com.masselis.tpmsadvanced.core.model.Record.Companion.asRawRecord
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
-@Singleton
+@CoreSingleton
 class BleScanUseCase @Inject constructor(bleScanner: BluetoothLeScanner) {
 
     private val bluetoothAdapter = appContext.getSystemService<BluetoothManager>()!!.adapter

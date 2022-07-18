@@ -15,8 +15,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":ui-common"))
+    api(project(":unit-feat"))
+
     implementation(project(":common"))
+    implementation(project(":ui-common"))
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
