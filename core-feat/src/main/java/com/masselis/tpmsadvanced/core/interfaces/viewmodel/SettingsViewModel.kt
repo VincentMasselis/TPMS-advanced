@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
-class SettingsViewModel @AssistedInject constructor(
+internal class SettingsViewModel @AssistedInject constructor(
     private val atmosphereRangeUseCase: AtmosphereRangeUseCase,
     unitUseCase: UnitUseCase,
     @Assisted private val savedStateHandle: SavedStateHandle

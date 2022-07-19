@@ -17,4 +17,5 @@ android {
 dependencies {
     implementation(project(":ui-common"))
     implementation(project(":common"))
+    debugImplementation(project(":debug-ui-common"))
 }

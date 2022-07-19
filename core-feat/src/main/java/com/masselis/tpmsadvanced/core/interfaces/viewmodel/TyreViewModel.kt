@@ -5,7 +5,7 @@ import com.masselis.tpmsadvanced.core.model.Fraction
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.parcelize.Parcelize
 
-interface TyreViewModel {
+internal interface TyreViewModel {
 
     sealed class State : Parcelable {
         // Shows an outlined tyre icon
@@ -28,5 +28,5 @@ interface TyreViewModel {
         object Alerting : State()
     }
 
-    val stateFlow : StateFlow<State>
+    val stateFlow: StateFlow<State>
 }

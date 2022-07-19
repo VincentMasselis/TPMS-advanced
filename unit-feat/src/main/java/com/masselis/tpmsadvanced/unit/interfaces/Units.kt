@@ -11,11 +11,16 @@ import com.masselis.tpmsadvanced.uicommon.EnumDropdown
 import com.masselis.tpmsadvanced.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.unit.model.TemperatureUnit
 
+@Composable
+public fun Units(
+    modifier: Modifier = Modifier
+) = Units(modifier, viewModel { unitComponent.unitsViewModel })
+
 @Suppress("DEPRECATION")
 @Composable
-fun Units(
+internal fun Units(
     modifier: Modifier = Modifier,
-    viewModel: UnitsViewModel = viewModel { unitComponent.unitsViewModel }
+    viewModel: UnitsViewModel
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),

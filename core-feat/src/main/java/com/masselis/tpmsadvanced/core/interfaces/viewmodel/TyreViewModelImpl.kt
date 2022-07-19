@@ -25,7 +25,7 @@ import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TyreViewModelImpl @AssistedInject constructor(
+internal class TyreViewModelImpl @AssistedInject constructor(
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: AtmosphereRangeUseCase,
     @Assisted obsoleteTimeoutJava: Duration,

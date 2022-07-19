@@ -52,7 +52,7 @@ fun LowPressureInfo(
 }
 
 @Composable
-fun TemperatureInfo(
+internal fun TemperatureInfo(
     text: String,
     state: TyreViewModel.State,
     temperatureStateFlow: StateFlow<Temperature>,

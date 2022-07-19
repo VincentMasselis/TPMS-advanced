@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun LowPressureSlider(
+internal fun LowPressureSlider(
     onInfo: () -> Unit,
     mutableStateFlow: MutableStateFlow<Pressure>,
     unitFlow: StateFlow<PressureUnit>
@@ -81,7 +81,7 @@ fun LowPressureSlider(
 }
 
 @Composable
-fun TemperatureSlider(
+internal fun TemperatureSlider(
     onInfo: () -> Unit,
     title: String,
     mutableStateFlow: MutableStateFlow<Temperature>,

@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PreconditionsViewModel @AssistedInject constructor(
+internal class PreconditionsViewModel @AssistedInject constructor(
     bleScanUseCase: BleScanUseCase,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {

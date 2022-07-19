@@ -13,7 +13,7 @@ import com.masselis.tpmsadvanced.core.interfaces.viewmodel.SensorFavouriteViewMo
 import com.masselis.tpmsadvanced.core.model.TyreLocation
 
 @Composable
-fun FavouriteButton(
+internal fun FavouriteButton(
     tyreLocation: TyreLocation,
     modifier: Modifier = Modifier,
     viewModel: SensorFavouriteViewModel = viewModel(key = "SensorFavouriteViewModel_${tyreLocation.name}") {

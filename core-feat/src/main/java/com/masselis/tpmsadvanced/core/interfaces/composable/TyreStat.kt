@@ -21,7 +21,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Suppress("NAME_SHADOWING")
 @Composable
-fun TyreStat(
+internal fun TyreStat(
     modifier: Modifier = Modifier,
     location: TyreLocation,
     viewModel: TyreStatsViewModel = viewModel(key = "TyreStatsViewModel_${location.name}") {

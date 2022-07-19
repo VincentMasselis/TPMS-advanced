@@ -28,7 +28,7 @@ import kotlin.time.Duration.Companion.milliseconds
 private val evaluator = ArgbEvaluator()
 
 @Composable
-fun Tyre(
+internal fun Tyre(
     location: TyreLocation,
     modifier: Modifier = Modifier,
     viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${location.name}") {

@@ -19,7 +19,7 @@ import com.masselis.tpmsadvanced.core.model.Fraction
 import com.masselis.tpmsadvanced.core.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.unit.interfaces.Units
 
-fun LazyListScope.coreSettings() {
+public fun LazyListScope.coreSettings() {
     item { Units() }
     separator()
     item { LowPressure() }

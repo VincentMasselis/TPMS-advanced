@@ -21,7 +21,7 @@ import com.masselis.tpmsadvanced.core.interfaces.coreComponent
 import com.masselis.tpmsadvanced.core.interfaces.viewmodel.ClearFavouritesViewModel
 
 @Composable
-fun ClearFavourites(
+internal fun ClearFavourites(
     modifier: Modifier = Modifier,
     viewModel: ClearFavouritesViewModel = viewModel {
         coreComponent.clearFavouritesViewModel.build(createSavedStateHandle())

@@ -19,7 +19,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 
-class TyreStatsViewModel @AssistedInject constructor(
+internal class TyreStatsViewModel @AssistedInject constructor(
     tyreAtmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: AtmosphereRangeUseCase,
     unitUseCase: UnitUseCase,

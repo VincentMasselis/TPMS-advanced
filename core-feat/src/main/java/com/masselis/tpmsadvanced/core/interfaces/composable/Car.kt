@@ -16,7 +16,7 @@ import com.masselis.tpmsadvanced.core.model.TyreLocation
 import com.masselis.tpmsadvanced.uicommon.KeepScreenOn
 
 @Composable
-fun Car(modifier: Modifier = Modifier) {
+public fun Car(modifier: Modifier = Modifier) {
     KeepScreenOn()
     ConstraintLayout(modifier = modifier) {
         val (car, tyreBox, topLeftStats, topLeftFav, topRightStats, topRightFav, bottomLeftStats, bottomLeftFav, bottomRightStats, bottomRightFav) = createRefs()

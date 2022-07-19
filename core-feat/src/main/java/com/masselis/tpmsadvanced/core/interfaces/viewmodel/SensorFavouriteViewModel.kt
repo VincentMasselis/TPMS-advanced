@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SensorFavouriteViewModel @AssistedInject constructor(
+internal class SensorFavouriteViewModel @AssistedInject constructor(
     private val favouriteSensorUseCase: FavouriteSensorUseCase,
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
