@@ -23,6 +23,8 @@ import com.masselis.tpmsadvanced.core.model.Pressure.CREATOR.psi
 import com.masselis.tpmsadvanced.core.model.Temperature
 import com.masselis.tpmsadvanced.core.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.core.model.Temperature.CREATOR.fahrenheit
+import com.masselis.tpmsadvanced.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.unit.model.TemperatureUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -30,7 +32,7 @@ import kotlinx.coroutines.flow.StateFlow
 fun LowPressureSlider(
     onInfo: () -> Unit,
     mutableStateFlow: MutableStateFlow<Pressure>,
-    unitFlow: StateFlow<Pressure.Unit>
+    unitFlow: StateFlow<PressureUnit>
 ) {
     val pressure by mutableStateFlow.collectAsState()
     val unit by unitFlow.collectAsState()
@@ -69,9 +71,9 @@ fun LowPressureSlider(
             valueRange = 0.5f.bar.convert(unit)..5f.bar.convert(unit),
             onValueChange = {
                 mutableStateFlow.value = when (unit) {
-                    Pressure.Unit.KILO_PASCAL -> it.kpa
-                    Pressure.Unit.BAR -> it.bar
-                    Pressure.Unit.PSI -> it.psi
+                    PressureUnit.KILO_PASCAL -> it.kpa
+                    PressureUnit.BAR -> it.bar
+                    PressureUnit.PSI -> it.psi
                 }
             }
         )
@@ -83,7 +85,7 @@ fun TemperatureSlider(
     onInfo: () -> Unit,
     title: String,
     mutableStateFlow: MutableStateFlow<Temperature>,
-    unitFlow: StateFlow<Temperature.Unit>,
+    unitFlow: StateFlow<TemperatureUnit>,
     valueRange: ClosedFloatingPointRange<Temperature>
 ) {
     val temp by mutableStateFlow.collectAsState()
@@ -124,8 +126,8 @@ fun TemperatureSlider(
             onValueChange = {
                 mutableStateFlow.value =
                     when (unit) {
-                        Temperature.Unit.CELSIUS -> it.celsius
-                        Temperature.Unit.FAHRENHEIT -> it.fahrenheit
+                        TemperatureUnit.CELSIUS -> it.celsius
+                        TemperatureUnit.FAHRENHEIT -> it.fahrenheit
                     }
             }
         )

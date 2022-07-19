@@ -12,6 +12,8 @@ import com.masselis.tpmsadvanced.core.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.model.Pressure
 import com.masselis.tpmsadvanced.core.model.Temperature
 import com.masselis.tpmsadvanced.core.model.TyreLocation
+import com.masselis.tpmsadvanced.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.unit.model.TemperatureUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.mockito.Mockito
 
@@ -25,17 +27,17 @@ fun TyreStatPreview() {
                 mock(
                     TyreStatsViewModel.State.Normal(
                         Pressure(200.978f),
-                        Pressure.Unit.BAR,
+                        PressureUnit.BAR,
                         Temperature(25.78f),
-                        Temperature.Unit.CELSIUS
+                        TemperatureUnit.CELSIUS
                     )
                 ),
                 mock(
                     TyreStatsViewModel.State.Alerting(
                         Pressure(0f),
-                        Pressure.Unit.BAR,
+                        PressureUnit.BAR,
                         Temperature(25f),
-                        Temperature.Unit.CELSIUS
+                        TemperatureUnit.CELSIUS
                     )
                 )
             )

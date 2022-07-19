@@ -5,7 +5,7 @@ import androidx.core.content.edit
 import com.masselis.tpmsadvanced.common.appContext
 import com.masselis.tpmsadvanced.core.ioc.SingleInstance
 import com.masselis.tpmsadvanced.core.model.TyreLocation
-import com.masselis.tpmsadvanced.core.tools.ObservableStateFlow
+import com.masselis.tpmsadvanced.common.ObservableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map

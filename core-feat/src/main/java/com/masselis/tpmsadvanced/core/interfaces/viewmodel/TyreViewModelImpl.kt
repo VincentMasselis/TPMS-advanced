@@ -8,9 +8,9 @@ import com.masselis.tpmsadvanced.core.model.Fraction
 import com.masselis.tpmsadvanced.core.model.Pressure
 import com.masselis.tpmsadvanced.core.model.Temperature
 import com.masselis.tpmsadvanced.core.model.TyreAtmosphere
-import com.masselis.tpmsadvanced.core.tools.asMutableStateFlow
 import com.masselis.tpmsadvanced.core.usecase.AtmosphereRangeUseCase
 import com.masselis.tpmsadvanced.core.usecase.TyreAtmosphereUseCase
+import com.masselis.tpmsadvanced.uicommon.asMutableStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

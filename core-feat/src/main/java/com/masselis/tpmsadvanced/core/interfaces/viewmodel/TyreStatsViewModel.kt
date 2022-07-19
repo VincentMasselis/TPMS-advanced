@@ -7,10 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.model.Pressure
 import com.masselis.tpmsadvanced.core.model.Temperature
 import com.masselis.tpmsadvanced.core.model.TyreAtmosphere
-import com.masselis.tpmsadvanced.core.tools.asMutableStateFlow
 import com.masselis.tpmsadvanced.core.usecase.AtmosphereRangeUseCase
 import com.masselis.tpmsadvanced.core.usecase.TyreAtmosphereUseCase
-import com.masselis.tpmsadvanced.core.usecase.UnitUseCase
+import com.masselis.tpmsadvanced.uicommon.asMutableStateFlow
+import com.masselis.tpmsadvanced.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.unit.usecase.UnitUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -38,18 +40,18 @@ class TyreStatsViewModel @AssistedInject constructor(
         @Parcelize
         data class Normal(
             val pressure: Pressure,
-            val pressureUnit: Pressure.Unit,
+            val pressureUnit: PressureUnit,
             val temperature: Temperature,
-            val temperatureUnit: Temperature.Unit,
+            val temperatureUnit: TemperatureUnit,
         ) : State()
 
         // Show the read values from the tyre in red
         @Parcelize
         data class Alerting(
             val pressure: Pressure,
-            val pressureUnit: Pressure.Unit,
+            val pressureUnit: PressureUnit,
             val temperature: Temperature,
-            val temperatureUnit: Temperature.Unit,
+            val temperatureUnit: TemperatureUnit,
         ) : State()
     }
 
@@ -96,7 +98,7 @@ class TyreStatsViewModel @AssistedInject constructor(
     private data class Data(
         val atmosphere: TyreAtmosphere,
         val highTemp: Temperature,
-        val pressureUnit: Pressure.Unit,
-        val temperature: Temperature.Unit
+        val pressureUnit: PressureUnit,
+        val temperature: TemperatureUnit
     )
 }

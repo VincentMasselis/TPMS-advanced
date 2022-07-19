@@ -17,6 +17,7 @@ import com.masselis.tpmsadvanced.core.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.core.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.model.Fraction
 import com.masselis.tpmsadvanced.core.model.Temperature.CREATOR.celsius
+import com.masselis.tpmsadvanced.unit.interfaces.Units
 
 fun LazyListScope.coreSettings() {
     item { Units() }

@@ -2,21 +2,22 @@ package com.masselis.tpmsadvanced.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.masselis.tpmsadvanced.unit.model.TemperatureUnit
 
 /* Cannot use @Parcelize here: https://issuetracker.google.com/issues/177856519 */
 @JvmInline
 value class Temperature(val celsius: Float) : Parcelable, Comparable<Temperature> {
 
-    fun asFahrenheit() = convert(Unit.FAHRENHEIT)
+    fun asFahrenheit() = convert(TemperatureUnit.FAHRENHEIT)
 
-    fun convert(unit: Unit) = when (unit) {
-        Unit.CELSIUS -> celsius
-        Unit.FAHRENHEIT -> (celsius * (9f / 5f)) + 32f
+    fun convert(unit: TemperatureUnit) = when (unit) {
+        TemperatureUnit.CELSIUS -> celsius
+        TemperatureUnit.FAHRENHEIT -> (celsius * (9f / 5f)) + 32f
     }
 
-    fun string(unit: Unit) = when (unit) {
-        Unit.CELSIUS -> "%.1f°C".format(celsius)
-        Unit.FAHRENHEIT -> "%.0f°F".format(asFahrenheit())
+    fun string(unit: TemperatureUnit) = when (unit) {
+        TemperatureUnit.CELSIUS -> "%.1f°C".format(celsius)
+        TemperatureUnit.FAHRENHEIT -> "%.0f°F".format(asFahrenheit())
     }
 
     override operator fun compareTo(other: Temperature) = celsius.compareTo(other.celsius)
@@ -52,16 +53,6 @@ value class Temperature(val celsius: Float) : Parcelable, Comparable<Temperature
 
         override fun newArray(size: Int): Array<Temperature?> {
             return arrayOfNulls(size)
-        }
-    }
-
-    enum class Unit {
-        CELSIUS,
-        FAHRENHEIT;
-
-        fun string() = when (this) {
-            CELSIUS -> "celsius"
-            FAHRENHEIT -> "fahrenheit"
         }
     }
 }

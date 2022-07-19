@@ -1,18 +1,16 @@
-package com.masselis.tpmsadvanced.core.usecase
+package com.masselis.tpmsadvanced.unit.usecase
 
 import android.content.Context
 import androidx.core.content.edit
+import com.masselis.tpmsadvanced.common.ObservableStateFlow
 import com.masselis.tpmsadvanced.common.appContext
-import com.masselis.tpmsadvanced.core.ioc.CoreSingleton
-import com.masselis.tpmsadvanced.core.ioc.SingleInstance
-import com.masselis.tpmsadvanced.core.model.Pressure
-import com.masselis.tpmsadvanced.core.model.Temperature
-import com.masselis.tpmsadvanced.core.tools.ObservableStateFlow
+import com.masselis.tpmsadvanced.unit.ioc.SingleInstance
+import com.masselis.tpmsadvanced.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.unit.model.TemperatureUnit
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@CoreSingleton
+@SingleInstance
 class UnitUseCase @Inject constructor() {
 
     private val sharedPreferences = appContext.getSharedPreferences(
@@ -23,11 +21,11 @@ class UnitUseCase @Inject constructor() {
     val pressure = ObservableStateFlow(
         sharedPreferences
             .getString("PRESSURE", null)
-            ?.let { name -> Pressure.Unit.values().first { it.name == name } }
+            ?.let { name -> PressureUnit.values().first { it.name == name } }
             ?: when (Locale.getDefault().isO3Country) {
-                "ARG", "BRA", "USA", "CHL", "MEX", "GBR", "IND", "HKG", "CAN", "AUS", "NZL", "IRL", "BHS", "PER" -> Pressure.Unit.PSI
-                "FRA" -> Pressure.Unit.BAR
-                else -> Pressure.Unit.KILO_PASCAL
+                "ARG", "BRA", "USA", "CHL", "MEX", "GBR", "IND", "HKG", "CAN", "AUS", "NZL", "IRL", "BHS", "PER" -> PressureUnit.PSI
+                "FRA" -> PressureUnit.BAR
+                else -> PressureUnit.KILO_PASCAL
             }
     ) { _, newValue ->
         sharedPreferences.edit { putString("PRESSURE", newValue.name) }
@@ -36,10 +34,10 @@ class UnitUseCase @Inject constructor() {
     val temperature = ObservableStateFlow(
         sharedPreferences
             .getString("TEMPERATURE", null)
-            ?.let { name -> Temperature.Unit.values().first { it.name == name } }
+            ?.let { name -> TemperatureUnit.values().first { it.name == name } }
             ?: when (Locale.getDefault().isO3Country) {
-                "USA" -> Temperature.Unit.FAHRENHEIT
-                else -> Temperature.Unit.CELSIUS
+                "USA" -> TemperatureUnit.FAHRENHEIT
+                else -> TemperatureUnit.CELSIUS
             }
     ) { _, newValue ->
         sharedPreferences.edit { putString("TEMPERATURE", newValue.name) }

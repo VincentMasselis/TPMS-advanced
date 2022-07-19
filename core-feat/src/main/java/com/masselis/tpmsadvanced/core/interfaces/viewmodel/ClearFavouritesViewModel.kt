@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.interfaces.viewmodel.ClearFavouritesViewModel.State.AlreadyCleared
 import com.masselis.tpmsadvanced.core.interfaces.viewmodel.ClearFavouritesViewModel.State.ClearingPossible
 import com.masselis.tpmsadvanced.core.model.TyreLocation
-import com.masselis.tpmsadvanced.core.tools.asMutableStateFlow
 import com.masselis.tpmsadvanced.core.usecase.FavouriteSensorUseCase
+import com.masselis.tpmsadvanced.uicommon.asMutableStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

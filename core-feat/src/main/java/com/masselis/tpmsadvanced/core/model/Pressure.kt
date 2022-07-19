@@ -2,25 +2,27 @@ package com.masselis.tpmsadvanced.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.masselis.tpmsadvanced.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.unit.model.PressureUnit.*
 
 /* Cannot use @Parcelize here: https://issuetracker.google.com/issues/177856519 */
 @JvmInline
 value class Pressure(val kpa: Float) : Parcelable {
 
-    fun asBar() = convert(Unit.BAR)
+    fun asBar() = convert(BAR)
 
-    fun asPsi() = convert(Unit.PSI)
+    fun asPsi() = convert(PSI)
 
-    fun convert(unit: Unit) = when (unit) {
-        Unit.KILO_PASCAL -> kpa
-        Unit.BAR -> kpa / 100f
-        Unit.PSI -> kpa / 6.895f
+    fun convert(unit: PressureUnit) = when (unit) {
+        KILO_PASCAL -> kpa
+        BAR -> kpa / 100f
+        PSI -> kpa / 6.895f
     }
 
-    fun string(unit: Unit) = when (unit) {
-        Unit.KILO_PASCAL -> "%.0f kpa".format(kpa)
-        Unit.BAR -> "%.2f bar".format(asBar())
-        Unit.PSI -> "%.0f psi".format(asPsi())
+    fun string(unit: PressureUnit) = when (unit) {
+        KILO_PASCAL -> "%.0f kpa".format(kpa)
+        BAR -> "%.2f bar".format(asBar())
+        PSI -> "%.0f psi".format(asPsi())
     }
 
     fun hasPressure() = kpa > 0f
@@ -49,18 +51,6 @@ value class Pressure(val kpa: Float) : Parcelable {
 
         override fun newArray(size: Int): Array<Pressure?> {
             return arrayOfNulls(size)
-        }
-    }
-
-    enum class Unit {
-        KILO_PASCAL,
-        BAR,
-        PSI;
-
-        fun string() = when (this) {
-            KILO_PASCAL -> "kpa"
-            BAR -> "bar"
-            PSI -> "psi"
         }
     }
 }

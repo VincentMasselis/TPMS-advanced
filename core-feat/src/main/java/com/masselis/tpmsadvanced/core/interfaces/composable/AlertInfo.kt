@@ -17,12 +17,14 @@ import com.masselis.tpmsadvanced.core.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.model.Pressure
 import com.masselis.tpmsadvanced.core.model.Temperature
 import com.masselis.tpmsadvanced.core.model.TyreLocation
+import com.masselis.tpmsadvanced.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.unit.model.TemperatureUnit
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun LowPressureInfo(
     lowPressureStateFlow: StateFlow<Pressure>,
-    pressureUnitFlow: StateFlow<Pressure.Unit>,
+    pressureUnitFlow: StateFlow<PressureUnit>,
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(
@@ -54,7 +56,7 @@ fun TemperatureInfo(
     text: String,
     state: TyreViewModel.State,
     temperatureStateFlow: StateFlow<Temperature>,
-    temperatureUnit: StateFlow<Temperature.Unit>,
+    temperatureUnit: StateFlow<TemperatureUnit>,
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(

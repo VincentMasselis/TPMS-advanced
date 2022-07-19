@@ -3,9 +3,9 @@ package com.masselis.tpmsadvanced.core.interfaces.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.tools.asMutableStateFlow
 import com.masselis.tpmsadvanced.core.usecase.AtmosphereRangeUseCase
-import com.masselis.tpmsadvanced.core.usecase.UnitUseCase
+import com.masselis.tpmsadvanced.uicommon.asMutableStateFlow
+import com.masselis.tpmsadvanced.unit.usecase.UnitUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

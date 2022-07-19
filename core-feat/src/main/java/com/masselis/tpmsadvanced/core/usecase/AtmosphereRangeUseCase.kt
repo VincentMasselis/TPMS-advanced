@@ -8,7 +8,7 @@ import com.masselis.tpmsadvanced.core.model.Pressure
 import com.masselis.tpmsadvanced.core.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.core.model.Temperature
 import com.masselis.tpmsadvanced.core.model.Temperature.CREATOR.celsius
-import com.masselis.tpmsadvanced.core.tools.ObservableStateFlow
+import com.masselis.tpmsadvanced.common.ObservableStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 

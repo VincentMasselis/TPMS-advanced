@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.core.tools
+package com.masselis.tpmsadvanced.common
 
 import kotlinx.coroutines.flow.MutableStateFlow
 
