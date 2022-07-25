@@ -25,16 +25,15 @@ import com.masselis.tpmsadvanced.uicommon.OnLifecycleEvent
 @Composable
 fun Preconditions(
     ready: @Composable () -> Unit
-) = Preconditions(
-    ready,
-    viewModel { coreComponent.preconditionsViewModel.build(createSavedStateHandle()) },
-)
+) = InternalPreconditions(ready)
 
 @Suppress("NAME_SHADOWING")
 @Composable
-internal fun Preconditions(
+internal fun InternalPreconditions(
     ready: @Composable () -> Unit,
-    viewModel: PreconditionsViewModel
+    viewModel: PreconditionsViewModel = viewModel {
+        coreComponent.preconditionsViewModel.build(createSavedStateHandle())
+    }
 ) {
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME)

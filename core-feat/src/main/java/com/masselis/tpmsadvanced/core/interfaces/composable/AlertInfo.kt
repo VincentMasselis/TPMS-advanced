@@ -22,7 +22,7 @@ import com.masselis.tpmsadvanced.unit.model.TemperatureUnit
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun LowPressureInfo(
+internal fun LowPressureInfo(
     lowPressureStateFlow: StateFlow<Pressure>,
     pressureUnitFlow: StateFlow<PressureUnit>,
     onDismissRequest: () -> Unit

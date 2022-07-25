@@ -18,8 +18,37 @@ subprojects {
                 if (plugins.hasPlugin("org.jetbrains.kotlin.android"))
                     kotlinOptions {
                         jvmTarget = '1.8'
-                        freeCompilerArgs += [/*'-Xexplicit-api=strict', */'-opt-in=kotlin.RequiresOptIn']
+                        freeCompilerArgs += [/*'-Xexplicit-api=strict', */ '-opt-in=kotlin.RequiresOptIn']
                     }
+                if (buildFeatures.compose == true) {
+                    def metricsDir = project.buildDir.absolutePath + "/compose_metrics"
+                    kotlinOptions {
+                        freeCompilerArgs += [
+                                "-P",
+                                "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + metricsDir
+                        ]
+                        freeCompilerArgs += [
+                                "-P",
+                                "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + metricsDir
+                        ]
+                    }
+                    tasks.whenTaskAdded {
+                        if (it.name == "compileReleaseKotlin")
+                            task composeReport2Html(type: Exec, dependsOn: compileReleaseKotlin) {
+                                inputs.dir(metricsDir)
+                                def outputDir = file("${project.buildDir}/compose_report")
+                                outputs.dir(outputDir)
+                                commandLine 'java'
+                                args "-jar", "${rootProject.projectDir}/composeReport2Html.jar",
+                                        "-app", project.name,
+                                        "-overallStatsReport", "$metricsDir/${project.name}_release-module.json",
+                                        "-detailedStatsMetrics", "$metricsDir/${project.name}_release-composables.csv",
+                                        "-composableMetrics", "$metricsDir/${project.name}_release-composables.txt",
+                                        "-classMetrics", "$metricsDir/${project.name}_release-classes.txt",
+                                        "-o", "$outputDir"
+                            }
+                    }
+                }
             }
         if (plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
             dependencies {

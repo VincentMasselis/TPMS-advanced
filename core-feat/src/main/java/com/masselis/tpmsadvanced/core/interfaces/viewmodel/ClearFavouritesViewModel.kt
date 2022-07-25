@@ -15,7 +15,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 
-class ClearFavouritesViewModel @AssistedInject constructor(
+internal class ClearFavouritesViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

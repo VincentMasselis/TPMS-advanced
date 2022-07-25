@@ -12,9 +12,8 @@ import com.masselis.tpmsadvanced.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.unit.model.TemperatureUnit
 
 @Composable
-public fun Units(
-    modifier: Modifier = Modifier
-) = Units(modifier, viewModel { unitComponent.unitsViewModel })
+public fun Units(modifier: Modifier = Modifier) =
+    Units(modifier, viewModel { unitComponent.unitsViewModel })
 
 @Suppress("DEPRECATION")
 @Composable
