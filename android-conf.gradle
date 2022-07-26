@@ -33,10 +33,10 @@ subprojects {
                         ]
                     }
                     tasks.whenTaskAdded {
-                        if (it.name == "compileReleaseKotlin")
+                        if (it.name == "compileReleaseKotlin") {
+                            def outputDir = file("${project.buildDir}/compose_reports")
                             task composeReport2Html(type: Exec, dependsOn: compileReleaseKotlin) {
                                 inputs.dir(metricsDir)
-                                def outputDir = file("${project.buildDir}/compose_report")
                                 outputs.dir(outputDir)
                                 commandLine 'java'
                                 args "-jar", "${rootProject.projectDir}/composeReport2Html.jar",
@@ -47,6 +47,13 @@ subprojects {
                                         "-classMetrics", "$metricsDir/${project.name}_release-classes.txt",
                                         "-o", "$outputDir"
                             }
+                            task exportComposeReport(type: Copy, dependsOn: composeReport2Html) {
+                                from(outputDir) {
+                                    rename 'index.html', "${project.name}.html"
+                                }
+                                into "${rootProject.buildDir}/compose_reports"
+                            }
+                        }
                     }
                 }
             }

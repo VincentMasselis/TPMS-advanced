@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - develop
+  pull_request:
+    types:
+      - opened
+    branches:
+      - develop
 
 concurrency:
   group: ${{ github.ref }}
@@ -28,7 +33,12 @@ jobs:
       - name: Build everything and run tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: build exportComposeReport
+      - name: Share compose reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: Compose-reports
+          path: build/compose_reports
       - name: Publish SDK Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
