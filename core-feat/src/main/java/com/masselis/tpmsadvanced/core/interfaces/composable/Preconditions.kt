@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.core.interfaces.composable
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
@@ -53,6 +54,7 @@ internal fun InternalPreconditions(
     }
 }
 
+@SuppressLint("MissingPermission")
 @Composable
 private fun ChipIsOff(
     modifier: Modifier = Modifier
