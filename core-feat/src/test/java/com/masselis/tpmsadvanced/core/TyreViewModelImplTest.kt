@@ -2,15 +2,15 @@ package com.masselis.tpmsadvanced.core
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
-import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.interfaces.viewmodel.TyreViewModelImpl
-import com.masselis.tpmsadvanced.model.Pressure
-import com.masselis.tpmsadvanced.model.Pressure.CREATOR.bar
-import com.masselis.tpmsadvanced.model.Temperature
-import com.masselis.tpmsadvanced.model.Temperature.CREATOR.celsius
-import com.masselis.tpmsadvanced.model.TyreAtmosphere
-import com.masselis.tpmsadvanced.usecase.AtmosphereRangeUseCase
-import com.masselis.tpmsadvanced.usecase.TyreAtmosphereUseCase
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.TyreViewModel.State
+import com.masselis.tpmsadvanced.core.interfaces.viewmodel.TyreViewModelImpl
+import com.masselis.tpmsadvanced.core.model.Pressure
+import com.masselis.tpmsadvanced.core.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.core.model.Temperature
+import com.masselis.tpmsadvanced.core.model.Temperature.CREATOR.celsius
+import com.masselis.tpmsadvanced.core.model.TyreAtmosphere
+import com.masselis.tpmsadvanced.core.usecase.AtmosphereRangeUseCase
+import com.masselis.tpmsadvanced.core.usecase.TyreAtmosphereUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

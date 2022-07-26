@@ -37,15 +37,17 @@ jobs:
         if: always()
         with:
           files: "test-results/**/*.xml"
-      - name: Compose reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: Compose-reports
-          path: build/compose_reports
       - name: Lint reports
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: Lint-reports
           path: "**/build/reports/lint-*.html"
+      - name: Compose reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: Compose-reports
+          path: build/compose_reports
 
 
