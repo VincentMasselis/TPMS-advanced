@@ -21,19 +21,19 @@ subprojects {
                         freeCompilerArgs += [/*'-Xexplicit-api=strict', */ '-opt-in=kotlin.RequiresOptIn']
                     }
                 if (buildFeatures.compose == true) {
-                    def metricsDir = project.buildDir.absolutePath + "/compose_metrics"
-                    kotlinOptions {
-                        freeCompilerArgs += [
-                                "-P",
-                                "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + metricsDir
-                        ]
-                        freeCompilerArgs += [
-                                "-P",
-                                "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + metricsDir
-                        ]
-                    }
                     tasks.whenTaskAdded {
                         if (it.name == "compileReleaseKotlin") {
+                            def metricsDir = project.buildDir.absolutePath + "/compose_metrics"
+                            compileReleaseKotlin.kotlinOptions {
+                                freeCompilerArgs += [
+                                        "-P",
+                                        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + metricsDir
+                                ]
+                                freeCompilerArgs += [
+                                        "-P",
+                                        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + metricsDir
+                                ]
+                            }
                             def outputDir = file("${project.buildDir}/compose_reports")
                             task composeReport2Html(type: Exec, dependsOn: compileReleaseKotlin) {
                                 group = 'verification'
