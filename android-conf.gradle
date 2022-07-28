@@ -36,6 +36,7 @@ subprojects {
                         if (it.name == "compileReleaseKotlin") {
                             def outputDir = file("${project.buildDir}/compose_reports")
                             task composeReport2Html(type: Exec, dependsOn: compileReleaseKotlin) {
+                                group = 'verification'
                                 inputs.dir(metricsDir)
                                 outputs.dir(outputDir)
                                 commandLine 'java'
@@ -48,6 +49,7 @@ subprojects {
                                         "-o", "$outputDir"
                             }
                             task exportComposeReport(type: Copy, dependsOn: composeReport2Html) {
+                                group = 'verification'
                                 from(outputDir) {
                                     rename 'index.html', "${project.name}.html"
                                 }
