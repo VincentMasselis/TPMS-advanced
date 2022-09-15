@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: Lint-reports
+          name: Detekt-reports
           path: "**/build/reports/detekt/*.html"
       - name: Compose reports
         uses: actions/upload-artifact@v3
