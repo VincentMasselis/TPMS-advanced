@@ -1,0 +1,14 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+dependencies {
+    // Tooling support (Previews, etc.)
+    debugApi "androidx.compose.ui:ui-tooling:$composeVersion"
+    debugApi "androidx.compose.ui:ui-test-manifest:$composeVersion"
+
+    debugApi 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
+    debugApi('org.mockito.kotlin:mockito-kotlin:4.0.0') {
+        exclude group: 'org.mockito', module: 'mockito-core'
+    }
+}

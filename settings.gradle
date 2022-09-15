@@ -13,5 +13,15 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "TPMS Advanced"
-include ':app'
-include ':core'
+include ':core:common'
+include ':core:ui'
+include ':core:debug-ui'
+include ':feature:unit'
+include ':feature:core'
+include ':feature:qrcode'
+include ':app:phone'
+include ':core:test'
+include ':core:android-test'
+include ':data:record'
+include ':data:favourite'
+include ':data:unit'

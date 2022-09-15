@@ -1,0 +1,76 @@
+subprojects {
+    apply plugin: 'io.gitlab.arturbosch.detekt'
+    detekt {
+        buildUponDefaultConfig = true
+        config = files("${rootProject.rootDir}/gradle/detekt-config.yml")
+    }
+    dependencies {
+        detektPlugins "com.twitter.compose.rules:detekt:0.0.9"
+    }
+    afterEvaluate {
+        if (plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
+            android {
+                compileSdk 33
+                defaultConfig {
+                    minSdk 27
+                    targetSdk 33
+
+                    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+                    if (plugins.hasPlugin("com.android.library"))
+                        consumerProguardFiles "consumer-rules.pro"
+                }
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_1_8
+                    targetCompatibility JavaVersion.VERSION_1_8
+                }
+                if (plugins.hasPlugin("org.jetbrains.kotlin.android"))
+                    kotlinOptions {
+                        jvmTarget = '1.8'
+                        freeCompilerArgs += ['-Xexplicit-api=strict', '-opt-in=kotlin.RequiresOptIn']
+                    }
+                if (buildFeatures.compose == true) {
+                    tasks.whenTaskAdded {
+                        if (it.name == "compileReleaseKotlin") {
+                            def metricsDir = project.buildDir.absolutePath + "/compose_metrics"
+                            compileReleaseKotlin.kotlinOptions {
+                                freeCompilerArgs += [
+                                        "-P",
+                                        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + metricsDir
+                                ]
+                                freeCompilerArgs += [
+                                        "-P",
+                                        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + metricsDir
+                                ]
+                            }
+                            def outputDir = file("${project.buildDir}/compose_reports")
+                            task composeReport2Html(type: JavaExec, dependsOn: compileReleaseKotlin) {
+                                group = 'verification'
+                                inputs.dir(metricsDir)
+                                outputs.dir(outputDir)
+                                classpath = files("${rootProject.projectDir}/gradle/lib/composeReport2Html.jar")
+                                args "-app", project.name,
+                                        "-overallStatsReport", "$metricsDir/${project.name}_release-module.json",
+                                        "-detailedStatsMetrics", "$metricsDir/${project.name}_release-composables.csv",
+                                        "-composableMetrics", "$metricsDir/${project.name}_release-composables.txt",
+                                        "-classMetrics", "$metricsDir/${project.name}_release-classes.txt",
+                                        "-o", "$outputDir"
+                            }
+                            task exportComposeReport(type: Copy, dependsOn: composeReport2Html) {
+                                group = 'verification'
+                                from(outputDir) {
+                                    rename 'index.html', "${project.name}.html"
+                                }
+                                into "${rootProject.buildDir}/compose_reports"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
+            dependencies {
+                implementation "com.google.dagger:dagger:$daggerVersion"
+                kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+            }
+    }
+}
