@@ -4,6 +4,10 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -12,9 +16,12 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.createSavedStateHandle
@@ -22,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.OnLifecycleEvent
+import com.masselis.tpmsadvanced.qrcode.R
 import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel.State
 
 @Composable
@@ -78,10 +86,13 @@ private fun Preview(
             }
         }
 
-    AndroidView(
-        { context -> PreviewView(context).apply { this.controller = controller } },
-        modifier = modifier
-    )
+    Box(modifier) {
+        AndroidView(
+            { context -> PreviewView(context).apply { this.controller = controller } },
+            Modifier.fillMaxSize()
+        )
+        QrCodeOverlay(Modifier.fillMaxSize())
+    }
 
     val viewModel = remember { qrCodeComponent.qrCodeViewModel.build(controller) }
     val state by viewModel.stateFlow.collectAsState()
@@ -107,5 +118,21 @@ private fun Preview(
         QRCodeViewModel.State.Leave ->
             LocalHomeNavController.current.popBackStack()
 
+    }
+}
+
+@Composable
+private fun QrCodeOverlay(
+    modifier: Modifier = Modifier
+) {
+    Box(modifier) {
+        Image(
+            painterResource(id = R.drawable.qr_core_sample),
+            null,
+            Modifier
+                .fillMaxWidth(0.7f)
+                .alpha(.4f)
+                .align(Alignment.Center)
+        )
     }
 }
