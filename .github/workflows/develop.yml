@@ -32,17 +32,23 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build exportComposeReport
-      - name: Publish SDK Unit Test Results
+      - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
-          files: "test-results/**/*.xml"
+          files: "**/build/test-results/**/*.xml"
       - name: Lint reports
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: Lint-reports
           path: "**/build/reports/lint-*.html"
+      - name: Detekt reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: Lint-reports
+          path: "**/build/reports/detekt/*.html"
       - name: Compose reports
         uses: actions/upload-artifact@v3
         if: always()

@@ -18,6 +18,7 @@ plugins {
     id 'com.google.gms.google-services' version '4.3.13' apply false
     id 'com.google.firebase.crashlytics' version '2.9.1' apply false
     id 'com.github.triplet.play' version '3.7.0' apply false
+    id "io.gitlab.arturbosch.detekt" version "1.21.0"
 }
 
 task clean(type: Delete) {
@@ -31,5 +32,5 @@ try {
     ext.isDecrypted = false
 }
 
-apply from: 'gittag.gradle'
-apply from: 'android-conf.gradle'
+apply from: 'gradle/gittag.gradle'
+apply from: 'gradle/android-conf.gradle'
