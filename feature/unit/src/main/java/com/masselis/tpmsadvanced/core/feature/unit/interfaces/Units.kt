@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.unit.ioc.featureUnitComponent
 import com.masselis.tpmsadvanced.core.ui.EnumDropdown
+import java.util.*
 
 @Composable
 public fun Units(modifier: Modifier = Modifier): Unit =
@@ -26,13 +27,13 @@ internal fun Units(
     ) {
         EnumDropdown(
             label = { Text("Pressure in") },
-            stringOf = { it.string().capitalize() },
+            stringOf = { it.string().capitalize(Locale.ROOT) },
             mutableStateFlow = viewModel.pressure,
             modifier = Modifier.weight(1f),
         )
         EnumDropdown(
             label = { Text(text = "Temperature in") },
-            stringOf = { it.string().capitalize() },
+            stringOf = { it.string().capitalize(Locale.ROOT) },
             mutableStateFlow = viewModel.temperature,
             modifier = Modifier.weight(1f),
         )

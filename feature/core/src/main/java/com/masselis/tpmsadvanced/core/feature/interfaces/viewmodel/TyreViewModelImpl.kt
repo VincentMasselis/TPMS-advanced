@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import java.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -42,7 +43,7 @@ internal class TyreViewModelImpl @AssistedInject constructor(
     interface Factory {
         fun build(
             savedStateHandle: SavedStateHandle,
-            obsoleteTimeout: Duration = 2.minutes.toJavaDuration()
+            obsoleteTimeout: Duration = 5.minutes.toJavaDuration()
         ): TyreViewModelImpl
     }
 
@@ -55,7 +56,9 @@ internal class TyreViewModelImpl @AssistedInject constructor(
 
     init {
         combine(
-            atmosphereUseCase.listen(),
+            atmosphereUseCase.listen()
+                .onEach { savedStateHandle[LAST_KNOWN] = it }
+                .onStart { savedStateHandle.get<TyreAtmosphere>(LAST_KNOWN)?.also { emit(it) } },
             rangeUseCase.highTempFlow,
             rangeUseCase.normalTempFlow,
             rangeUseCase.lowTempFlow,
@@ -102,8 +105,7 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                     .also { delay(it) }
                 emit(State.NotDetected)
             }
-        }
-            .onEach { state.value = it }
+        }.onEach { state.value = it }
             .launchIn(viewModelScope)
     }
 
@@ -114,4 +116,8 @@ internal class TyreViewModelImpl @AssistedInject constructor(
         val lowTemp: Temperature,
         val lowPressure: Pressure
     )
+
+    companion object {
+        private const val LAST_KNOWN = "LAST_KNOWN"
+    }
 }

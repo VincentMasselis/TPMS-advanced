@@ -11,6 +11,8 @@ import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
+import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -19,13 +21,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.parcelize.Parcelize
 
 internal class TyreStatsViewModel @AssistedInject constructor(
     tyreAtmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: AtmosphereRangePreferences,
     unitPreferences: UnitPreferences,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     @AssistedFactory
@@ -42,18 +45,18 @@ internal class TyreStatsViewModel @AssistedInject constructor(
         @Parcelize
         data class Normal(
             val pressure: Pressure,
-            val pressureUnit: com.masselis.tpmsadvanced.data.unit.model.PressureUnit,
+            val pressureUnit: PressureUnit,
             val temperature: Temperature,
-            val temperatureUnit: com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit,
+            val temperatureUnit: TemperatureUnit,
         ) : State()
 
         // Show the read values from the tyre in red
         @Parcelize
         data class Alerting(
             val pressure: Pressure,
-            val pressureUnit: com.masselis.tpmsadvanced.data.unit.model.PressureUnit,
+            val pressureUnit: PressureUnit,
             val temperature: Temperature,
-            val temperatureUnit: com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit,
+            val temperatureUnit: TemperatureUnit,
         ) : State()
     }
 
@@ -64,7 +67,9 @@ internal class TyreStatsViewModel @AssistedInject constructor(
 
     init {
         combine(
-            tyreAtmosphereUseCase.listen(),
+            tyreAtmosphereUseCase.listen()
+                .onEach { savedStateHandle[LAST_KNOWN] = it }
+                .onStart { savedStateHandle.get<TyreAtmosphere>(LAST_KNOWN)?.also { emit(it) } },
             rangeUseCase.highTempFlow,
             unitPreferences.pressure.asStateFlow(),
             unitPreferences.temperature.asStateFlow(),
@@ -101,7 +106,11 @@ internal class TyreStatsViewModel @AssistedInject constructor(
     private data class Data(
         val atmosphere: TyreAtmosphere,
         val highTemp: Temperature,
-        val pressureUnit: com.masselis.tpmsadvanced.data.unit.model.PressureUnit,
-        val temperature: com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+        val pressureUnit: PressureUnit,
+        val temperature: TemperatureUnit
     )
+
+    companion object {
+        private const val LAST_KNOWN = "LAST_KNOWN"
+    }
 }
