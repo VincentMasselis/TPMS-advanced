@@ -71,7 +71,6 @@ internal fun QrCodeScan(
 
 @Suppress("NAME_SHADOWING")
 @Composable
-@Stable
 private fun Preview(
     modifier: Modifier = Modifier,
     cameraSelector: CameraSelector = DEFAULT_BACK_CAMERA,

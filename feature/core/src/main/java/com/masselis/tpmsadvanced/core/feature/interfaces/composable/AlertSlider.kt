@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,22 +26,24 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.fahrenhei
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun LowPressureSlider(
-    currentValue: Pressure,
-    unit: PressureUnit,
+internal fun PressureRangeSlider(
     onInfo: () -> Unit,
-    onValue: (Pressure) -> Unit,
+    pressures: ClosedFloatingPointRange<Pressure>,
+    unit: PressureUnit,
+    valueRange: ClosedFloatingPointRange<Pressure>,
     modifier: Modifier = Modifier,
+    onValue: (ClosedFloatingPointRange<Pressure>) -> Unit,
 ) {
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "Low pressure: ",
+                text = "Expected pressure range: ",
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = currentValue.string(unit),
+                text = "${pressures.start.string(unit)} to ${pressures.endInclusive.string(unit)}",
                 fontWeight = FontWeight.Bold,
             )
             IconButton(
@@ -54,23 +58,23 @@ public fun LowPressureSlider(
         }
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                0.5f.bar.string(unit),
+                valueRange.start.string(unit),
                 Modifier.align(Alignment.TopStart)
             )
             Text(
-                5f.bar.string(unit),
+                valueRange.endInclusive.string(unit),
                 Modifier.align(Alignment.TopEnd)
             )
         }
-        Slider(
-            value = currentValue.convert(unit),
-            valueRange = 0.5f.bar.convert(unit)..5f.bar.convert(unit),
+        RangeSlider(
+            value = pressures.start.convert(unit)..pressures.endInclusive.convert(unit),
+            valueRange = valueRange.start.convert(unit)..valueRange.endInclusive.convert(unit),
             onValueChange = {
                 onValue(
                     when (unit) {
-                        PressureUnit.KILO_PASCAL -> it.kpa
-                        PressureUnit.BAR -> it.bar
-                        PressureUnit.PSI -> it.psi
+                        PressureUnit.KILO_PASCAL -> it.start.kpa..it.endInclusive.kpa
+                        PressureUnit.BAR -> it.start.bar..it.endInclusive.bar
+                        PressureUnit.PSI -> it.start.psi..it.endInclusive.psi
                     }
                 )
             }
@@ -85,7 +89,8 @@ internal fun TemperatureSlider(
     temperature: Temperature,
     unit: TemperatureUnit,
     onValue: (Temperature) -> Unit,
-    valueRange: ClosedFloatingPointRange<Temperature>
+    valueRange: ClosedFloatingPointRange<Temperature>,
+    modifier: Modifier = Modifier,
 ) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {

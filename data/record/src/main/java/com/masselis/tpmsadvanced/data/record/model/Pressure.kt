@@ -10,7 +10,7 @@ import com.masselis.tpmsadvanced.data.unit.model.PressureUnit.PSI
 /* Cannot use @Parcelize here: https://issuetracker.google.com/issues/177856519 */
 @Suppress("MagicNumber")
 @JvmInline
-public value class Pressure(public val kpa: Float) : Parcelable {
+public value class Pressure(public val kpa: Float) : Parcelable, Comparable<Pressure> {
 
     public fun asBar(): Float = convert(BAR)
 
@@ -30,7 +30,17 @@ public value class Pressure(public val kpa: Float) : Parcelable {
 
     public fun hasPressure(): Boolean = kpa > 0f
 
-    public operator fun compareTo(other: Pressure): Int = kpa.compareTo(other.kpa)
+    override operator fun compareTo(other: Pressure): Int = kpa.compareTo(other.kpa)
+
+    public operator fun rangeTo(other: Pressure): ClosedFloatingPointRange<Pressure> =
+        Range(this, other)
+
+    private class Range(
+        override val start: Pressure,
+        override val endInclusive: Pressure
+    ) : ClosedFloatingPointRange<Pressure> {
+        override fun lessThanOrEquals(a: Pressure, b: Pressure): Boolean = a.kpa <= b.kpa
+    }
 
     private constructor(parcel: Parcel) : this(parcel.readFloat())
 

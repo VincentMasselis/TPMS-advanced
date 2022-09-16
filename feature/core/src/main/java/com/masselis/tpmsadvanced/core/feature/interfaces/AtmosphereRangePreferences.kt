@@ -31,6 +31,7 @@ internal class AtmosphereRangePreferences @Inject constructor() {
         }
 
     val lowPressureFlow = pressureSharedPreference(LOW_PRESSURE_KEY, 1f.bar)
+    val highPressureFlow = pressureSharedPreference(HIGH_PRESSURE_KEY, 3f.bar)
 
     @Suppress("SameParameterValue")
     private fun pressureSharedPreference(key: String, defaultValue: Pressure) = observableStateFlow(
@@ -43,6 +44,8 @@ internal class AtmosphereRangePreferences @Inject constructor() {
         private const val HIGH_TEMP_KEY = "HIGH_TEMP_KEY"
         private const val NORMAL_TEMP_KEY = "NORMAL_TEMP_KEY"
         private const val LOW_TEMP_KEY = "LOW_TEMP_KEY"
+
         private const val LOW_PRESSURE_KEY = "LOW_PRESSURE_KEY"
+        private const val HIGH_PRESSURE_KEY = "HIGH_PRESSURE_KEY"
     }
 }

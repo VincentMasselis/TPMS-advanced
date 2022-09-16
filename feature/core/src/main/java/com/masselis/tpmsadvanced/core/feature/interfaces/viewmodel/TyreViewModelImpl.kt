@@ -62,15 +62,25 @@ internal class TyreViewModelImpl @AssistedInject constructor(
             rangeUseCase.highTempFlow,
             rangeUseCase.normalTempFlow,
             rangeUseCase.lowTempFlow,
-            rangeUseCase.lowPressureFlow
-        ) { tyreAtmosphere, highTemp, normalTemp, lowTemp, lowPressure ->
-            Data(tyreAtmosphere, highTemp, normalTemp, lowTemp, lowPressure)
-        }.flatMapLatest { (atmosphere, highTemp, normalTemp, lowTemp, lowPressure) ->
+            rangeUseCase.lowPressureFlow,
+            rangeUseCase.highPressureFlow,
+        ) { values ->
+            @Suppress("MagicNumber")
+            Data(
+                values[0] as TyreAtmosphere,
+                values[1] as Temperature,
+                values[2] as Temperature,
+                values[3] as Temperature,
+                values[4] as Pressure,
+                values[5] as Pressure
+            )
+        }.flatMapLatest { (atmosphere, highTemp, normalTemp, lowTemp, lowPressure, highPressure) ->
             flow {
                 emit(
-                    if (atmosphere.pressure.hasPressure().not()
-                        || atmosphere.pressure < lowPressure
-                    ) State.Alerting
+                    if (atmosphere.pressure.hasPressure().not() ||
+                        atmosphere.pressure !in lowPressure..highPressure
+                    )
+                        State.Alerting
                     else
                         when (atmosphere.temperature) {
                             in Temperature(Float.MIN_VALUE)..lowTemp ->
@@ -114,7 +124,8 @@ internal class TyreViewModelImpl @AssistedInject constructor(
         val highTemp: Temperature,
         val normalTemp: Temperature,
         val lowTemp: Temperature,
-        val lowPressure: Pressure
+        val lowPressure: Pressure,
+        val highPressure: Pressure
     )
 
     companion object {

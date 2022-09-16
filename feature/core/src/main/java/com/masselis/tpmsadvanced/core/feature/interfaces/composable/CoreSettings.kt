@@ -22,12 +22,13 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.unit.interfaces.Units
+import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 
 public fun LazyListScope.coreSettings() {
     item { Units() }
     separator()
-    item { LowPressure() }
+    item { PressureRange() }
     separator()
     item { HighTemp() }
     item { NormalTemp() }
@@ -37,22 +38,26 @@ public fun LazyListScope.coreSettings() {
 }
 
 @Composable
-private fun LowPressure(
+private fun PressureRange(
     viewModel: SettingsViewModel = viewModel {
         featureCoreComponent.settingsViewModel.build(createSavedStateHandle())
     }
 ) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
     val lowPressure by viewModel.lowPressure.collectAsState()
-    val pressureUnit by viewModel.pressureUnit.collectAsState()
-    LowPressureSlider(
-        lowPressure,
-        pressureUnit,
-        onInfo = { showLowPressureDialog = true },
-        onValue = { viewModel.lowPressure.value = it }
-    )
+    val highPressure by viewModel.highPressure.collectAsState()
+    val unit by viewModel.pressureUnit.collectAsState()
+    PressureRangeSlider(
+        { showLowPressureDialog = true },
+        lowPressure..highPressure,
+        unit,
+        0.5f.bar..5f.bar,
+    ) { range ->
+        viewModel.lowPressure.value = range.start
+        viewModel.highPressure.value = range.endInclusive
+    }
     if (showLowPressureDialog)
-        LowPressureInfo {
+        PressureInfo(lowPressure..highPressure, unit) {
             showLowPressureDialog = false
         }
 }
@@ -73,7 +78,7 @@ private fun HighTemp(
         highTemp,
         unit,
         { viewModel.highTemp.value = it },
-        valueRange = normalTemp..(150f.celsius),
+        normalTemp..(150f.celsius),
     )
     if (showHighTempDialog)
         TemperatureInfo(
@@ -101,7 +106,7 @@ private fun NormalTemp(
         normalTemp,
         unit,
         { viewModel.normalTemp.value = it },
-        valueRange = lowTemp..highTemp
+        lowTemp..highTemp
     )
     if (showNormalTempDialog)
         TemperatureInfo(
@@ -128,7 +133,7 @@ private fun LowTemp(
         lowTemp,
         unit,
         { viewModel.lowTemp.value = it },
-        valueRange = 5f.celsius..normalTemp
+        5f.celsius..normalTemp
     )
     if (showLowTempDialog) TemperatureInfo(
         text = "When the temperature is close to %s, the tyre is colored in blue",

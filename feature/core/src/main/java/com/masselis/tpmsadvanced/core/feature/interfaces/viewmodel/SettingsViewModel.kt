@@ -32,6 +32,10 @@ internal class SettingsViewModel @AssistedInject constructor(
         .getLiveData("LOW_PRESSURE", atmosphereRangePreferences.lowPressureFlow.value)
         .asMutableStateFlow()
 
+    val highPressure = savedStateHandle
+        .getLiveData("HIGH_PRESSURE", atmosphereRangePreferences.highPressureFlow.value)
+        .asMutableStateFlow()
+
     val pressureUnit = unitPreferences.pressure.asStateFlow()
 
     val highTemp = savedStateHandle
@@ -52,6 +56,11 @@ internal class SettingsViewModel @AssistedInject constructor(
         lowPressure
             .debounce(100.milliseconds)
             .onEach { atmosphereRangePreferences.lowPressureFlow.value = it }
+            .launchIn(viewModelScope)
+
+        highPressure
+            .debounce(100.milliseconds)
+            .onEach { atmosphereRangePreferences.highPressureFlow.value = it }
             .launchIn(viewModelScope)
 
         highTemp
