@@ -92,7 +92,7 @@ internal fun TemperatureSlider(
     valueRange: ClosedFloatingPointRange<Temperature>,
     modifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "$title ",
