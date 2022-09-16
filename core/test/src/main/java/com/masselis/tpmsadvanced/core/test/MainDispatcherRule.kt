@@ -1,26 +1,24 @@
 package com.masselis.tpmsadvanced.core.test
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
-import kotlin.coroutines.ContinuationInterceptor
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@Suppress("DEPRECATION")
-public class MainCoroutineRule : TestWatcher(), TestCoroutineScope by TestCoroutineScope() {
-
+public class MainDispatcherRule(
+    private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(),
+) : TestWatcher() {
     override fun starting(description: Description) {
-        super.starting(description)
-        Dispatchers.setMain(this.coroutineContext[ContinuationInterceptor] as CoroutineDispatcher)
+        Dispatchers.setMain(testDispatcher)
     }
 
     override fun finished(description: Description) {
-        super.finished(description)
         Dispatchers.resetMain()
     }
 }
+

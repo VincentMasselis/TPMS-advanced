@@ -7,12 +7,14 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.AtmosphereRangePreferen
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
-import com.masselis.tpmsadvanced.core.test.MainCoroutineRule
+import com.masselis.tpmsadvanced.core.test.MainDispatcherRule
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,9 +25,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
@@ -34,10 +33,10 @@ import kotlin.time.toJavaDuration
 internal class TyreViewModelImplTest {
 
     @get:Rule
-    val mainCoroutineRule = MainCoroutineRule()
+    val mainDispatcherRule = MainDispatcherRule()
 
     @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
+    val instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var tyreAtmosphereUseCase: TyreAtmosphereUseCase
     private lateinit var atmosphereRangePreferences: AtmosphereRangePreferences
@@ -45,14 +44,14 @@ internal class TyreViewModelImplTest {
 
     @Before
     fun setup() {
-        tyreAtmosphereUseCase = mock {
-            on { mock.listen() } doReturn emptyFlow()
+        tyreAtmosphereUseCase = mockk {
+            every { listen() } returns emptyFlow()
         }
-        atmosphereRangePreferences = mock {
-            on { mock.lowTempFlow } doReturn MutableStateFlow(20f.celsius)
-            on { mock.normalTempFlow } doReturn MutableStateFlow(45f.celsius)
-            on { mock.highTempFlow } doReturn MutableStateFlow(90f.celsius)
-            on { mock.lowPressureFlow } doReturn MutableStateFlow(1f.bar)
+        atmosphereRangePreferences = mockk {
+            every { lowTempFlow } returns MutableStateFlow(20f.celsius)
+            every { normalTempFlow } returns MutableStateFlow(45f.celsius)
+            every { highTempFlow } returns MutableStateFlow(90f.celsius)
+            every { lowPressureFlow } returns MutableStateFlow(1f.bar)
         }
         savedStateHandle = SavedStateHandle()
     }
@@ -65,7 +64,7 @@ internal class TyreViewModelImplTest {
     )
 
     private fun setAtmosphere(pressure: Pressure, temperature: Temperature) =
-        whenever(tyreAtmosphereUseCase.listen()).doReturn(
+        every { tyreAtmosphereUseCase.listen() }.returns(
             flowOf(TyreAtmosphere(now(), pressure, temperature))
         )
 
