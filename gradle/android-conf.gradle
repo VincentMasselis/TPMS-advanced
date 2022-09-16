@@ -58,7 +58,7 @@ subprojects {
                             task exportComposeReport(type: Copy, dependsOn: composeReport2Html) {
                                 group = 'verification'
                                 from(outputDir) {
-                                    rename 'index.html', "${project.path}.html"
+                                    rename 'index.html', "${project.path.replaceAll(':','_')}.html"
                                 }
                                 into "${rootProject.buildDir}/compose_reports"
                             }
