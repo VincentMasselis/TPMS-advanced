@@ -21,6 +21,7 @@ dependencies {
 
     api "androidx.compose.ui:ui:$composeVersion"
     api "androidx.compose.ui:ui-tooling-preview:$composeVersion"
+    api "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     api "androidx.compose.foundation:foundation:$composeVersion"
     // Material Design

@@ -11,8 +11,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -25,18 +23,15 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.fahrenheit
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 public fun LowPressureSlider(
+    currentValue: Pressure,
+    unit: PressureUnit,
     onInfo: () -> Unit,
-    mutableStateFlow: MutableStateFlow<Pressure>,
-    unitFlow: StateFlow<PressureUnit>,
+    onValue: (Pressure) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val pressure by mutableStateFlow.collectAsState()
-    val unit by unitFlow.collectAsState()
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -44,7 +39,7 @@ public fun LowPressureSlider(
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = pressure.string(unit),
+                text = currentValue.string(unit),
                 fontWeight = FontWeight.Bold,
             )
             IconButton(
@@ -68,14 +63,16 @@ public fun LowPressureSlider(
             )
         }
         Slider(
-            value = pressure.convert(unit),
+            value = currentValue.convert(unit),
             valueRange = 0.5f.bar.convert(unit)..5f.bar.convert(unit),
             onValueChange = {
-                mutableStateFlow.value = when (unit) {
-                    PressureUnit.KILO_PASCAL -> it.kpa
-                    PressureUnit.BAR -> it.bar
-                    PressureUnit.PSI -> it.psi
-                }
+                onValue(
+                    when (unit) {
+                        PressureUnit.KILO_PASCAL -> it.kpa
+                        PressureUnit.BAR -> it.bar
+                        PressureUnit.PSI -> it.psi
+                    }
+                )
             }
         )
     }
@@ -85,12 +82,11 @@ public fun LowPressureSlider(
 internal fun TemperatureSlider(
     onInfo: () -> Unit,
     title: String,
-    mutableStateFlow: MutableStateFlow<Temperature>,
-    unitFlow: StateFlow<TemperatureUnit>,
+    temperature: Temperature,
+    unit: TemperatureUnit,
+    onValue: (Temperature) -> Unit,
     valueRange: ClosedFloatingPointRange<Temperature>
 ) {
-    val temp by mutableStateFlow.collectAsState()
-    val unit by unitFlow.collectAsState()
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -98,7 +94,7 @@ internal fun TemperatureSlider(
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = temp.string(unit),
+                text = temperature.string(unit),
                 fontWeight = FontWeight.Bold,
             )
             IconButton(
@@ -122,14 +118,15 @@ internal fun TemperatureSlider(
             )
         }
         Slider(
-            value = temp.convert(unit),
+            value = temperature.convert(unit),
             valueRange = valueRange.start.convert(unit)..valueRange.endInclusive.convert(unit),
             onValueChange = {
-                mutableStateFlow.value =
+                onValue(
                     when (unit) {
                         TemperatureUnit.CELSIUS -> it.celsius
                         TemperatureUnit.FAHRENHEIT -> it.fahrenheit
                     }
+                )
             }
         )
     }

@@ -8,39 +8,41 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 public inline fun <reified T : Enum<T>> EnumDropdown(
     noinline label: @Composable () -> Unit,
+    currentValue: T,
     noinline stringOf: (T) -> String,
-    mutableStateFlow: MutableStateFlow<T>,
+    noinline onValue: (T) -> Unit,
     modifier: Modifier = Modifier,
 ): Unit = EnumDropdown(
     label = label,
     stringOf = stringOf,
-    values = enumValues(),
-    mutableStateFlow = mutableStateFlow,
+    values = persistentSetOf(*enumValues()),
+    currentValue = currentValue,
+    onValue = onValue,
     modifier = modifier,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun <T : Enum<T>> EnumDropdown(
+    values: ImmutableSet<T>,
     label: @Composable () -> Unit,
+    currentValue: T,
     stringOf: (T) -> String,
-    values: Array<T>,
-    mutableStateFlow: MutableStateFlow<T>,
+    onValue: (T) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val currentValue by mutableStateFlow.collectAsState()
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
@@ -62,7 +64,7 @@ public fun <T : Enum<T>> EnumDropdown(
                 DropdownMenuItem(
                     text = { Text(stringOf(value)) },
                     onClick = {
-                        mutableStateFlow.value = value
+                        onValue(value)
                         expanded = false
                     }
                 )

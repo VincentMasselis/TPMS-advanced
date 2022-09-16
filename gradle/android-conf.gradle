@@ -5,7 +5,7 @@ subprojects {
         config = files("${rootProject.rootDir}/gradle/detekt-config.yml")
     }
     dependencies {
-        detektPlugins "com.twitter.compose.rules:detekt:0.0.9"
+        detektPlugins "com.twitter.compose.rules:detekt:0.0.10"
     }
     afterEvaluate {
         if (plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
@@ -48,7 +48,7 @@ subprojects {
                                 inputs.dir(metricsDir)
                                 outputs.dir(outputDir)
                                 classpath = files("${rootProject.projectDir}/gradle/lib/composeReport2Html.jar")
-                                args "-app", project.name,
+                                args "-app", project.path,
                                         "-overallStatsReport", "$metricsDir/${project.name}_release-module.json",
                                         "-detailedStatsMetrics", "$metricsDir/${project.name}_release-composables.csv",
                                         "-composableMetrics", "$metricsDir/${project.name}_release-composables.txt",
@@ -58,7 +58,7 @@ subprojects {
                             task exportComposeReport(type: Copy, dependsOn: composeReport2Html) {
                                 group = 'verification'
                                 from(outputDir) {
-                                    rename 'index.html', "${project.name}.html"
+                                    rename 'index.html', "${project.path}.html"
                                 }
                                 into "${rootProject.buildDir}/compose_reports"
                             }

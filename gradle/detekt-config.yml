@@ -12,6 +12,9 @@ style:
   DestructuringDeclarationWithTooManyEntries:
     # I disagree with https://detekt.dev/docs/rules/style/#destructuringdeclarationwithtoomanyentries
     maxDestructuringEntries: 10
+complexity:
+  LongParameterList:
+    functionThreshold: 10
 TwitterCompose:
   ContentEmitterReturningValues:
     active: true

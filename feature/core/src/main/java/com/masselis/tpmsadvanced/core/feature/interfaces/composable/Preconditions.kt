@@ -26,6 +26,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.OnLifecycleEvent
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 public fun Preconditions(
@@ -52,7 +53,7 @@ internal fun InternalPreconditions(
             @Suppress("MaxLineLength")
             "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
             "Failed to obtain permission, please update this in the app's system settings",
-            missingPermissions = state.permissions,
+            missingPermissions = state.permissions.toImmutableList(),
             modifier = Modifier.fillMaxSize(),
         ) { viewModel.trigger() }
         PreconditionsViewModel.State.Ready -> ready()

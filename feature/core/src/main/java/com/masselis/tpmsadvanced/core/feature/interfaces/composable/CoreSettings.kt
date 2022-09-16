@@ -43,13 +43,16 @@ private fun LowPressure(
     }
 ) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
+    val lowPressure by viewModel.lowPressure.collectAsState()
+    val pressureUnit by viewModel.pressureUnit.collectAsState()
     LowPressureSlider(
-        { showLowPressureDialog = true },
-        viewModel.lowPressure,
-        viewModel.pressureUnit
+        lowPressure,
+        pressureUnit,
+        onInfo = { showLowPressureDialog = true },
+        onValue = { viewModel.lowPressure.value = it }
     )
     if (showLowPressureDialog)
-        LowPressureInfo(viewModel.lowPressure, viewModel.pressureUnit) {
+        LowPressureInfo {
             showLowPressureDialog = false
         }
 }
@@ -61,20 +64,23 @@ private fun HighTemp(
     }
 ) {
     var showHighTempDialog by remember { mutableStateOf(false) }
+    val highTemp by viewModel.highTemp.collectAsState()
     val normalTemp by viewModel.normalTemp.collectAsState()
+    val unit by viewModel.temperatureUnit.collectAsState()
     TemperatureSlider(
         { showHighTempDialog = true },
         "Max temperature:",
-        mutableStateFlow = viewModel.highTemp,
-        unitFlow = viewModel.temperatureUnit,
+        highTemp,
+        unit,
+        { viewModel.highTemp.value = it },
         valueRange = normalTemp..(150f.celsius),
     )
     if (showHighTempDialog)
         TemperatureInfo(
             text = "When the temperature is equals or superior to %s, the tyre starts to blink in red to alert you",
             state = State.Alerting,
-            temperatureStateFlow = viewModel.highTemp,
-            temperatureUnit = viewModel.temperatureUnit,
+            temperature = highTemp,
+            unit = unit,
         ) { showHighTempDialog = false }
 }
 
@@ -86,20 +92,23 @@ private fun NormalTemp(
 ) {
     var showNormalTempDialog by remember { mutableStateOf(false) }
     val lowTemp by viewModel.lowTemp.collectAsState()
+    val normalTemp by viewModel.normalTemp.collectAsState()
     val highTemp by viewModel.highTemp.collectAsState()
+    val unit by viewModel.temperatureUnit.collectAsState()
     TemperatureSlider(
         { showNormalTempDialog = true },
         "Normal temperature:",
-        mutableStateFlow = viewModel.normalTemp,
-        unitFlow = viewModel.temperatureUnit,
+        normalTemp,
+        unit,
+        { viewModel.normalTemp.value = it },
         valueRange = lowTemp..highTemp
     )
     if (showNormalTempDialog)
         TemperatureInfo(
             text = "When the temperature is close to %s, the tyre is colored in green",
             state = State.Normal.BlueToGreen(Fraction(1f)),
-            temperatureStateFlow = viewModel.normalTemp,
-            temperatureUnit = viewModel.temperatureUnit,
+            temperature = normalTemp,
+            unit = unit,
         ) { showNormalTempDialog = false }
 }
 
@@ -110,21 +119,23 @@ private fun LowTemp(
     }
 ) {
     var showLowTempDialog by remember { mutableStateOf(false) }
+    val lowTemp by viewModel.lowTemp.collectAsState()
     val normalTemp by viewModel.normalTemp.collectAsState()
+    val unit by viewModel.temperatureUnit.collectAsState()
     TemperatureSlider(
         { showLowTempDialog = true },
         "Low temperature:",
-        mutableStateFlow = viewModel.lowTemp,
-        unitFlow = viewModel.temperatureUnit,
+        lowTemp,
+        unit,
+        { viewModel.lowTemp.value = it },
         valueRange = 5f.celsius..normalTemp
     )
-    if (showLowTempDialog)
-        TemperatureInfo(
-            text = "When the temperature is close to %s, the tyre is colored in blue",
-            state = State.Normal.BlueToGreen(Fraction(0f)),
-            temperatureStateFlow = viewModel.lowTemp,
-            temperatureUnit = viewModel.temperatureUnit,
-        ) { showLowTempDialog = false }
+    if (showLowTempDialog) TemperatureInfo(
+        text = "When the temperature is close to %s, the tyre is colored in blue",
+        state = State.Normal.BlueToGreen(Fraction(0f)),
+        temperature = lowTemp,
+        unit = unit,
+    ) { showLowTempDialog = false }
 }
 
 private fun LazyListScope.separator() = item {

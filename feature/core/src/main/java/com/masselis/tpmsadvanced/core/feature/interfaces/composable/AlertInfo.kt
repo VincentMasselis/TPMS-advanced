@@ -12,18 +12,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation
-import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
-import kotlinx.coroutines.flow.StateFlow
+import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 
 @Composable
 internal fun LowPressureInfo(
-    lowPressureStateFlow: StateFlow<Pressure>,
-    pressureUnitFlow: StateFlow<PressureUnit>,
+    viewModel: SettingsViewModel = viewModel {
+        featureCoreComponent.settingsViewModel.build(createSavedStateHandle())
+    },
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(
@@ -32,8 +35,8 @@ internal fun LowPressureInfo(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val pressure by lowPressureStateFlow.collectAsState()
-                val unit by pressureUnitFlow.collectAsState()
+                val lowPressure by viewModel.lowPressure.collectAsState()
+                val unit by viewModel.pressureUnit.collectAsState()
                 Tyre(
                     location = TyreLocation.FRONT_LEFT,
                     modifier = Modifier.height(150.dp),
@@ -41,7 +44,7 @@ internal fun LowPressureInfo(
                 )
                 Text(
                     "When the pressure is < to %s, the tyre starts to blink in red to alert you"
-                        .format(pressure.string(unit))
+                        .format(lowPressure.string(unit))
                 )
             }
         },
@@ -54,8 +57,8 @@ internal fun LowPressureInfo(
 internal fun TemperatureInfo(
     text: String,
     state: State,
-    temperatureStateFlow: StateFlow<Temperature>,
-    temperatureUnit: StateFlow<com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit>,
+    temperature: Temperature,
+    unit: TemperatureUnit,
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(
@@ -64,8 +67,6 @@ internal fun TemperatureInfo(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val temperature by temperatureStateFlow.collectAsState()
-                val unit by temperatureUnit.collectAsState()
                 Tyre(
                     location = TyreLocation.FRONT_LEFT,
                     modifier = Modifier.height(150.dp),

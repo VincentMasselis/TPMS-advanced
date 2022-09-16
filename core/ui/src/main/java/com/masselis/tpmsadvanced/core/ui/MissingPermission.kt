@@ -21,12 +21,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 public fun MissingPermission(
     text: String,
     refusedText: String,
-    missingPermissions: List<String>,
+    missingPermissions: ImmutableList<String>,
     modifier: Modifier = Modifier,
     trigger: () -> Unit,
 ) {

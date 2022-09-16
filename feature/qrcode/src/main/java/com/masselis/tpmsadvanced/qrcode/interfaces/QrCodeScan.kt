@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -31,20 +32,23 @@ import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.OnLifecycleEvent
 import com.masselis.tpmsadvanced.qrcode.R
 import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel.State
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun QrCodeScan(
     modifier: Modifier = Modifier,
 ): Unit = QrCodeScan(
-    viewModel { qrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle()) },
     modifier,
+    viewModel { qrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle()) },
 )
 
 @Suppress("NAME_SHADOWING")
 @Composable
 internal fun QrCodeScan(
-    viewModel: CameraPreconditionsViewModel,
     modifier: Modifier = Modifier,
+    viewModel: CameraPreconditionsViewModel = viewModel {
+        qrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle())
+    },
 ) {
     OnLifecycleEvent { _, event ->
         if (event == Lifecycle.Event.ON_RESUME)
@@ -56,7 +60,7 @@ internal fun QrCodeScan(
         is State.MissingPermission -> MissingPermission(
             "TPMS Advanced need you to approve a permission to scan the QR Code",
             "Failed to obtain permission, please update this in the app's system settings to continue",
-            listOf(state.permission),
+            persistentListOf(state.permission),
             modifier = modifier,
         ) { viewModel.trigger() }
         State.Ready -> Preview(
@@ -67,6 +71,7 @@ internal fun QrCodeScan(
 
 @Suppress("NAME_SHADOWING")
 @Composable
+@Stable
 private fun Preview(
     modifier: Modifier = Modifier,
     cameraSelector: CameraSelector = DEFAULT_BACK_CAMERA,
