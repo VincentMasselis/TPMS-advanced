@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableSet
 
 @Composable
 public inline fun <reified T : Enum<T>> EnumDropdown(
@@ -24,9 +24,9 @@ public inline fun <reified T : Enum<T>> EnumDropdown(
     noinline onValue: (T) -> Unit,
     modifier: Modifier = Modifier,
 ): Unit = EnumDropdown(
+    values = enumValues<T>().asIterable().toImmutableSet(),
     label = label,
     stringOf = stringOf,
-    values = persistentSetOf(*enumValues()),
     currentValue = currentValue,
     onValue = onValue,
     modifier = modifier,
