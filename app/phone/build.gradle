@@ -13,7 +13,7 @@ if (isDecrypted) {
     // Needs the publisher-service-account.json file to work
     apply plugin: 'com.github.triplet.play'
     play {
-        serviceAccountCredentials.set(file("../secrets/publisher-service-account.json"))
+        serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
         defaultToAppBundles.set(true)
         track.set("alpha")
     }
