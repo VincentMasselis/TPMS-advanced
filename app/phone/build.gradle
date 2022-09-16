@@ -1,0 +1,64 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
+    id 'org.jetbrains.kotlin.kapt'
+}
+
+if (isDecrypted) {
+    // Needs the google-services.json file to work
+    apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'com.google.firebase.crashlytics'
+
+    // Needs the publisher-service-account.json file to work
+    apply plugin: 'com.github.triplet.play'
+    play {
+        serviceAccountCredentials.set(file("../secrets/publisher-service-account.json"))
+        defaultToAppBundles.set(true)
+        track.set("alpha")
+    }
+}
+
+android {
+    defaultConfig {
+        applicationId "com.masselis.tpmsadvanced"
+        versionCode tpmsAdvancedVersionCode()
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        if (isDecrypted)
+            release {
+                keyAlias APP_KEY_ALIAS
+                keyPassword APP_KEY_STORE_PWD
+                storeFile file(APP_KEYSTORE_LOCATION)
+                storePassword APP_KEY_STORE_PWD
+            }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.findByName('release') ?: signingConfigs.debug
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "$composeCompilerVersion"
+    }
+}
+
+dependencies {
+    implementation(project(":core:common"))
+    implementation(project(":core:ui"))
+    implementation(project(":feature:core"))
+    implementation(project(":feature:qrcode"))
+    implementation(project(":core:debug-ui"))
+
+    testImplementation(project(":core:test"))
+    androidTestImplementation(project(":core:android-test"))
+}

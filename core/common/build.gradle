@@ -1,0 +1,15 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
+}
+
+dependencies {
+    api 'androidx.core:core-ktx:1.8.0'
+    api "androidx.startup:startup-runtime:1.1.1"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutineVersion"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-guava:$coroutineVersion"
+    api 'com.squareup.okio:okio:3.2.0'
+    api "com.google.firebase:firebase-crashlytics-ktx:18.2.11"
+}
