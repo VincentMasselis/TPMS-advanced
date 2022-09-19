@@ -58,6 +58,7 @@ internal fun Home() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("LongMethod")
 @Composable
 private fun TopAppBar() {
     val navController = LocalHomeNavController.current
