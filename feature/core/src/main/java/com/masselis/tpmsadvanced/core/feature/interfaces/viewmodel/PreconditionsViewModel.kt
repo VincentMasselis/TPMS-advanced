@@ -4,8 +4,10 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
+import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
+import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner.Companion.isChipTurnedOn
+import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner.Companion.missingPermission
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -22,7 +24,6 @@ import kotlinx.parcelize.Parcelize
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class PreconditionsViewModel @AssistedInject constructor(
-    bleScanUseCase: BluetoothLeScanner,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -55,8 +56,8 @@ internal class PreconditionsViewModel @AssistedInject constructor(
         trigger
             .flatMapLatest {
                 combine(
-                    bleScanUseCase.isChipTurnedOn(),
-                    flowOf(bleScanUseCase.missingPermission())
+                    isChipTurnedOn(),
+                    flowOf(missingPermission())
                 ) { isOn, permissions ->
                     when {
                         permissions.isNotEmpty() -> State.MissingPermission(permissions)

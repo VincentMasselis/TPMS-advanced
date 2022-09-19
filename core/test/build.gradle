@@ -7,6 +7,6 @@ dependencies {
     api 'junit:junit:4.13.2'
     api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineVersion"
     api "androidx.arch.core:core-testing:2.1.0"
-    api 'io.mockk:mockk:1.12.5'
+    api 'io.mockk:mockk:1.12.8'
     api 'org.jetbrains.kotlin:kotlin-test'
 }

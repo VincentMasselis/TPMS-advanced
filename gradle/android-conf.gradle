@@ -28,6 +28,21 @@ subprojects {
                         jvmTarget = '1.8'
                         freeCompilerArgs += ['-Xexplicit-api=strict', '-opt-in=kotlin.RequiresOptIn']
                     }
+                flavorDimensions "mode"
+                productFlavors {
+                    demo {
+                        dimension "mode"
+                    }
+                    normal {
+                        dimension "mode"
+                    }
+                }
+                variantFilter { variant ->
+                    def names = variant.flavors*.name
+                    if (names.contains("demo") && variant.buildType.name == 'release') {
+                        setIgnore(true)
+                    }
+                }
                 if (buildFeatures.compose == true) {
                     tasks.whenTaskAdded {
                         if (it.name == "compileReleaseKotlin") {
