@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
@@ -74,4 +75,8 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
     override fun highDutyScan(): Flow<Tyre> = source
 
     override fun normalScan(): Flow<Tyre> = source
+
+    override fun missingPermission(): List<String> = emptyList()
+
+    override fun isChipTurnedOn(): Flow<Boolean> = flowOf(true)
 }

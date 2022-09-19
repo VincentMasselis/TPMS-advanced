@@ -1,6 +1,14 @@
 package com.masselis.tpmsadvanced.data.record.interfaces
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.BLUETOOTH_CONNECT
+import android.Manifest.permission.BLUETOOTH_SCAN
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED
+import android.bluetooth.BluetoothAdapter.ERROR
+import android.bluetooth.BluetoothAdapter.EXTRA_STATE
+import android.bluetooth.BluetoothAdapter.STATE_ON
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
@@ -8,11 +16,16 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.bluetooth.le.ScanSettings.MATCH_MODE_AGGRESSIVE
 import android.bluetooth.le.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT
+import android.content.IntentFilter
+import android.os.Build
 import android.os.ParcelUuid
 import androidx.annotation.RequiresPermission
+import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
 import androidx.core.util.size
 import com.masselis.tpmsadvanced.core.common.appContext
+import com.masselis.tpmsadvanced.core.common.asFlow
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.kpa
@@ -30,6 +43,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
@@ -142,6 +156,26 @@ internal class BluetoothLeScannerImpl @Inject internal constructor() : Bluetooth
         fun battery(): Byte = bytes[14]
         fun alarm(): Byte = bytes[15]
     }
+
+    private val bluetoothAdapter by lazy { appContext.getSystemService<BluetoothManager>()!!.adapter }
+
+    @SuppressLint("InlinedApi")
+    @Suppress("MagicNumber")
+    override fun missingPermission(): List<String> = when (Build.VERSION.SDK_INT) {
+        in Int.MIN_VALUE..28 -> listOf(ACCESS_COARSE_LOCATION)
+        in 29..30 -> listOf(ACCESS_FINE_LOCATION)
+        in 31..Int.MAX_VALUE -> listOf(BLUETOOTH_CONNECT, BLUETOOTH_SCAN)
+        else ->
+            @Suppress("ThrowingExceptionsWithoutMessageOrCause")
+            throw IllegalArgumentException()
+    }.filter { checkSelfPermission(appContext, it) != PERMISSION_GRANTED }
+
+    override fun isChipTurnedOn(): Flow<Boolean> = IntentFilter(ACTION_STATE_CHANGED)
+        .asFlow()
+        .map { it.getIntExtra(EXTRA_STATE, ERROR) }
+        .filter { it != ERROR }
+        .map { it == STATE_ON }
+        .onStart { emit(bluetoothAdapter.isEnabled) }
 
     @OptIn(ExperimentalUnsignedTypes::class)
     companion object {
