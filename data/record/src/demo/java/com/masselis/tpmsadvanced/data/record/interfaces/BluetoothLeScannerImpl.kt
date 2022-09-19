@@ -7,24 +7,19 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @SingleInstance
 internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner {
 
@@ -70,7 +65,11 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
             delay(5.seconds)
         }
         .onStart { emitAll(startTyres.values.asFlow()) }
-        .shareIn(CoroutineScope(EmptyCoroutineContext), SharingStarted.Eagerly, startTyres.size)
+        .shareIn(
+            CoroutineScope(EmptyCoroutineContext),
+            SharingStarted.Lazily,
+            startTyres.size + 1
+        )
 
     override fun highDutyScan(): Flow<Tyre> = source
 
