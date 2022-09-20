@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build:
     name: Build everthing, test and report
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
@@ -28,10 +28,15 @@ jobs:
           java-version: 11
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2
-      - name: Build everything and run tests
+      - name: Build everything and run unit tests
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build exportComposeReport
+      - name: Run instrumented tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          script: ./gradlew connectedCheck
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
