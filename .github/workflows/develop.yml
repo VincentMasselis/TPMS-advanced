@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build:
     name: Build everthing, test and report
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
@@ -39,7 +39,7 @@ jobs:
           arch: 'x86_64'
           script: ./gradlew connectedDemoDebugAndroidTest
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2
         if: always()
         with:
           files: "**/build/test-results/**/*.xml"
