@@ -116,3 +116,5 @@ task copyScreenshot(type: Copy) {
             throw IllegalArgumentException(filename)
     }
 }
+
+publishApps.dependsOn copyScreenshot
