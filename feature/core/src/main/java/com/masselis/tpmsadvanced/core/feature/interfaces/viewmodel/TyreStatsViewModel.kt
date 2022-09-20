@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.parcelize.Parcelize
 
 internal class TyreStatsViewModel @AssistedInject constructor(
-    tyreAtmosphereUseCase: TyreAtmosphereUseCase,
+    atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: AtmosphereRangePreferences,
     unitPreferences: UnitPreferences,
     @Assisted savedStateHandle: SavedStateHandle
@@ -67,15 +67,29 @@ internal class TyreStatsViewModel @AssistedInject constructor(
 
     init {
         combine(
-            tyreAtmosphereUseCase.listen()
+            atmosphereUseCase.listen()
                 .onEach { savedStateHandle[LAST_KNOWN] = it }
                 .onStart { savedStateHandle.get<TyreAtmosphere>(LAST_KNOWN)?.also { emit(it) } },
             rangeUseCase.highTempFlow,
+            rangeUseCase.lowPressureFlow,
+            rangeUseCase.highPressureFlow,
             unitPreferences.pressure.asStateFlow(),
             unitPreferences.temperature.asStateFlow(),
-        ) { a, b, c, d -> Data(a, b, c, d) }
-            .map { (atmosphere, highTemp, pressureUnit, temperatureUnit) ->
-                if (atmosphere.pressure.hasPressure().not()) State.Alerting(
+        ) { values ->
+            @Suppress("MagicNumber")
+            Data(
+                values[0] as TyreAtmosphere,
+                values[1] as Temperature,
+                values[2] as Pressure,
+                values[3] as Pressure,
+                values[4] as PressureUnit,
+                values[5] as TemperatureUnit
+            )
+        }
+            .map { (atmosphere, highTemp, lowPressure, highPressure, pressureUnit, temperatureUnit) ->
+                if (atmosphere.pressure.hasPressure().not() ||
+                    atmosphere.pressure !in lowPressure..highPressure
+                ) State.Alerting(
                     atmosphere.pressure,
                     pressureUnit,
                     atmosphere.temperature,
@@ -104,8 +118,10 @@ internal class TyreStatsViewModel @AssistedInject constructor(
     }
 
     private data class Data(
-        val atmosphere: TyreAtmosphere,
+        val tyreAtmosphere: TyreAtmosphere,
         val highTemp: Temperature,
+        val lowPressure: Pressure,
+        val highPressure: Pressure,
         val pressureUnit: PressureUnit,
         val temperature: TemperatureUnit
     )

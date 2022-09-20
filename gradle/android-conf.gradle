@@ -28,11 +28,26 @@ subprojects {
                         jvmTarget = '1.8'
                         freeCompilerArgs += ['-Xexplicit-api=strict', '-opt-in=kotlin.RequiresOptIn']
                     }
+                flavorDimensions "mode"
+                productFlavors {
+                    demo {
+                        dimension "mode"
+                    }
+                    normal {
+                        dimension "mode"
+                    }
+                }
+                variantFilter { variant ->
+                    def names = variant.flavors*.name
+                    if (names.contains("demo") && variant.buildType.name == 'release') {
+                        setIgnore(true)
+                    }
+                }
                 if (buildFeatures.compose == true) {
                     tasks.whenTaskAdded {
-                        if (it.name == "compileReleaseKotlin") {
+                        if (it.name == "compileNormalReleaseKotlin") {
                             def metricsDir = project.buildDir.absolutePath + "/compose_metrics"
-                            compileReleaseKotlin.kotlinOptions {
+                            compileNormalReleaseKotlin.kotlinOptions {
                                 freeCompilerArgs += [
                                         "-P",
                                         "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + metricsDir
@@ -43,16 +58,16 @@ subprojects {
                                 ]
                             }
                             def outputDir = file("${project.buildDir}/compose_reports")
-                            task composeReport2Html(type: JavaExec, dependsOn: compileReleaseKotlin) {
+                            task composeReport2Html(type: JavaExec, dependsOn: compileNormalReleaseKotlin) {
                                 group = 'verification'
                                 inputs.dir(metricsDir)
                                 outputs.dir(outputDir)
                                 classpath = files("${rootProject.projectDir}/gradle/lib/composeReport2Html.jar")
                                 args "-app", project.path,
-                                        "-overallStatsReport", "$metricsDir/${project.name}_release-module.json",
-                                        "-detailedStatsMetrics", "$metricsDir/${project.name}_release-composables.csv",
-                                        "-composableMetrics", "$metricsDir/${project.name}_release-composables.txt",
-                                        "-classMetrics", "$metricsDir/${project.name}_release-classes.txt",
+                                        "-overallStatsReport", "$metricsDir/${project.name}_normalRelease-module.json",
+                                        "-detailedStatsMetrics", "$metricsDir/${project.name}_normalRelease-composables.csv",
+                                        "-composableMetrics", "$metricsDir/${project.name}_normalRelease-composables.txt",
+                                        "-classMetrics", "$metricsDir/${project.name}_normalRelease-classes.txt",
                                         "-o", "$outputDir"
                             }
                             task exportComposeReport(type: Copy, dependsOn: composeReport2Html) {
@@ -64,6 +79,19 @@ subprojects {
                             }
                         }
                     }
+                }
+                packagingOptions {
+                    exclude 'META-INF/DEPENDENCIES'
+                    exclude 'META-INF/LICENSE'
+                    exclude 'META-INF/LICENSE.txt'
+                    exclude 'META-INF/LICENSE.md'
+                    exclude 'META-INF/LICENSE-notice.md'
+                    exclude 'META-INF/license.txt'
+                    exclude 'META-INF/NOTICE'
+                    exclude 'META-INF/NOTICE.txt'
+                    exclude 'META-INF/notice.txt'
+                    exclude 'META-INF/ASL2.0'
+                    exclude("META-INF/*.kotlin_module")
                 }
             }
         }

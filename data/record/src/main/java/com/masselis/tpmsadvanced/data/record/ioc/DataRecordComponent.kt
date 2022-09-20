@@ -4,7 +4,9 @@ import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
 import dagger.Component
 
 @SingleInstance
-@Component
+@Component(
+    modules = [Module::class]
+)
 public abstract class DataRecordComponent {
     @Component.Factory
     internal abstract class Factory {

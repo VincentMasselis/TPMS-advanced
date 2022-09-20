@@ -65,7 +65,8 @@ internal fun TyreStat(
                 }
             }
         }
-    }
+    } else
+        isVisible = true
     val alignment by remember {
         derivedStateOf {
             when (location) {

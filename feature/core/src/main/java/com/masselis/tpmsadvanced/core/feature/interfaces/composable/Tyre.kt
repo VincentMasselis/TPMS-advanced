@@ -53,7 +53,8 @@ internal fun Tyre(
                 }
             }
         }
-    }
+    } else
+        isVisible = true
     Box(
         modifier
             .alpha(if (isVisible) 1f else 0f)

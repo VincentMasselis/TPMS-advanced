@@ -7,5 +7,5 @@ dependencies {
     debugApi "androidx.compose.ui:ui-tooling:$composeVersion"
     debugApi "androidx.compose.ui:ui-test-manifest:$composeVersion"
 
-    debugApi 'io.mockk:mockk-android:1.12.5'
+    debugApi 'io.mockk:mockk-android:1.12.8'
 }

@@ -15,6 +15,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavHostController
@@ -57,6 +58,7 @@ internal fun Home() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("LongMethod")
 @Composable
 private fun TopAppBar() {
     val navController = LocalHomeNavController.current
@@ -94,17 +96,19 @@ private fun TopAppBar() {
         actions = {
             when (currentPath) {
                 Paths.Home -> {
-                    IconButton(onClick = {
-                        navController.navigate(Paths.QrCode.path)
-                    }) {
+                    IconButton(
+                        onClick = { navController.navigate(Paths.QrCode.path) },
+                        Modifier.testTag("qrcode")
+                    ) {
                         Icon(
                             ImageVector.vectorResource(R.drawable.qrcode),
                             contentDescription = null,
                         )
                     }
-                    IconButton(onClick = {
-                        navController.navigate(Paths.Settings.path)
-                    }) {
+                    IconButton(
+                        onClick = { navController.navigate(Paths.Settings.path) },
+                        Modifier.testTag("settings")
+                    ) {
                         Icon(
                             ImageBitmap.imageResource(R.drawable.ic_car_cog_black_24dp),
                             contentDescription = null,
