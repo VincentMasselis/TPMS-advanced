@@ -45,9 +45,9 @@ subprojects {
                 }
                 if (buildFeatures.compose == true) {
                     tasks.whenTaskAdded {
-                        if (it.name == "compileReleaseKotlin") {
+                        if (it.name == "compileNormalReleaseKotlin") {
                             def metricsDir = project.buildDir.absolutePath + "/compose_metrics"
-                            compileReleaseKotlin.kotlinOptions {
+                            compileNormalReleaseKotlin.kotlinOptions {
                                 freeCompilerArgs += [
                                         "-P",
                                         "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + metricsDir
@@ -58,16 +58,16 @@ subprojects {
                                 ]
                             }
                             def outputDir = file("${project.buildDir}/compose_reports")
-                            task composeReport2Html(type: JavaExec, dependsOn: compileReleaseKotlin) {
+                            task composeReport2Html(type: JavaExec, dependsOn: compileNormalReleaseKotlin) {
                                 group = 'verification'
                                 inputs.dir(metricsDir)
                                 outputs.dir(outputDir)
                                 classpath = files("${rootProject.projectDir}/gradle/lib/composeReport2Html.jar")
                                 args "-app", project.path,
-                                        "-overallStatsReport", "$metricsDir/${project.name}_release-module.json",
-                                        "-detailedStatsMetrics", "$metricsDir/${project.name}_release-composables.csv",
-                                        "-composableMetrics", "$metricsDir/${project.name}_release-composables.txt",
-                                        "-classMetrics", "$metricsDir/${project.name}_release-classes.txt",
+                                        "-overallStatsReport", "$metricsDir/${project.name}_normalRelease-module.json",
+                                        "-detailedStatsMetrics", "$metricsDir/${project.name}_normalRelease-composables.csv",
+                                        "-composableMetrics", "$metricsDir/${project.name}_normalRelease-composables.txt",
+                                        "-classMetrics", "$metricsDir/${project.name}_normalRelease-classes.txt",
                                         "-o", "$outputDir"
                             }
                             task exportComposeReport(type: Copy, dependsOn: composeReport2Html) {
