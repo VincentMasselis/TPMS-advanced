@@ -29,7 +29,11 @@ jobs:
           java-version: 11
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2
-      - name: Upload bundle to the Play Store
+      - name: Gradle cache
         uses: gradle/gradle-build-action@v2
+      - name: Build bundle, create screenshots and upload release
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          arguments: publishApps
+          api-level: 31
+          arch: 'x86_64'
+          script: ./gradlew publishApps
