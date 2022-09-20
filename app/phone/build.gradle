@@ -99,6 +99,7 @@ tasks.whenTaskAdded { instrumentedTestTask ->
                     throw IllegalArgumentException(filename)
             }
         }
-        publishApps.dependsOn copyScreenshot
+        if (isDecrypted)
+            publishApps.dependsOn copyScreenshot
     }
 }
