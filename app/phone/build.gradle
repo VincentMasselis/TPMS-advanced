@@ -65,11 +65,17 @@ dependencies {
 
 tasks.whenTaskAdded { instrumentedTestTask ->
     if (instrumentedTestTask.name == "connectedDemoDebugAndroidTest") {
+        task adbRoot(type: Exec) {
+            commandLine 'adb', 'root'
+            ignoreExitValue true
+        }
         task clearScreenshotPhoneFolder(type: Exec) {
+            dependsOn adbRoot
             instrumentedTestTask.dependsOn clearScreenshotPhoneFolder
             commandLine 'adb', 'shell', 'rm -rf /sdcard/Pictures/screenshots'
         }
         task downloadScreenshots(type: Exec) {
+            dependsOn adbRoot
             dependsOn instrumentedTestTask
             doFirst {
                 delete layout.buildDirectory.dir("screenshots")
