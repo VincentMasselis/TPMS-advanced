@@ -36,7 +36,8 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
-          script: ./gradlew connectedCheck
+          arch: 'x86_64'
+          script: ./gradlew connectedDemoDebugAndroidTest
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
