@@ -63,45 +63,42 @@ dependencies {
     androidTestImplementation(project(":core:android-test"))
 }
 
-task clearScreenshotPhoneFolder(type: Exec) {
-    commandLine 'adb', 'shell', 'rm -rf /sdcard/Pictures/screenshots'
-    afterEvaluate {
-        connectedDemoDebugAndroidTest.dependsOn clearScreenshotPhoneFolder
+tasks.whenTaskAdded { instrumentedTestTask ->
+    if (instrumentedTestTask.name == "connectedDemoDebugAndroidTest") {
+        task clearScreenshotPhoneFolder(type: Exec) {
+            instrumentedTestTask.dependsOn clearScreenshotPhoneFolder
+            commandLine 'adb', 'shell', 'rm -rf /sdcard/Pictures/screenshots'
+        }
+        task downloadScreenshots(type: Exec) {
+            dependsOn instrumentedTestTask
+            doFirst {
+                delete layout.buildDirectory.dir("screenshots")
+                mkdir layout.buildDirectory.dir("screenshots")
+            }
+            commandLine 'adb', 'pull', '/sdcard/Pictures/screenshots', "$buildDir"
+        }
+        task copyScreenshot(type: Copy) {
+            dependsOn downloadScreenshots
+
+            def path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
+            doFirst {
+                mkdir path
+            }
+            from layout.buildDirectory.dir("screenshots")
+            into path
+            rename { filename ->
+                if (filename.startsWith("light_main"))
+                    return "1.png"
+                else if (filename.startsWith("light_settings"))
+                    return "2.png"
+                else if (filename.startsWith("dark_main"))
+                    return "3.png"
+                else if (filename.startsWith("dark_settings"))
+                    return "4.png"
+                else
+                    throw IllegalArgumentException(filename)
+            }
+        }
+        publishApps.dependsOn copyScreenshot
     }
 }
-
-task downloadScreenshots(type: Exec) {
-    afterEvaluate {
-        downloadScreenshots.dependsOn connectedDemoDebugAndroidTest
-    }
-    doFirst {
-        delete layout.buildDirectory.dir("screenshots")
-        mkdir layout.buildDirectory.dir("screenshots")
-    }
-    commandLine 'adb', 'pull', '/sdcard/Pictures/screenshots', "$buildDir"
-}
-
-task copyScreenshot(type: Copy) {
-    dependsOn downloadScreenshots
-
-    def path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
-    doFirst {
-        mkdir path
-    }
-    from layout.buildDirectory.dir("screenshots")
-    into path
-    rename { filename ->
-        if (filename.startsWith("light_main"))
-            return "1.png"
-        else if (filename.startsWith("light_settings"))
-            return "2.png"
-        else if (filename.startsWith("dark_main"))
-            return "3.png"
-        else if (filename.startsWith("dark_settings"))
-            return "4.png"
-        else
-            throw IllegalArgumentException(filename)
-    }
-}
-
-publishApps.dependsOn copyScreenshot
