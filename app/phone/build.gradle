@@ -15,7 +15,11 @@ if (isDecrypted) {
     play {
         serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
         defaultToAppBundles.set(true)
-        track.set("alpha")
+        track.set("beta")
+        // Keep the strategy AUTO to continue generating "available-version-codes.txt" files
+        resolutionStrategy = com.github.triplet.gradle.androidpublisher.ResolutionStrategy.AUTO
+        fromTrack.set("beta")
+        promoteTrack.set("production")
     }
 }
 
@@ -71,12 +75,14 @@ tasks.whenTaskAdded { instrumentedTestTask ->
         }
         task clearScreenshotPhoneFolder(type: Exec) {
             dependsOn adbRoot
+            group = 'publishing'
             instrumentedTestTask.dependsOn clearScreenshotPhoneFolder
             commandLine 'adb', 'shell', 'rm -rf /sdcard/Pictures/screenshots'
         }
         task downloadScreenshots(type: Exec) {
             dependsOn adbRoot
             dependsOn instrumentedTestTask
+            group = 'publishing'
             doFirst {
                 delete layout.buildDirectory.dir("screenshots")
                 mkdir layout.buildDirectory.dir("screenshots")
@@ -85,7 +91,7 @@ tasks.whenTaskAdded { instrumentedTestTask ->
         }
         task copyScreenshot(type: Copy) {
             dependsOn downloadScreenshots
-
+            group = 'publishing'
             def path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
             doFirst {
                 mkdir path
@@ -106,6 +112,20 @@ tasks.whenTaskAdded { instrumentedTestTask ->
             }
         }
         if (isDecrypted)
-            publishApps.dependsOn copyScreenshot
+            publishListing.dependsOn copyScreenshot
+    }
+}
+tasks.whenTaskAdded { processVersionCodes ->
+    if (processVersionCodes.name == "processNormalReleaseVersionCodes") {
+        task compareLocalVersionCodeWithPlayStore {
+            dependsOn processVersionCodes
+            group = 'publishing'
+            description = 'Ensure the artifact to be promoted by promoteArtifact will be generated from the current commit'
+            doLast {
+                def playStoreVc = file("$buildDir/intermediates/gpp/normalRelease/available-version-codes.txt").text.toInteger() - 1
+                assert playStoreVc == tpmsAdvancedVersionCode()
+            }
+        }
+        promoteArtifact.dependsOn compareLocalVersionCodeWithPlayStore
     }
 }

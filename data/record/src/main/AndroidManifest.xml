@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.masselis.tpmsadvanced.data.record">
 
+    <uses-feature android:name="android.hardware.bluetooth_le" />
+    <uses-feature android:name="android.hardware.bluetooth" />
+
     <application>
         <provider
             android:name="androidx.startup.InitializationProvider"
