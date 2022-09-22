@@ -24,8 +24,6 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-feature android:name="android.hardware.bluetooth_le" />
-
     <application>
         <provider
             android:name="androidx.startup.InitializationProvider"
