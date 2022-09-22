@@ -21,40 +21,48 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
           distribution: temurin
           java-version: 11
+
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2
+
       - name: Build everything and run unit tests
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build exportComposeReport
+
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
           arch: 'x86_64'
           script: ./gradlew connectedDemoDebugAndroidTest
+
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v2
         if: always()
         with:
           files: "**/build/test-results/**/*.xml"
+
       - name: Lint reports
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: Lint-reports
           path: "**/build/reports/lint-*.html"
+
       - name: Detekt reports
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: Detekt-reports
           path: "**/build/reports/detekt/*.html"
+
       - name: Compose reports
         uses: actions/upload-artifact@v3
         if: always()
