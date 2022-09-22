@@ -1,3 +1,5 @@
+import com.github.triplet.gradle.play.tasks.PublishListings
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -26,6 +28,8 @@ if (isDecrypted) {
 android {
     defaultConfig {
         applicationId "com.masselis.tpmsadvanced"
+        namespace 'com.masselis.tpmsadvanced'
+
         versionCode tpmsAdvancedVersionCode()
         versionName "1.0"
 
@@ -111,8 +115,12 @@ tasks.whenTaskAdded { instrumentedTestTask ->
                     throw IllegalArgumentException(filename)
             }
         }
-        if (isDecrypted)
-            publishListing.dependsOn copyScreenshot
+        if (isDecrypted) {
+            tasks.forEach { task ->
+                if (task instanceof PublishListings)
+                    task.dependsOn copyScreenshot
+            }
+        }
     }
 }
 tasks.whenTaskAdded { processVersionCodes ->
@@ -126,6 +134,9 @@ tasks.whenTaskAdded { processVersionCodes ->
                 assert playStoreVc == tpmsAdvancedVersionCode()
             }
         }
-        promoteArtifact.dependsOn compareLocalVersionCodeWithPlayStore
+        tasks.forEach { task ->
+            if (task.name.startsWith("promote") && task.name.endsWith("Artifact"))
+                task.dependsOn compareLocalVersionCodeWithPlayStore
+        }
     }
 }
