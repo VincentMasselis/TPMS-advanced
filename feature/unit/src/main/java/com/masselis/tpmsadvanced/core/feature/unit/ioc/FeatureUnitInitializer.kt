@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.core.feature.unit.ioc
 
 import android.content.Context
 import androidx.startup.Initializer
-import com.masselis.tpmsadvanced.core.common.CommonInitializer
+import com.masselis.tpmsadvanced.core.common.CoreCommonInitializer
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitInitializer
 import com.masselis.tpmsadvanced.data.unit.ioc.dataUnitComponent
 
@@ -16,7 +16,7 @@ public class FeatureUnitInitializer : Initializer<FeatureUnitComponent> {
         .also { privateComponent = it }
 
     override fun dependencies(): List<Class<out Initializer<*>>> = listOf(
-        CommonInitializer::class.java,
+        CoreCommonInitializer::class.java,
         DataUnitInitializer::class.java
     )
 }

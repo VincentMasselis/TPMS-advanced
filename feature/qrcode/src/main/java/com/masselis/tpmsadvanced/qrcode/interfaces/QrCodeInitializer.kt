@@ -2,6 +2,8 @@ package com.masselis.tpmsadvanced.qrcode.interfaces
 
 import android.content.Context
 import androidx.startup.Initializer
+import com.masselis.tpmsadvanced.core.common.CoreCommonInitializer
+import com.masselis.tpmsadvanced.core.common.coreCommonComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.FeatureCoreInitializer
 import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.data.favourite.ioc.DataFavouriteInitializer
@@ -15,10 +17,11 @@ public val qrCodeComponent: FeatureQrCodeComponent get() = privateComponent
 public class QrCodeInitializer : Initializer<FeatureQrCodeComponent> {
     override fun create(context: Context): FeatureQrCodeComponent = DaggerFeatureQrCodeComponent
         .factory()
-        .build(dataFavouriteComponent, featureCoreComponent)
+        .build(coreCommonComponent, dataFavouriteComponent, featureCoreComponent)
         .also { privateComponent = it }
 
     override fun dependencies(): List<Class<out Initializer<*>>> = listOf(
+        CoreCommonInitializer::class.java,
         DataFavouriteInitializer::class.java,
         FeatureCoreInitializer::class.java
     )

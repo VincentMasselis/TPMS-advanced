@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   build:
-    name: Publish
+    name: Promote to production
     runs-on: macos-latest
     steps:
       - name: Checkout project
@@ -36,12 +36,14 @@ jobs:
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2
 
-      - name: Gradle cache
+      - name: Promotion
         uses: gradle/gradle-build-action@v2
+        with:
+          arguments: promoteArtifact # This task cannot run simultaneously with publishListing because of concurrent issues when working with the play store (take a look at https://github.com/VincentMasselis/TPMS-advanced/actions/runs/3098953629/jobs/5017497505)
 
-      - name: Update screenshots and promote build
+      - name: Update screenshots
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
           arch: 'x86_64'
-          script: ./gradlew publishListing promoteArtifact
+          script: ./gradlew publishListing

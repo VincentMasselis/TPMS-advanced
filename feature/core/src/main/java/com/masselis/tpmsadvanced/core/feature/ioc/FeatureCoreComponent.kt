@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
-import com.masselis.tpmsadvanced.core.common.FirebaseModule
+import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearFavouritesViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
@@ -15,10 +15,10 @@ import dagger.Component
 @SingleInstance
 @Component(
     modules = [
-        FirebaseModule::class,
         TyreComponentFactoryModule::class,
     ],
     dependencies = [
+        CoreCommonComponent::class,
         DataRecordComponent::class,
         DataUnitComponent::class,
         FeatureUnitComponent::class,
@@ -30,6 +30,7 @@ public abstract class FeatureCoreComponent {
     @Component.Factory
     internal abstract class Factory {
         abstract fun build(
+            coreCommonComponent: CoreCommonComponent,
             dataRecordComponent: DataRecordComponent,
             dataUnitComponent: DataUnitComponent,
             featureUnitComponent: FeatureUnitComponent,

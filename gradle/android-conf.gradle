@@ -5,7 +5,7 @@ subprojects {
         config = files("${rootProject.rootDir}/gradle/detekt-config.yml")
     }
     dependencies {
-        detektPlugins "com.twitter.compose.rules:detekt:0.0.10"
+        detektPlugins "com.twitter.compose.rules:detekt:0.0.14"
     }
     afterEvaluate {
         if (plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {

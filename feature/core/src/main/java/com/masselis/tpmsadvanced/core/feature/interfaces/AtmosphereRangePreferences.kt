@@ -2,7 +2,6 @@ package com.masselis.tpmsadvanced.core.feature.interfaces
 
 import android.content.Context
 import androidx.core.content.edit
-import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.common.observableStateFlow
 import com.masselis.tpmsadvanced.core.feature.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.record.model.Pressure
@@ -12,9 +11,11 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import javax.inject.Inject
 
 @SingleInstance
-internal class AtmosphereRangePreferences @Inject constructor() {
+internal class AtmosphereRangePreferences @Inject constructor(
+    context: Context
+) {
 
-    private val sharedPreferences = appContext.getSharedPreferences(
+    private val sharedPreferences = context.getSharedPreferences(
         "ATMOSPHERE_ALERTS",
         Context.MODE_PRIVATE
     )

@@ -26,6 +26,8 @@ if (isDecrypted) {
 android {
     defaultConfig {
         applicationId "com.masselis.tpmsadvanced"
+        namespace 'com.masselis.tpmsadvanced'
+
         versionCode tpmsAdvancedVersionCode()
         versionName "1.0"
 
@@ -69,18 +71,12 @@ dependencies {
 
 tasks.whenTaskAdded { instrumentedTestTask ->
     if (instrumentedTestTask.name == "connectedDemoDebugAndroidTest") {
-        task adbRoot(type: Exec) {
-            commandLine 'adb', 'root'
-            ignoreExitValue true
-        }
         task clearScreenshotPhoneFolder(type: Exec) {
-            dependsOn adbRoot
             group = 'publishing'
             instrumentedTestTask.dependsOn clearScreenshotPhoneFolder
             commandLine 'adb', 'shell', 'rm -rf /sdcard/Pictures/screenshots'
         }
         task downloadScreenshots(type: Exec) {
-            dependsOn adbRoot
             dependsOn instrumentedTestTask
             group = 'publishing'
             doFirst {
@@ -111,8 +107,6 @@ tasks.whenTaskAdded { instrumentedTestTask ->
                     throw IllegalArgumentException(filename)
             }
         }
-        if (isDecrypted)
-            publishListing.dependsOn copyScreenshot
     }
 }
 tasks.whenTaskAdded { processVersionCodes ->
@@ -126,6 +120,9 @@ tasks.whenTaskAdded { processVersionCodes ->
                 assert playStoreVc == tpmsAdvancedVersionCode()
             }
         }
-        promoteArtifact.dependsOn compareLocalVersionCodeWithPlayStore
+        tasks.forEach { task ->
+            if (task.name.startsWith("promote") && task.name.endsWith("Artifact"))
+                task.dependsOn compareLocalVersionCodeWithPlayStore
+        }
     }
 }

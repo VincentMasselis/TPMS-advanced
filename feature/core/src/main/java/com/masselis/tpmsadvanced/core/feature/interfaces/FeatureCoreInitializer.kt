@@ -2,6 +2,8 @@ package com.masselis.tpmsadvanced.core.feature.interfaces
 
 import android.content.Context
 import androidx.startup.Initializer
+import com.masselis.tpmsadvanced.core.common.CoreCommonInitializer
+import com.masselis.tpmsadvanced.core.common.coreCommonComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.DaggerFeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.unit.ioc.FeatureUnitInitializer
@@ -19,10 +21,17 @@ public val featureCoreComponent: FeatureCoreComponent get() = privateComponent
 public class FeatureCoreInitializer : Initializer<FeatureCoreComponent> {
     override fun create(context: Context): FeatureCoreComponent = DaggerFeatureCoreComponent
         .factory()
-        .build(dataRecordComponent, dataUnitComponent, featureUnitComponent, dataFavouriteComponent)
+        .build(
+            coreCommonComponent,
+            dataRecordComponent,
+            dataUnitComponent,
+            featureUnitComponent,
+            dataFavouriteComponent
+        )
         .also { privateComponent = it }
 
     override fun dependencies(): List<Class<out Initializer<*>>> = listOf(
+        CoreCommonInitializer::class.java,
         DataRecordInitializer::class.java,
         DataUnitInitializer::class.java,
         FeatureUnitInitializer::class.java,

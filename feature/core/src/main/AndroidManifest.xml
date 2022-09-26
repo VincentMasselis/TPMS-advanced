@@ -34,9 +34,5 @@
                 android:name="com.masselis.tpmsadvanced.core.feature.interfaces.FeatureCoreInitializer"
                 android:value="androidx.startup" />
         </provider>
-        <provider
-            android:name="com.google.firebase.provider.FirebaseInitProvider"
-            android:authorities="${applicationId}.firebaseperfprovider"
-            tools:node="remove" />
     </application>
 </manifest>

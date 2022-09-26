@@ -9,18 +9,19 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-public object FirebaseModule {
+internal object FirebaseModule {
 
     private val firebaseApp = Firebase.initialize(appContext)
     private val crashlytics = firebaseApp?.let { Firebase.crashlytics }
 
     init {
+        firebaseApp?.setDataCollectionDefaultEnabled(BuildConfig.DEBUG.not() as Boolean?)
         crashlytics?.setCrashlyticsCollectionEnabled(BuildConfig.DEBUG.not())
     }
 
     @Provides
-    public fun firebaseApp(): FirebaseApp? = firebaseApp
+    fun firebaseApp(): FirebaseApp? = firebaseApp
 
     @Provides
-    public fun crashlytics(): FirebaseCrashlytics? = crashlytics
+    fun crashlytics(): FirebaseCrashlytics? = crashlytics
 }
