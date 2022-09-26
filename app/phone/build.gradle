@@ -1,5 +1,3 @@
-import com.github.triplet.gradle.play.tasks.PublishListings
-
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -107,12 +105,6 @@ tasks.whenTaskAdded { instrumentedTestTask ->
                     return "4.png"
                 else
                     throw IllegalArgumentException(filename)
-            }
-        }
-        if (isDecrypted) {
-            tasks.forEach { task ->
-                if (task instanceof PublishListings)
-                    task.dependsOn copyScreenshot
             }
         }
     }
