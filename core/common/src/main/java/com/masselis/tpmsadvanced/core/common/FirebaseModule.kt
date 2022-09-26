@@ -15,7 +15,6 @@ internal object FirebaseModule {
     private val crashlytics = firebaseApp?.let { Firebase.crashlytics }
 
     init {
-        Firebase.crashlytics
         firebaseApp?.setDataCollectionDefaultEnabled(BuildConfig.DEBUG.not() as Boolean?)
         crashlytics?.setCrashlyticsCollectionEnabled(BuildConfig.DEBUG.not())
     }
