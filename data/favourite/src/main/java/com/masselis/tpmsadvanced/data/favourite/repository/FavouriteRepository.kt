@@ -2,7 +2,6 @@ package com.masselis.tpmsadvanced.data.favourite.repository
 
 import android.content.Context
 import androidx.core.content.edit
-import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.common.observableStateFlow
 import com.masselis.tpmsadvanced.data.favourite.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation
@@ -11,9 +10,11 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 @SingleInstance
-public class FavouriteRepository @Inject constructor() {
+public class FavouriteRepository @Inject constructor(
+    context: Context
+) {
 
-    private val sharedPreferences = appContext.getSharedPreferences(
+    private val sharedPreferences = context.getSharedPreferences(
         "SENSOR_IDS",
         Context.MODE_PRIVATE
     )

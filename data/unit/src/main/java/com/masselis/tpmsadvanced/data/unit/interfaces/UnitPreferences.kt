@@ -2,7 +2,6 @@ package com.masselis.tpmsadvanced.data.unit.interfaces
 
 import android.content.Context
 import androidx.core.content.edit
-import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.common.observableStateFlow
 import com.masselis.tpmsadvanced.data.unit.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
@@ -12,9 +11,11 @@ import java.util.*
 import javax.inject.Inject
 
 @SingleInstance
-public class UnitPreferences @Inject internal constructor() {
+public class UnitPreferences @Inject internal constructor(
+    context: Context
+) {
 
-    private val sharedPreferences = appContext.getSharedPreferences(
+    private val sharedPreferences = context.getSharedPreferences(
         "UNITS",
         Context.MODE_PRIVATE
     )

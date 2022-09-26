@@ -16,6 +16,7 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.bluetooth.le.ScanSettings.MATCH_MODE_AGGRESSIVE
 import android.bluetooth.le.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT
+import android.content.Context
 import android.content.IntentFilter
 import android.os.Build
 import android.os.ParcelUuid
@@ -24,7 +25,6 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
 import androidx.core.util.size
-import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.common.asFlow
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
@@ -56,7 +56,9 @@ import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
 @SingleInstance
-internal class BluetoothLeScannerImpl @Inject internal constructor() : BluetoothLeScanner {
+internal class BluetoothLeScannerImpl @Inject internal constructor(
+    private val context: Context
+) : BluetoothLeScanner {
 
     @SuppressLint("InlinedApi")
     @RequiresPermission("android.permission.BLUETOOTH_SCAN")
@@ -74,7 +76,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor() : Bluetooth
                 close(ScanFailed(errorCode))
             }
         }
-        val leScanner = appContext
+        val leScanner = context
             .getSystemService<BluetoothManager>()!!
             .adapter
             .bluetoothLeScanner
@@ -157,7 +159,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor() : Bluetooth
         fun alarm(): Byte = bytes[15]
     }
 
-    private val bluetoothAdapter by lazy { appContext.getSystemService<BluetoothManager>()!!.adapter }
+    private val bluetoothAdapter by lazy { context.getSystemService<BluetoothManager>()!!.adapter }
 
     @SuppressLint("InlinedApi")
     @Suppress("MagicNumber")
@@ -168,7 +170,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor() : Bluetooth
         else ->
             @Suppress("ThrowingExceptionsWithoutMessageOrCause")
             throw IllegalArgumentException()
-    }.filter { checkSelfPermission(appContext, it) != PERMISSION_GRANTED }
+    }.filter { checkSelfPermission(context, it) != PERMISSION_GRANTED }
 
     override fun isChipTurnedOn(): Flow<Boolean> = IntentFilter(ACTION_STATE_CHANGED)
         .asFlow()
