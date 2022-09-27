@@ -5,6 +5,11 @@ pluginManagement {
         mavenCentral()
     }
 }
+
+plugins {
+    id "com.gradle.enterprise" version "3.11.1"
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -12,6 +17,14 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+gradleEnterprise {
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+    }
+}
+
 rootProject.name = "TPMS Advanced"
 include ':core:common'
 include ':core:ui'

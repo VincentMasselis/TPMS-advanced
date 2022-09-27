@@ -34,7 +34,7 @@ jobs:
       - name: Build everything and run unit tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build exportComposeReport
+          arguments: build exportComposeReport --scan
 
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
