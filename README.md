@@ -1,0 +1,26 @@
+# TPMS-advanced
+Android app for Bluetooth TPMS sensors made by Sysgration
+
+<img src="https://user-images.githubusercontent.com/6769250/192485450-354d941b-47e7-4078-bede-5c28ace85b30.png" width="200"> <img src="https://user-images.githubusercontent.com/6769250/192485472-8c2c60fd-da54-4703-99db-3113e1339676.png" width="200"> <img src="https://user-images.githubusercontent.com/6769250/192485477-24ef7b35-8b37-4c40-b98e-e7025980d3f6.png" width="200"> <img src="https://user-images.githubusercontent.com/6769250/192485485-493ee137-6d88-43fc-b6fa-e50a31c96696.png" width="200">
+
+Available on the [Play Store](https://play.google.com/store/apps/details?id=com.masselis.tpmsadvanced)
+
+## Features
+* QR Code scanning
+* Pressures alerts
+* Temperature alerts
+* Dark mode
+* Pressure and temperature units selection
+* Favourites sensors
+
+## What's next ?
+* Multiple cars
+* Temperature history
+* Automatic startup in background when connected to the car's radio in bluetooth
+* Add support for other BLE Sensors
+
+## Which sensors are compatibles ?
+You can buy them on Ali*xpress, it looks like this:
+
+![BLE5](https://user-images.githubusercontent.com/6769250/192489323-00d1f481-635e-459b-9a43-f2ff75299fa5.png)  or  ![BLE4](https://user-images.githubusercontent.com/6769250/192489440-88d8f885-7679-4b99-9ecf-b9fff51723ed.png)
+
