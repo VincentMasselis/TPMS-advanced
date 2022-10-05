@@ -33,6 +33,7 @@ internal object Module {
 
         override fun encode(value: TyreLocation): Long = value.toLong()
 
+        @Suppress("MagicNumber")
         private fun TyreLocation.toLong(): Long = when (this) {
             TyreLocation.FRONT_LEFT -> 0
             TyreLocation.FRONT_RIGHT -> 1
