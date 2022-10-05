@@ -7,4 +7,6 @@ public enum class TyreLocation(
     FRONT_RIGHT(0x81u),
     REAR_LEFT(0x82u),
     REAR_RIGHT(0x83u);
+
+    public companion object
 }

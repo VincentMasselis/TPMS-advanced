@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'app.cash.sqldelight'
+}
+
+android {
+    defaultConfig {
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    }
+}
+
+
+dependencies {
+    api(project(":core:common"))
+    api(project(":core:database"))
+    api(project(":data:record"))
+
+    androidTestImplementation(project(":core:android-test"))
+    androidTestUtil 'androidx.test:orchestrator:1.4.1'
+}
+
+sqldelight {
+    Database {
+        packageName = "com.masselis.tpmsadvanced.data.car"
+        verifyMigrations = true
+        schemaOutputDirectory = file("src/main/sqldelight")
+        dialect("app.cash.sqldelight:sqlite-3-18-dialect:$sqlDelightVersion")
+    }
+}

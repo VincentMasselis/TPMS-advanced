@@ -1,0 +1,65 @@
+import java.util.UUID;
+import kotlin.Boolean;
+
+CREATE TABLE Car(
+    uuid TEXT AS UUID NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    isFavourite INTEGER AS Boolean NOT NULL
+);
+
+-- This sucession of triggers ensure there is always exactly 1 car with isFavourite set to 1
+
+CREATE TRIGGER IF NOT EXISTS new_favourite_insert
+    AFTER INSERT ON Car
+    WHEN new.isFavourite = 1
+BEGIN
+    UPDATE Car SET isFavourite = 0 WHERE isFavourite = 1 AND uuid != new.uuid;
+END;
+
+CREATE TRIGGER IF NOT EXISTS new_favourite_update
+    AFTER UPDATE OF isFavourite
+    ON Car
+    WHEN new.isFavourite = 1
+BEGIN
+    UPDATE Car SET isFavourite = 0 WHERE isFavourite = 1 AND uuid != new.uuid;
+END;
+
+CREATE TRIGGER IF NOT EXISTS no_favourite_update
+    AFTER UPDATE OF isFavourite
+    ON Car
+    WHEN (SELECT COUNT(*) FROM Car WHERE isFavourite = 1) = 0
+BEGIN
+    UPDATE Car SET isFavourite = 1 WHERE rowid IN (SELECT rowid FROM Car LIMIT 1);
+END;
+
+CREATE TRIGGER IF NOT EXISTS no_car_delete
+    BEFORE DELETE
+    ON Car
+    WHEN (SELECT COUNT(*) FROM Car) = 1
+BEGIN
+    SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS no_favourite_delete
+    AFTER DELETE
+    ON Car
+    WHEN old.isFavourite = 1
+BEGIN
+    UPDATE Car SET isFavourite = 1 WHERE rowid IN (SELECT rowid FROM Car LIMIT 1);
+END;
+
+-- This statement is put in the end because SQLDelight executes the triggers before the statements
+
+INSERT INTO Car(uuid, name, isFavourite) VALUES ("466b2e13-e33a-4adf-a101-a920140a29a1","My car",1);
+
+insert:
+INSERT INTO Car(uuid, name, isFavourite) VALUES (?,?,?);
+
+setAsFavourite:
+UPDATE Car SET isFavourite = ? WHERE uuid = ?;
+
+delete:
+DELETE FROM Car WHERE uuid = ?;
+
+currentFavourite:
+SELECT * FROM Car WHERE isFavourite = 1;

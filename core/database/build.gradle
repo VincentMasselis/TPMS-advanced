@@ -1,0 +1,10 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+dependencies {
+    api "app.cash.sqldelight:android-driver:$sqlDelightVersion"
+    api "app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion"
+    api "app.cash.sqldelight:primitive-adapters:$sqlDelightVersion"
+}
