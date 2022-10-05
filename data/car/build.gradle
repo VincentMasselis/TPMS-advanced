@@ -31,8 +31,9 @@ dependencies {
 sqldelight {
     Database {
         packageName = "com.masselis.tpmsadvanced.data.car"
-        verifyMigrations = true
-        schemaOutputDirectory = file("src/main/sqldelight")
         dialect("app.cash.sqldelight:sqlite-3-18-dialect:$sqlDelightVersion")
+        // Uncomment this when the first release with a database will be pushed
+        // verifyMigrations = true
+        // schemaOutputDirectory = file("src/main/sqldelight")
     }
 }
