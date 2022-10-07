@@ -76,8 +76,8 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: Lint-reports
-          path: "**/build/reports/androidTests/*.html"
+          name: Instrumented-reports
+          path: "**/build/reports/androidTests/**/*.html"
 
       - name: Lint reports
         uses: actions/upload-artifact@v3
