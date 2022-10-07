@@ -54,7 +54,7 @@ public fun <T : Enum<T>> EnumDropdown(
             readOnly = true,
             label = label,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().menuAnchor()
         )
         ExposedDropdownMenu(
             expanded = expanded,
