@@ -29,8 +29,10 @@ public class CarDatabase @Inject internal constructor(database: Database) {
         queries.delete(uuid)
     }
 
-    public fun currentFavourite(): Flow<Car> = queries.currentFavourite()
+    public fun currentFavouriteFlow(): Flow<Car> = queries.currentFavourite()
         .asFlow()
         .mapToOne(IO)
         .distinctUntilChanged()
+
+    public fun currentFavourite(): Car = queries.currentFavourite().executeAsOne()
 }

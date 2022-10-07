@@ -8,6 +8,8 @@ import com.masselis.tpmsadvanced.core.feature.ioc.DaggerFeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.unit.ioc.FeatureUnitInitializer
 import com.masselis.tpmsadvanced.core.feature.unit.ioc.featureUnitComponent
+import com.masselis.tpmsadvanced.data.car.ioc.DataCarInitializer
+import com.masselis.tpmsadvanced.data.car.ioc.dataCarComponent
 import com.masselis.tpmsadvanced.data.favourite.ioc.DataFavouriteInitializer
 import com.masselis.tpmsadvanced.data.favourite.ioc.dataFavouriteComponent
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordInitializer
@@ -25,8 +27,9 @@ public class FeatureCoreInitializer : Initializer<FeatureCoreComponent> {
             coreCommonComponent,
             dataRecordComponent,
             dataUnitComponent,
+            dataFavouriteComponent,
+            dataCarComponent,
             featureUnitComponent,
-            dataFavouriteComponent
         )
         .also { privateComponent = it }
 
@@ -34,7 +37,8 @@ public class FeatureCoreInitializer : Initializer<FeatureCoreComponent> {
         CoreCommonInitializer::class.java,
         DataRecordInitializer::class.java,
         DataUnitInitializer::class.java,
+        DataFavouriteInitializer::class.java,
+        DataCarInitializer::class.java,
         FeatureUnitInitializer::class.java,
-        DataFavouriteInitializer::class.java
     )
 }

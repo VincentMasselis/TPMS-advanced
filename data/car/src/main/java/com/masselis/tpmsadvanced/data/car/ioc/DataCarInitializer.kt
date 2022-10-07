@@ -7,7 +7,7 @@ import com.masselis.tpmsadvanced.core.common.CoreCommonInitializer
 private lateinit var privateInitializer: DataCarComponent
 public val dataCarComponent: DataCarComponent get() = privateInitializer
 
-internal class DataCarInitializer : Initializer<DataCarComponent> {
+public class DataCarInitializer : Initializer<DataCarComponent> {
 
     override fun create(context: Context): DataCarComponent = DaggerDataCarComponent
         .factory()
