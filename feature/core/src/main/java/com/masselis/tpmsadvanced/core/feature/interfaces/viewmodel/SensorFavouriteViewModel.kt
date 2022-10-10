@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.FavouriteSensorUseCase
 import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
+import com.masselis.tpmsadvanced.data.car.model.Sensor
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -33,7 +35,7 @@ internal class SensorFavouriteViewModel @AssistedInject constructor(
         object Empty : State()
 
         @Parcelize
-        data class RequestBond(val id: Int) : State()
+        data class RequestBond(val sensor: Sensor) : State()
     }
 
     private val mutableStateFlow = savedStateHandle
@@ -42,10 +44,10 @@ internal class SensorFavouriteViewModel @AssistedInject constructor(
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {
-        favouriteSensorUseCase.savedId
+        favouriteSensorUseCase.saved
             .flatMapLatest { savedId ->
                 if (savedId == null) favouriteSensorUseCase
-                    .foundIds
+                    .found
                     .map { State.RequestBond(it) }
                 else
                     flowOf(State.Empty)
@@ -56,7 +58,8 @@ internal class SensorFavouriteViewModel @AssistedInject constructor(
 
     fun save() {
         val state = stateFlow.value
-        if (state is State.RequestBond)
-            favouriteSensorUseCase.savedId.value = state.id
+        if (state is State.RequestBond) viewModelScope.launch {
+            favouriteSensorUseCase.save(state.sensor)
+        }
     }
 }

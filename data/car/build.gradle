@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
     id 'app.cash.sqldelight'
+    id 'kotlin-parcelize'
 }
 
 android {

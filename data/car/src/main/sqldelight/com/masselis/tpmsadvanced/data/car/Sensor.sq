@@ -1,10 +1,11 @@
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation;
+import java.util.UUID;
 import kotlin.Int;
 
 CREATE TABLE Sensor(
     id INTEGER AS Int NOT NULL PRIMARY KEY,
     location INTEGER AS TyreLocation NOT NULL,
-    carId TEXT NOT NULL,
+    carId TEXT AS UUID NOT NULL,
     FOREIGN KEY(carId) REFERENCES Car(uuid) ON DELETE CASCADE,
     UNIQUE(location, carId)
 );
@@ -14,3 +15,8 @@ INSERT INTO Sensor (id, location, carId) VALUES (?, ?, ?);
 
 delete:
 DELETE FROM Sensor WHERE id = ?;
+
+selectByCarAndLocation:
+SELECT Sensor.* FROM Sensor
+INNER JOIN Car ON Sensor.carId = Car.uuid
+WHERE Car.uuid = ? AND location = ?;
