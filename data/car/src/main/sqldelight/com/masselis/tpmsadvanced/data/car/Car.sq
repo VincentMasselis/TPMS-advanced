@@ -63,3 +63,6 @@ DELETE FROM Car WHERE uuid = ?;
 
 currentFavourite:
 SELECT * FROM Car WHERE isFavourite = 1;
+
+selectAll:
+SELECT * FROM Car;

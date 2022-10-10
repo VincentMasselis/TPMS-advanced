@@ -1,10 +1,14 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,8 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarViewModel
-import com.masselis.tpmsadvanced.data.car.Car
-import java.util.*
 
 @Composable
 public fun CurrentCarText(
@@ -32,6 +34,7 @@ internal fun CurrentCarText(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val car by viewModel.flow.collectAsState()
+    val carList by viewModel.carListFlow.collectAsState(emptyList())
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
@@ -44,18 +47,27 @@ internal fun CurrentCarText(
             Text(text = car.name)
             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
         }
-        ExposedDropdownMenu(
+        DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = !expanded }
+            onDismissRequest = { expanded = !expanded },
+            modifier = Modifier.exposedDropdownSize(false)
         ) {
-            listOf(car, Car(UUID.randomUUID(), "toto", false)).forEach { selectedValue ->
+            carList.forEach { currentCar ->
                 DropdownMenuItem(
-                    text = { Text(selectedValue.name) },
+                    text = { Text(currentCar.name, Modifier.weight(1f)) },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     onClick = {
+                        viewModel.setFavourite(currentCar)
                         expanded = false
-                    }
+                    },
                 )
             }
+            DropdownMenuItem(
+                text = { Text(text = "Add a car", Modifier.weight(1f)) },
+                trailingIcon = { Icon(Icons.Filled.AddCircle, contentDescription = null) },
+                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                onClick = { expanded = false },
+            )
         }
     }
 }

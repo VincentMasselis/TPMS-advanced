@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.core.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -53,16 +54,21 @@ public fun <T : Enum<T>> EnumDropdown(
             onValueChange = { },
             readOnly = true,
             label = label,
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.fillMaxWidth().menuAnchor()
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor()
         )
-        ExposedDropdownMenu(
+        DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = !expanded }
+            onDismissRequest = { expanded = !expanded },
+            modifier = Modifier.exposedDropdownSize()
         ) {
             values.forEach { value ->
                 DropdownMenuItem(
                     text = { Text(stringOf(value)) },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     onClick = {
                         onValue(value)
                         expanded = false
