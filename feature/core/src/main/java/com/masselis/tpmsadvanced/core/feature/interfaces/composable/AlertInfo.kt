@@ -12,11 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
+import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
+import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
+import com.masselis.tpmsadvanced.data.car.Car
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 internal fun PressureInfo(
@@ -33,6 +37,7 @@ internal fun PressureInfo(
                 Tyre(
                     location = TyreLocation.FRONT_LEFT,
                     modifier = Modifier.height(150.dp),
+                    carComponent = DemoCarComponent(),
                     viewModel = DemoTyreViewModel(State.Alerting),
                 )
                 Text(
@@ -66,6 +71,7 @@ internal fun TemperatureInfo(
                 Tyre(
                     location = TyreLocation.FRONT_LEFT,
                     modifier = Modifier.height(150.dp),
+                    carComponent = DemoCarComponent(),
                     viewModel = DemoTyreViewModel(state),
                 )
                 Text(text.format(temperature.string(unit)))
@@ -74,4 +80,13 @@ internal fun TemperatureInfo(
         onDismissRequest = onDismissRequest,
         confirmButton = { TextButton(onClick = onDismissRequest) { Text(text = "OK") } }
     )
+}
+
+private class DemoCarComponent : CarComponent() {
+    override val findTyreComponentUseCase: FindTyreComponentUseCase
+        get() = TODO("Not yet implemented")
+    override val car: Car
+        get() = TODO("Not yet implemented")
+    override val scope: CoroutineScope
+        get() = TODO("Not yet implemented")
 }

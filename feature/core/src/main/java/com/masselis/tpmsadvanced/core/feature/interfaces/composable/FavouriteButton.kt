@@ -19,17 +19,22 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SensorFavouriteViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent.Companion.component
+import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation
 
 @Composable
 internal fun FavouriteButton(
-    tyreLocation: TyreLocation,
+    location: TyreLocation,
     modifier: Modifier = Modifier,
-    viewModel: SensorFavouriteViewModel = viewModel(key = "SensorFavouriteViewModel_${tyreLocation.name}") {
-        tyreLocation.component.sensorFavouriteViewModelFactory.build(createSavedStateHandle())
+    carComponent: CarComponent = LocalCarComponent.current,
+    viewModel: SensorFavouriteViewModel = viewModel(
+        key = "SensorFavouriteViewModel_${carComponent.car.uuid}_${location.name}"
+    ) {
+        carComponent.tyreComponent(location).sensorFavouriteViewModelFactory
+            .build(createSavedStateHandle())
     }
 ) {
+
     var isDialogDisplayed by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
         val state by viewModel.stateFlow.collectAsState()

@@ -20,7 +20,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel.State
-import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent.Companion.component
+import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation.FRONT_RIGHT
@@ -35,8 +35,10 @@ import kotlin.time.Duration.Companion.milliseconds
 internal fun TyreStat(
     location: TyreLocation,
     modifier: Modifier = Modifier,
-    viewModel: TyreStatsViewModel = viewModel(key = "TyreStatsViewModel_${location.name}") {
-        location.component.tyreStatViewModelFactory.build(createSavedStateHandle())
+    carComponent: CarComponent = LocalCarComponent.current,
+    viewModel: TyreStatsViewModel = viewModel(key = "TyreStatsViewModel_${carComponent.car.uuid}_${location.name}") {
+        carComponent.tyreComponent(location).tyreStatViewModelFactory
+            .build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()
