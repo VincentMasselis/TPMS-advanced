@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.core.feature.interfaces.AtmosphereRangePreferences
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
+import com.masselis.tpmsadvanced.core.feature.usecase.CarRangesUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
 import com.masselis.tpmsadvanced.data.record.model.Pressure
@@ -36,7 +36,7 @@ import kotlin.time.toKotlinDuration
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TyreViewModelImpl @AssistedInject constructor(
     atmosphereUseCase: TyreAtmosphereUseCase,
-    rangeUseCase: AtmosphereRangePreferences,
+    rangeUseCase: CarRangesUseCase,
     @Assisted obsoleteTimeoutJava: Duration,
     @Assisted savedStateHandle: SavedStateHandle,
 ) : ViewModel(), TyreViewModel {
@@ -61,11 +61,11 @@ internal class TyreViewModelImpl @AssistedInject constructor(
             atmosphereUseCase.listen()
                 .onEach { savedStateHandle[LAST_KNOWN] = it }
                 .onStart { savedStateHandle.get<TyreAtmosphere>(LAST_KNOWN)?.also { emit(it) } },
-            rangeUseCase.highTempFlow,
-            rangeUseCase.normalTempFlow,
-            rangeUseCase.lowTempFlow,
-            rangeUseCase.lowPressureFlow,
-            rangeUseCase.highPressureFlow,
+            rangeUseCase.highTemp,
+            rangeUseCase.normalTemp,
+            rangeUseCase.lowTemp,
+            rangeUseCase.lowPressure,
+            rangeUseCase.highPressure,
         ) { values ->
             @Suppress("MagicNumber")
             Data(

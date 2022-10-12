@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.feature.interfaces.AtmosphereRangePreferences
+import com.masselis.tpmsadvanced.core.feature.usecase.CarRangesUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
 import com.masselis.tpmsadvanced.data.record.model.Pressure
@@ -28,7 +28,7 @@ import kotlin.Float.Companion.POSITIVE_INFINITY
 
 internal class TyreStatsViewModel @AssistedInject constructor(
     atmosphereUseCase: TyreAtmosphereUseCase,
-    rangeUseCase: AtmosphereRangePreferences,
+    rangeUseCase: CarRangesUseCase,
     unitPreferences: UnitPreferences,
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -72,9 +72,9 @@ internal class TyreStatsViewModel @AssistedInject constructor(
             atmosphereUseCase.listen()
                 .onEach { savedStateHandle[LAST_KNOWN] = it }
                 .onStart { savedStateHandle.get<TyreAtmosphere>(LAST_KNOWN)?.also { emit(it) } },
-            rangeUseCase.highTempFlow,
-            rangeUseCase.lowPressureFlow,
-            rangeUseCase.highPressureFlow,
+            rangeUseCase.highTemp,
+            rangeUseCase.lowPressure,
+            rangeUseCase.highPressure,
             unitPreferences.pressure.asStateFlow(),
             unitPreferences.temperature.asStateFlow(),
         ) { values ->

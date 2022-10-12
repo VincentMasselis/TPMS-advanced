@@ -3,7 +3,6 @@ package com.masselis.tpmsadvanced.core
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.core.feature.interfaces.AtmosphereRangePreferences
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
