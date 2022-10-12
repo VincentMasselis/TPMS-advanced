@@ -1,9 +1,9 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import dagger.Module
 import dagger.Provides
 

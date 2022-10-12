@@ -4,7 +4,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearFavourit
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.data.car.model.Car
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import dagger.BindsInstance
 import dagger.Subcomponent
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +25,7 @@ internal abstract class CarComponent {
     }
 
     protected abstract val findTyreComponentUseCase: FindTyreComponentUseCase
-    internal fun tyreComponent(location: TyreLocation) = findTyreComponentUseCase.find(location)
+    internal fun tyreComponent(location: SensorLocation) = findTyreComponentUseCase.find(location)
 
     internal abstract val carId: UUID
     internal abstract val carFlow: Flow<Car>

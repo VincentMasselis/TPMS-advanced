@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.data.car.interfaces
 import app.cash.sqldelight.Query
 import com.masselis.tpmsadvanced.data.car.Database
 import com.masselis.tpmsadvanced.data.record.model.Tyre
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -27,7 +27,7 @@ public class TyreDatabase @Inject internal constructor(
         )
     }
 
-    public fun selectByTyreLocationByCar(location: TyreLocation, carId: UUID): Query<Tyre> = queries
+    public fun selectByTyreLocationByCar(location: SensorLocation, carId: UUID): Query<Tyre> = queries
         .selectByTyreLocationByCar(
             location,
             carId

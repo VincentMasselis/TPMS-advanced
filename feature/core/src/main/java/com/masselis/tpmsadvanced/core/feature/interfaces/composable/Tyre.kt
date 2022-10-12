@@ -27,7 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -36,7 +36,7 @@ private val evaluator = ArgbEvaluator()
 
 @Composable
 internal fun Tyre(
-    location: TyreLocation,
+    location: SensorLocation,
     modifier: Modifier = Modifier,
     carComponent: CarComponent = LocalCarComponent.current,
     viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${carComponent.carId}_${location.name}") {

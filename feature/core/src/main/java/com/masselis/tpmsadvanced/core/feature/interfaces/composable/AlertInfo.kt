@@ -16,10 +16,9 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewM
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
-import com.masselis.tpmsadvanced.data.car.Car
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import kotlinx.coroutines.CoroutineScope
@@ -39,7 +38,7 @@ internal fun PressureInfo(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Tyre(
-                    location = TyreLocation.FRONT_LEFT,
+                    location = SensorLocation.FRONT_LEFT,
                     modifier = Modifier.height(150.dp),
                     carComponent = DemoCarComponent(),
                     viewModel = DemoTyreViewModel(State.Alerting),
@@ -73,7 +72,7 @@ internal fun TemperatureInfo(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Tyre(
-                    location = TyreLocation.FRONT_LEFT,
+                    location = SensorLocation.FRONT_LEFT,
                     modifier = Modifier.height(150.dp),
                     carComponent = DemoCarComponent(),
                     viewModel = DemoTyreViewModel(state),

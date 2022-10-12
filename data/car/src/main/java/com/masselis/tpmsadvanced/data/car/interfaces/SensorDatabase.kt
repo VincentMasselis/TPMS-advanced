@@ -5,7 +5,7 @@ import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.masselis.tpmsadvanced.data.car.Database
 import com.masselis.tpmsadvanced.data.car.model.Sensor
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -26,7 +26,7 @@ public class SensorDatabase @Inject internal constructor(
     }
 
     @Suppress("NAME_SHADOWING")
-    public fun selectByCarAndLocationFlow(carId: UUID, location: TyreLocation): Flow<Sensor?> =
+    public fun selectByCarAndLocationFlow(carId: UUID, location: SensorLocation): Flow<Sensor?> =
         queries
             .selectByCarAndLocation(carId, location) { id, location, _ -> Sensor(id, location) }
             .asFlow()

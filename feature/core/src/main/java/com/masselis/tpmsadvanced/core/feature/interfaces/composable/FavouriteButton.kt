@@ -20,11 +20,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SensorFavouriteViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 
 @Composable
 internal fun FavouriteButton(
-    location: TyreLocation,
+    location: SensorLocation,
     modifier: Modifier = Modifier,
     carComponent: CarComponent = LocalCarComponent.current,
     viewModel: SensorFavouriteViewModel = viewModel(

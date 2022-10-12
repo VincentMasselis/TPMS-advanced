@@ -30,7 +30,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 
 @Composable
 public fun Car(modifier: Modifier = Modifier) {
@@ -87,28 +87,28 @@ internal fun Car(
                     }
             ) {
                 Tyre(
-                    location = TyreLocation.FRONT_LEFT,
+                    location = SensorLocation.FRONT_LEFT,
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .fillMaxHeight(.2f)
                         .fillMaxWidth(.1f)
                 )
                 Tyre(
-                    location = TyreLocation.FRONT_RIGHT,
+                    location = SensorLocation.FRONT_RIGHT,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .fillMaxHeight(.2f)
                         .fillMaxWidth(.1f)
                 )
                 Tyre(
-                    location = TyreLocation.REAR_LEFT,
+                    location = SensorLocation.REAR_LEFT,
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .fillMaxHeight(.2f)
                         .fillMaxWidth(.12f)
                 )
                 Tyre(
-                    location = TyreLocation.REAR_RIGHT,
+                    location = SensorLocation.REAR_RIGHT,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .fillMaxHeight(.2f)
@@ -123,7 +123,7 @@ internal fun Car(
                 .width(100.dp)
             ) {
                 TyreStat(
-                    location = TyreLocation.FRONT_LEFT,
+                    location = SensorLocation.FRONT_LEFT,
                     modifier = Modifier.align(Alignment.TopEnd)
                 )
             }
@@ -132,7 +132,7 @@ internal fun Car(
                 start.linkTo(tyreBox.start)
             }) {
                 FavouriteButton(
-                    TyreLocation.FRONT_LEFT,
+                    SensorLocation.FRONT_LEFT,
                     modifier = Modifier.padding(start = 24.dp)
                 )
             }
@@ -144,7 +144,7 @@ internal fun Car(
                 .width(100.dp)
             ) {
                 TyreStat(
-                    location = TyreLocation.FRONT_RIGHT,
+                    location = SensorLocation.FRONT_RIGHT,
                     modifier = Modifier.align(Alignment.TopStart)
                 )
             }
@@ -153,7 +153,7 @@ internal fun Car(
                 end.linkTo(tyreBox.end)
             }) {
                 FavouriteButton(
-                    TyreLocation.FRONT_RIGHT,
+                    SensorLocation.FRONT_RIGHT,
                     modifier = Modifier.padding(end = 24.dp)
                 )
             }
@@ -165,7 +165,7 @@ internal fun Car(
                 .width(100.dp)
             ) {
                 TyreStat(
-                    location = TyreLocation.REAR_LEFT,
+                    location = SensorLocation.REAR_LEFT,
                     modifier = Modifier.align(Alignment.BottomEnd)
                 )
             }
@@ -174,7 +174,7 @@ internal fun Car(
                 start.linkTo(tyreBox.start)
             }) {
                 FavouriteButton(
-                    TyreLocation.REAR_LEFT,
+                    SensorLocation.REAR_LEFT,
                     modifier = Modifier.padding(start = 28.dp)
                 )
             }
@@ -186,7 +186,7 @@ internal fun Car(
                 .width(100.dp)
             ) {
                 TyreStat(
-                    location = TyreLocation.REAR_RIGHT,
+                    location = SensorLocation.REAR_RIGHT,
                     modifier = Modifier.align(Alignment.TopStart)
                 )
             }
@@ -195,7 +195,7 @@ internal fun Car(
                 end.linkTo(tyreBox.end)
             }) {
                 FavouriteButton(
-                    TyreLocation.REAR_RIGHT,
+                    SensorLocation.REAR_RIGHT,
                     modifier = Modifier.padding(end = 28.dp)
                 )
             }

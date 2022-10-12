@@ -11,7 +11,7 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.masselis.tpmsadvanced.data.car.model.Sensor
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -68,10 +68,10 @@ internal class QrCodeAnalyserUseCase @Inject constructor(private val context: Co
         }
         .map { intIds ->
             SensorMap(
-                Sensor(intIds[0], TyreLocation.FRONT_LEFT),
-                Sensor(intIds[1], TyreLocation.FRONT_RIGHT),
-                Sensor(intIds[2], TyreLocation.REAR_LEFT),
-                Sensor(intIds[3], TyreLocation.REAR_RIGHT)
+                Sensor(intIds[0], SensorLocation.FRONT_LEFT),
+                Sensor(intIds[1], SensorLocation.FRONT_RIGHT),
+                Sensor(intIds[2], SensorLocation.REAR_LEFT),
+                Sensor(intIds[3], SensorLocation.REAR_RIGHT)
             )
         }
 

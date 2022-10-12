@@ -13,7 +13,7 @@ import com.masselis.tpmsadvanced.data.car.Sensor
 import com.masselis.tpmsadvanced.data.car.Tyre
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import dagger.Provides
 import java.util.*
 
@@ -27,21 +27,21 @@ internal object Module {
     }
 
     @Provides
-    fun tyreLocationAdapter() = object : ColumnAdapter<TyreLocation, Long> {
+    fun tyreLocationAdapter() = object : ColumnAdapter<SensorLocation, Long> {
 
-        override fun decode(databaseValue: Long): TyreLocation = TyreLocation.from(databaseValue)
+        override fun decode(databaseValue: Long): SensorLocation = SensorLocation.from(databaseValue)
 
-        override fun encode(value: TyreLocation): Long = value.toLong()
+        override fun encode(value: SensorLocation): Long = value.toLong()
 
         @Suppress("MagicNumber")
-        private fun TyreLocation.toLong(): Long = when (this) {
-            TyreLocation.FRONT_LEFT -> 0
-            TyreLocation.FRONT_RIGHT -> 1
-            TyreLocation.REAR_LEFT -> 2
-            TyreLocation.REAR_RIGHT -> 3
+        private fun SensorLocation.toLong(): Long = when (this) {
+            SensorLocation.FRONT_LEFT -> 0
+            SensorLocation.FRONT_RIGHT -> 1
+            SensorLocation.REAR_LEFT -> 2
+            SensorLocation.REAR_RIGHT -> 3
         }
 
-        private fun TyreLocation.Companion.from(long: Long) = TyreLocation
+        private fun SensorLocation.Companion.from(long: Long) = SensorLocation
             .values()
             .first { it.toLong() == long }
     }
@@ -96,7 +96,7 @@ internal object Module {
     fun database(
         driver: SqlDriver,
         uuidAdapter: ColumnAdapter<UUID, String>,
-        tyreLocationAdapter: ColumnAdapter<TyreLocation, Long>,
+        sensorLocationAdapter: ColumnAdapter<SensorLocation, Long>,
         pressureAdapter: ColumnAdapter<Pressure, Double>,
         temperatureAdapter: ColumnAdapter<Temperature, Double>,
         uShortAdapter: ColumnAdapter<UShort, Long>,
@@ -110,10 +110,10 @@ internal object Module {
             temperatureAdapter,
             temperatureAdapter
         ),
-        SensorAdapter = Sensor.Adapter(IntColumnAdapter, tyreLocationAdapter, uuidAdapter),
+        SensorAdapter = Sensor.Adapter(IntColumnAdapter, sensorLocationAdapter, uuidAdapter),
         TyreAdapter = Tyre.Adapter(
             IntColumnAdapter,
-            tyreLocationAdapter,
+            sensorLocationAdapter,
             pressureAdapter,
             temperatureAdapter,
             uShortAdapter,

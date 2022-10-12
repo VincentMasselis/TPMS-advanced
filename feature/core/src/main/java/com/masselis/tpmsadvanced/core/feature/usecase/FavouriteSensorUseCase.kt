@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreScope
 import com.masselis.tpmsadvanced.data.car.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.car.model.Sensor
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @TyreScope
 internal class FavouriteSensorUseCase @Inject constructor(
     private val carId: UUID,
-    private val location: TyreLocation,
+    private val location: SensorLocation,
     private val sensorDatabase: SensorDatabase,
     private val tyreUseCaseImpl: TyreUseCaseImpl,
 ) : TyreUseCase {

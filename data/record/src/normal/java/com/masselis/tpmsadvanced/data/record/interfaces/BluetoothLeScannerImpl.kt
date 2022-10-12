@@ -31,7 +31,7 @@ import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -125,7 +125,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             @Suppress("MagicNumber")
             Tyre(
                 now(),
-                TyreLocation.values().first { it.byte == raw.location() },
+                SensorLocation.values().first { it.byte == raw.location() },
                 ByteBuffer
                     .wrap(byteArrayOf(0x00) + raw.id())
                     .order(ByteOrder.LITTLE_ENDIAN)
