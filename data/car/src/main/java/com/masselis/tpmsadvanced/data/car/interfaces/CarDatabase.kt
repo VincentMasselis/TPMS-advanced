@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 @Reusable
 public class CarDatabase @Inject internal constructor(database: Database) {
 

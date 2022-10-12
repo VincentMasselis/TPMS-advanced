@@ -60,7 +60,9 @@ private fun LazyListScope.carItem(
 @Composable
 private fun PressureRange(
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") { carComponent.settingsViewModel.build() }
+    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") {
+        carComponent.settingsViewModel.build()
+    }
 ) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
     val lowPressure by viewModel.lowPressure.collectAsState()
@@ -112,7 +114,9 @@ private fun HighTemp(
 @Composable
 private fun NormalTemp(
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") { carComponent.settingsViewModel.build() }
+    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") {
+        carComponent.settingsViewModel.build()
+    }
 ) {
     var showNormalTempDialog by remember { mutableStateOf(false) }
     val lowTemp by viewModel.lowTemp.collectAsState()
@@ -139,7 +143,9 @@ private fun NormalTemp(
 @Composable
 private fun LowTemp(
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") { carComponent.settingsViewModel.build() }
+    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") {
+        carComponent.settingsViewModel.build()
+    }
 ) {
     var showLowTempDialog by remember { mutableStateOf(false) }
     val lowTemp by viewModel.lowTemp.collectAsState()
