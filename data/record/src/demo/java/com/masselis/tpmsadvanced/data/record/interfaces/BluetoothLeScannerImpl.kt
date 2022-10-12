@@ -3,9 +3,9 @@ package com.masselis.tpmsadvanced.data.record.interfaces
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -44,7 +44,7 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
 
     private fun createTyre() = Tyre(
         now(),
-        TyreLocation.values().random(random),
+        SensorLocation.values().random(random),
         (1..4).random(random),
         pressures.random(random),
         temperatures.random(random),
@@ -52,8 +52,8 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
         false
     )
 
-    private val startTyres = mutableMapOf<TyreLocation, Tyre>().apply {
-        while (TyreLocation.values().size != count()) {
+    private val startTyres = mutableMapOf<SensorLocation, Tyre>().apply {
+        while (SensorLocation.values().size != count()) {
             val tyre = createTyre()
             put(tyre.location, tyre)
         }
