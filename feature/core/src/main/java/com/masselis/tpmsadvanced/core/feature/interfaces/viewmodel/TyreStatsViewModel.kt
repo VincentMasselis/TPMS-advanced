@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.parcelize.Parcelize
+import kotlin.Float.Companion.NEGATIVE_INFINITY
+import kotlin.Float.Companion.POSITIVE_INFINITY
 
 internal class TyreStatsViewModel @AssistedInject constructor(
     atmosphereUseCase: TyreAtmosphereUseCase,
@@ -96,13 +98,13 @@ internal class TyreStatsViewModel @AssistedInject constructor(
                     temperatureUnit
                 ) else
                     when (atmosphere.temperature.celsius) {
-                        in Float.MIN_VALUE..highTemp.celsius -> State.Normal(
+                        in NEGATIVE_INFINITY..highTemp.celsius -> State.Normal(
                             atmosphere.pressure,
                             pressureUnit,
                             atmosphere.temperature,
                             temperatureUnit
                         )
-                        in highTemp.celsius..Float.MAX_VALUE -> State.Alerting(
+                        in highTemp.celsius..POSITIVE_INFINITY -> State.Alerting(
                             atmosphere.pressure,
                             pressureUnit,
                             atmosphere.temperature,

@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import java.time.Duration
+import kotlin.Float.Companion.NEGATIVE_INFINITY
+import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
@@ -83,7 +85,7 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                         State.Alerting
                     else
                         when (atmosphere.temperature) {
-                            in Temperature(Float.MIN_VALUE)..lowTemp ->
+                            in Temperature(NEGATIVE_INFINITY)..lowTemp ->
                                 State.Normal.BlueToGreen(Fraction(0f))
                             in lowTemp..normalTemp ->
                                 State.Normal.BlueToGreen(
@@ -101,7 +103,7 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                                             .div(highTemp.celsius - normalTemp.celsius)
                                     )
                                 )
-                            in highTemp..Temperature(Float.MAX_VALUE) ->
+                            in highTemp..Temperature(POSITIVE_INFINITY) ->
                                 State.Alerting
                             else ->
                                 @Suppress("ThrowingExceptionsWithoutMessageOrCause")
