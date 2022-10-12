@@ -9,7 +9,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.car.Car
 import com.masselis.tpmsadvanced.data.car.Database
-import com.masselis.tpmsadvanced.data.car.Sensor.Adapter
+import com.masselis.tpmsadvanced.data.car.Sensor
 import com.masselis.tpmsadvanced.data.car.Tyre
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature
@@ -102,8 +102,15 @@ internal object Module {
         uShortAdapter: ColumnAdapter<UShort, Long>,
     ) = Database(
         driver,
-        CarAdapter = Car.Adapter(uuidAdapter),
-        SensorAdapter = Adapter(IntColumnAdapter, tyreLocationAdapter, uuidAdapter),
+        CarAdapter = Car.Adapter(
+            uuidAdapter,
+            pressureAdapter,
+            pressureAdapter,
+            temperatureAdapter,
+            temperatureAdapter,
+            temperatureAdapter
+        ),
+        SensorAdapter = Sensor.Adapter(IntColumnAdapter, tyreLocationAdapter, uuidAdapter),
         TyreAdapter = Tyre.Adapter(
             IntColumnAdapter,
             tyreLocationAdapter,

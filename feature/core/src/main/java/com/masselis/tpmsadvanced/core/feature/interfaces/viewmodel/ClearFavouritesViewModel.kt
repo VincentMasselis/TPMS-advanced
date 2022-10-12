@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 internal class ClearFavouritesViewModel @AssistedInject constructor(
@@ -47,7 +48,7 @@ internal class ClearFavouritesViewModel @AssistedInject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun clear() {
+    fun clear() = viewModelScope.launch {
         clearFavouriteUseCase.clear()
     }
 }

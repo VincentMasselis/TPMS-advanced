@@ -2,15 +2,13 @@ package com.masselis.tpmsadvanced.core.feature.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarListViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearFavouritesViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.unit.ioc.FeatureUnitComponent
-import com.masselis.tpmsadvanced.core.feature.usecase.FavouriteCarUseCase
 import com.masselis.tpmsadvanced.data.car.ioc.DataCarComponent
-import com.masselis.tpmsadvanced.data.favourite.ioc.DataFavouriteComponent
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import dagger.Component
@@ -24,7 +22,6 @@ import dagger.Component
         CoreCommonComponent::class,
         DataRecordComponent::class,
         DataUnitComponent::class,
-        DataFavouriteComponent::class,
         DataCarComponent::class,
         FeatureUnitComponent::class,
     ]
@@ -37,15 +34,12 @@ public abstract class FeatureCoreComponent {
             coreCommonComponent: CoreCommonComponent,
             dataRecordComponent: DataRecordComponent,
             dataUnitComponent: DataUnitComponent,
-            dataFavouriteComponent: DataFavouriteComponent,
             dataCarComponent: DataCarComponent,
             featureUnitComponent: FeatureUnitComponent,
         ): FeatureCoreComponent
     }
 
     internal abstract val preconditionsViewModel: PreconditionsViewModel.Factory
-    internal abstract val settingsViewModel: SettingsViewModel.Factory
-    internal abstract val clearFavouritesViewModel: ClearFavouritesViewModel.Factory
     internal abstract val favouriteCarViewModel: FavouriteCarViewModel
     internal abstract val carListViewModel: CarListViewModel
     internal abstract val favouriteCarComponentViewModel: FavouriteCarComponentViewModel

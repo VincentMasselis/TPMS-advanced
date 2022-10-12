@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -108,7 +107,7 @@ private fun Preview(
                 text = { Text(text = "Would you add theses sensors as your favourite sensors ?") },
                 onDismissRequest = { viewModel.scanAgain() },
                 confirmButton = {
-                    TextButton(onClick = { viewModel.addToFavourites(state.sensorIds) }) {
+                    TextButton(onClick = { viewModel.addToFavourites(state.sensorMap) }) {
                         Text(text = "Yes")
                     }
                 },

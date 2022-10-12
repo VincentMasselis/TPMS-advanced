@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.data.car.interfaces
 
 import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.masselis.tpmsadvanced.data.car.Database
 import com.masselis.tpmsadvanced.data.car.model.Sensor
@@ -20,8 +21,8 @@ public class SensorDatabase @Inject internal constructor(
         queries.insert(sensor.id, sensor.location, carId)
     }
 
-    public suspend fun delete(id: Int): Unit = withContext(IO) {
-        queries.delete(id)
+    public suspend fun deleteFromCar(carId: UUID): Unit = withContext(IO) {
+        queries.deleteByCar(carId)
     }
 
     @Suppress("NAME_SHADOWING")
@@ -30,4 +31,8 @@ public class SensorDatabase @Inject internal constructor(
             .selectByCarAndLocation(carId, location) { id, location, _ -> Sensor(id, location) }
             .asFlow()
             .mapToOneOrNull(IO)
+
+    public fun countByCar(carId: UUID): Flow<Long> = queries.countByCar(carId)
+        .asFlow()
+        .mapToOne(IO)
 }

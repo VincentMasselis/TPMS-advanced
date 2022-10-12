@@ -16,7 +16,19 @@ INSERT INTO Sensor (id, location, carId) VALUES (?, ?, ?);
 delete:
 DELETE FROM Sensor WHERE id = ?;
 
+deleteByCar:
+DELETE FROM Sensor WHERE rowid IN (
+    SELECT Sensor.rowid FROM Sensor
+    INNER JOIN Car ON Sensor.carId = Car.uuid
+    WHERE Car.uuid = ?
+);
+
 selectByCarAndLocation:
 SELECT Sensor.* FROM Sensor
 INNER JOIN Car ON Sensor.carId = Car.uuid
 WHERE Car.uuid = ? AND location = ?;
+
+countByCar:
+SELECT COUNT(Sensor.rowid) FROM Sensor
+INNER JOIN Car ON Sensor.carId = Car.uuid
+WHERE Car.uuid = ?;

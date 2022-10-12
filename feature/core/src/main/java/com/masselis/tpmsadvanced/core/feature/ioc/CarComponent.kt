@@ -1,11 +1,15 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearFavouritesViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
-import com.masselis.tpmsadvanced.data.car.Car
+import com.masselis.tpmsadvanced.data.car.model.Car
 import com.masselis.tpmsadvanced.data.record.model.TyreLocation
 import dagger.BindsInstance
 import dagger.Subcomponent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import java.util.*
 
 @CarScope
 @Subcomponent(
@@ -17,12 +21,16 @@ import kotlinx.coroutines.CoroutineScope
 internal abstract class CarComponent {
     @Subcomponent.Factory
     internal interface Factory {
-        fun build(@BindsInstance car: Car): CarComponent
+        fun build(@BindsInstance carId: UUID): CarComponent
     }
 
     protected abstract val findTyreComponentUseCase: FindTyreComponentUseCase
     internal fun tyreComponent(location: TyreLocation) = findTyreComponentUseCase.find(location)
 
-    internal abstract val car: Car
+    internal abstract val carId: UUID
+    internal abstract val carFlow: Flow<Car>
     internal abstract val scope: CoroutineScope
+
+    internal abstract val clearFavouritesViewModel: ClearFavouritesViewModel.Factory
+    internal abstract val settingsViewModel: SettingsViewModel.Factory
 }

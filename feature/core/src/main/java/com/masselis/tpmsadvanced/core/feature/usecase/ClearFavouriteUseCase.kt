@@ -1,22 +1,20 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.data.favourite.repository.FavouriteRepository
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
-import kotlinx.coroutines.flow.combine
+import com.masselis.tpmsadvanced.data.car.interfaces.SensorDatabase
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import java.util.*
 import javax.inject.Inject
 
 internal class ClearFavouriteUseCase @Inject constructor(
-    private val favouriteRepository: FavouriteRepository
+    private val carId: UUID,
+    private val sensorDatabase: SensorDatabase,
 ) {
 
-    private val mutableStateFlows = TyreLocation
-        .values()
-        .map { loc -> favouriteRepository.favouriteId(loc) }
+    suspend fun clear() = sensorDatabase.deleteFromCar(carId)
 
-    fun clear() = mutableStateFlows.forEach { it.value = null }
-
-    fun isClearingAllowed() = combine(mutableStateFlows) { ids -> ids.any { it != null } }
+    fun isClearingAllowed() = sensorDatabase.countByCar(carId)
+        .map { it > 0 }
         .distinctUntilChanged()
 
 }

@@ -39,7 +39,7 @@ internal fun Tyre(
     location: TyreLocation,
     modifier: Modifier = Modifier,
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${carComponent.car.uuid}_${location.name}") {
+    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${carComponent.carId}_${location.name}") {
         carComponent.tyreComponent(location).tyreViewModelFactory.build(createSavedStateHandle())
     },
 ) {

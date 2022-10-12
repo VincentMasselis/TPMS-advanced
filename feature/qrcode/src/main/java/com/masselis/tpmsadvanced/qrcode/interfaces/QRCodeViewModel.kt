@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.qrcode.interfaces
 import androidx.camera.view.CameraController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.qrcode.model.SensorIds
+import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import com.masselis.tpmsadvanced.qrcode.usecase.QrCodeAnalyserUseCase
 import com.masselis.tpmsadvanced.qrcode.usecase.SaveIdsUseCase
 import dagger.assisted.Assisted
@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class QRCodeViewModel @AssistedInject constructor(
@@ -31,7 +32,7 @@ internal class QRCodeViewModel @AssistedInject constructor(
 
     sealed class State {
         object Scanning : State()
-        data class AskFavourites(val sensorIds: SensorIds) : State()
+        data class AskFavourites(val sensorMap: SensorMap) : State()
         object Leave : State()
     }
 
@@ -50,7 +51,7 @@ internal class QRCodeViewModel @AssistedInject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun addToFavourites(ids: SensorIds) {
+    fun addToFavourites(ids: SensorMap) = viewModelScope.launch {
         saveIdsUseCase.save(ids)
         mutableStateFlow.value = State.Leave
     }

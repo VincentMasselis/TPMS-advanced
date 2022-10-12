@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.qrcode.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
-import com.masselis.tpmsadvanced.data.favourite.ioc.DataFavouriteComponent
+import com.masselis.tpmsadvanced.data.car.ioc.DataCarComponent
 import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel
 import dagger.Component
@@ -11,7 +11,7 @@ import dagger.Component
 @Component(
     dependencies = [
         CoreCommonComponent::class,
-        DataFavouriteComponent::class,
+        DataCarComponent::class,
         FeatureCoreComponent::class
     ]
 )
@@ -20,7 +20,7 @@ public abstract class FeatureQrCodeComponent {
     internal abstract class Factory {
         abstract fun build(
             coreCommonComponent: CoreCommonComponent,
-            dataFavouriteComponent: DataFavouriteComponent,
+            dataCarComponent: DataCarComponent,
             featureCoreComponent: FeatureCoreComponent
         ): FeatureQrCodeComponent
     }

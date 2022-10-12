@@ -17,14 +17,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearFavouritesViewModel
+import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 
 @Composable
 internal fun ClearFavourites(
     modifier: Modifier = Modifier,
-    viewModel: ClearFavouritesViewModel = viewModel {
-        featureCoreComponent.clearFavouritesViewModel.build(createSavedStateHandle())
+    carComponent: CarComponent = LocalCarComponent.current,
+    viewModel: ClearFavouritesViewModel = viewModel(key = "ClearFavouritesViewModel_${carComponent.carId}") {
+        carComponent.clearFavouritesViewModel.build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()

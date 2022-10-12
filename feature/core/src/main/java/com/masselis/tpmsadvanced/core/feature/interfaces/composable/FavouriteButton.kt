@@ -28,7 +28,7 @@ internal fun FavouriteButton(
     modifier: Modifier = Modifier,
     carComponent: CarComponent = LocalCarComponent.current,
     viewModel: SensorFavouriteViewModel = viewModel(
-        key = "SensorFavouriteViewModel_${carComponent.car.uuid}_${location.name}"
+        key = "SensorFavouriteViewModel_${carComponent.carId}_${location.name}"
     ) {
         carComponent.tyreComponent(location).sensorFavouriteViewModelFactory
             .build(createSavedStateHandle())

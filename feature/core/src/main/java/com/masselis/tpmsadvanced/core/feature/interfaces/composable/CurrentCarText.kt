@@ -26,7 +26,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarListViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarViewModel
-import com.masselis.tpmsadvanced.data.car.Car
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarViewModel.State
+import com.masselis.tpmsadvanced.data.car.model.Car
 
 @Composable
 public fun CurrentCarText(
@@ -40,8 +41,8 @@ internal fun CurrentCarText(
 ) {
     val state by viewModel.stateFlow.collectAsState()
     val car = when (val state = state) {
-        FavouriteCarViewModel.State.Loading -> return
-        is FavouriteCarViewModel.State.CurrentCar -> state.car
+        State.Loading -> return
+        is State.CurrentCar -> state.car
     }
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(

@@ -1,10 +1,17 @@
+import com.masselis.tpmsadvanced.data.record.model.Pressure;
+import com.masselis.tpmsadvanced.data.record.model.Temperature;
 import java.util.UUID;
 import kotlin.Boolean;
 
 CREATE TABLE Car(
     uuid TEXT AS UUID NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
-    isFavourite INTEGER AS Boolean NOT NULL
+    isFavourite INTEGER AS Boolean NOT NULL,
+    lowPressure REAL AS Pressure NOT NULL DEFAULT 100,
+    highPressure REAL AS Pressure NOT NULL DEFAULT 300,
+    lowTemp REAL AS Temperature NOT NULL DEFAULT 20,
+    normalTemp REAL AS Temperature NOT NULL DEFAULT 45,
+    highTemp REAL AS Temperature NOT NULL DEFAULT 90
 );
 
 -- This sucession of triggers ensure there is always exactly 1 car with isFavourite set to 1
@@ -55,14 +62,47 @@ INSERT INTO Car(uuid, name, isFavourite) VALUES ("466b2e13-e33a-4adf-a101-a92014
 insert:
 INSERT INTO Car(uuid, name, isFavourite) VALUES (?,?,?);
 
-setAsFavourite:
-UPDATE Car SET isFavourite = ? WHERE uuid = ?;
+selectLowPressureByCarId:
+SELECT lowPressure FROM Car WHERE uuid = ?;
+
+updateLowPressure:
+UPDATE Car SET lowPressure = ? WHERE uuid = ?;
+
+selectHighPressureByCarId:
+SELECT highPressure FROM Car WHERE uuid = ?;
+
+updateHighPressure:
+UPDATE Car SET highPressure = ? WHERE uuid = ?;
+
+selectLowTempByCarId:
+SELECT lowTemp FROM Car WHERE uuid = ?;
+
+updateLowTemp:
+UPDATE Car SET lowTemp = ? WHERE uuid = ?;
+
+selectNormalTempByCarId:
+SELECT normalTemp FROM Car WHERE uuid = ?;
+
+updateNormalTemp:
+UPDATE Car SET normalTemp = ? WHERE uuid = ?;
+
+selectHighTempByCarId:
+SELECT highTemp FROM Car WHERE uuid = ?;
+
+updateHighTemp:
+UPDATE Car SET highTemp = ? WHERE uuid = ?;
 
 delete:
 DELETE FROM Car WHERE uuid = ?;
+
+setAsFavourite:
+UPDATE Car SET isFavourite = ? WHERE uuid = ?;
 
 currentFavourite:
 SELECT * FROM Car WHERE isFavourite = 1;
 
 selectAll:
 SELECT * FROM Car;
+
+selectByUuid:
+SELECT * FROM Car WHERE uuid = ?;
