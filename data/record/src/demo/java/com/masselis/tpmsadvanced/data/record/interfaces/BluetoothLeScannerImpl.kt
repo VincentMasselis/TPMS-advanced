@@ -42,15 +42,18 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
 
     private val random = Random(9847946)
 
-    private fun createTyre() = Tyre(
-        now(),
-        SensorLocation.values().random(random),
-        (1..4).random(random),
-        pressures.random(random),
-        temperatures.random(random),
-        100u,
-        false
-    )
+    private fun createTyre(): Tyre {
+        val location = SensorLocation.values().random(random)
+        return Tyre(
+            now(),
+            location,
+            location.ordinal,
+            pressures.random(random),
+            temperatures.random(random),
+            100u,
+            false
+        )
+    }
 
     private val startTyres = mutableMapOf<SensorLocation, Tyre>().apply {
         while (SensorLocation.values().size != count()) {

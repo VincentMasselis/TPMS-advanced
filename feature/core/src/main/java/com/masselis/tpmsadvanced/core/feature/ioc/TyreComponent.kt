@@ -8,7 +8,9 @@ import dagger.BindsInstance
 import dagger.Subcomponent
 
 @TyreScope
-@Subcomponent
+@Subcomponent(
+    modules = [TyreModule::class]
+)
 public abstract class TyreComponent {
 
     @Subcomponent.Factory
