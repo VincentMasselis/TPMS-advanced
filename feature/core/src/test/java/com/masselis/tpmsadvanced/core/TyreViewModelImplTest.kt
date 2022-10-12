@@ -76,7 +76,7 @@ internal class TyreViewModelImplTest {
 
     @Test
     fun belowRangeTemperature() = runTest {
-        setAtmosphere(2f.bar, 15f.celsius)
+        setAtmosphere(2f.bar, (-10f).celsius)
         assertIs<State.Normal.BlueToGreen>(test().stateFlow.value)
     }
 
