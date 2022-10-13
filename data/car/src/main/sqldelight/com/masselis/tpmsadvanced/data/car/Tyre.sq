@@ -20,8 +20,10 @@ CREATE TABLE Tyre(
 insert:
 INSERT INTO Tyre (id, timestamp, location, pressure, temperature, battery, isAlarm, sensorId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
-selectByTyreLocationByCar:
+latestByTyreLocationByCar:
 SELECT Tyre.id, Tyre.timestamp, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm FROM Tyre
 INNER JOIN Sensor ON Tyre.sensorId = Sensor.id
 INNER JOIN Car ON Sensor.carId = Car.uuid
-WHERE Sensor.location = ? AND Car.uuid = ?;
+WHERE Sensor.location = ? AND Car.uuid = ?
+ORDER BY timestamp DESC
+LIMIT 1;

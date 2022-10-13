@@ -40,7 +40,6 @@ internal fun BindSensorButton(
             .build(createSavedStateHandle())
     }
 ) {
-    println(LocalViewModelStoreOwner.current)
     var sensorToAdd by remember { mutableStateOf<Sensor?>(null) }
     Box(modifier = modifier) {
         val state by viewModel.stateFlow.collectAsState(State.Empty)
