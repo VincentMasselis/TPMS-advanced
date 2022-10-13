@@ -20,12 +20,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertIs
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -60,7 +60,7 @@ internal class TyreViewModelImplTest {
     private fun test() = TyreViewModelImpl(
         tyreAtmosphereUseCase,
         carRangesUseCase,
-        500.milliseconds.toJavaDuration(),
+        3.seconds.toJavaDuration(),
         savedStateHandle
     )
 
@@ -70,64 +70,64 @@ internal class TyreViewModelImplTest {
         )
 
     @Test
-    fun notDetected() = runTest {
+    fun notDetected(): Unit = runBlocking {
         assertIs<State.NotDetected>(test().stateFlow.value)
     }
 
     @Test
-    fun belowRangeTemperature() = runTest {
+    fun belowRangeTemperature(): Unit = runBlocking {
         setAtmosphere(2f.bar, (-10f).celsius)
         assertIs<State.Normal.BlueToGreen>(test().stateFlow.value)
     }
 
     @Test
-    fun normalTemperature() = runTest {
+    fun normalTemperature(): Unit = runBlocking {
         setAtmosphere(2f.bar, 25f.celsius)
         assertIs<State.Normal.BlueToGreen>(test().stateFlow.value)
     }
 
     @Test
-    fun highTemperature() = runTest {
+    fun highTemperature(): Unit = runBlocking {
         setAtmosphere(2f.bar, 60f.celsius)
         assertIs<State.Normal.GreenToRed>(test().stateFlow.value)
     }
 
     @Test
-    fun ultraHighTemperature() = runTest {
+    fun ultraHighTemperature(): Unit = runBlocking {
         setAtmosphere(2f.bar, 115f.celsius)
         assertIs<State.Alerting>(test().stateFlow.value)
     }
 
     @Test
-    fun noPressure() = runTest {
+    fun noPressure(): Unit = runBlocking {
         setAtmosphere(0f.bar, 45f.celsius)
         assertIs<State.Alerting>(test().stateFlow.value)
     }
 
     @Test
-    fun lowPressure() = runTest {
+    fun lowPressure(): Unit = runBlocking {
         setAtmosphere(0.8f.bar, 45f.celsius)
         assertIs<State.Alerting>(test().stateFlow.value)
     }
 
     @Test
-    fun highPressure() = runTest {
+    fun highPressure(): Unit = runBlocking {
         setAtmosphere(4f.bar, 45f.celsius)
         assertIs<State.Alerting>(test().stateFlow.value)
     }
 
     @Test
-    fun normalPressure() = runTest {
+    fun normalPressure(): Unit = runBlocking {
         setAtmosphere(2f.bar, 45f.celsius)
         assertIs<State.Normal>(test().stateFlow.value)
     }
 
     @Test
-    fun obsolete() = runTest {
+    fun obsolete(): Unit = runTest {
         setAtmosphere(2f.bar, 35f.celsius)
         val vm = test()
         assertIs<State.Normal.BlueToGreen>(vm.stateFlow.value)
-        delay(1.seconds)
+        delay(10.seconds)
         assertIs<State.NotDetected>(vm.stateFlow.value)
     }
 }
