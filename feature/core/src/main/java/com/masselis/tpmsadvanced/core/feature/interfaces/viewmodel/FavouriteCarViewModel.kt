@@ -36,4 +36,8 @@ internal class FavouriteCarViewModel @Inject constructor(
     fun setFavourite(car: Car) = viewModelScope.launch {
         favouriteCarUseCase.setFavourite(car)
     }
+
+    fun insert(carName: String) = viewModelScope.launch {
+        favouriteCarUseCase.insert(carName)
+    }
 }

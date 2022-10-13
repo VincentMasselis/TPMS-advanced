@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.shareIn
+import java.util.UUID.randomUUID
 import javax.inject.Inject
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -37,4 +38,6 @@ internal class FavouriteCarUseCase @Inject constructor(
         )
 
     internal suspend fun setFavourite(car: Car) = database.setAsFavourite(car.uuid, true)
+
+    internal suspend fun insert(carName: String) = database.insert(randomUUID(), carName, true)
 }

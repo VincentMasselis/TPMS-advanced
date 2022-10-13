@@ -6,6 +6,7 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,7 +14,9 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuBoxScope
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,6 +48,7 @@ internal fun CurrentCarText(
         is State.CurrentCar -> state.car
     }
     var expanded by remember { mutableStateOf(false) }
+    var askNewCar by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
@@ -60,9 +64,15 @@ internal fun CurrentCarText(
         CarListDropdownMenu(
             isExpanded = expanded,
             onDismissRequest = { expanded = false },
-            onNewFavourite = { viewModel.setFavourite(it) }
+            onNewFavourite = { viewModel.setFavourite(it) },
+            onAskNewCar = { askNewCar = true }
         )
     }
+    if (askNewCar)
+        AddCar(
+            onDismissRequest = { askNewCar = false },
+            onCarAdd = { viewModel.insert(it) }
+        )
 }
 
 @Suppress("NAME_SHADOWING")
@@ -71,6 +81,7 @@ private fun ExposedDropdownMenuBoxScope.CarListDropdownMenu(
     isExpanded: Boolean,
     onDismissRequest: () -> Unit,
     onNewFavourite: (Car) -> Unit,
+    onAskNewCar: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CarListViewModel = viewModel { featureCoreComponent.carListViewModel }
 ) {
@@ -94,7 +105,35 @@ private fun ExposedDropdownMenuBoxScope.CarListDropdownMenu(
             text = { Text(text = "Add a car", Modifier.weight(1f)) },
             trailingIcon = { Icon(Icons.Filled.AddCircle, contentDescription = null) },
             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-            onClick = onDismissRequest,
+            onClick = { onAskNewCar(); onDismissRequest() },
         )
     }
+}
+
+@Composable
+private fun AddCar(
+    onDismissRequest: () -> Unit,
+    onCarAdd: (name: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var carName by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        modifier = modifier,
+        title = { Text(text = "Add a new car") },
+        text = {
+            OutlinedTextField(
+                label = { Text(text = "Car name") },
+                value = carName,
+                onValueChange = { carName = it }
+            )
+        },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text(text = "Cancel") } },
+        confirmButton = {
+            TextButton(
+                onClick = { onCarAdd(carName); onDismissRequest() },
+                content = { Text(text = "Add") }
+            )
+        }
+    )
 }
