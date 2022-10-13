@@ -65,7 +65,7 @@ private fun FavouriteAlertDialog(
 ) {
     AlertDialog(
         title = { Text("Would you mark this sensor as your favorite sensor ?") },
-        text = { Text("When a sensor is set as favorite, TPMS Advanced will stop to display other sensors") },
+        text = { Text("When a sensor is set as favorite, TPMS Advanced will only display this sensor for this tyre") },
         onDismissRequest = onDismissRequest,
         dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
         confirmButton = {
