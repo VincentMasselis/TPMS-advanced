@@ -106,3 +106,8 @@ SELECT * FROM Car;
 
 selectByUuid:
 SELECT * FROM Car WHERE uuid = ?;
+
+selectBySensorId:
+SELECT Car.* FROM Car
+INNER JOIN Sensor ON Sensor.carId = Car.uuid
+WHERE Sensor.id = ?;

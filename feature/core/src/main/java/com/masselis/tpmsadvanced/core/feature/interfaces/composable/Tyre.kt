@@ -39,7 +39,7 @@ internal fun Tyre(
     location: SensorLocation,
     modifier: Modifier = Modifier,
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${carComponent.carId}_${location.name}") {
+    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${carComponent.hashCode()}_${location.name}") {
         carComponent.tyreComponent(location).tyreViewModelFactory.build(createSavedStateHandle())
     },
 ) {

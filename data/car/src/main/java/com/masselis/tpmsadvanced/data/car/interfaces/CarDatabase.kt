@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.data.car.interfaces
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.masselis.tpmsadvanced.data.car.Database
 import com.masselis.tpmsadvanced.data.car.model.Car
 import com.masselis.tpmsadvanced.data.record.model.Pressure
@@ -20,13 +21,13 @@ public class CarDatabase @Inject internal constructor(database: Database) {
 
     private val queries = database.carQueries
 
-    public suspend fun insert(id: UUID, name: String, isFavourite: Boolean): Unit =
+    public suspend fun insert(id: UUID, name: String, isCurrent: Boolean): Unit =
         withContext(IO) {
-            queries.insert(id, name, isFavourite)
+            queries.insert(id, name, isCurrent)
         }
 
-    public suspend fun setAsFavourite(uuid: UUID, isFavourite: Boolean): Unit = withContext(IO) {
-        queries.setAsFavourite(isFavourite, uuid)
+    public suspend fun setIsCurrent(uuid: UUID, isCurrent: Boolean): Unit = withContext(IO) {
+        queries.setAsFavourite(isCurrent, uuid)
     }
 
     public fun selectLowPressure(carId: UUID): Pressure =
@@ -71,11 +72,11 @@ public class CarDatabase @Inject internal constructor(database: Database) {
         queries.delete(uuid)
     }
 
-    public fun currentFavouriteFlow(): Flow<Car> = queries.currentFavourite(mapper)
+    public fun currentCarFlow(): Flow<Car> = queries.currentFavourite(mapper)
         .asFlow()
         .mapToOne(IO)
 
-    public fun currentFavourite(): Car = queries.currentFavourite(mapper).executeAsOne()
+    public fun currentCar(): Car = queries.currentFavourite(mapper).executeAsOne()
 
     public fun selectAllFlow(): Flow<List<Car>> = queries.selectAll(mapper)
         .asFlow()
@@ -87,13 +88,17 @@ public class CarDatabase @Inject internal constructor(database: Database) {
         .asFlow()
         .mapToOne(IO)
 
+    public fun selectBySensorId(sensorId: Int): Flow<Car?> = queries
+        .selectBySensorId(sensorId, mapper)
+        .asFlow()
+        .mapToOneOrNull(IO)
+
     private companion object {
         val mapper: (UUID, String, Boolean, Pressure, Pressure, Temperature, Temperature, Temperature) -> Car =
-            { uuid, name, isFavourite, lowPressure, highPressure, lowTemp, normalTemp, highTemp ->
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp ->
                 Car(
                     uuid,
                     name,
-                    isFavourite,
                     lowPressure,
                     highPressure,
                     lowTemp,

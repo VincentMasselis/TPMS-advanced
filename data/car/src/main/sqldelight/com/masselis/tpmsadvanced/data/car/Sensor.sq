@@ -10,8 +10,14 @@ CREATE TABLE Sensor(
     UNIQUE(location, carId)
 );
 
-insert:
-INSERT INTO Sensor (id, location, carId) VALUES (?, ?, ?);
+upsert:
+INSERT INTO Sensor (id, location, carId)
+VALUES (?, ?, ?)
+ON CONFLICT(id) DO
+UPDATE SET location=excluded.location, carId=excluded.carId;
+
+updateCarId:
+UPDATE Sensor SET carId = ? WHERE id = ?;
 
 delete:
 DELETE FROM Sensor WHERE id = ?;

@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SensorFavouriteViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
@@ -20,5 +20,5 @@ public abstract class TyreComponent {
 
     internal abstract val tyreViewModelFactory: TyreViewModelImpl.Factory
     internal abstract val tyreStatViewModelFactory: TyreStatsViewModel.Factory
-    internal abstract val sensorFavouriteViewModelFactory: SensorFavouriteViewModel.Factory
+    internal abstract val bindSensorButtonViewModelFactory: BindSensorButtonViewModel.Factory
 }

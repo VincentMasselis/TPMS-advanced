@@ -10,9 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearFavouritesViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorDialogViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
@@ -94,8 +95,10 @@ private class DemoCarComponent : CarComponent() {
         get() = TODO("Not yet implemented")
     override val scope: CoroutineScope
         get() = TODO("Not yet implemented")
-    override val clearFavouritesViewModel: ClearFavouritesViewModel.Factory
+    override val clearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory
         get() = TODO("Not yet implemented")
-    override val settingsViewModel: SettingsViewModel.Factory
+    override val carSettingsViewModel: CarSettingsViewModel.Factory
+        get() = TODO("Not yet implemented")
+    override val bindSensorDialogViewModelFactory: BindSensorDialogViewModel.Factory
         get() = TODO("Not yet implemented")
 }

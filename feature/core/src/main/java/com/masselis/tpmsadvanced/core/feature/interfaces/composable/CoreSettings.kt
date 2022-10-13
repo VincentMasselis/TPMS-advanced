@@ -20,8 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarComponentViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.feature.unit.interfaces.Units
@@ -37,7 +36,7 @@ public fun LazyListScope.coreSettings() {
     carItem { NormalTemp() }
     carItem { LowTemp() }
     separator()
-    carItem { ClearFavourites(Modifier.fillMaxWidth()) }
+    carItem { ClearBoundSensorsButton(Modifier.fillMaxWidth()) }
 }
 
 @Suppress("NAME_SHADOWING")
@@ -46,12 +45,8 @@ private fun LazyListScope.carItem(
     contentType: Any? = null,
     content: @Composable LazyItemScope.() -> Unit
 ) = item(key, contentType) {
-    val viewModel = viewModel { featureCoreComponent.favouriteCarComponentViewModel }
-    val state by viewModel.stateFlow.collectAsState()
-    val component = when (val state = state) {
-        FavouriteCarComponentViewModel.State.Loading -> return@item
-        is FavouriteCarComponentViewModel.State.Current -> state.component
-    }
+    val viewModel = viewModel { featureCoreComponent.currentCarComponentViewModel }
+    val component by viewModel.stateFlow.collectAsState()
     CompositionLocalProvider(LocalCarComponent provides component) {
         content()
     }
@@ -60,8 +55,8 @@ private fun LazyListScope.carItem(
 @Composable
 private fun PressureRange(
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") {
-        carComponent.settingsViewModel.build()
+    viewModel: CarSettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.hashCode()}") {
+        carComponent.carSettingsViewModel.build()
     }
 ) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
@@ -86,8 +81,8 @@ private fun PressureRange(
 @Composable
 private fun HighTemp(
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") {
-        carComponent.settingsViewModel.build()
+    viewModel: CarSettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.hashCode()}") {
+        carComponent.carSettingsViewModel.build()
     }
 ) {
     var showHighTempDialog by remember { mutableStateOf(false) }
@@ -114,8 +109,8 @@ private fun HighTemp(
 @Composable
 private fun NormalTemp(
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") {
-        carComponent.settingsViewModel.build()
+    viewModel: CarSettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.hashCode()}") {
+        carComponent.carSettingsViewModel.build()
     }
 ) {
     var showNormalTempDialog by remember { mutableStateOf(false) }
@@ -143,8 +138,8 @@ private fun NormalTemp(
 @Composable
 private fun LowTemp(
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: SettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.carId}") {
-        carComponent.settingsViewModel.build()
+    viewModel: CarSettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.hashCode()}") {
+        carComponent.carSettingsViewModel.build()
     }
 ) {
     var showLowTempDialog by remember { mutableStateOf(false) }

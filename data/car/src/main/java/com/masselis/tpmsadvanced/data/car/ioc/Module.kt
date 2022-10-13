@@ -12,9 +12,10 @@ import com.masselis.tpmsadvanced.data.car.Database
 import com.masselis.tpmsadvanced.data.car.Sensor
 import com.masselis.tpmsadvanced.data.car.Tyre
 import com.masselis.tpmsadvanced.data.record.model.Pressure
-import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import com.masselis.tpmsadvanced.data.record.model.Temperature
 import dagger.Provides
+import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import java.util.*
 
 @dagger.Module
@@ -29,7 +30,8 @@ internal object Module {
     @Provides
     fun tyreLocationAdapter() = object : ColumnAdapter<SensorLocation, Long> {
 
-        override fun decode(databaseValue: Long): SensorLocation = SensorLocation.from(databaseValue)
+        override fun decode(databaseValue: Long): SensorLocation =
+            SensorLocation.from(databaseValue)
 
         override fun encode(value: SensorLocation): Long = value.toLong()
 
@@ -72,6 +74,7 @@ internal object Module {
         schema = Database.Schema,
         context = appContext,
         name = "car.db",
+        factory = RequerySQLiteOpenHelperFactory(),
         callback = object : SupportSQLiteOpenHelper.Callback(Database.Schema.version) {
 
             val delegate = AndroidSqliteDriver.Callback(Database.Schema)

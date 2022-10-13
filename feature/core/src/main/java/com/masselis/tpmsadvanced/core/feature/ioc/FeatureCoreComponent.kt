@@ -1,12 +1,10 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarListViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearFavouritesViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarComponentViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarListDropdownViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarComponentViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarTextViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.unit.ioc.FeatureUnitComponent
 import com.masselis.tpmsadvanced.data.car.ioc.DataCarComponent
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
@@ -40,7 +38,7 @@ public abstract class FeatureCoreComponent {
     }
 
     internal abstract val preconditionsViewModel: PreconditionsViewModel.Factory
-    internal abstract val favouriteCarViewModel: FavouriteCarViewModel
-    internal abstract val carListViewModel: CarListViewModel
-    internal abstract val favouriteCarComponentViewModel: FavouriteCarComponentViewModel
+    internal abstract val currentCarTextViewModel: CurrentCarTextViewModel
+    internal abstract val carListDropdownViewModel: CarListDropdownViewModel
+    internal abstract val currentCarComponentViewModel: CurrentCarComponentViewModel
 }

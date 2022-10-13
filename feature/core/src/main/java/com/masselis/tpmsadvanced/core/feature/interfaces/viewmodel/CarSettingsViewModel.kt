@@ -7,14 +7,14 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.asStateFlow
 
-internal class SettingsViewModel @AssistedInject constructor(
+internal class CarSettingsViewModel @AssistedInject constructor(
     carRangesUseCase: CarRangesUseCase,
     unitPreferences: UnitPreferences,
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun build(): SettingsViewModel
+        fun build(): CarSettingsViewModel
     }
 
     val lowPressure = carRangesUseCase.lowPressure

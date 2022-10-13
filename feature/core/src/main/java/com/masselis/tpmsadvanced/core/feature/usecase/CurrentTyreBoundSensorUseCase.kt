@@ -12,24 +12,24 @@ import java.util.*
 import javax.inject.Inject
 
 @TyreScope
-internal class FavouriteSensorUseCase @Inject constructor(
-    private val carId: UUID,
+internal class CurrentTyreBoundSensorUseCase @Inject constructor(
     private val location: SensorLocation,
-    private val sensorDatabase: SensorDatabase,
     private val tyreUseCaseImpl: TyreUseCaseImpl,
+    carId: UUID,
+    sensorDatabase: SensorDatabase,
 ) : TyreUseCase {
 
-    val found = tyreUseCaseImpl
+    val foundSensor = tyreUseCaseImpl
         .listen()
         .map { Sensor(it.id, location) }
         .distinctUntilChanged()
 
-    val saved = sensorDatabase.selectByCarAndLocationFlow(carId, location)
-
-    suspend fun save(sensor: Sensor) = sensorDatabase.insert(sensor, carId)
+    val boundSensor = sensorDatabase
+        .selectByCarAndLocationFlow(carId, location)
+        .distinctUntilChanged()
 
     override fun listen() = tyreUseCaseImpl.listen().filter {
-        val favId = saved.first()?.id ?: return@filter true
+        val favId = boundSensor.first()?.id ?: return@filter true
         favId == it.id
     }
 }

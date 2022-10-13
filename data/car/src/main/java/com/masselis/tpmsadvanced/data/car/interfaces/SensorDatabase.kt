@@ -17,8 +17,12 @@ public class SensorDatabase @Inject internal constructor(
 ) {
     private val queries = database.sensorQueries
 
-    public suspend fun insert(sensor: Sensor, carId: UUID): Unit = withContext(IO) {
-        queries.insert(sensor.id, sensor.location, carId)
+    public suspend fun upsert(sensor: Sensor, carId: UUID): Unit = withContext(IO) {
+        queries.upsert(sensor.id, sensor.location, carId)
+    }
+
+    public suspend fun updateCarId(sensorId: Int, carId: UUID): Unit = withContext(IO) {
+        queries.updateCarId(carId, sensorId)
     }
 
     public suspend fun deleteFromCar(carId: UUID): Unit = withContext(IO) {

@@ -102,12 +102,12 @@ private fun Preview(
     when (val state = state) {
         QRCodeViewModel.State.Scanning -> {}
 
-        is QRCodeViewModel.State.AskFavourites ->
+        is QRCodeViewModel.State.AskForBinding ->
             AlertDialog(
                 text = { Text(text = "Would you add theses sensors as your favourite sensors ?") },
                 onDismissRequest = { viewModel.scanAgain() },
                 confirmButton = {
-                    TextButton(onClick = { viewModel.addToFavourites(state.sensorMap) }) {
+                    TextButton(onClick = { viewModel.bindSensors(state.sensorMap) }) {
                         Text(text = "Yes")
                     }
                 },

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import com.masselis.tpmsadvanced.qrcode.usecase.QrCodeAnalyserUseCase
-import com.masselis.tpmsadvanced.qrcode.usecase.SaveIdsUseCase
+import com.masselis.tpmsadvanced.qrcode.usecase.BoundSensorMapUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class QRCodeViewModel @AssistedInject constructor(
     private val qrCodeAnalyserUseCase: QrCodeAnalyserUseCase,
-    private val saveIdsUseCase: SaveIdsUseCase,
+    private val boundSensorMapUseCase: BoundSensorMapUseCase,
     @Assisted private val controller: CameraController
 ) : ViewModel() {
 
@@ -32,7 +32,7 @@ internal class QRCodeViewModel @AssistedInject constructor(
 
     sealed class State {
         object Scanning : State()
-        data class AskFavourites(val sensorMap: SensorMap) : State()
+        data class AskForBinding(val sensorMap: SensorMap) : State()
         object Leave : State()
     }
 
@@ -43,16 +43,16 @@ internal class QRCodeViewModel @AssistedInject constructor(
         stateFlow
             .flatMapLatest {
                 when (it) {
-                    State.Leave, is State.AskFavourites -> emptyFlow()
+                    State.Leave, is State.AskForBinding -> emptyFlow()
                     State.Scanning -> qrCodeAnalyserUseCase.analyse(controller)
                 }
             }
-            .onEach { mutableStateFlow.value = State.AskFavourites(it) }
+            .onEach { mutableStateFlow.value = State.AskForBinding(it) }
             .launchIn(viewModelScope)
     }
 
-    fun addToFavourites(ids: SensorMap) = viewModelScope.launch {
-        saveIdsUseCase.save(ids)
+    fun bindSensors(ids: SensorMap) = viewModelScope.launch {
+        boundSensorMapUseCase.bind(ids)
         mutableStateFlow.value = State.Leave
     }
 

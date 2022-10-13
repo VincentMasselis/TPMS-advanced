@@ -6,7 +6,6 @@ import app.cash.sqldelight.coroutines.mapToList
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.car.ioc.DebugComponent
 import com.masselis.tpmsadvanced.data.car.ioc.dataCarComponent
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
@@ -22,7 +21,7 @@ import kotlin.test.assertTrue
 
 @OptIn(DelicateCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
-internal class UniqueFavouriteTest {
+internal class UniqueCurrentCarTest {
 
     private lateinit var debugComponent: DebugComponent
     private lateinit var database: Database
@@ -125,26 +124,26 @@ internal class UniqueFavouriteTest {
 
     @Test
     fun combinedTest() {
-        assertUniqueFavourite()
+        assertUniqueCurrent()
         carQueries.delete(carList().first().uuid)
-        assertUniqueFavourite()
+        assertUniqueCurrent()
         carQueries.setAsFavourite(false, carList().first().uuid)
-        assertUniqueFavourite()
+        assertUniqueCurrent()
         val uuid = UUID.randomUUID()
         carQueries.insert(uuid, "TEST", false)
         assertEquals(2, carList().size)
-        assertUniqueFavourite()
+        assertUniqueCurrent()
         carQueries.setAsFavourite(true, uuid)
-        assertUniqueFavourite()
+        assertUniqueCurrent()
         carQueries.delete(carList().first { it.uuid != uuid }.uuid)
         assertEquals(1, carList().size)
-        assertUniqueFavourite()
+        assertUniqueCurrent()
         carQueries.delete(carList().first().uuid)
-        assertUniqueFavourite()
+        assertUniqueCurrent()
     }
 
     @After
-    fun assertUniqueFavourite() {
+    fun assertUniqueCurrent() {
         assertEquals(
             1,
             debugCarQueries.favouriteCount().executeAsOne(),

@@ -1,7 +1,8 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearFavouritesViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.SettingsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorDialogViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.data.car.model.Car
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
@@ -31,6 +32,7 @@ internal abstract class CarComponent {
     internal abstract val carFlow: Flow<Car>
     internal abstract val scope: CoroutineScope
 
-    internal abstract val clearFavouritesViewModel: ClearFavouritesViewModel.Factory
-    internal abstract val settingsViewModel: SettingsViewModel.Factory
+    internal abstract val clearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory
+    internal abstract val carSettingsViewModel: CarSettingsViewModel.Factory
+    internal abstract val bindSensorDialogViewModelFactory: BindSensorDialogViewModel.Factory
 }

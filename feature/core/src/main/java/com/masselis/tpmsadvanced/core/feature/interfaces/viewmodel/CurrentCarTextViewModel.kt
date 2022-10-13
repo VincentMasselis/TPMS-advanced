@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.feature.usecase.FavouriteCarUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.CurrentCarUseCase
 import com.masselis.tpmsadvanced.data.car.model.Car
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +14,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class FavouriteCarViewModel @Inject constructor(
-    private val favouriteCarUseCase: FavouriteCarUseCase,
+internal class CurrentCarTextViewModel @Inject constructor(
+    private val currentCarUseCase: CurrentCarUseCase,
 ) : ViewModel() {
 
     sealed class State {
@@ -27,17 +27,17 @@ internal class FavouriteCarViewModel @Inject constructor(
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {
-        favouriteCarUseCase.flow
+        currentCarUseCase.flow
             .flatMapLatest { it.carFlow }
             .onEach { mutableStateFlow.value = State.CurrentCar(it) }
             .launchIn(viewModelScope)
     }
 
-    fun setFavourite(car: Car) = viewModelScope.launch {
-        favouriteCarUseCase.setFavourite(car)
+    fun setCurrent(car: Car) = viewModelScope.launch {
+        currentCarUseCase.setAsCurrent(car)
     }
 
     fun insert(carName: String) = viewModelScope.launch {
-        favouriteCarUseCase.insert(carName)
+        currentCarUseCase.insertAsCurrent(carName)
     }
 }

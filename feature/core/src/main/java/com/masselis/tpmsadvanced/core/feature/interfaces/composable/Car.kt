@@ -27,7 +27,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarComponentViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
@@ -36,7 +36,7 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 public fun Car(modifier: Modifier = Modifier) {
     Car(
         modifier,
-        viewModel { featureCoreComponent.favouriteCarComponentViewModel }
+        viewModel { featureCoreComponent.currentCarComponentViewModel }
     )
 }
 
@@ -44,16 +44,12 @@ public fun Car(modifier: Modifier = Modifier) {
 @Composable
 internal fun Car(
     modifier: Modifier = Modifier,
-    viewModel: FavouriteCarComponentViewModel = viewModel {
-        featureCoreComponent.favouriteCarComponentViewModel
+    viewModel: CurrentCarComponentViewModel = viewModel {
+        featureCoreComponent.currentCarComponentViewModel
     }
 ) {
     KeepScreenOn()
-    val state by viewModel.stateFlow.collectAsState()
-    val component = when (val state = state) {
-        FavouriteCarComponentViewModel.State.Loading -> return
-        is FavouriteCarComponentViewModel.State.Current -> state.component
-    }
+    val component by viewModel.stateFlow.collectAsState()
     CompositionLocalProvider(LocalCarComponent provides component) {
         ConstraintLayout(modifier = modifier) {
             val (carConst,
@@ -131,7 +127,7 @@ internal fun Car(
                 top.linkTo(tyreBox.top)
                 start.linkTo(tyreBox.start)
             }) {
-                FavouriteButton(
+                BindSensorButton(
                     SensorLocation.FRONT_LEFT,
                     modifier = Modifier.padding(start = 24.dp)
                 )
@@ -152,7 +148,7 @@ internal fun Car(
                 top.linkTo(tyreBox.top)
                 end.linkTo(tyreBox.end)
             }) {
-                FavouriteButton(
+                BindSensorButton(
                     SensorLocation.FRONT_RIGHT,
                     modifier = Modifier.padding(end = 24.dp)
                 )
@@ -173,7 +169,7 @@ internal fun Car(
                 bottom.linkTo(tyreBox.bottom)
                 start.linkTo(tyreBox.start)
             }) {
-                FavouriteButton(
+                BindSensorButton(
                     SensorLocation.REAR_LEFT,
                     modifier = Modifier.padding(start = 28.dp)
                 )
@@ -194,7 +190,7 @@ internal fun Car(
                 bottom.linkTo(tyreBox.bottom)
                 end.linkTo(tyreBox.end)
             }) {
-                FavouriteButton(
+                BindSensorButton(
                     SensorLocation.REAR_RIGHT,
                     modifier = Modifier.padding(end = 28.dp)
                 )

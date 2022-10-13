@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
 
-internal class ClearFavouriteUseCase @Inject constructor(
+internal class ClearBoundSensorsUseCase @Inject constructor(
     private val carId: UUID,
     private val sensorDatabase: SensorDatabase,
 ) {

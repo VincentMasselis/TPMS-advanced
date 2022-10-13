@@ -17,21 +17,21 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearFavouritesViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 
 @Composable
-internal fun ClearFavourites(
+internal fun ClearBoundSensorsButton(
     modifier: Modifier = Modifier,
     carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: ClearFavouritesViewModel = viewModel(key = "ClearFavouritesViewModel_${carComponent.carId}") {
-        carComponent.clearFavouritesViewModel.build(createSavedStateHandle())
+    viewModel: ClearBoundSensorsViewModel = viewModel(key = "ClearBoundSensorsButton_${carComponent.hashCode()}") {
+        carComponent.clearBoundSensorsViewModel.build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     Box(modifier = modifier) {
         OutlinedButton(
-            enabled = state is ClearFavouritesViewModel.State.ClearingPossible,
+            enabled = state is ClearBoundSensorsViewModel.State.ClearingPossible,
             modifier = Modifier.align(Alignment.TopEnd),
             onClick = { viewModel.clear() }
         ) {

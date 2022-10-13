@@ -27,20 +27,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarListViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.FavouriteCarViewModel.State
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarListDropdownViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarTextViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarTextViewModel.State
 import com.masselis.tpmsadvanced.data.car.model.Car
 
 @Composable
 public fun CurrentCarText(
     modifier: Modifier = Modifier,
-): Unit = CurrentCarText(modifier, viewModel { featureCoreComponent.favouriteCarViewModel })
+): Unit = CurrentCarText(modifier, viewModel { featureCoreComponent.currentCarTextViewModel })
 
 @Composable
 internal fun CurrentCarText(
     modifier: Modifier = Modifier,
-    viewModel: FavouriteCarViewModel = viewModel { featureCoreComponent.favouriteCarViewModel }
+    viewModel: CurrentCarTextViewModel = viewModel { featureCoreComponent.currentCarTextViewModel }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     val car = when (val state = state) {
@@ -64,7 +64,7 @@ internal fun CurrentCarText(
         CarListDropdownMenu(
             isExpanded = expanded,
             onDismissRequest = { expanded = false },
-            onNewFavourite = { viewModel.setFavourite(it) },
+            onNewCurrent = { viewModel.setCurrent(it) },
             onAskNewCar = { askNewCar = true }
         )
     }
@@ -80,10 +80,10 @@ internal fun CurrentCarText(
 private fun ExposedDropdownMenuBoxScope.CarListDropdownMenu(
     isExpanded: Boolean,
     onDismissRequest: () -> Unit,
-    onNewFavourite: (Car) -> Unit,
+    onNewCurrent: (Car) -> Unit,
     onAskNewCar: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CarListViewModel = viewModel { featureCoreComponent.carListViewModel }
+    viewModel: CarListDropdownViewModel = viewModel { featureCoreComponent.carListDropdownViewModel }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     DropdownMenu(
@@ -96,7 +96,7 @@ private fun ExposedDropdownMenuBoxScope.CarListDropdownMenu(
                 text = { Text(currentCar.name, Modifier.weight(1f)) },
                 contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                 onClick = {
-                    onNewFavourite(currentCar)
+                    onNewCurrent(currentCar)
                     onDismissRequest()
                 },
             )
