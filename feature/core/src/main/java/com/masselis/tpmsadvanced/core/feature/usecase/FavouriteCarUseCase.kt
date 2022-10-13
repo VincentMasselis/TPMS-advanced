@@ -4,7 +4,8 @@ import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.car.interfaces.CarDatabase
 import com.masselis.tpmsadvanced.data.car.model.Car
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -13,8 +14,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.shareIn
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
 
+@OptIn(DelicateCoroutinesApi::class)
 @SingleInstance
 internal class FavouriteCarUseCase @Inject constructor(
     private val database: CarDatabase,
@@ -30,7 +31,7 @@ internal class FavouriteCarUseCase @Inject constructor(
         }
         .filterNotNull()
         .shareIn(
-            CoroutineScope(EmptyCoroutineContext),
+            GlobalScope,
             SharingStarted.Eagerly,
             replay = 1
         )

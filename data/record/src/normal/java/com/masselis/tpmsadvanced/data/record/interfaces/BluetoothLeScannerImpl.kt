@@ -29,9 +29,9 @@ import com.masselis.tpmsadvanced.core.common.asFlow
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.kpa
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -50,7 +50,6 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.UUID.fromString
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -117,7 +116,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
 
     private fun Flow<Raw>.shared() = this
         .shareIn(
-            CoroutineScope(EmptyCoroutineContext),
+            CoroutineScope(Dispatchers.Unconfined),
             // Anti-spam mechanism to avoid an exception when requesting 6 scans within a 30s frame
             SharingStarted.WhileSubscribed(5.seconds, Duration.ZERO)
         )

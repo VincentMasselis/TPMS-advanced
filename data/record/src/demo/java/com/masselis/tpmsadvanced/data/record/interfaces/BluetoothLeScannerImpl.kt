@@ -7,6 +7,7 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
@@ -70,7 +70,7 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
         }
         .onStart { emitAll(startTyres.values.asFlow()) }
         .shareIn(
-            CoroutineScope(EmptyCoroutineContext),
+            CoroutineScope(Dispatchers.Unconfined),
             SharingStarted.Lazily,
             startTyres.size + 1
         )
