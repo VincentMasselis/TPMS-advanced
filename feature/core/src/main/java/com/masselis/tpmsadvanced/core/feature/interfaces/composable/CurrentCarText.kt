@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,12 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarListDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarTextViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarTextViewModel.State
 import com.masselis.tpmsadvanced.data.car.model.Car
+import kotlinx.coroutines.delay
 
 @Composable
 public fun CurrentCarText(
@@ -116,6 +120,7 @@ private fun AddCar(
     onCarAdd: (name: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusRequester = remember { FocusRequester() }
     var carName by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -125,7 +130,9 @@ private fun AddCar(
             OutlinedTextField(
                 label = { Text(text = "Car name") },
                 value = carName,
-                onValueChange = { carName = it }
+                onValueChange = { carName = it },
+                singleLine = true,
+                modifier = Modifier.focusRequester(focusRequester)
             )
         },
         dismissButton = { TextButton(onClick = onDismissRequest) { Text(text = "Cancel") } },
@@ -136,4 +143,8 @@ private fun AddCar(
             )
         }
     )
+    LaunchedEffect(key1 = Unit) {
+        delay(200)
+        focusRequester.requestFocus()
+    }
 }
