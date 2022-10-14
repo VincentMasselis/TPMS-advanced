@@ -72,7 +72,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             }
 
             override fun onScanFailed(errorCode: Int) {
-                close(ScanFailed(errorCode))
+                close(BluetoothLeScanner.ScanFailed(errorCode))
             }
         }
         val leScanner = context
@@ -102,8 +102,6 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
         .mapNotNull { result -> result.scanRecord?.manufacturerSpecificData?.takeIf { it.size > 0 } }
         .map { Raw(it.valueAt(0)) }
         .filter { it.address().contentEquals(expectedAddress) }
-
-    class ScanFailed(val reason: Int) : Exception()
 
     private val lowLatencyScanFlow = scan(ScanSettings.SCAN_MODE_LOW_LATENCY).shared()
 
