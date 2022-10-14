@@ -11,7 +11,6 @@ internal class BoundSensorMapUseCase @Inject constructor(
 ) {
     suspend fun bind(ids: SensorMap) {
         val currentCar = carDatabase.currentCar()
-        sensorDatabase.deleteFromCar(currentCar.uuid)
         ids.values.forEach { sensor ->
             sensorDatabase.upsert(sensor, currentCar.uuid)
         }

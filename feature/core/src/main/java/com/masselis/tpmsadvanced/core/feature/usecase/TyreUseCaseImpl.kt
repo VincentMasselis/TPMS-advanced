@@ -7,21 +7,24 @@ import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Tyre
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.transformLatest
 import java.util.*
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @TyreScope
 public class TyreUseCaseImpl @Inject internal constructor(
     private val carId: UUID,
@@ -34,10 +37,13 @@ public class TyreUseCaseImpl @Inject internal constructor(
     override fun listen(): SharedFlow<Tyre> = flow {
         emit(scanner.highDutyScan().filterLocation().first())
         emitAll(scanner.normalScan().filterLocation())
-    }.onEach {
-        val sensor = sensorDatabase.selectByCarAndLocationFlow(carId, location).first()
-            ?: return@onEach
-        tyreDatabase.insert(it, sensor.id)
+    }.transformLatest { tyre ->
+        emit(tyre)
+        sensorDatabase.selectByCarAndLocationFlow(carId, location)
+            .map { it?.id }
+            .filterNotNull()
+            .first()
+            .also { tyreDatabase.insert(tyre, it) }
     }.shareIn(
         scope,
         SharingStarted.WhileSubscribed(
