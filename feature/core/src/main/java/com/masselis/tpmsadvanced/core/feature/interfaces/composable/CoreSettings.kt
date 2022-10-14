@@ -1,12 +1,8 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -15,8 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
@@ -24,12 +18,11 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarSettingsVi
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.feature.unit.interfaces.Units
+import com.masselis.tpmsadvanced.core.ui.separator
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 
 public fun LazyListScope.coreSettings() {
-    item { Units() }
-    separator()
     carItem { PressureRange() }
     separator()
     carItem { HighTemp() }
@@ -162,10 +155,4 @@ private fun LowTemp(
     ) { showLowTempDialog = false }
 }
 
-private fun LazyListScope.separator() = item {
-    Column {
-        Spacer(modifier = Modifier.height(24.dp))
-        Divider(thickness = Dp.Hairline)
-        Spacer(modifier = Modifier.height(24.dp))
-    }
-}
+
