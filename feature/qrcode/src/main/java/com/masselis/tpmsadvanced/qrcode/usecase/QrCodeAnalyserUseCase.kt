@@ -10,7 +10,9 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.masselis.tpmsadvanced.qrcode.model.SensorIds
+import com.masselis.tpmsadvanced.data.car.model.Sensor
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
@@ -64,7 +66,14 @@ internal class QrCodeAnalyserUseCase @Inject constructor(private val context: Co
                     .int
             }
         }
-        .map { intIds -> SensorIds(intIds[0], intIds[1], intIds[2], intIds[3]) }
+        .map { intIds ->
+            SensorMap(
+                Sensor(intIds[0], SensorLocation.FRONT_LEFT),
+                Sensor(intIds[1], SensorLocation.FRONT_RIGHT),
+                Sensor(intIds[2], SensorLocation.REAR_LEFT),
+                Sensor(intIds[3], SensorLocation.REAR_RIGHT)
+            )
+        }
 
     fun missingPermission() = CAMERA
         .takeIf { checkSelfPermission(context, CAMERA) != PERMISSION_GRANTED }

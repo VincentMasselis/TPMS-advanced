@@ -18,7 +18,7 @@ dependencies {
     api(project(":core:common"))
     api(project(":core:ui"))
     api(project(":data:record"))
-    api(project(":data:favourite"))
+    api(project(":data:car"))
     api(project(":feature:unit"))
 
     testImplementation(project(":core:test"))

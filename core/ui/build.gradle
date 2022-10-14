@@ -25,11 +25,11 @@ dependencies {
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     api "androidx.compose.foundation:foundation:$composeVersion"
     // Material Design
-    api 'androidx.compose.material3:material3:1.0.0-beta02'
+    api 'androidx.compose.material3:material3:1.0.0-rc01'
     api 'com.google.android.material:material:1.6.1'
     // Integration with activities
-    api 'androidx.activity:activity-compose:1.5.1'
-    api "androidx.fragment:fragment:1.5.2"
+    api 'androidx.activity:activity-compose:1.6.0'
+    api "androidx.fragment:fragment:1.5.3"
     // Layout
     api "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     // Navigation

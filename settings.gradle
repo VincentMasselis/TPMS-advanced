@@ -15,6 +15,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -27,14 +28,15 @@ gradleEnterprise {
 
 rootProject.name = "TPMS Advanced"
 include ':core:common'
-include ':core:ui'
-include ':core:debug-ui'
-include ':feature:unit'
-include ':feature:core'
-include ':feature:qrcode'
-include ':app:phone'
 include ':core:test'
 include ':core:android-test'
+include ':core:ui'
+include ':core:debug-ui'
+include ':core:database'
 include ':data:record'
-include ':data:favourite'
 include ':data:unit'
+include ':data:car'
+include ':feature:core'
+include ':feature:unit'
+include ':feature:qrcode'
+include ':app:phone'
