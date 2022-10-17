@@ -1,0 +1,29 @@
+import com.masselis.tpmsadvanced.data.record.model.Pressure;
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation;
+import com.masselis.tpmsadvanced.data.record.model.Temperature;
+import java.util.UUID;
+import kotlin.Boolean;
+import kotlin.Int;
+import kotlin.UShort;
+
+CREATE TABLE Tyre(
+    id INTEGER AS Int NOT NULL,
+    timestamp REAL NOT NULL,
+    location INTEGER AS SensorLocation NOT NULL,
+    pressure REAL AS Pressure NOT NULL,
+    temperature REAL AS Temperature NOT NULL,
+    battery INTEGER AS UShort NOT NULL,
+    isAlarm INTEGER AS Boolean NOT NULL,
+    carId TEXT AS UUID NOT NULL,
+    FOREIGN KEY(carId) REFERENCES Car(uuid) ON DELETE CASCADE
+);
+
+insert:
+INSERT INTO Tyre (id, timestamp, location, pressure, temperature, battery, isAlarm, carId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+latestByTyreLocationByCar:
+SELECT Tyre.id, Tyre.timestamp, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm FROM Tyre
+INNER JOIN Car ON Tyre.carId = Car.uuid
+WHERE location = ? AND Car.uuid = ?
+ORDER BY timestamp DESC
+LIMIT 1;

@@ -25,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Car
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentCarText
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
 
@@ -69,13 +70,11 @@ private fun TopAppBar() {
         ?.let { Paths.from(it) }
     CenterAlignedTopAppBar(
         title = {
-            Text(
-                text = when (currentPath) {
-                    Paths.Home -> "My car"
-                    Paths.Settings -> "Settings"
-                    else -> ""
-                }
-            )
+            when (currentPath) {
+                Paths.Home -> CurrentCarText()
+                Paths.Settings -> Text(text = "Settings")
+                Paths.QrCode, null -> {}
+            }
         },
         navigationIcon = {
             when (currentPath) {

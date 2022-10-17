@@ -29,9 +29,9 @@ import com.masselis.tpmsadvanced.core.common.asFlow
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.kpa
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -50,7 +50,6 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.UUID.fromString
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -73,7 +72,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             }
 
             override fun onScanFailed(errorCode: Int) {
-                close(ScanFailed(errorCode))
+                close(BluetoothLeScanner.ScanFailed(errorCode))
             }
         }
         val leScanner = context
@@ -104,8 +103,6 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
         .map { Raw(it.valueAt(0)) }
         .filter { it.address().contentEquals(expectedAddress) }
 
-    class ScanFailed(val reason: Int) : Exception()
-
     private val lowLatencyScanFlow = scan(ScanSettings.SCAN_MODE_LOW_LATENCY).shared()
 
     override fun highDutyScan(): Flow<Tyre> = lowLatencyScanFlow
@@ -116,16 +113,11 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
     override fun normalScan(): Flow<Tyre> = balancedScanFlow
 
     private fun Flow<Raw>.shared() = this
-        .shareIn(
-            CoroutineScope(EmptyCoroutineContext),
-            // Anti-spam mechanism to avoid an exception when requesting 6 scans within a 30s frame
-            SharingStarted.WhileSubscribed(5.seconds, Duration.ZERO)
-        )
         .map { raw ->
             @Suppress("MagicNumber")
             Tyre(
                 now(),
-                TyreLocation.values().first { it.byte == raw.location() },
+                SensorLocation.values().first { it.byte == raw.location() },
                 ByteBuffer
                     .wrap(byteArrayOf(0x00) + raw.id())
                     .order(ByteOrder.LITTLE_ENDIAN)
@@ -146,6 +138,12 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 raw.alarm() == PRESSURE_ALARM_BYTE
             )
         }
+        .shareIn(
+            CoroutineScope(Dispatchers.Default),
+            // Anti-spam mechanism to avoid an exception when requesting 6 scans within a 30s frame
+            SharingStarted.WhileSubscribed(5.seconds, Duration.ZERO),
+            0
+        )
 
     @JvmInline
     @Suppress("MagicNumber")

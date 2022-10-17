@@ -3,10 +3,11 @@ package com.masselis.tpmsadvanced.data.record.interfaces
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
@@ -42,18 +42,21 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
 
     private val random = Random(9847946)
 
-    private fun createTyre() = Tyre(
-        now(),
-        TyreLocation.values().random(random),
-        (1..4).random(random),
-        pressures.random(random),
-        temperatures.random(random),
-        100u,
-        false
-    )
+    private fun createTyre(): Tyre {
+        val location = SensorLocation.values().random(random)
+        return Tyre(
+            now(),
+            location,
+            location.ordinal,
+            pressures.random(random),
+            temperatures.random(random),
+            100u,
+            false
+        )
+    }
 
-    private val startTyres = mutableMapOf<TyreLocation, Tyre>().apply {
-        while (TyreLocation.values().size != count()) {
+    private val startTyres = mutableMapOf<SensorLocation, Tyre>().apply {
+        while (SensorLocation.values().size != count()) {
             val tyre = createTyre()
             put(tyre.location, tyre)
         }
@@ -67,7 +70,7 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
         }
         .onStart { emitAll(startTyres.values.asFlow()) }
         .shareIn(
-            CoroutineScope(EmptyCoroutineContext),
+            CoroutineScope(Dispatchers.Unconfined),
             SharingStarted.Lazily,
             startTyres.size + 1
         )

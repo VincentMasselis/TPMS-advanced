@@ -3,9 +3,9 @@ package com.masselis.tpmsadvanced.core
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.core.feature.interfaces.AtmosphereRangePreferences
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
+import com.masselis.tpmsadvanced.core.feature.usecase.CarRangesUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.core.test.MainDispatcherRule
 import com.masselis.tpmsadvanced.data.record.model.Pressure
@@ -20,12 +20,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertIs
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -39,7 +39,7 @@ internal class TyreViewModelImplTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var tyreAtmosphereUseCase: TyreAtmosphereUseCase
-    private lateinit var atmosphereRangePreferences: AtmosphereRangePreferences
+    private lateinit var carRangesUseCase: CarRangesUseCase
     private lateinit var savedStateHandle: SavedStateHandle
 
     @Before
@@ -47,20 +47,20 @@ internal class TyreViewModelImplTest {
         tyreAtmosphereUseCase = mockk {
             every { listen() } returns emptyFlow()
         }
-        atmosphereRangePreferences = mockk {
-            every { lowTempFlow } returns MutableStateFlow(20f.celsius)
-            every { normalTempFlow } returns MutableStateFlow(45f.celsius)
-            every { highTempFlow } returns MutableStateFlow(90f.celsius)
-            every { lowPressureFlow } returns MutableStateFlow(1f.bar)
-            every { highPressureFlow } returns MutableStateFlow(3f.bar)
+        carRangesUseCase = mockk {
+            every { lowTemp } returns MutableStateFlow(20f.celsius)
+            every { normalTemp } returns MutableStateFlow(45f.celsius)
+            every { highTemp } returns MutableStateFlow(90f.celsius)
+            every { lowPressure } returns MutableStateFlow(1f.bar)
+            every { highPressure } returns MutableStateFlow(3f.bar)
         }
         savedStateHandle = SavedStateHandle()
     }
 
     private fun test() = TyreViewModelImpl(
         tyreAtmosphereUseCase,
-        atmosphereRangePreferences,
-        500.milliseconds.toJavaDuration(),
+        carRangesUseCase,
+        3.seconds.toJavaDuration(),
         savedStateHandle
     )
 
@@ -70,64 +70,64 @@ internal class TyreViewModelImplTest {
         )
 
     @Test
-    fun notDetected() = runTest {
+    fun notDetected(): Unit = runBlocking {
         assertIs<State.NotDetected>(test().stateFlow.value)
     }
 
     @Test
-    fun belowRangeTemperature() = runTest {
-        setAtmosphere(2f.bar, 15f.celsius)
+    fun belowRangeTemperature(): Unit = runBlocking {
+        setAtmosphere(2f.bar, (-10f).celsius)
         assertIs<State.Normal.BlueToGreen>(test().stateFlow.value)
     }
 
     @Test
-    fun normalTemperature() = runTest {
+    fun normalTemperature(): Unit = runBlocking {
         setAtmosphere(2f.bar, 25f.celsius)
         assertIs<State.Normal.BlueToGreen>(test().stateFlow.value)
     }
 
     @Test
-    fun highTemperature() = runTest {
+    fun highTemperature(): Unit = runBlocking {
         setAtmosphere(2f.bar, 60f.celsius)
         assertIs<State.Normal.GreenToRed>(test().stateFlow.value)
     }
 
     @Test
-    fun ultraHighTemperature() = runTest {
+    fun ultraHighTemperature(): Unit = runBlocking {
         setAtmosphere(2f.bar, 115f.celsius)
         assertIs<State.Alerting>(test().stateFlow.value)
     }
 
     @Test
-    fun noPressure() = runTest {
+    fun noPressure(): Unit = runBlocking {
         setAtmosphere(0f.bar, 45f.celsius)
         assertIs<State.Alerting>(test().stateFlow.value)
     }
 
     @Test
-    fun lowPressure() = runTest {
+    fun lowPressure(): Unit = runBlocking {
         setAtmosphere(0.8f.bar, 45f.celsius)
         assertIs<State.Alerting>(test().stateFlow.value)
     }
 
     @Test
-    fun highPressure() = runTest {
+    fun highPressure(): Unit = runBlocking {
         setAtmosphere(4f.bar, 45f.celsius)
         assertIs<State.Alerting>(test().stateFlow.value)
     }
 
     @Test
-    fun normalPressure() = runTest {
+    fun normalPressure(): Unit = runBlocking {
         setAtmosphere(2f.bar, 45f.celsius)
         assertIs<State.Normal>(test().stateFlow.value)
     }
 
     @Test
-    fun obsolete() = runTest {
+    fun obsolete(): Unit = runTest {
         setAtmosphere(2f.bar, 35f.celsius)
         val vm = test()
         assertIs<State.Normal.BlueToGreen>(vm.stateFlow.value)
-        delay(1.seconds)
+        delay(10.seconds)
         assertIs<State.NotDetected>(vm.stateFlow.value)
     }
 }

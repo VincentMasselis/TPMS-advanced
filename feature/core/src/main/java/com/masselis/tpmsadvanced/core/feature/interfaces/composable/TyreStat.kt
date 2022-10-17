@@ -20,12 +20,12 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel.State
-import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent.Companion.component
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.record.model.TyreLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -33,10 +33,12 @@ import kotlin.time.Duration.Companion.milliseconds
 @Suppress("NAME_SHADOWING")
 @Composable
 internal fun TyreStat(
-    location: TyreLocation,
+    location: SensorLocation,
     modifier: Modifier = Modifier,
-    viewModel: TyreStatsViewModel = viewModel(key = "TyreStatsViewModel_${location.name}") {
-        location.component.tyreStatViewModelFactory.build(createSavedStateHandle())
+    carComponent: CarComponent = LocalCarComponent.current,
+    viewModel: TyreStatsViewModel = viewModel(key = "TyreStatsViewModel_${carComponent.hashCode()}_${location.name}") {
+        carComponent.tyreComponent(location).tyreStatViewModelFactory
+            .build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()

@@ -14,4 +14,5 @@ dependencies {
     api 'io.mockk:mockk-android:1.12.8'
     api "androidx.compose.ui:ui-test-junit4:$composeVersion"
     api "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    api 'org.jetbrains.kotlin:kotlin-test'
 }
