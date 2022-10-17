@@ -14,6 +14,8 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSen
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorDialogViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarSettingsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteCarAlertViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteCarViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
@@ -100,5 +102,9 @@ private class DemoCarComponent : CarComponent() {
     override val carSettingsViewModel: CarSettingsViewModel.Factory
         get() = TODO("Not yet implemented")
     override val bindSensorDialogViewModelFactory: BindSensorDialogViewModel.Factory
+        get() = TODO("Not yet implemented")
+    override val deleteCarViewModel: DeleteCarViewModel
+        get() = TODO("Not yet implemented")
+    override val deleteCarAlertViewModel: DeleteCarAlertViewModel
         get() = TODO("Not yet implemented")
 }

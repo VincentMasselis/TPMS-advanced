@@ -135,7 +135,7 @@ private fun AddCar(
                 modifier = Modifier.focusRequester(focusRequester)
             )
         },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text(text = "Cancel") } },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
         confirmButton = {
             TextButton(
                 onClick = { onCarAdd(carName); onDismissRequest() },

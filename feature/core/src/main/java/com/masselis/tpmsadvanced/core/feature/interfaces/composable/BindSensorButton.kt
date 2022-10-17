@@ -69,10 +69,7 @@ private fun BindSensorDialog(
     carComponent: CarComponent = LocalCarComponent.current,
     viewModel: BindSensorDialogViewModel = viewModel(
         key = "BindSensorDialogViewModel_${carComponent.hashCode()}_${sensorToAdd.id}"
-    ) {
-        carComponent.bindSensorDialogViewModelFactory
-            .build(sensorToAdd, createSavedStateHandle())
-    }
+    ) { carComponent.bindSensorDialogViewModelFactory.build(sensorToAdd, createSavedStateHandle()) }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     if (state is BindSensorDialogViewModel.State.Loading)

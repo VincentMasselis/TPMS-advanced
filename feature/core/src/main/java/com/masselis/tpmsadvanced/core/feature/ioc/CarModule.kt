@@ -13,5 +13,5 @@ internal object CarModule {
     fun scope(): CoroutineScope = CoroutineScope(Dispatchers.Unconfined)
 
     @Provides
-    fun carFlow(carUseCase: CarUseCase) = carUseCase.flow
+    fun carFlow(carUseCase: CarUseCase) = carUseCase.carFlow()
 }

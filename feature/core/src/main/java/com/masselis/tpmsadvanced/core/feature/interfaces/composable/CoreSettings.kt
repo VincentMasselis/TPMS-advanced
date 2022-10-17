@@ -17,7 +17,6 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
-import com.masselis.tpmsadvanced.core.feature.unit.interfaces.Units
 import com.masselis.tpmsadvanced.core.ui.separator
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
@@ -30,6 +29,8 @@ public fun LazyListScope.coreSettings() {
     carItem { LowTemp() }
     separator()
     carItem { ClearBoundSensorsButton(Modifier.fillMaxWidth()) }
+    separator()
+    carItem { DeleteCar(Modifier.fillMaxWidth()) }
 }
 
 @Suppress("NAME_SHADOWING")
