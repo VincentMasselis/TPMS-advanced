@@ -4,7 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.feature.usecase.CurrentTyreBoundSensorUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.BoundSensorUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.SearchSensorUseCase
 import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
 import com.masselis.tpmsadvanced.data.car.model.Sensor
 import dagger.assisted.Assisted
@@ -21,7 +22,8 @@ import kotlinx.parcelize.Parcelize
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class BindSensorButtonViewModel @AssistedInject constructor(
-    private val currentTyreBoundSensorUseCase: CurrentTyreBoundSensorUseCase,
+    boundSensorTyreUseCase: BoundSensorUseCase,
+    private val searchSensorUseCase: SearchSensorUseCase,
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     @AssistedFactory
@@ -43,10 +45,11 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {
-        currentTyreBoundSensorUseCase.boundSensor
+        boundSensorTyreUseCase
+            .boundSensor()
             .flatMapLatest { savedId ->
-                if (savedId == null) currentTyreBoundSensorUseCase
-                    .foundSensor
+                if (savedId == null) searchSensorUseCase
+                    .search()
                     .map { State.RequestBond(it) }
                 else
                     flowOf(State.Empty)
