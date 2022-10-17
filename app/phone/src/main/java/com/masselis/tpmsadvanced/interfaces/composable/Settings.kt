@@ -10,6 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.BuildConfig
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.coreSettings
@@ -31,6 +33,7 @@ internal fun Settings(
             Text(
                 "Version code: ${BuildConfig.VERSION_CODE}",
                 Modifier.align(Alignment.TopEnd),
+                color = Color.Gray
             )
         }
     }
