@@ -120,7 +120,7 @@ internal object Module {
             pressureAdapter,
             temperatureAdapter,
             uShortAdapter,
-            IntColumnAdapter
+            uuidAdapter
         )
     )
 }

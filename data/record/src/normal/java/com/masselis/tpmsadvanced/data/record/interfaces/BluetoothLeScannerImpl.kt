@@ -113,11 +113,6 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
     override fun normalScan(): Flow<Tyre> = balancedScanFlow
 
     private fun Flow<Raw>.shared() = this
-        .shareIn(
-            CoroutineScope(Dispatchers.Unconfined),
-            // Anti-spam mechanism to avoid an exception when requesting 6 scans within a 30s frame
-            SharingStarted.WhileSubscribed(5.seconds, Duration.ZERO)
-        )
         .map { raw ->
             @Suppress("MagicNumber")
             Tyre(
@@ -143,6 +138,12 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 raw.alarm() == PRESSURE_ALARM_BYTE
             )
         }
+        .shareIn(
+            CoroutineScope(Dispatchers.Default),
+            // Anti-spam mechanism to avoid an exception when requesting 6 scans within a 30s frame
+            SharingStarted.WhileSubscribed(5.seconds, Duration.ZERO),
+            0
+        )
 
     @JvmInline
     @Suppress("MagicNumber")

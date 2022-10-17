@@ -13,7 +13,7 @@ public class TyreDatabase @Inject internal constructor(
 ) {
     private val queries = database.tyreQueries
 
-    public suspend fun insert(tyre: Tyre, sensorId: Int): Unit = withContext(IO) {
+    public suspend fun insert(tyre: Tyre, carId: UUID): Unit = withContext(IO) {
         queries.insert(
             tyre.id,
             tyre.timestamp,
@@ -22,7 +22,7 @@ public class TyreDatabase @Inject internal constructor(
             tyre.temperature,
             tyre.battery,
             tyre.isAlarm,
-            sensorId
+            carId
         )
     }
 
