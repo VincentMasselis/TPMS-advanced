@@ -9,16 +9,17 @@ the [Play Store](https://play.google.com/store/apps/details?id=com.masselis.tpms
 
 ## Features
 
-* QR Code scanning
 * Pressures alerts
 * Temperature alerts
+* Support one or multiple cars
+* QR Code scanning
 * Dark mode
 * Pressure and temperature units selection
-* Favourites sensors
+* Show the latest recorded value even after a restart
+* Filter with favourites sensors
 
 ## What's next ?
 
-* Multiple cars
 * Temperature history
 * Automatic startup in background when connected to the car's radio in bluetooth
 * Add support for other BLE Sensors
