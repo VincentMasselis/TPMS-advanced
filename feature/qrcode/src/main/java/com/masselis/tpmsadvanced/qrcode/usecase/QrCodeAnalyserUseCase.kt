@@ -48,7 +48,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor(private val context: Co
                 COORDINATE_SYSTEM_VIEW_REFERENCED,
                 executor
             ) {
-                launch { send(it.getValue(scanner)!!) }
+                it.getValue(scanner)?.also { barcodes -> launch { send(barcodes) } }
             }
         )
         awaitClose { controller.clearImageAnalysisAnalyzer() }
