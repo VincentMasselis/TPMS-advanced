@@ -59,6 +59,8 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
     private val context: Context
 ) : BluetoothLeScanner {
 
+    private val bluetoothAdapter get() = context.getSystemService<BluetoothManager>()?.adapter
+
     @SuppressLint("InlinedApi")
     @RequiresPermission("android.permission.BLUETOOTH_SCAN")
     private fun scan(mode: Int) = callbackFlow {
@@ -75,10 +77,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 close(BluetoothLeScanner.ScanFailed(errorCode))
             }
         }
-        val leScanner = context
-            .getSystemService<BluetoothManager>()!!
-            .adapter
-            .bluetoothLeScanner
+        val leScanner = bluetoothAdapter!!.bluetoothLeScanner
         leScanner.startScan(
             listOf(
                 ScanFilter
@@ -157,8 +156,6 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
         fun alarm(): Byte = bytes[15]
     }
 
-    private val bluetoothAdapter by lazy { context.getSystemService<BluetoothManager>()!!.adapter }
-
     @SuppressLint("InlinedApi")
     @Suppress("MagicNumber")
     override fun missingPermission(): List<String> = when (Build.VERSION.SDK_INT) {
@@ -175,7 +172,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
         .map { it.getIntExtra(EXTRA_STATE, ERROR) }
         .filter { it != ERROR }
         .map { it == STATE_ON }
-        .onStart { emit(bluetoothAdapter.isEnabled) }
+        .onStart { emit(bluetoothAdapter?.isEnabled ?: false) }
 
     @OptIn(ExperimentalUnsignedTypes::class)
     companion object {
