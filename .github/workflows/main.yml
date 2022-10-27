@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  publication:
     name: Publish
     runs-on: ubuntu-latest
     steps:
@@ -36,4 +36,4 @@ jobs:
       - name: Upload release
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: bundle publishApps
+          arguments: bundle publishApps # Calling "publishApps" doesn't upload the mapping.txt file to crashlytics, to fix that, I've added "bundle"
