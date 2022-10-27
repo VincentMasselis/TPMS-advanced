@@ -36,4 +36,4 @@ jobs:
       - name: Upload release
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: publishApps
+          arguments: bundle publishApps
