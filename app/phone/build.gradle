@@ -89,7 +89,7 @@ tasks.whenTaskAdded { instrumentedTestTask ->
             dependsOn downloadScreenshots
             group = 'publishing'
             description = 'Copy and rename the screenshots from the phone in order to be uploaded to the play store listing'
-            def path = "$projectDir/src/demo/play/listings/en-US/graphics/phone-screenshots"
+            def path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
             doFirst {
                 mkdir path
             }

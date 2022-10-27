@@ -51,10 +51,10 @@ internal class TakeScreenshotTest {
             MODE_NIGHT_YES -> "dark_"
             else -> throw IllegalArgumentException()
         }
-        sleep(200.milliseconds)
+        sleep(500.milliseconds)
         capture("${prefix}main.png")
         composeTestRule.onNodeWithTag("settings").performClick()
-        sleep(200.milliseconds)
+        sleep(500.milliseconds)
         capture("${prefix}settings.png")
     }
 
