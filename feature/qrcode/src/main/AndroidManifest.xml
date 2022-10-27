@@ -2,6 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.masselis.tpmsadvanced.qrcode">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application>
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
