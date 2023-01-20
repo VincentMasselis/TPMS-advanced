@@ -29,22 +29,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarListDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarTextViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarTextViewModel.State
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.car.model.Car
 import kotlinx.coroutines.delay
 
 @Composable
 public fun CurrentCarText(
     modifier: Modifier = Modifier,
-): Unit = CurrentCarText(modifier, viewModel { featureCoreComponent.currentCarTextViewModel })
+): Unit = CurrentCarText(modifier, viewModel { FeatureCoreComponent.currentCarTextViewModel })
 
 @Composable
 internal fun CurrentCarText(
     modifier: Modifier = Modifier,
-    viewModel: CurrentCarTextViewModel = viewModel { featureCoreComponent.currentCarTextViewModel }
+    viewModel: CurrentCarTextViewModel = viewModel { FeatureCoreComponent.currentCarTextViewModel }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     val car = when (val state = state) {
@@ -87,7 +87,7 @@ private fun ExposedDropdownMenuBoxScope.CarListDropdownMenu(
     onNewCurrent: (Car) -> Unit,
     onAskNewCar: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CarListDropdownViewModel = viewModel { featureCoreComponent.carListDropdownViewModel }
+    viewModel: CarListDropdownViewModel = viewModel { FeatureCoreComponent.carListDropdownViewModel }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     DropdownMenu(

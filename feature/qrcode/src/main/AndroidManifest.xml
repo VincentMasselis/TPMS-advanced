@@ -1,5 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.masselis.tpmsadvanced.qrcode">
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -8,14 +7,5 @@
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode" />
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-            <meta-data
-                android:name="com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeInitializer"
-                android:value="androidx.startup" />
-        </provider>
     </application>
 </manifest>

@@ -95,10 +95,11 @@ subprojects {
                 }
             }
         }
-        if (plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
+        if (plugins.hasPlugin("kotlin-kapt")) {
             dependencies {
                 implementation "com.google.dagger:dagger:$daggerVersion"
                 kapt "com.google.dagger:dagger-compiler:$daggerVersion"
             }
+        }
     }
 }

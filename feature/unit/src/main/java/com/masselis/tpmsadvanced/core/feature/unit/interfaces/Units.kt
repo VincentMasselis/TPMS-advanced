@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.core.feature.unit.ioc.featureUnitComponent
+import com.masselis.tpmsadvanced.core.feature.unit.ioc.FeatureUnitComponent
 import com.masselis.tpmsadvanced.core.ui.EnumDropdown
 import java.util.*
 
@@ -17,14 +17,14 @@ import java.util.*
 public fun Units(modifier: Modifier = Modifier): Unit =
     Units(
         modifier,
-        viewModel { featureUnitComponent.unitsViewModel },
+        viewModel { FeatureUnitComponent.unitsViewModel },
     )
 
 @Suppress("DEPRECATION")
 @Composable
 internal fun Units(
     modifier: Modifier = Modifier,
-    viewModel: UnitsViewModel = viewModel { featureUnitComponent.unitsViewModel },
+    viewModel: UnitsViewModel = viewModel { FeatureUnitComponent.unitsViewModel },
 ) {
     val pressure by viewModel.pressure.collectAsState()
     val temperature by viewModel.temperature.collectAsState()

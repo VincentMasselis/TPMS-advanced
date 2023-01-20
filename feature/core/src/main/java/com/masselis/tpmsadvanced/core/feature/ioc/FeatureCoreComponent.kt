@@ -10,6 +10,7 @@ import com.masselis.tpmsadvanced.data.car.ioc.DataCarComponent
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import dagger.Component
+import javax.inject.Inject
 
 @SingleInstance
 @Component(
@@ -24,11 +25,11 @@ import dagger.Component
         FeatureUnitComponent::class,
     ]
 )
-public abstract class FeatureCoreComponent {
+public interface FeatureCoreComponent {
 
     @Component.Factory
-    internal abstract class Factory {
-        abstract fun build(
+    public interface Factory {
+        public fun build(
             coreCommonComponent: CoreCommonComponent,
             dataRecordComponent: DataRecordComponent,
             dataUnitComponent: DataUnitComponent,
@@ -37,8 +38,37 @@ public abstract class FeatureCoreComponent {
         ): FeatureCoreComponent
     }
 
-    internal abstract val preconditionsViewModel: PreconditionsViewModel.Factory
-    internal abstract val currentCarTextViewModel: CurrentCarTextViewModel
-    internal abstract val carListDropdownViewModel: CarListDropdownViewModel
-    internal abstract val currentCarComponentViewModel: CurrentCarComponentViewModel
+    public fun inject(injectable: Injectable)
+
+    public companion object : Injectable()
+
+    public abstract class Injectable protected constructor() :
+        FeatureCoreComponent by DaggerFeatureCoreComponent
+            .factory()
+            .build(
+                CoreCommonComponent,
+                DataRecordComponent,
+                DataUnitComponent,
+                DataCarComponent,
+                FeatureUnitComponent
+            ) {
+
+        @Inject
+        internal lateinit var preconditionsViewModel: PreconditionsViewModel.Factory
+
+        @Inject
+        internal lateinit var currentCarTextViewModel: CurrentCarTextViewModel
+
+        @Inject
+        internal lateinit var carListDropdownViewModel: CarListDropdownViewModel
+
+        @Inject
+        internal lateinit var currentCarComponentViewModel: CurrentCarComponentViewModel
+
+        init {
+            @Suppress("LeakingThis")
+            inject(this)
+        }
+    }
+
 }

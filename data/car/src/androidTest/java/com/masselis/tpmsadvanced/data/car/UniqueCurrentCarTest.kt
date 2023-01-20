@@ -4,8 +4,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.masselis.tpmsadvanced.core.common.appContext
+import com.masselis.tpmsadvanced.data.car.ioc.DataCarComponent
 import com.masselis.tpmsadvanced.data.car.ioc.DebugComponent
-import com.masselis.tpmsadvanced.data.car.ioc.dataCarComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
@@ -23,7 +23,6 @@ import kotlin.test.assertTrue
 @RunWith(AndroidJUnit4::class)
 internal class UniqueCurrentCarTest {
 
-    private lateinit var debugComponent: DebugComponent
     private lateinit var database: Database
     private lateinit var carQueries: CarQueries
     private lateinit var debugCarQueries: DebugCarQueries
@@ -31,7 +30,7 @@ internal class UniqueCurrentCarTest {
     @Before
     fun setup() {
         appContext.getDatabasePath("car.db").delete()
-        debugComponent = dataCarComponent.debugFactory.build()
+        val debugComponent = DataCarComponent.debugComponentFactory.build()
         database = debugComponent.database
         carQueries = database.carQueries
         debugCarQueries = database.debugCarQueries

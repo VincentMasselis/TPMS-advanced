@@ -9,15 +9,13 @@ import dagger.Component
 @Component(
     modules = [Module::class]
 )
-public abstract class DataCarComponent {
-    @Component.Factory
-    internal abstract class Factory {
-        internal abstract fun build(): DataCarComponent
-    }
+public interface DataCarComponent {
 
-    internal abstract val debugFactory: DebugComponent.Factory
+    public val debugComponentFactory: DebugComponent.Factory
 
-    public abstract val car: CarDatabase
-    public abstract val sensor: SensorDatabase
-    public abstract val tyreDatabase: TyreDatabase
+    public val car: CarDatabase
+    public val sensor: SensorDatabase
+    public val tyreDatabase: TyreDatabase
+
+    public companion object : DataCarComponent by DaggerDataCarComponent.create()
 }

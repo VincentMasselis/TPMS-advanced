@@ -31,6 +31,7 @@ import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.OnLifecycleEvent
 import com.masselis.tpmsadvanced.qrcode.R
 import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel.State
+import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -38,7 +39,7 @@ public fun QrCodeScan(
     modifier: Modifier = Modifier,
 ): Unit = QrCodeScan(
     modifier,
-    viewModel { qrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle()) },
+    viewModel { FeatureQrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle()) },
 )
 
 @Suppress("NAME_SHADOWING")
@@ -46,7 +47,7 @@ public fun QrCodeScan(
 internal fun QrCodeScan(
     modifier: Modifier = Modifier,
     viewModel: CameraPreconditionsViewModel = viewModel {
-        qrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle())
+        FeatureQrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle())
     },
 ) {
     OnLifecycleEvent { _, event ->
@@ -97,7 +98,7 @@ private fun Preview(
         QrCodeOverlay(Modifier.fillMaxSize())
     }
 
-    val viewModel = remember { qrCodeComponent.qrCodeViewModel.build(controller) }
+    val viewModel = remember { FeatureQrCodeComponent.qrCodeViewModel.build(controller) }
     val state by viewModel.stateFlow.collectAsState()
     when (val state = state) {
         QRCodeViewModel.State.Scanning -> {}

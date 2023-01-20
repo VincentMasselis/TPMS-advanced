@@ -26,9 +26,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 
@@ -36,7 +36,7 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 public fun Car(modifier: Modifier = Modifier) {
     Car(
         modifier,
-        viewModel { featureCoreComponent.currentCarComponentViewModel }
+        viewModel { FeatureCoreComponent.currentCarComponentViewModel }
     )
 }
 
@@ -45,7 +45,7 @@ public fun Car(modifier: Modifier = Modifier) {
 internal fun Car(
     modifier: Modifier = Modifier,
     viewModel: CurrentCarComponentViewModel = viewModel {
-        featureCoreComponent.currentCarComponentViewModel
+        FeatureCoreComponent.currentCarComponentViewModel
     }
 ) {
     KeepScreenOn()

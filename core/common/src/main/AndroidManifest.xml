@@ -9,7 +9,7 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="com.masselis.tpmsadvanced.core.common.CoreCommonInitializer"
+                android:name="com.masselis.tpmsadvanced.core.common.AppContextInitializer"
                 android:value="androidx.startup" />
         </provider>
         <provider

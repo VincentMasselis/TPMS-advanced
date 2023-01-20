@@ -13,10 +13,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.common.Fraction
-import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.ui.separator
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
@@ -39,7 +39,7 @@ private fun LazyListScope.carItem(
     contentType: Any? = null,
     content: @Composable LazyItemScope.() -> Unit
 ) = item(key, contentType) {
-    val viewModel = viewModel { featureCoreComponent.currentCarComponentViewModel }
+    val viewModel = viewModel { FeatureCoreComponent.currentCarComponentViewModel }
     val component by viewModel.stateFlow.collectAsState()
     CompositionLocalProvider(LocalCarComponent provides component) {
         content()

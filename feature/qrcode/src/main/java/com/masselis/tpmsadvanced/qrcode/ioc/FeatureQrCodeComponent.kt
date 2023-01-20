@@ -6,6 +6,7 @@ import com.masselis.tpmsadvanced.data.car.ioc.DataCarComponent
 import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel
 import dagger.Component
+import javax.inject.Inject
 
 @SingleInstance
 @Component(
@@ -15,16 +16,39 @@ import dagger.Component
         FeatureCoreComponent::class
     ]
 )
-public abstract class FeatureQrCodeComponent {
+public interface FeatureQrCodeComponent {
     @Component.Factory
-    internal abstract class Factory {
-        abstract fun build(
+    public interface Factory {
+        public fun build(
             coreCommonComponent: CoreCommonComponent,
             dataCarComponent: DataCarComponent,
             featureCoreComponent: FeatureCoreComponent
         ): FeatureQrCodeComponent
     }
 
-    internal abstract val cameraPreconditionsViewModel: CameraPreconditionsViewModel.Factory
-    internal abstract val qrCodeViewModel: QRCodeViewModel.Factory
+    public fun inject(companion: Injectable)
+
+    public companion object : Injectable()
+
+    public abstract class Injectable protected constructor() :
+        FeatureQrCodeComponent by DaggerFeatureQrCodeComponent
+            .factory()
+            .build(
+                CoreCommonComponent,
+                DataCarComponent,
+                FeatureCoreComponent
+            ) {
+
+        @Inject
+        internal lateinit var qrCodeViewModel: QRCodeViewModel.Factory
+
+        @Inject
+        internal lateinit var cameraPreconditionsViewModel: CameraPreconditionsViewModel.Factory
+
+        init {
+            @Suppress("LeakingThis")
+            inject(this)
+        }
+
+    }
 }

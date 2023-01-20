@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.featureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.OnLifecycleEvent
 import kotlinx.collections.immutable.toImmutableList
@@ -38,7 +38,7 @@ public fun Preconditions(
 internal fun InternalPreconditions(
     ready: @Composable () -> Unit,
     viewModel: PreconditionsViewModel = viewModel {
-        featureCoreComponent.preconditionsViewModel.build(createSavedStateHandle())
+        FeatureCoreComponent.preconditionsViewModel.build(createSavedStateHandle())
     }
 ) {
     OnLifecycleEvent { _, event ->

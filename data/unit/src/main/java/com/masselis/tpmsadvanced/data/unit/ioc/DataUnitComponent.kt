@@ -8,11 +8,15 @@ import dagger.Component
 @Component(
     dependencies = [CoreCommonComponent::class]
 )
-public abstract class DataUnitComponent {
+public interface DataUnitComponent {
     @Component.Factory
-    internal abstract class Factory {
-        abstract fun build(coreCommonComponent: CoreCommonComponent): DataUnitComponent
+    public interface Factory {
+        public fun build(coreCommonComponent: CoreCommonComponent): DataUnitComponent
     }
 
-    public abstract val unitPreferences: UnitPreferences
+    public val unitPreferences: UnitPreferences
+
+    public companion object : DataUnitComponent by DaggerDataUnitComponent
+        .factory()
+        .build(CoreCommonComponent)
 }

@@ -9,11 +9,15 @@ import dagger.Component
     dependencies = [CoreCommonComponent::class],
     modules = [Module::class]
 )
-public abstract class DataRecordComponent {
+public interface DataRecordComponent {
     @Component.Factory
-    internal abstract class Factory {
-        abstract fun build(coreCommonComponent: CoreCommonComponent): DataRecordComponent
+    public interface Factory {
+        public fun build(coreCommonComponent: CoreCommonComponent): DataRecordComponent
     }
 
-    public abstract val bluetoothLeScanner: BluetoothLeScanner
+    public val bluetoothLeScanner: BluetoothLeScanner
+
+    public companion object : DataRecordComponent by DaggerDataRecordComponent
+        .factory()
+        .build(CoreCommonComponent)
 }
