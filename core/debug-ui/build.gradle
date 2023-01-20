@@ -3,9 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 dependencies {
+    debugApi project(":core:common")
     // Tooling support (Previews, etc.)
-    debugApi "androidx.compose.ui:ui-tooling:$composeVersion"
-    debugApi "androidx.compose.ui:ui-test-manifest:$composeVersion"
+    debugApi "androidx.compose.ui:ui-tooling"
+    debugApi "androidx.compose.ui:ui-test-manifest"
 
     debugApi 'io.mockk:mockk-android:1.12.8'
 }

@@ -17,3 +17,6 @@ local.properties
 .idea/inspectionProfiles/Project_Default.xml
 .idea/deploymentTargetDropDown.xml
 .idea/gradle.xml
+.idea/misc.xml
+.idea/codeStyles/Project.xml
+.idea/codeStyles/codeStyleConfig.xml
