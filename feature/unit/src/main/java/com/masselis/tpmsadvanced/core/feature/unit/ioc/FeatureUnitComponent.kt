@@ -14,7 +14,7 @@ import javax.inject.Inject
 public interface FeatureUnitComponent {
     @Component.Factory
     public interface Factory {
-        public fun build(dataUnitComponent: DataUnitComponent): FeatureUnitComponent
+        public fun build(dataUnitComponent: DataUnitComponent = DataUnitComponent): FeatureUnitComponent
     }
 
     public fun inject(injectable: Injectable)
@@ -24,7 +24,7 @@ public interface FeatureUnitComponent {
     public abstract class Injectable protected constructor() :
         FeatureUnitComponent by DaggerFeatureUnitComponent
             .factory()
-            .build(DataUnitComponent) {
+            .build() {
 
         @Inject
         internal lateinit var unitsViewModel: UnitsViewModel

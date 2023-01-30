@@ -12,12 +12,12 @@ import dagger.Component
 public interface DataRecordComponent {
     @Component.Factory
     public interface Factory {
-        public fun build(coreCommonComponent: CoreCommonComponent): DataRecordComponent
+        public fun build(coreCommonComponent: CoreCommonComponent = CoreCommonComponent): DataRecordComponent
     }
 
     public val bluetoothLeScanner: BluetoothLeScanner
 
     public companion object : DataRecordComponent by DaggerDataRecordComponent
         .factory()
-        .build(CoreCommonComponent)
+        .build()
 }

@@ -30,11 +30,11 @@ public interface FeatureCoreComponent {
     @Component.Factory
     public interface Factory {
         public fun build(
-            coreCommonComponent: CoreCommonComponent,
-            dataRecordComponent: DataRecordComponent,
-            dataUnitComponent: DataUnitComponent,
-            dataCarComponent: DataCarComponent,
-            featureUnitComponent: FeatureUnitComponent,
+            coreCommonComponent: CoreCommonComponent = CoreCommonComponent,
+            dataRecordComponent: DataRecordComponent = DataRecordComponent,
+            dataUnitComponent: DataUnitComponent = DataUnitComponent,
+            dataCarComponent: DataCarComponent = DataCarComponent,
+            featureUnitComponent: FeatureUnitComponent = FeatureUnitComponent,
         ): FeatureCoreComponent
     }
 
@@ -45,13 +45,7 @@ public interface FeatureCoreComponent {
     public abstract class Injectable protected constructor() :
         FeatureCoreComponent by DaggerFeatureCoreComponent
             .factory()
-            .build(
-                CoreCommonComponent,
-                DataRecordComponent,
-                DataUnitComponent,
-                DataCarComponent,
-                FeatureUnitComponent
-            ) {
+            .build() {
 
         @Inject
         internal lateinit var preconditionsViewModel: PreconditionsViewModel.Factory

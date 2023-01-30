@@ -16,7 +16,7 @@ public interface CoreCommonComponent {
 
     @Component.Factory
     public interface Factory {
-        public fun build(@BindsInstance context: Context): CoreCommonComponent
+        public fun build(@BindsInstance context: Context = appContext): CoreCommonComponent
     }
 
     public val context: Context
@@ -29,7 +29,7 @@ public interface CoreCommonComponent {
     public abstract class Injectable protected constructor() :
         CoreCommonComponent by DaggerCoreCommonComponent
             .factory()
-            .build(appContext) {
+            .build() {
 
         @set:Inject
         internal var firebaseApp: FirebaseApp? = null

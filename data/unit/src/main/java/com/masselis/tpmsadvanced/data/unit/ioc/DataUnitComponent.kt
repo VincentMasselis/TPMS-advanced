@@ -11,12 +11,12 @@ import dagger.Component
 public interface DataUnitComponent {
     @Component.Factory
     public interface Factory {
-        public fun build(coreCommonComponent: CoreCommonComponent): DataUnitComponent
+        public fun build(coreCommonComponent: CoreCommonComponent = CoreCommonComponent): DataUnitComponent
     }
 
     public val unitPreferences: UnitPreferences
 
     public companion object : DataUnitComponent by DaggerDataUnitComponent
         .factory()
-        .build(CoreCommonComponent)
+        .build()
 }

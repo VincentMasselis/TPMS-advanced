@@ -20,9 +20,9 @@ public interface FeatureQrCodeComponent {
     @Component.Factory
     public interface Factory {
         public fun build(
-            coreCommonComponent: CoreCommonComponent,
-            dataCarComponent: DataCarComponent,
-            featureCoreComponent: FeatureCoreComponent
+            coreCommonComponent: CoreCommonComponent = CoreCommonComponent,
+            dataCarComponent: DataCarComponent = DataCarComponent,
+            featureCoreComponent: FeatureCoreComponent = FeatureCoreComponent
         ): FeatureQrCodeComponent
     }
 
@@ -33,11 +33,7 @@ public interface FeatureQrCodeComponent {
     public abstract class Injectable protected constructor() :
         FeatureQrCodeComponent by DaggerFeatureQrCodeComponent
             .factory()
-            .build(
-                CoreCommonComponent,
-                DataCarComponent,
-                FeatureCoreComponent
-            ) {
+            .build() {
 
         @Inject
         internal lateinit var qrCodeViewModel: QRCodeViewModel.Factory
