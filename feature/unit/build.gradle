@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    namespace 'com.masselis.tpmsadvanced.core.feature.unit'
     buildFeatures {
         compose true
     }
@@ -19,4 +20,5 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:debug-ui"))
     implementation(project(":data:unit"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
 }

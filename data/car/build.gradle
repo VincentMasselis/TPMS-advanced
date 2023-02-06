@@ -7,6 +7,7 @@ plugins {
 }
 
 android {
+    namespace 'com.masselis.tpmsadvanced.data.car'
     defaultConfig {
         // The following argument makes the Android Test Orchestrator run its
         // "pm clear" command after each test invocation. This command ensures
@@ -24,17 +25,20 @@ dependencies {
     api(project(":core:common"))
     api(project(":core:database"))
     api(project(":data:record"))
+    implementation 'androidx.core:core-ktx:+'
 
     androidTestImplementation(project(":core:android-test"))
-    androidTestUtil 'androidx.test:orchestrator:1.4.1'
+    androidTestUtil 'androidx.test:orchestrator:1.4.2'
 }
 
 sqldelight {
-    Database {
-        packageName = "com.masselis.tpmsadvanced.data.car"
-        dialect("app.cash.sqldelight:sqlite-3-24-dialect:$sqlDelightVersion")
-        // Uncomment this when the first release with a database will be pushed
-        // verifyMigrations = true
-        // schemaOutputDirectory = file("src/main/sqldelight")
+    databases {
+        Database {
+            packageName = "com.masselis.tpmsadvanced.data.car"
+            dialect("app.cash.sqldelight:sqlite-3-24-dialect:$sqlDelightVersion")
+            // Uncomment this when the first release with a database will be pushed
+            // verifyMigrations = true
+            // schemaOutputDirectory = file("src/main/sqldelight")
+        }
     }
 }

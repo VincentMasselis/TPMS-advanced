@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.data.record.interfaces
 
 import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
+import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
@@ -21,7 +21,7 @@ import javax.inject.Inject
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
-@SingleInstance
+@DataRecordComponent.Scope
 internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner {
 
     private val pressures = listOf(

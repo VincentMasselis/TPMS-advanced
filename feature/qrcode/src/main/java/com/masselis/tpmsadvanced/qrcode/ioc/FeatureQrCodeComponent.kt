@@ -8,7 +8,7 @@ import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel
 import dagger.Component
 import javax.inject.Inject
 
-@SingleInstance
+@FeatureQrCodeComponent.Scope
 @Component(
     dependencies = [
         CoreCommonComponent::class,
@@ -25,6 +25,9 @@ public interface FeatureQrCodeComponent {
             featureCoreComponent: FeatureCoreComponent = FeatureCoreComponent
         ): FeatureQrCodeComponent
     }
+
+    @javax.inject.Scope
+    public annotation class Scope
 
     public fun inject(companion: Injectable)
 

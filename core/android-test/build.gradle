@@ -3,6 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+android {
+    namespace 'com.masselis.tpmsadvanced.core.androidtest'
+}
+
 dependencies {
     api project(":core:common")
     api 'androidx.test.ext:junit:1.1.5'

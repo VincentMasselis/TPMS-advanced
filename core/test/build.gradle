@@ -3,6 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+android {
+    namespace 'com.masselis.tpmsadvanced.core.test'
+}
+
 dependencies {
     api 'junit:junit:4.13.2'
     api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineVersion"

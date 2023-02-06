@@ -5,7 +5,7 @@ import com.masselis.tpmsadvanced.core.feature.unit.interfaces.UnitsViewModel
 import dagger.Component
 import javax.inject.Inject
 
-@SingleInstance
+@FeatureUnitComponent.Scope
 @Component(
     dependencies = [
         DataUnitComponent::class
@@ -16,6 +16,9 @@ public interface FeatureUnitComponent {
     public interface Factory {
         public fun build(dataUnitComponent: DataUnitComponent = DataUnitComponent): FeatureUnitComponent
     }
+
+    @javax.inject.Scope
+    public annotation class Scope
 
     public fun inject(injectable: Injectable)
 

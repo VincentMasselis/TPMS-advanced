@@ -68,7 +68,7 @@ internal object Module {
         override fun encode(value: UShort): Long = value.toLong()
     }
 
-    @SingleInstance
+    @DataCarComponent.Scope
     @Provides
     fun driver(): SqlDriver = AndroidSqliteDriver(
         schema = Database.Schema,
@@ -94,7 +94,7 @@ internal object Module {
         }
     )
 
-    @SingleInstance
+    @DataCarComponent.Scope
     @Provides
     fun database(
         driver: SqlDriver,

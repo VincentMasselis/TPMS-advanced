@@ -3,6 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+android {
+    namespace 'com.masselis.tpmsadvanced.core.database'
+}
+
 dependencies {
     api "app.cash.sqldelight:android-driver:$sqlDelightVersion"
     api "app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion"

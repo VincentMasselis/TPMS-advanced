@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace 'com.masselis.tpmsadvanced.core.ui'
     buildFeatures {
         compose true
     }

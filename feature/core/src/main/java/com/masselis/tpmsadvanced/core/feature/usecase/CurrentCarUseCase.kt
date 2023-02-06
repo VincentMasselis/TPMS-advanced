@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 
 import com.masselis.tpmsadvanced.core.common.observableStateFlow
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
-import com.masselis.tpmsadvanced.core.feature.ioc.SingleInstance
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.car.interfaces.CarDatabase
 import com.masselis.tpmsadvanced.data.car.model.Car
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -18,7 +18,7 @@ import java.util.UUID.randomUUID
 import javax.inject.Inject
 
 @OptIn(DelicateCoroutinesApi::class)
-@SingleInstance
+@FeatureCoreComponent.Scope
 internal class CurrentCarUseCase @Inject constructor(
     private val database: CarDatabase,
     private val factory: CarComponent.Factory

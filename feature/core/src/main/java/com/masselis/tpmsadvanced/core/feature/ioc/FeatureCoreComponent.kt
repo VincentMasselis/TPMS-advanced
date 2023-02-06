@@ -12,7 +12,7 @@ import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import dagger.Component
 import javax.inject.Inject
 
-@SingleInstance
+@FeatureCoreComponent.Scope
 @Component(
     modules = [
         CarComponentModule::class
@@ -37,6 +37,9 @@ public interface FeatureCoreComponent {
             featureUnitComponent: FeatureUnitComponent = FeatureUnitComponent,
         ): FeatureCoreComponent
     }
+
+    @javax.inject.Scope
+    public annotation class Scope
 
     public fun inject(injectable: Injectable)
 
