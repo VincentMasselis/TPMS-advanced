@@ -13,5 +13,5 @@ dependencies {
     debugApi "androidx.compose.ui:ui-tooling"
     debugApi "androidx.compose.ui:ui-test-manifest"
 
-    debugApi 'io.mockk:mockk-android:1.12.8'
+    debugApi 'io.mockk:mockk-android:1.13.4'
 }
