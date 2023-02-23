@@ -20,6 +20,7 @@ the [Play Store](https://play.google.com/store/apps/details?id=com.masselis.tpms
 
 ## What's next ?
 
+* Handle 4+ wheels use cases like trailers or 6 wheels pickups ([link to issue](https://github.com/VincentMasselis/TPMS-advanced/issues/4))
 * Run in background
 * Temperature history
 * Automatic startup in background when connected to the car's radio in bluetooth
