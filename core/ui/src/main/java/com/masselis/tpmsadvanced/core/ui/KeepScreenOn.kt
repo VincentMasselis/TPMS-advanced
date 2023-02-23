@@ -6,9 +6,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 
 public val LocalKeepScreenOnCounter: ProvidableCompositionLocal<ScreenOnCounter> =
-    compositionLocalOf {
-        error("Not available")
-    }
+    compositionLocalOf { error("Not available") }
 
 @Composable
 public fun KeepScreenOn() {

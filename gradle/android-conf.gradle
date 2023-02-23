@@ -1,14 +1,18 @@
 subprojects {
-    apply plugin: 'io.gitlab.arturbosch.detekt'
+    // Detekt configuration
+    plugins.apply 'io.gitlab.arturbosch.detekt'
     detekt {
         buildUponDefaultConfig = true
         config = files("${rootProject.rootDir}/gradle/detekt-config.yml")
     }
     dependencies {
-        detektPlugins "com.twitter.compose.rules:detekt:0.0.18"
+        detektPlugins "io.nlopez.compose.rules:detekt:0.1.1"
     }
+
+    // Configures every android module
     afterEvaluate {
         if (plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
+            plugins.apply 'kotlin-parcelize'
             android {
                 compileSdk 33
                 defaultConfig {
@@ -73,7 +77,7 @@ subprojects {
                             task exportComposeReport(type: Copy, dependsOn: composeReport2Html) {
                                 group = 'verification'
                                 from(outputDir) {
-                                    rename 'index.html', "${project.path.replaceAll(':','_')}.html"
+                                    rename 'index.html', "${project.path.replaceAll(':', '_')}.html"
                                 }
                                 into "${rootProject.buildDir}/compose_reports"
                             }
@@ -93,12 +97,6 @@ subprojects {
                     exclude 'META-INF/ASL2.0'
                     exclude("META-INF/*.kotlin_module")
                 }
-            }
-        }
-        if (plugins.hasPlugin("kotlin-kapt")) {
-            dependencies {
-                implementation "com.google.dagger:dagger:$daggerVersion"
-                kapt "com.google.dagger:dagger-compiler:$daggerVersion"
             }
         }
     }

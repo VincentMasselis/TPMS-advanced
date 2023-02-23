@@ -15,7 +15,7 @@ style:
 complexity:
   LongParameterList:
     functionThreshold: 10
-TwitterCompose:
+Compose:
   ContentEmitterReturningValues:
     active: true
   ModifierComposable:
@@ -42,3 +42,6 @@ TwitterCompose:
     active: true
   ViewModelInjection:
     active: true
+  CompositionLocalAllowlist:
+    active: false
+

@@ -1,9 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
-    id 'kotlin-parcelize'
 }
+apply from : "${project.rootDir}/gradle/dagger.gradle"
 
 android {
     namespace 'com.masselis.tpmsadvanced.data.record'
