@@ -23,6 +23,7 @@ runs:
       if: steps.avd-cache.outputs.cache-hit != 'true'
       uses: reactivecircus/android-emulator-runner@v2
       with:
+        profile: Pixel
         arch: x86_64
         api-level: 31
         force-avd-creation: false
@@ -33,6 +34,7 @@ runs:
     - name: Run on AVD
       uses: reactivecircus/android-emulator-runner@v2
       with:
+        profile: Pixel
         arch: x86_64
         api-level: 31
         force-avd-creation: false
