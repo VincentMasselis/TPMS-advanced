@@ -1,17 +1,15 @@
 package com.masselis.tpmsadvanced.interfaces
 
-import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_NO
 import android.app.UiModeManager.MODE_NIGHT_YES
 import android.graphics.Bitmap.CompressFormat.PNG
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.core.content.getSystemService
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.runner.screenshot.Screenshot
-import com.masselis.tpmsadvanced.core.common.appContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -35,17 +33,16 @@ internal class TakeScreenshotTest {
 
     @Test
     fun lightModeScreenshots() = runTest {
-        takeScreenshots(MODE_NIGHT_NO)
+        takeScreenshots(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
     @Test
     fun darkModeScreenshots() = runTest {
-        takeScreenshots(MODE_NIGHT_YES)
+        takeScreenshots(AppCompatDelegate.MODE_NIGHT_YES)
     }
 
-    private suspend fun takeScreenshots(mode: Int) {
-        appContext.getSystemService<UiModeManager>()!!
-            .setApplicationNightMode(mode)
+    private suspend fun takeScreenshots(@AppCompatDelegate.NightMode mode: Int) {
+        AppCompatDelegate.setDefaultNightMode(mode)
         val prefix = when (mode) {
             MODE_NIGHT_NO -> "light_"
             MODE_NIGHT_YES -> "dark_"
