@@ -1,0 +1,41 @@
+name: Run on emulator
+description: Starts the emulator and run the filled script
+inputs:
+  script:
+    description: Script to run once the emulator is ready
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Gradle cache
+      uses: gradle/gradle-build-action@v2
+
+    - name: AVD cache
+      uses: actions/cache@v3
+      id: avd-cache
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-31
+
+    - name: Create AVD and generate snapshot for caching
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        arch: x86_64
+        api-level: 31
+        force-avd-creation: false
+        emulator-options: -noaudio -no-boot-anim -camera-back none
+        disable-animations: false
+        script: echo "Generated AVD snapshot for caching."
+
+    - name: Run on AVD
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        arch: x86_64
+        api-level: 31
+        force-avd-creation: false
+        emulator-options: -no-snapshot-save -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        script: ${{ inputs.script }}
