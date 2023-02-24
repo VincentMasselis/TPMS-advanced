@@ -1,17 +1,13 @@
 package com.masselis.tpmsadvanced.interfaces
 
-import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_NO
 import android.app.UiModeManager.MODE_NIGHT_YES
-import android.graphics.Bitmap.CompressFormat.PNG
-import androidx.compose.ui.test.ComposeTimeoutException
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.core.content.getSystemService
+import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.runner.screenshot.Screenshot
-import com.masselis.tpmsadvanced.core.common.appContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -28,34 +24,38 @@ internal class TakeScreenshotTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule(RootActivity::class.java)
 
-    private fun capture(name: String) = Screenshot.capture()
-        .apply { format = PNG }
-        .apply { setName(name) }
-        .process()
+    private fun capture(name: String) = composeTestRule
+        .onRoot()
+        .captureToImage()
+        .asAndroidBitmap()
+        .writeToTestStorage(name)
 
     @Test
     fun lightModeScreenshots() = runTest {
-        takeScreenshots(MODE_NIGHT_NO)
+        takeScreenshots(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
     @Test
     fun darkModeScreenshots() = runTest {
-        takeScreenshots(MODE_NIGHT_YES)
+        takeScreenshots(AppCompatDelegate.MODE_NIGHT_YES)
     }
 
-    private suspend fun takeScreenshots(mode: Int) {
-        appContext.getSystemService<UiModeManager>()!!
-            .setApplicationNightMode(mode)
+    private suspend fun takeScreenshots(@AppCompatDelegate.NightMode mode: Int) {
+        composeTestRule.activityRule.scenario.apply {
+            onActivity {
+                AppCompatDelegate.setDefaultNightMode(mode)
+            }
+        }
         val prefix = when (mode) {
             MODE_NIGHT_NO -> "light_"
             MODE_NIGHT_YES -> "dark_"
             else -> throw IllegalArgumentException()
         }
         sleep(500.milliseconds)
-        capture("${prefix}main.png")
+        capture("${prefix}main")
         composeTestRule.onNodeWithTag("settings").performClick()
         sleep(500.milliseconds)
-        capture("${prefix}settings.png")
+        capture("${prefix}settings")
     }
 
     private suspend fun sleep(duration: Duration): Unit = try {

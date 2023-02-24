@@ -31,6 +31,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // The next line enables the ability to store files when capturing screenshots
+        testInstrumentationRunnerArguments useTestStorageService: 'true'
     }
     signingConfigs {
         if (isDecrypted)
@@ -65,6 +67,7 @@ dependencies {
     implementation(project(":core:debug-ui"))
 
     testImplementation(project(":core:test"))
+    androidTestUtil 'androidx.test.services:test-services:1.4.2'
     androidTestImplementation(project(":core:android-test"))
 }
 
@@ -73,16 +76,16 @@ tasks.whenTaskAdded { instrumentedTestTask ->
         task clearScreenshotPhoneFolder(type: Exec) {
             description = 'Clears the phone\'s screenshot folder'
             instrumentedTestTask.dependsOn clearScreenshotPhoneFolder
-            commandLine 'adb', 'shell', 'rm -rf /sdcard/Pictures/screenshots'
+            commandLine 'adb', 'shell', 'rm -rf /sdcard/googletest/test_outputfiles'
         }
         task downloadScreenshots(type: Exec) {
             dependsOn instrumentedTestTask
             description = 'Download screenshot folder from the phone'
             doFirst {
-                delete layout.buildDirectory.dir("screenshots")
-                mkdir layout.buildDirectory.dir("screenshots")
+                delete layout.buildDirectory.dir("test_outputfiles")
+                mkdir layout.buildDirectory.dir("test_outputfiles")
             }
-            commandLine 'adb', 'pull', '/sdcard/Pictures/screenshots', "$buildDir"
+            commandLine 'adb', 'pull', '/sdcard/googletest/test_outputfiles', "$buildDir"
         }
         task copyScreenshot(type: Copy) {
             dependsOn downloadScreenshots
@@ -92,7 +95,7 @@ tasks.whenTaskAdded { instrumentedTestTask ->
             doFirst {
                 mkdir path
             }
-            from layout.buildDirectory.dir("screenshots")
+            from layout.buildDirectory.dir("test_outputfiles")
             into path
             rename { filename ->
                 if (filename.startsWith("light_main"))
