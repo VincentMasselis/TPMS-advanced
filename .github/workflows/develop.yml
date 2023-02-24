@@ -68,7 +68,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Run androidTest + take screenshots
-        uses: ./.github/actions/run-emulator-2
+        uses: ./.github/actions/run-emulator
         with:
           script: ./gradlew connectedDemoDebugAndroidTest copyScreenshot
 
