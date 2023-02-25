@@ -10,7 +10,16 @@ runs:
     - name: Gradle cache
       uses: gradle/gradle-build-action@v2
 
-    - name: Starts emulator
+    - name: AVD cache
+      uses: actions/cache@v3
+      id: avd-cache
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-cache
+
+    - name: Install tools
       shell: bash
       run: |
         #!/usr/bin/env bash
@@ -20,9 +29,17 @@ runs:
         # Install AVD files
         echo "y" | sdkmanager --install 'system-images;android-27;default;x86_64'
 
+    - name: Creates the emulator if not exists and create AVD cache
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        #!/usr/bin/env bash
+        
+        brew install telnet
+        
         # Create emulator
-        echo "no" | avdmanager create avd -n android_emulator -d 19 --package 'system-images;android-27;default;x86_64'
-    
+        echo "no" | avdmanager --verbose create avd --name android_emulator -d 19 --package 'system-images;android-27;default;x86_64'
+        
         # list emulator
         echo "Available emulator"
         $ANDROID_HOME/emulator/emulator -list-avds
@@ -48,11 +65,43 @@ runs:
         echo "Emulator settings ($emulator_config)"
         cat "$emulator_config"
         fi
+      
+        echo "Starting emulator and create cache"
 
-        echo "Starting emulator"
+        # Start emulator in background and saves the state to speed up future boots
+        nohup $ANDROID_HOME/emulator/emulator -avd android_emulator -no-audio -gpu host -no-boot-anim -qemu -m 2048 > /dev/null 2>&1 &
+        adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
 
-        # Start emulator in background
-        nohup $ANDROID_HOME/emulator/emulator -avd android_emulator -no-snapshot -no-audio -gpu host -no-boot-anim -qemu -m 2048 > /dev/null 2>&1 &
+        #list online device/emulator
+        adb devices
+
+        echo "Emulator cache initialized, let's stop it"
+        token=`cat ~/.emulator_console_auth_token`
+        { echo "auth $token"; echo "kill"; echo "exit"; sleep 30; } | telnet localhost 5554 || true 
+        
+        while adb devices | grep -q 'emulator'; do
+          echo "Device is still available through ADB"
+          adb devices
+        
+          token=`cat ~/.emulator_console_auth_token`
+          { echo "auth $token"; echo "kill"; echo "exit"; sleep 30; } | telnet localhost 5554 || true 
+        
+          adb kill-server 
+          sleep 5
+        done
+  
+        echo "Check if device was correctly killed"
+        adb devices
+
+    - name: Starts the emulator
+      shell: bash
+      run: |
+        #!/usr/bin/env bash
+        
+        echo "Starting emulator from cache"
+
+        # Start emulator in background, state isn't saved since there is already one in cache 
+        nohup $ANDROID_HOME/emulator/emulator -avd android_emulator -no-snapshot-save -no-audio -gpu host -no-boot-anim -qemu -m 2048 > /dev/null 2>&1 &
         adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
 
         #list online device/emulator
@@ -60,7 +109,9 @@ runs:
 
         echo "Emulator started"
 
-    - name: Run script
+    - name: Run filled script
       shell: bash
       run: |
+        #!/usr/bin/env bash
+        
         ${{ inputs.script }}
