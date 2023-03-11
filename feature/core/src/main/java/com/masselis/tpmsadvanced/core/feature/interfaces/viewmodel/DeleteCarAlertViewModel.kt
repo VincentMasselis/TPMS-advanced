@@ -3,7 +3,9 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.CarUseCase
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -28,8 +30,8 @@ internal class DeleteCarAlertViewModel @Inject constructor(
         object Leave : Event()
     }
 
-    private val mutableEventFlow = MutableSharedFlow<Event>()
-    val eventFlow = mutableEventFlow
+    private val _evenChannel = Channel<Event>(BUFFERED)
+    val eventChannel = _evenChannel as ReceiveChannel<Event>
 
     init {
         carUseCase.carFlow()
@@ -39,6 +41,6 @@ internal class DeleteCarAlertViewModel @Inject constructor(
 
     fun delete() = viewModelScope.launch {
         carUseCase.delete()
-        mutableEventFlow.emit(Event.Leave)
+        _evenChannel.send(Event.Leave)
     }
 }

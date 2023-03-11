@@ -27,7 +27,12 @@ jobs:
       - name: Build everything and run unit tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build exportComposeReport --scan
+          arguments: build --scan
+
+      - name: Generate compose reports
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: normalReleaseComposeCompilerHtmlReport --no-parallel
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v2
@@ -54,7 +59,7 @@ jobs:
         if: always()
         with:
           name: Compose-reports
-          path: build/compose_reports
+          path: "**/build/compose_report/index.html"
 
   instrumented_test_n_screenshots:
     name: Run instrumented tests and take screenshots

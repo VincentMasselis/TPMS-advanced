@@ -9,6 +9,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +26,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteCarAler
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteCarViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
-import com.masselis.tpmsadvanced.core.ui.observeWithLifecycle
+import kotlinx.coroutines.channels.consumeEach
 
 @Suppress("NAME_SHADOWING")
 @Composable
@@ -55,11 +56,11 @@ internal fun DeleteCar(
         }
     }
     if (showDeleteDialog)
-        DeleteCarAlert({ showDeleteDialog = false })
+        DeleteCarDialog({ showDeleteDialog = false })
 }
 
 @Composable
-private fun DeleteCarAlert(
+private fun DeleteCarDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     carComponent: CarComponent = LocalCarComponent.current,
@@ -68,11 +69,6 @@ private fun DeleteCarAlert(
     }
 ) {
     val navController = LocalHomeNavController.current
-    viewModel.eventFlow.observeWithLifecycle {
-        when (it) {
-            DeleteCarAlertViewModel.Event.Leave -> navController.popBackStack()
-        }
-    }
     val state by viewModel.stateFlow.collectAsState()
     val carState = when (state) {
         DeleteCarAlertViewModel.State.Loading -> return
@@ -87,4 +83,11 @@ private fun DeleteCarAlert(
         confirmButton = { TextButton(onClick = { viewModel.delete() }) { Text("Delete \"${carState.car.name}\"") } },
         modifier = modifier
     )
+    LaunchedEffect("EVENTS") {
+        viewModel.eventChannel.consumeEach {
+            when (it) {
+                DeleteCarAlertViewModel.Event.Leave -> navController.popBackStack()
+            }
+        }
+    }
 }

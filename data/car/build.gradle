@@ -24,7 +24,6 @@ dependencies {
     api(project(":core:common"))
     api(project(":core:database"))
     api(project(":data:record"))
-    implementation 'androidx.core:core-ktx:+'
 
     androidTestImplementation(project(":core:android-test"))
     androidTestUtil 'androidx.test:orchestrator:1.4.2'

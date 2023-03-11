@@ -6,7 +6,7 @@ subprojects {
         config = files("${rootProject.rootDir}/gradle/detekt-config.yml")
     }
     dependencies {
-        detektPlugins "io.nlopez.compose.rules:detekt:0.1.1"
+        detektPlugins "io.nlopez.compose.rules:detekt:0.1.2"
     }
 
     // Configures every android module
@@ -48,41 +48,7 @@ subprojects {
                     }
                 }
                 if (buildFeatures.compose == true) {
-                    tasks.whenTaskAdded {
-                        if (it.name == "compileNormalReleaseKotlin") {
-                            def metricsDir = project.buildDir.absolutePath + "/compose_metrics"
-                            compileNormalReleaseKotlin.kotlinOptions {
-                                freeCompilerArgs += [
-                                        "-P",
-                                        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + metricsDir
-                                ]
-                                freeCompilerArgs += [
-                                        "-P",
-                                        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + metricsDir
-                                ]
-                            }
-                            def outputDir = file("${project.buildDir}/compose_reports")
-                            task composeReport2Html(type: JavaExec, dependsOn: compileNormalReleaseKotlin) {
-                                group = 'verification'
-                                inputs.dir(metricsDir)
-                                outputs.dir(outputDir)
-                                classpath = files("${rootProject.projectDir}/gradle/lib/composeReport2Html.jar")
-                                args "-app", project.path,
-                                        "-overallStatsReport", "$metricsDir/${project.name}_normalRelease-module.json",
-                                        "-detailedStatsMetrics", "$metricsDir/${project.name}_normalRelease-composables.csv",
-                                        "-composableMetrics", "$metricsDir/${project.name}_normalRelease-composables.txt",
-                                        "-classMetrics", "$metricsDir/${project.name}_normalRelease-classes.txt",
-                                        "-o", "$outputDir"
-                            }
-                            task exportComposeReport(type: Copy, dependsOn: composeReport2Html) {
-                                group = 'verification'
-                                from(outputDir) {
-                                    rename 'index.html', "${project.path.replaceAll(':', '_')}.html"
-                                }
-                                into "${rootProject.buildDir}/compose_reports"
-                            }
-                        }
-                    }
+                    plugins.apply 'dev.shreyaspatil.compose-compiler-report-generator'
                 }
                 packagingOptions {
                     exclude 'META-INF/DEPENDENCIES'

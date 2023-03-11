@@ -23,6 +23,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.OnLifecycleEvent
@@ -47,16 +48,16 @@ internal fun InternalPreconditions(
     }
     val state by viewModel.stateFlow.collectAsState()
     when (val state = state) {
-        PreconditionsViewModel.State.Loading -> {}
-        PreconditionsViewModel.State.BluetoothChipTurnedOff -> ChipIsOff(modifier = Modifier.fillMaxSize())
-        is PreconditionsViewModel.State.MissingPermission -> MissingPermission(
+        State.Loading -> {}
+        State.BluetoothChipTurnedOff -> ChipIsOff(modifier = Modifier.fillMaxSize())
+        is State.MissingPermission -> MissingPermission(
             @Suppress("MaxLineLength")
             "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
             "Failed to obtain permission, please update this in the app's system settings",
             missingPermissions = state.permissions.toImmutableList(),
             modifier = Modifier.fillMaxSize(),
         ) { viewModel.trigger() }
-        PreconditionsViewModel.State.Ready -> ready()
+        State.Ready -> ready()
     }
 }
 
