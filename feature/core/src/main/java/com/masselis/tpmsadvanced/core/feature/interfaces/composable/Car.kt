@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +25,6 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarComponentViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
@@ -198,6 +195,3 @@ internal fun Car(
         }
     }
 }
-
-internal val LocalCarComponent: ProvidableCompositionLocal<CarComponent> =
-    compositionLocalOf { error("Not available") }

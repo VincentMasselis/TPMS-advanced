@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,16 +33,18 @@ internal fun CarRangeSettings(
     viewModel: CurrentCarComponentViewModel = viewModel { FeatureCoreComponent.currentCarComponentViewModel }
 ) {
     val component by viewModel.stateFlow.collectAsState()
-    Column(modifier) {
-        PressureRange(component)
-        Separator()
-        HighTemp(component)
-        NormalTemp(component)
-        LowTemp(component)
-        Separator()
-        ClearBoundSensorsButton(Modifier.fillMaxWidth())
-        Separator()
-        DeleteCar(Modifier.fillMaxWidth())
+    CompositionLocalProvider(LocalCarComponent provides component) {
+        Column(modifier) {
+            PressureRange(component)
+            Separator()
+            HighTemp(component)
+            NormalTemp(component)
+            LowTemp(component)
+            Separator()
+            ClearBoundSensorsButton(Modifier.fillMaxWidth())
+            Separator()
+            DeleteCar(Modifier.fillMaxWidth())
+        }
     }
 }
 

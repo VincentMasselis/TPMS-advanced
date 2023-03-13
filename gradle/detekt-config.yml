@@ -15,33 +15,3 @@ style:
 complexity:
   LongParameterList:
     functionThreshold: 10
-Compose:
-  ContentEmitterReturningValues:
-    active: true
-  ModifierComposable:
-    active: true
-  ModifierMissing:
-    active: true
-  ModifierReused:
-    active: true
-  ModifierWithoutDefault:
-    active: true
-  MultipleEmitters:
-    active: true
-  MutableParams:
-    active: true
-  ComposableNaming:
-    active: true
-  ComposableParamOrder:
-    active: true
-  PreviewPublic:
-    active: true
-  RememberMissing:
-    active: true
-  ViewModelForwarding:
-    active: true
-  ViewModelInjection:
-    active: true
-  CompositionLocalAllowlist:
-    active: false
-

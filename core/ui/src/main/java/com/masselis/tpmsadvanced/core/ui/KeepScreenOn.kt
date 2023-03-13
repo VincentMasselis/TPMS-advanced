@@ -1,12 +1,14 @@
 package com.masselis.tpmsadvanced.core.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 
+@SuppressLint("ComposeCompositionLocalUsage")
 public val LocalKeepScreenOnCounter: ProvidableCompositionLocal<ScreenOnCounter> =
-    compositionLocalOf { error("Not available") }
+    staticCompositionLocalOf { error("Not available") }
 
 @Composable
 public fun KeepScreenOn() {

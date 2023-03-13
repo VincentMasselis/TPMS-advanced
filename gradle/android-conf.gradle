@@ -5,9 +5,6 @@ subprojects {
         buildUponDefaultConfig = true
         config = files("${rootProject.rootDir}/gradle/detekt-config.yml")
     }
-    dependencies {
-        detektPlugins "io.nlopez.compose.rules:detekt:0.1.2"
-    }
 
     // Configures every android module
     afterEvaluate {
@@ -48,7 +45,9 @@ subprojects {
                     }
                 }
                 if (buildFeatures.compose == true) {
-                    plugins.apply 'dev.shreyaspatil.compose-compiler-report-generator'
+                    dependencies {
+                        lintChecks("com.slack.lint.compose:compose-lint-checks:1.1.1")
+                    }
                 }
                 packagingOptions {
                     exclude 'META-INF/DEPENDENCIES'

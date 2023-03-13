@@ -28,7 +28,7 @@ dependencies {
     api "androidx.compose.foundation:foundation"
     // Material Design
     api 'androidx.compose.material3:material3:1.0.1'
-    api 'com.google.android.material:material:1.7.0'
+    api 'com.google.android.material:material:1.8.0'
     // Integration with activities
     api 'androidx.activity:activity-compose:1.6.1'
     api "androidx.fragment:fragment:1.5.5"
