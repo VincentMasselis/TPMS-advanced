@@ -24,8 +24,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.masselis.tpmsadvanced.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Car
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentCarText
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdown
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Vehicle
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
 
@@ -44,7 +44,7 @@ internal fun Home() {
                         .padding(paddingValues)
                         .fillMaxSize()
                     composable(Paths.Home.path) {
-                        Car(modifier = modifier)
+                        Vehicle(modifier = modifier)
                     }
                     composable(Paths.QrCode.path) {
                         QrCodeScan(modifier = modifier)
@@ -71,7 +71,7 @@ private fun TopAppBar() {
     CenterAlignedTopAppBar(
         title = {
             when (currentPath) {
-                Paths.Home -> CurrentCarText()
+                Paths.Home -> CurrentVehicleDropdown()
                 Paths.Settings -> Text(text = "Settings")
                 Paths.QrCode, null -> {}
             }

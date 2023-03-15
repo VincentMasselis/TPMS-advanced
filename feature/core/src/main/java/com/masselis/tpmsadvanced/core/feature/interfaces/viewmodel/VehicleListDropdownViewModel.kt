@@ -2,34 +2,34 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.feature.usecase.CarListUseCase
-import com.masselis.tpmsadvanced.data.car.model.Car
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-internal class CarListDropdownViewModel @Inject constructor(
-    carListUseCase: CarListUseCase
+internal class VehicleListDropdownViewModel @Inject constructor(
+    vehicleListUseCase: VehicleListUseCase
 ) : ViewModel() {
 
     sealed class State {
-        abstract val list: List<Car>
+        abstract val list: List<Vehicle>
 
         object Loading : State() {
-            override val list: List<Car> = emptyList()
+            override val list: List<Vehicle> = emptyList()
         }
 
-        data class Cars(override val list: List<Car>) : State()
+        data class Vehicles(override val list: List<Vehicle>) : State()
     }
 
     private val mutableStateFlow = MutableStateFlow<State>(State.Loading)
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {
-        carListUseCase.carListFlow
-            .onEach { mutableStateFlow.value = State.Cars(it) }
+        vehicleListUseCase.vehicleListFlow
+            .onEach { mutableStateFlow.value = State.Vehicles(it) }
             .launchIn(viewModelScope)
     }
 }

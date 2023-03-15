@@ -12,6 +12,6 @@ internal class BoundSensorUseCase @Inject constructor(
     private val sensorDatabase: SensorDatabase,
 ) {
     fun boundSensor() = sensorDatabase
-        .selectByCarAndLocationFlow(carId, location)
+        .selectByVehicleAndLocationFlow(carId, location)
         .distinctUntilChanged()
 }

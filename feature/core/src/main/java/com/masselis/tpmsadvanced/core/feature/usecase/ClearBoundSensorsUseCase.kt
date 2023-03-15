@@ -7,13 +7,13 @@ import java.util.*
 import javax.inject.Inject
 
 internal class ClearBoundSensorsUseCase @Inject constructor(
-    private val carId: UUID,
+    private val vehicleId: UUID,
     private val sensorDatabase: SensorDatabase,
 ) {
 
-    suspend fun clear() = sensorDatabase.deleteFromCar(carId)
+    suspend fun clear() = sensorDatabase.deleteFromVehicle(vehicleId)
 
-    fun isClearingAllowed() = sensorDatabase.countByCar(carId)
+    fun isClearingAllowed() = sensorDatabase.countByVehicle(vehicleId)
         .map { it > 0 }
         .distinctUntilChanged()
 

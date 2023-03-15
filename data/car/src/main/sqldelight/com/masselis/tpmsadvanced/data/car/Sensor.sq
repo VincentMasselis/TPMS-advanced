@@ -5,36 +5,36 @@ import kotlin.Int;
 CREATE TABLE Sensor(
     id INTEGER AS Int NOT NULL PRIMARY KEY,
     location INTEGER AS SensorLocation NOT NULL,
-    carId TEXT AS UUID NOT NULL,
-    FOREIGN KEY(carId) REFERENCES Car(uuid) ON DELETE CASCADE,
-    UNIQUE(location, carId)
+    vehicleId TEXT AS UUID NOT NULL,
+    FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE,
+    UNIQUE(location, vehicleId)
 );
 
 upsert:
-INSERT INTO Sensor (id, location, carId)
+INSERT INTO Sensor (id, location, vehicleId)
 VALUES (?, ?, ?)
 ON CONFLICT(id) DO
-UPDATE SET location=excluded.location, carId=excluded.carId;
+UPDATE SET location=excluded.location, vehicleId=excluded.vehicleId;
 
-updateCarId:
-UPDATE Sensor SET carId = ? WHERE id = ?;
+updateVehicleId:
+UPDATE Sensor SET vehicleId = ? WHERE id = ?;
 
 delete:
 DELETE FROM Sensor WHERE id = ?;
 
-deleteByCar:
+deleteByVehicle:
 DELETE FROM Sensor WHERE rowid IN (
     SELECT Sensor.rowid FROM Sensor
-    INNER JOIN Car ON Sensor.carId = Car.uuid
-    WHERE Car.uuid = ?
+    INNER JOIN Vehicle ON Sensor.vehicleId = Vehicle.uuid
+    WHERE Vehicle.uuid = ?
 );
 
-selectByCarAndLocation:
+selectByVehicleAndLocation:
 SELECT Sensor.* FROM Sensor
-INNER JOIN Car ON Sensor.carId = Car.uuid
-WHERE Car.uuid = ? AND location = ?;
+INNER JOIN Vehicle ON Sensor.vehicleId = Vehicle.uuid
+WHERE Vehicle.uuid = ? AND location = ?;
 
-countByCar:
+countByVehicle:
 SELECT COUNT(Sensor.rowid) FROM Sensor
-INNER JOIN Car ON Sensor.carId = Car.uuid
-WHERE Car.uuid = ?;
+INNER JOIN Vehicle ON Sensor.vehicleId = Vehicle.uuid
+WHERE Vehicle.uuid = ?;

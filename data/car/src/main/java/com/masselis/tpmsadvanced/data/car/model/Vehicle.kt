@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 import java.util.*
 
 @Parcelize
-public data class Car(
+public data class Vehicle(
     public val uuid: UUID,
     public val name: String,
     public val lowPressure: Pressure,

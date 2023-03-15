@@ -24,30 +24,30 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarComponentViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 
 @Composable
-public fun Car(modifier: Modifier = Modifier) {
-    Car(
+public fun Vehicle(modifier: Modifier = Modifier) {
+    Vehicle(
         modifier,
-        viewModel { FeatureCoreComponent.currentCarComponentViewModel }
+        viewModel { FeatureCoreComponent.currentVehicleComponentViewModel }
     )
 }
 
 @Suppress("LongMethod")
 @Composable
-internal fun Car(
+internal fun Vehicle(
     modifier: Modifier = Modifier,
-    viewModel: CurrentCarComponentViewModel = viewModel {
-        FeatureCoreComponent.currentCarComponentViewModel
+    viewModel: CurrentVehicleComponentViewModel = viewModel {
+        FeatureCoreComponent.currentVehicleComponentViewModel
     }
 ) {
     KeepScreenOn()
     val component by viewModel.stateFlow.collectAsState()
-    CompositionLocalProvider(LocalCarComponent provides component) {
+    CompositionLocalProvider(LocalVehicleComponent provides component) {
         ConstraintLayout(modifier = modifier) {
             val (carConst,
                 tyreBox,

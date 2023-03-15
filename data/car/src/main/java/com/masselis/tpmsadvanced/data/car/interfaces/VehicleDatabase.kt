@@ -5,7 +5,7 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.masselis.tpmsadvanced.data.car.Database
-import com.masselis.tpmsadvanced.data.car.model.Car
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature
 import dagger.Reusable
@@ -17,9 +17,9 @@ import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
 @Reusable
-public class CarDatabase @Inject internal constructor(database: Database) {
+public class VehicleDatabase @Inject internal constructor(database: Database) {
 
-    private val queries = database.carQueries
+    private val queries = database.vehicleQueries
 
     public suspend fun insert(id: UUID, name: String, isCurrent: Boolean): Unit =
         withContext(IO) {
@@ -30,39 +30,39 @@ public class CarDatabase @Inject internal constructor(database: Database) {
         queries.setAsFavourite(isCurrent, uuid)
     }
 
-    public fun selectLowPressure(carId: UUID): Pressure =
-        queries.selectLowPressureByCarId(carId).executeAsOne()
+    public fun selectLowPressure(vehicleId: UUID): Pressure =
+        queries.selectLowPressureByVehicleId(vehicleId).executeAsOne()
 
-    public suspend fun updateLowPressure(lowPressure: Pressure, carId: UUID): Unit =
+    public suspend fun updateLowPressure(lowPressure: Pressure, vehicleId: UUID): Unit =
         withContext(IO) {
-            queries.updateLowPressure(lowPressure, carId)
+            queries.updateLowPressure(lowPressure, vehicleId)
         }
 
-    public fun selectHighPressure(carId: UUID): Pressure =
-        queries.selectHighPressureByCarId(carId).executeAsOne()
+    public fun selectHighPressure(vehicleId: UUID): Pressure =
+        queries.selectHighPressureByVehicleId(vehicleId).executeAsOne()
 
     public suspend fun updateHighPressure(highPressure: Pressure, uuid: UUID): Unit =
         withContext(IO) {
             queries.updateHighPressure(highPressure, uuid)
         }
 
-    public fun selectLowTemp(carId: UUID): Temperature =
-        queries.selectLowTempByCarId(carId).executeAsOne()
+    public fun selectLowTemp(vehicleId: UUID): Temperature =
+        queries.selectLowTempByVehicleId(vehicleId).executeAsOne()
 
     public suspend fun updateLowTemp(lowTemp: Temperature, uuid: UUID): Unit = withContext(IO) {
         queries.updateLowTemp(lowTemp, uuid)
     }
 
-    public fun selectNormalTemp(carId: UUID): Temperature =
-        queries.selectNormalTempByCarId(carId).executeAsOne()
+    public fun selectNormalTemp(vehicleId: UUID): Temperature =
+        queries.selectNormalTempByVehicleId(vehicleId).executeAsOne()
 
     public suspend fun updateNormalTemp(normalTemp: Temperature, uuid: UUID): Unit =
         withContext(IO) {
             queries.updateNormalTemp(normalTemp, uuid)
         }
 
-    public fun selectHighTemp(carId: UUID): Temperature =
-        queries.selectHighTempByCarId(carId).executeAsOne()
+    public fun selectHighTemp(vehicleId: UUID): Temperature =
+        queries.selectHighTempByVehicleId(vehicleId).executeAsOne()
 
     public suspend fun updateHighTemp(highTemp: Temperature, uuid: UUID): Unit = withContext(IO) {
         queries.updateHighTemp(highTemp, uuid)
@@ -72,31 +72,31 @@ public class CarDatabase @Inject internal constructor(database: Database) {
         queries.delete(uuid)
     }
 
-    public fun currentCarFlow(): Flow<Car> = queries.currentFavourite(mapper)
+    public fun currentVehicleFlow(): Flow<Vehicle> = queries.currentFavourite(mapper)
         .asFlow()
         .mapToOne(IO)
 
-    public fun currentCar(): Car = queries.currentFavourite(mapper).executeAsOne()
+    public fun currentVehicle(): Vehicle = queries.currentFavourite(mapper).executeAsOne()
 
-    public fun selectAllFlow(): Flow<List<Car>> = queries.selectAll(mapper)
+    public fun selectAllFlow(): Flow<List<Vehicle>> = queries.selectAll(mapper)
         .asFlow()
         .mapToList(IO)
 
-    public fun selectAll(): List<Car> = queries.selectAll(mapper).executeAsList()
+    public fun selectAll(): List<Vehicle> = queries.selectAll(mapper).executeAsList()
 
-    public fun selectByUuid(carId: UUID): Flow<Car> = queries.selectByUuid(carId, mapper)
+    public fun selectByUuid(vehicleId: UUID): Flow<Vehicle> = queries.selectByUuid(vehicleId, mapper)
         .asFlow()
         .mapToOne(IO)
 
-    public fun selectBySensorId(sensorId: Int): Flow<Car?> = queries
+    public fun selectBySensorId(sensorId: Int): Flow<Vehicle?> = queries
         .selectBySensorId(sensorId, mapper)
         .asFlow()
         .mapToOneOrNull(IO)
 
     private companion object {
-        val mapper: (UUID, String, Boolean, Pressure, Pressure, Temperature, Temperature, Temperature) -> Car =
+        val mapper: (UUID, String, Boolean, Pressure, Pressure, Temperature, Temperature, Temperature) -> Vehicle =
             { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp ->
-                Car(
+                Vehicle(
                     uuid,
                     name,
                     lowPressure,

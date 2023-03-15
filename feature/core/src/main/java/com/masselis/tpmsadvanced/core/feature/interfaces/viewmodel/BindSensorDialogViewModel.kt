@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.SensorToBindUseCase
 import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
-import com.masselis.tpmsadvanced.data.car.model.Car
 import com.masselis.tpmsadvanced.data.car.model.Sensor
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -25,7 +25,7 @@ import kotlinx.parcelize.Parcelize
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class BindSensorDialogViewModel @AssistedInject constructor(
     private val sensorToBindUseCase: SensorToBindUseCase,
-    private val carFlow: Flow<Car>,
+    private val carFlow: Flow<Vehicle>,
     @Assisted private val sensorToAdd: Sensor,
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -46,7 +46,7 @@ internal class BindSensorDialogViewModel @AssistedInject constructor(
         object NewSensor : State()
 
         @Parcelize
-        data class UpdateSensor(val currentBound: Car, val newOwner: Car) : State()
+        data class UpdateSensor(val currentBound: Vehicle, val newOwner: Vehicle) : State()
     }
 
     private val mutableStateFlow = savedStateHandle
@@ -55,10 +55,10 @@ internal class BindSensorDialogViewModel @AssistedInject constructor(
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {
-        sensorToBindUseCase.boundCar(sensorToAdd)
-            .flatMapLatest { boundCar ->
-                if (boundCar == null) flowOf(State.NewSensor)
-                else carFlow.map { State.UpdateSensor(boundCar, it) }
+        sensorToBindUseCase.boundVehicle(sensorToAdd)
+            .flatMapLatest { boundVehicle ->
+                if (boundVehicle == null) flowOf(State.NewSensor)
+                else carFlow.map { State.UpdateSensor(boundVehicle, it) }
             }
             .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)

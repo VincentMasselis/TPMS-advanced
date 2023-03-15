@@ -12,28 +12,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.common.Fraction
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarSettingsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarComponentViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.ui.Separator
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 
 @Composable
-public fun CarRangeSettings(modifier: Modifier = Modifier): Unit = CarRangeSettings(
+public fun VehicleRangeSettings(modifier: Modifier = Modifier): Unit = VehicleRangeSettings(
     modifier,
-    viewModel { FeatureCoreComponent.currentCarComponentViewModel }
+    viewModel { FeatureCoreComponent.currentVehicleComponentViewModel }
 )
 
 @Composable
-internal fun CarRangeSettings(
+internal fun VehicleRangeSettings(
     modifier: Modifier = Modifier,
-    viewModel: CurrentCarComponentViewModel = viewModel { FeatureCoreComponent.currentCarComponentViewModel }
+    viewModel: CurrentVehicleComponentViewModel = viewModel { FeatureCoreComponent.currentVehicleComponentViewModel }
 ) {
     val component by viewModel.stateFlow.collectAsState()
-    CompositionLocalProvider(LocalCarComponent provides component) {
+    CompositionLocalProvider(LocalVehicleComponent provides component) {
         Column(modifier) {
             PressureRange(component)
             Separator()
@@ -43,16 +43,16 @@ internal fun CarRangeSettings(
             Separator()
             ClearBoundSensorsButton(Modifier.fillMaxWidth())
             Separator()
-            DeleteCar(Modifier.fillMaxWidth())
+            DeleteVehicle(Modifier.fillMaxWidth())
         }
     }
 }
 
 @Composable
 private fun PressureRange(
-    carComponent: CarComponent,
-    viewModel: CarSettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.hashCode()}") {
-        carComponent.carSettingsViewModel.build()
+    vehicleComponent: VehicleComponent,
+    viewModel: VehicleSettingsViewModel = viewModel(key = "SettingsViewModel_${vehicleComponent.hashCode()}") {
+        vehicleComponent.vehicleSettingsViewModel.build()
     }
 ) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
@@ -76,9 +76,9 @@ private fun PressureRange(
 
 @Composable
 private fun HighTemp(
-    carComponent: CarComponent,
-    viewModel: CarSettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.hashCode()}") {
-        carComponent.carSettingsViewModel.build()
+    vehicleComponent: VehicleComponent,
+    viewModel: VehicleSettingsViewModel = viewModel(key = "SettingsViewModel_${vehicleComponent.hashCode()}") {
+        vehicleComponent.vehicleSettingsViewModel.build()
     }
 ) {
     var showHighTempDialog by remember { mutableStateOf(false) }
@@ -104,9 +104,9 @@ private fun HighTemp(
 
 @Composable
 private fun NormalTemp(
-    carComponent: CarComponent,
-    viewModel: CarSettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.hashCode()}") {
-        carComponent.carSettingsViewModel.build()
+    vehicleComponent: VehicleComponent,
+    viewModel: VehicleSettingsViewModel = viewModel(key = "SettingsViewModel_${vehicleComponent.hashCode()}") {
+        vehicleComponent.vehicleSettingsViewModel.build()
     }
 ) {
     var showNormalTempDialog by remember { mutableStateOf(false) }
@@ -133,9 +133,9 @@ private fun NormalTemp(
 
 @Composable
 private fun LowTemp(
-    carComponent: CarComponent,
-    viewModel: CarSettingsViewModel = viewModel(key = "SettingsViewModel_${carComponent.hashCode()}") {
-        carComponent.carSettingsViewModel.build()
+    vehicleComponent: VehicleComponent,
+    viewModel: VehicleSettingsViewModel = viewModel(key = "SettingsViewModel_${vehicleComponent.hashCode()}") {
+        vehicleComponent.vehicleSettingsViewModel.build()
     }
 ) {
     var showLowTempDialog by remember { mutableStateOf(false) }

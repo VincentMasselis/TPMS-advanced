@@ -1,30 +1,30 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.masselis.tpmsadvanced.core.feature.usecase.CarRangesUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.asStateFlow
 
-internal class CarSettingsViewModel @AssistedInject constructor(
-    carRangesUseCase: CarRangesUseCase,
+internal class VehicleSettingsViewModel @AssistedInject constructor(
+    vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun build(): CarSettingsViewModel
+        fun build(): VehicleSettingsViewModel
     }
 
-    val lowPressure = carRangesUseCase.lowPressure
-    val highPressure = carRangesUseCase.highPressure
+    val lowPressure = vehicleRangesUseCase.lowPressure
+    val highPressure = vehicleRangesUseCase.highPressure
 
     val pressureUnit = unitPreferences.pressure.asStateFlow()
 
-    val highTemp = carRangesUseCase.highTemp
-    val normalTemp = carRangesUseCase.normalTemp
-    val lowTemp = carRangesUseCase.lowTemp
+    val highTemp = vehicleRangesUseCase.highTemp
+    val normalTemp = vehicleRangesUseCase.normalTemp
+    val lowTemp = vehicleRangesUseCase.lowTemp
 
     val temperatureUnit = unitPreferences.temperature.asStateFlow()
 

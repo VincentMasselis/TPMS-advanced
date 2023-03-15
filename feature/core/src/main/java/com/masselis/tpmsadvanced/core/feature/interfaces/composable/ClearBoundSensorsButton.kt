@@ -18,14 +18,14 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 
 @Composable
 internal fun ClearBoundSensorsButton(
     modifier: Modifier = Modifier,
-    carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: ClearBoundSensorsViewModel = viewModel(key = "ClearBoundSensorsButton_${carComponent.hashCode()}") {
-        carComponent.clearBoundSensorsViewModel.build(createSavedStateHandle())
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
+    viewModel: ClearBoundSensorsViewModel = viewModel(key = "ClearBoundSensorsButton_${vehicleComponent.hashCode()}") {
+        vehicleComponent.clearBoundSensorsViewModel.build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()

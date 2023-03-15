@@ -1,5 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
 @file:Suppress("NAME_SHADOWING")
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
@@ -29,30 +29,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CarListDropdownViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarTextViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentCarTextViewModel.State
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleTextViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleTextViewModel.State
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleListDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
-import com.masselis.tpmsadvanced.data.car.model.Car
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import kotlinx.coroutines.delay
 
 @Composable
-public fun CurrentCarText(
+public fun CurrentVehicleDropdown(
     modifier: Modifier = Modifier,
-): Unit = CurrentCarText(modifier, viewModel { FeatureCoreComponent.currentCarTextViewModel })
+): Unit = CurrentVehicleDropdown(modifier, viewModel { FeatureCoreComponent.currentVehicleTextViewModel })
 
 @Composable
-internal fun CurrentCarText(
+internal fun CurrentVehicleDropdown(
     modifier: Modifier = Modifier,
-    viewModel: CurrentCarTextViewModel = viewModel { FeatureCoreComponent.currentCarTextViewModel }
+    viewModel: CurrentVehicleTextViewModel = viewModel { FeatureCoreComponent.currentVehicleTextViewModel }
 ) {
     val state by viewModel.stateFlow.collectAsState()
-    val car = when (val state = state) {
+    val vehicle = when (val state = state) {
         State.Loading -> return
-        is State.CurrentCar -> state.car
+        is State.CurrentVehicle -> state.vehicle
     }
     var expanded by remember { mutableStateOf(false) }
-    var askNewCar by remember { mutableStateOf(false) }
+    var askNewVehicle by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
@@ -62,32 +62,32 @@ internal fun CurrentCarText(
             verticalAlignment = Alignment.Bottom,
             modifier = Modifier.menuAnchor()
         ) {
-            Text(text = car.name)
+            Text(text = vehicle.name)
             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
         }
-        CarListDropdownMenu(
+        VehicleListDropdownMenu(
             isExpanded = expanded,
             onDismissRequest = { expanded = false },
             onNewCurrent = { viewModel.setCurrent(it) },
-            onAskNewCar = { askNewCar = true }
+            onAskNewVehicle = { askNewVehicle = true }
         )
     }
-    if (askNewCar)
-        AddCar(
-            onDismissRequest = { askNewCar = false },
-            onCarAdd = { viewModel.insert(it) }
+    if (askNewVehicle)
+        AddVehicle(
+            onDismissRequest = { askNewVehicle = false },
+            onVehicleAdd = { viewModel.insert(it) }
         )
 }
 
 @Suppress("NAME_SHADOWING")
 @Composable
-private fun ExposedDropdownMenuBoxScope.CarListDropdownMenu(
+private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
     isExpanded: Boolean,
     onDismissRequest: () -> Unit,
-    onNewCurrent: (Car) -> Unit,
-    onAskNewCar: () -> Unit,
+    onNewCurrent: (Vehicle) -> Unit,
+    onAskNewVehicle: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CarListDropdownViewModel = viewModel { FeatureCoreComponent.carListDropdownViewModel }
+    viewModel: VehicleListDropdownViewModel = viewModel { FeatureCoreComponent.vehicleListDropdownViewModel }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     DropdownMenu(
@@ -95,12 +95,12 @@ private fun ExposedDropdownMenuBoxScope.CarListDropdownMenu(
         onDismissRequest = onDismissRequest,
         modifier = modifier.exposedDropdownSize(false)
     ) {
-        state.list.forEach { currentCar ->
+        state.list.forEach { currentVehicle ->
             DropdownMenuItem(
-                text = { Text(currentCar.name, Modifier.weight(1f)) },
+                text = { Text(currentVehicle.name, Modifier.weight(1f)) },
                 contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                 onClick = {
-                    onNewCurrent(currentCar)
+                    onNewCurrent(currentVehicle)
                     onDismissRequest()
                 },
             )
@@ -109,19 +109,19 @@ private fun ExposedDropdownMenuBoxScope.CarListDropdownMenu(
             text = { Text(text = "Add a car", Modifier.weight(1f)) },
             trailingIcon = { Icon(Icons.Filled.AddCircle, contentDescription = null) },
             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-            onClick = { onAskNewCar(); onDismissRequest() },
+            onClick = { onAskNewVehicle(); onDismissRequest() },
         )
     }
 }
 
 @Composable
-private fun AddCar(
+private fun AddVehicle(
     onDismissRequest: () -> Unit,
-    onCarAdd: (name: String) -> Unit,
+    onVehicleAdd: (name: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
-    var carName by remember { mutableStateOf("") }
+    var vehicleName by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
@@ -129,8 +129,8 @@ private fun AddCar(
         text = {
             OutlinedTextField(
                 label = { Text(text = "Car name") },
-                value = carName,
-                onValueChange = { carName = it },
+                value = vehicleName,
+                onValueChange = { vehicleName = it },
                 singleLine = true,
                 modifier = Modifier.focusRequester(focusRequester)
             )
@@ -138,7 +138,7 @@ private fun AddCar(
         dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
         confirmButton = {
             TextButton(
-                onClick = { onCarAdd(carName); onDismissRequest() },
+                onClick = { onVehicleAdd(vehicleName); onDismissRequest() },
                 content = { Text(text = "Add") }
             )
         }

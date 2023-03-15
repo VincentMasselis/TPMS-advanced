@@ -14,22 +14,22 @@ import dagger.Provides
 )
 internal object TyreComponentModule {
     @Provides
-    @CarScope
+    @VehicleComponent.Scope
     @TyreLocationQualifier(FRONT_LEFT)
     fun frontLeftTyreComponent(factory: TyreComponent.Factory) = factory.build(FRONT_LEFT)
 
     @Provides
-    @CarScope
+    @VehicleComponent.Scope
     @TyreLocationQualifier(FRONT_RIGHT)
     fun frontRightTyreComponent(factory: TyreComponent.Factory) = factory.build(FRONT_RIGHT)
 
     @Provides
-    @CarScope
+    @VehicleComponent.Scope
     @TyreLocationQualifier(REAR_LEFT)
     fun rearLeftTyreComponent(factory: TyreComponent.Factory) = factory.build(REAR_LEFT)
 
     @Provides
-    @CarScope
+    @VehicleComponent.Scope
     @TyreLocationQualifier(REAR_RIGHT)
     fun rearRightTyreComponent(factory: TyreComponent.Factory) = factory.build(REAR_RIGHT)
 }

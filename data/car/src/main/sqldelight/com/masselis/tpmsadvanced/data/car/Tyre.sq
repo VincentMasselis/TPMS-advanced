@@ -14,16 +14,16 @@ CREATE TABLE Tyre(
     temperature REAL AS Temperature NOT NULL,
     battery INTEGER AS UShort NOT NULL,
     isAlarm INTEGER AS Boolean NOT NULL,
-    carId TEXT AS UUID NOT NULL,
-    FOREIGN KEY(carId) REFERENCES Car(uuid) ON DELETE CASCADE
+    vehicleId TEXT AS UUID NOT NULL,
+    FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE
 );
 
 insert:
-INSERT INTO Tyre (id, timestamp, location, pressure, temperature, battery, isAlarm, carId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO Tyre (id, timestamp, location, pressure, temperature, battery, isAlarm, vehicleId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
-latestByTyreLocationByCar:
+latestByTyreLocationByVehicle:
 SELECT Tyre.id, Tyre.timestamp, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm FROM Tyre
-INNER JOIN Car ON Tyre.carId = Car.uuid
-WHERE location = ? AND Car.uuid = ?
+INNER JOIN Vehicle ON Tyre.vehicleId = Vehicle.uuid
+WHERE location = ? AND Vehicle.uuid = ?
 ORDER BY timestamp DESC
 LIMIT 1;

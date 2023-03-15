@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.core.feature.ioc.CarScope
-import com.masselis.tpmsadvanced.data.car.interfaces.CarDatabase
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,10 +13,10 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
-@CarScope
-internal class CarRangesUseCase @Inject constructor(
+@VehicleComponent.Scope
+internal class VehicleRangesUseCase @Inject constructor(
     private val carId: UUID,
-    private val database: CarDatabase,
+    private val database: VehicleDatabase,
     scope: CoroutineScope
 ) {
 

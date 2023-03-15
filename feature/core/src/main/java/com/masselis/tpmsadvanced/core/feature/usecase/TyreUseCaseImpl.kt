@@ -44,7 +44,7 @@ public class TyreUseCaseImpl @Inject internal constructor(
             scope,
             SharingStarted.WhileSubscribed()
         )
-        .onStart { tyreDatabase.latestByTyreLocationByCar(location, carId)?.also { emit(it) } }
+        .onStart { tyreDatabase.latestByTyreLocationByVehicle(location, carId)?.also { emit(it) } }
 
     override fun listen(): Flow<Tyre> = flow
 

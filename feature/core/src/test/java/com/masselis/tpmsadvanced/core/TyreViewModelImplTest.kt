@@ -5,8 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
-import com.masselis.tpmsadvanced.core.feature.usecase.CarRangesUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.core.test.MainDispatcherRule
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
@@ -39,7 +39,7 @@ internal class TyreViewModelImplTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var tyreAtmosphereUseCase: TyreAtmosphereUseCase
-    private lateinit var carRangesUseCase: CarRangesUseCase
+    private lateinit var vehicleRangesUseCase: VehicleRangesUseCase
     private lateinit var savedStateHandle: SavedStateHandle
 
     @Before
@@ -47,7 +47,7 @@ internal class TyreViewModelImplTest {
         tyreAtmosphereUseCase = mockk {
             every { listen() } returns emptyFlow()
         }
-        carRangesUseCase = mockk {
+        vehicleRangesUseCase = mockk {
             every { lowTemp } returns MutableStateFlow(20f.celsius)
             every { normalTemp } returns MutableStateFlow(45f.celsius)
             every { highTemp } returns MutableStateFlow(90f.celsius)
@@ -59,7 +59,7 @@ internal class TyreViewModelImplTest {
 
     private fun test() = TyreViewModelImpl(
         tyreAtmosphereUseCase,
-        carRangesUseCase,
+        vehicleRangesUseCase,
         3.seconds.toJavaDuration(),
         savedStateHandle
     )

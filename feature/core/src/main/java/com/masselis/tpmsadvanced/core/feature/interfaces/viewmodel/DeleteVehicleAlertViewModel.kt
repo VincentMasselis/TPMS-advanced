@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.feature.usecase.CarUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -12,15 +12,15 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.masselis.tpmsadvanced.data.car.model.Car as CarModel
+import com.masselis.tpmsadvanced.data.car.model.Vehicle as VehicleModel
 
-internal class DeleteCarAlertViewModel @Inject constructor(
-    private val carUseCase: CarUseCase,
+internal class DeleteVehicleAlertViewModel @Inject constructor(
+    private val vehicleUseCase: VehicleUseCase,
 ) : ViewModel() {
 
     sealed class State {
         object Loading : State()
-        data class Car(val car: CarModel) : State()
+        data class Vehicle(val vehicle: VehicleModel) : State()
     }
 
     private val mutableStateFlow = MutableStateFlow<State>(State.Loading)
@@ -34,13 +34,13 @@ internal class DeleteCarAlertViewModel @Inject constructor(
     val eventChannel = _evenChannel as ReceiveChannel<Event>
 
     init {
-        carUseCase.carFlow()
-            .onEach { mutableStateFlow.value = State.Car(it) }
+        vehicleUseCase.vehicleFlow()
+            .onEach { mutableStateFlow.value = State.Vehicle(it) }
             .launchIn(viewModelScope)
     }
 
     fun delete() = viewModelScope.launch {
-        carUseCase.delete()
+        vehicleUseCase.delete()
         _evenChannel.send(Event.Leave)
     }
 }

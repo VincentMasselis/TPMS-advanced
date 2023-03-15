@@ -7,10 +7,10 @@ import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.data.car.Car
 import com.masselis.tpmsadvanced.data.car.Database
 import com.masselis.tpmsadvanced.data.car.Sensor
 import com.masselis.tpmsadvanced.data.car.Tyre
+import com.masselis.tpmsadvanced.data.car.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature
@@ -68,7 +68,7 @@ internal object Module {
         override fun encode(value: UShort): Long = value.toLong()
     }
 
-    @DataCarComponent.Scope
+    @DataVehicleComponent.Scope
     @Provides
     fun driver(): SqlDriver = AndroidSqliteDriver(
         schema = Database.Schema,
@@ -94,7 +94,7 @@ internal object Module {
         }
     )
 
-    @DataCarComponent.Scope
+    @DataVehicleComponent.Scope
     @Provides
     fun database(
         driver: SqlDriver,
@@ -105,7 +105,7 @@ internal object Module {
         uShortAdapter: ColumnAdapter<UShort, Long>,
     ) = Database(
         driver,
-        CarAdapter = Car.Adapter(
+        VehicleAdapter = Vehicle.Adapter(
             uuidAdapter,
             pressureAdapter,
             pressureAdapter,

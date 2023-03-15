@@ -23,7 +23,7 @@ import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorDialogViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.car.model.Sensor
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 
@@ -31,11 +31,11 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 internal fun BindSensorButton(
     location: SensorLocation,
     modifier: Modifier = Modifier,
-    carComponent: CarComponent = LocalCarComponent.current,
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: BindSensorButtonViewModel = viewModel(
-        key = "BindSensorButtonViewModel_${carComponent.hashCode()}_${location.name}"
+        key = "BindSensorButtonViewModel_${vehicleComponent.hashCode()}_${location.name}"
     ) {
-        carComponent.tyreComponent(location).bindSensorButtonViewModelFactory
+        vehicleComponent.tyreComponent(location).bindSensorButtonViewModelFactory
             .build(createSavedStateHandle())
     }
 ) {
@@ -66,10 +66,10 @@ internal fun BindSensorButton(
 private fun BindSensorDialog(
     sensorToAdd: Sensor,
     onDismissRequest: () -> Unit,
-    carComponent: CarComponent = LocalCarComponent.current,
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: BindSensorDialogViewModel = viewModel(
-        key = "BindSensorDialogViewModel_${carComponent.hashCode()}_${sensorToAdd.id}"
-    ) { carComponent.bindSensorDialogViewModelFactory.build(sensorToAdd, createSavedStateHandle()) }
+        key = "BindSensorDialogViewModel_${vehicleComponent.hashCode()}_${sensorToAdd.id}"
+    ) { vehicleComponent.bindSensorDialogViewModelFactory.build(sensorToAdd, createSavedStateHandle()) }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     if (state is BindSensorDialogViewModel.State.Loading)
