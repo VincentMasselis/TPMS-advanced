@@ -22,8 +22,8 @@ insert:
 INSERT INTO Tyre (id, timestamp, location, pressure, temperature, battery, isAlarm, vehicleId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 latestByTyreLocationByVehicle:
-SELECT Tyre.id, Tyre.timestamp, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm FROM Tyre
+SELECT Tyre.id, Tyre.timestamp, Tyre.location, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm FROM Tyre
 INNER JOIN Vehicle ON Tyre.vehicleId = Vehicle.uuid
-WHERE location = ? AND Vehicle.uuid = ?
+WHERE location IN ? AND Vehicle.uuid = ?
 ORDER BY timestamp DESC
 LIMIT 1;

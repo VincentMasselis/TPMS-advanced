@@ -22,31 +22,30 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorDialogViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.data.car.model.Sensor
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import com.masselis.tpmsadvanced.core.feature.model.ManySensor
 
 @Composable
 internal fun BindSensorButton(
-    location: SensorLocation,
+    manySensor: ManySensor,
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: BindSensorButtonViewModel = viewModel(
-        key = "BindSensorButtonViewModel_${vehicleComponent.hashCode()}_${location.name}"
+        key = "BindSensorButtonViewModel_${vehicleComponent.hashCode()}_${manySensor.name}"
     ) {
-        vehicleComponent.tyreComponent(location).bindSensorButtonViewModelFactory
+        vehicleComponent.tyreComponent(manySensor)
+            .bindSensorButtonViewModelFactory
             .build(createSavedStateHandle())
     }
 ) {
-    var sensorToAdd by remember { mutableStateOf<Sensor?>(null) }
+    val state by viewModel.stateFlow.collectAsState(State.Empty)
+    var bondRequest by remember { mutableStateOf<State.RequestBond?>(null) }
     Box(modifier = modifier) {
-        val state by viewModel.stateFlow.collectAsState(State.Empty)
         when (val state = state) {
             State.Empty -> {}
             is State.RequestBond ->
                 IconButton(
-                    onClick = { sensorToAdd = state.sensor },
+                    onClick = { bondRequest = state },
                 ) {
                     Icon(
                         ImageVector.vectorResource(R.drawable.link_variant_plus),
@@ -55,37 +54,31 @@ internal fun BindSensorButton(
                 }
         }
     }
-    if (sensorToAdd != null)
+    if (bondRequest != null)
         BindSensorDialog(
-            sensorToAdd!!,
-            onDismissRequest = { sensorToAdd = null }
+            bondRequest = bondRequest!!,
+            onBind = viewModel::bind,
+            onDismissRequest = { bondRequest = null }
         )
 }
 
 @Composable
 private fun BindSensorDialog(
-    sensorToAdd: Sensor,
+    bondRequest: State.RequestBond,
+    onBind: () -> Unit,
     onDismissRequest: () -> Unit,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: BindSensorDialogViewModel = viewModel(
-        key = "BindSensorDialogViewModel_${vehicleComponent.hashCode()}_${sensorToAdd.id}"
-    ) { vehicleComponent.bindSensorDialogViewModelFactory.build(sensorToAdd, createSavedStateHandle()) }
 ) {
-    val state by viewModel.stateFlow.collectAsState()
-    if (state is BindSensorDialogViewModel.State.Loading)
-        return
     AlertDialog(
         title = { Text("Would you mark this sensor as your favorite sensor ?") },
         text = {
             Text(
-                when (val state = state) {
-                    BindSensorDialogViewModel.State.NewSensor ->
+                when (bondRequest) {
+                    is State.RequestBond.NewBinding ->
                         "When a sensor is set as favorite, TPMS Advanced will only display this sensor for this tyre"
-                    is BindSensorDialogViewModel.State.UpdateSensor ->
+                    is State.RequestBond.AlreadyBound ->
                         @Suppress("MaxLineLength")
-                        "This sensor will be removed from the car \"${state.currentBound.name}\"" +
-                                " and it will be added to the car \"${state.newOwner.name}\""
-                    BindSensorDialogViewModel.State.Loading -> error("Unreachable state")
+                        "This sensor will be removed from the car \"${bondRequest.currentVehicle.name}\"" +
+                                " and it will be added to the car \"${bondRequest.targetVehicle.name}\""
                 }
             )
         },
@@ -93,7 +86,7 @@ private fun BindSensorDialog(
         dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
         confirmButton = {
             TextButton(
-                onClick = { viewModel.save(); onDismissRequest() },
+                onClick = onBind,
                 content = { Text("Add to favorites") }
             )
         }

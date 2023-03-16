@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorDialogViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleAlertViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
@@ -18,6 +17,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewM
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.core.feature.model.ManySensor
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.Pressure
@@ -26,8 +26,7 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import java.util.*
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 internal fun PressureInfo(
@@ -42,7 +41,7 @@ internal fun PressureInfo(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Tyre(
-                    location = SensorLocation.FRONT_LEFT,
+                    manySensor = ManySensor.Side(SensorLocation.Side.LEFT),
                     modifier = Modifier.height(150.dp),
                     vehicleComponent = DemoVehicleComponent(),
                     viewModel = DemoTyreViewModel(State.Alerting),
@@ -76,7 +75,7 @@ internal fun TemperatureInfo(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Tyre(
-                    location = SensorLocation.FRONT_LEFT,
+                    manySensor = ManySensor.Side(SensorLocation.Side.LEFT),
                     modifier = Modifier.height(150.dp),
                     vehicleComponent = DemoVehicleComponent(),
                     viewModel = DemoTyreViewModel(state),
@@ -92,9 +91,9 @@ internal fun TemperatureInfo(
 private class DemoVehicleComponent : VehicleComponent() {
     override val findTyreComponentUseCase: FindTyreComponentUseCase
         get() = TODO("Not yet implemented")
-    override val carId: UUID
+    override val vehicle: Vehicle
         get() = TODO("Not yet implemented")
-    override val carFlow: Flow<Vehicle>
+    override val carFlow: StateFlow<Vehicle>
         get() = TODO("Not yet implemented")
     override val scope: CoroutineScope
         get() = TODO("Not yet implemented")

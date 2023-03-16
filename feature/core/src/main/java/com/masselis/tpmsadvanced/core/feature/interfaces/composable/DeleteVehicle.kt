@@ -71,7 +71,6 @@ private fun DeleteVehicleDialog(
     val navController = LocalHomeNavController.current
     val state by viewModel.stateFlow.collectAsState()
     val vehicleState = when (state) {
-        DeleteVehicleAlertViewModel.State.Loading -> return
         is DeleteVehicleAlertViewModel.State.Vehicle -> state as DeleteVehicleAlertViewModel.State.Vehicle
     }
     AlertDialog(

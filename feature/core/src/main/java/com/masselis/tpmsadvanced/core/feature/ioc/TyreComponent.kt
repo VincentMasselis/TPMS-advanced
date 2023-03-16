@@ -15,7 +15,7 @@ public abstract class TyreComponent {
 
     @Subcomponent.Factory
     internal interface Factory {
-        fun build(@BindsInstance location: SensorLocation): TyreComponent
+        fun build(@BindsInstance locations: Set<SensorLocation>): TyreComponent
     }
 
     internal abstract val tyreViewModelFactory: TyreViewModelImpl.Factory

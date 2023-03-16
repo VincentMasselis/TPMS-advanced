@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -16,14 +17,14 @@ import com.masselis.tpmsadvanced.data.car.model.Vehicle as VehicleModel
 
 internal class DeleteVehicleAlertViewModel @Inject constructor(
     private val vehicleUseCase: VehicleUseCase,
+    vehicleFlow: StateFlow<VehicleModel>,
 ) : ViewModel() {
 
     sealed class State {
-        object Loading : State()
         data class Vehicle(val vehicle: VehicleModel) : State()
     }
 
-    private val mutableStateFlow = MutableStateFlow<State>(State.Loading)
+    private val mutableStateFlow = MutableStateFlow<State>(State.Vehicle(vehicleFlow.value))
     val stateFlow = mutableStateFlow.asStateFlow()
 
     sealed class Event {
@@ -34,7 +35,7 @@ internal class DeleteVehicleAlertViewModel @Inject constructor(
     val eventChannel = _evenChannel as ReceiveChannel<Event>
 
     init {
-        vehicleUseCase.vehicleFlow()
+        vehicleFlow
             .onEach { mutableStateFlow.value = State.Vehicle(it) }
             .launchIn(viewModelScope)
     }

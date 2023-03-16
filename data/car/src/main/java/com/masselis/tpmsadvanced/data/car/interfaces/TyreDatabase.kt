@@ -26,11 +26,14 @@ public class TyreDatabase @Inject internal constructor(
         )
     }
 
-    public fun latestByTyreLocationByVehicle(location: SensorLocation, vehicleId: UUID): Tyre? = queries
+    public fun latestByTyreLocationByVehicle(
+        locations: Set<SensorLocation>,
+        vehicleId: UUID
+    ): Tyre? = queries
         .latestByTyreLocationByVehicle(
-            location,
+            locations,
             vehicleId
-        ) { id, timestamp, pressure, temperature, battery, isAlarm ->
+        ) { id, timestamp, location, pressure, temperature, battery, isAlarm ->
             Tyre(timestamp, location, id, pressure, temperature, battery, isAlarm)
         }
         .executeAsOneOrNull()

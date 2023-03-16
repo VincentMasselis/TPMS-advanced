@@ -1,4 +1,4 @@
-import com.masselis.tpmsadvanced.data.car.model.Vehicle;
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind;
 import com.masselis.tpmsadvanced.data.record.model.Pressure;
 import com.masselis.tpmsadvanced.data.record.model.Temperature;
 import java.util.UUID;
@@ -6,6 +6,7 @@ import kotlin.Boolean;
 
 CREATE TABLE Vehicle(
     uuid TEXT AS UUID NOT NULL PRIMARY KEY,
+    kind TEXT AS Kind NOT NULL,
     name TEXT NOT NULL,
     isFavourite INTEGER AS Boolean NOT NULL,
     lowPressure REAL AS Pressure NOT NULL DEFAULT 100,
@@ -58,10 +59,10 @@ END;
 
 -- This statement is put in the end because SQLDelight executes the triggers before the statements
 
-INSERT INTO Vehicle(uuid, name, isFavourite) VALUES ("466b2e13-e33a-4adf-a101-a920140a29a1","My car",1);
+INSERT INTO Vehicle(uuid, kind, name, isFavourite) VALUES ("466b2e13-e33a-4adf-a101-a920140a29a1","CAR", "My car",1);
 
 insert:
-INSERT INTO Vehicle(uuid, name, isFavourite) VALUES (?,?,?);
+INSERT INTO Vehicle(uuid, kind, name, isFavourite) VALUES (?,?,?,?);
 
 selectLowPressureByVehicleId:
 SELECT lowPressure FROM Vehicle WHERE uuid = ?;

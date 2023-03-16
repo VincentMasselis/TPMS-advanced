@@ -21,10 +21,13 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
 
     private val queries = database.vehicleQueries
 
-    public suspend fun insert(id: UUID, name: String, isCurrent: Boolean): Unit =
-        withContext(IO) {
-            queries.insert(id, name, isCurrent)
-        }
+    public suspend fun insert(
+        id: UUID,
+        kind: Vehicle.Kind,
+        name: String,
+        isCurrent: Boolean
+    ): Unit =
+        withContext(IO) { queries.insert(id, kind, name, isCurrent) }
 
     public suspend fun setIsCurrent(uuid: UUID, isCurrent: Boolean): Unit = withContext(IO) {
         queries.setAsFavourite(isCurrent, uuid)
@@ -84,9 +87,10 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
 
     public fun selectAll(): List<Vehicle> = queries.selectAll(mapper).executeAsList()
 
-    public fun selectByUuid(vehicleId: UUID): Flow<Vehicle> = queries.selectByUuid(vehicleId, mapper)
-        .asFlow()
-        .mapToOne(IO)
+    public fun selectByUuid(vehicleId: UUID): Flow<Vehicle> =
+        queries.selectByUuid(vehicleId, mapper)
+            .asFlow()
+            .mapToOne(IO)
 
     public fun selectBySensorId(sensorId: Int): Flow<Vehicle?> = queries
         .selectBySensorId(sensorId, mapper)
@@ -94,10 +98,11 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         .mapToOneOrNull(IO)
 
     private companion object {
-        val mapper: (UUID, String, Boolean, Pressure, Pressure, Temperature, Temperature, Temperature) -> Vehicle =
-            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp ->
+        val mapper: (UUID, Vehicle.Kind, String, Boolean, Pressure, Pressure, Temperature, Temperature, Temperature) -> Vehicle =
+            { uuid, kind, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp ->
                 Vehicle(
                     uuid,
+                    kind,
                     name,
                     lowPressure,
                     highPressure,

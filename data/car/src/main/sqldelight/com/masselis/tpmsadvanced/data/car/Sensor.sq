@@ -10,17 +10,15 @@ CREATE TABLE Sensor(
     UNIQUE(location, vehicleId)
 );
 
+/**
+Insert the sensor. If the sensor already exists in the database, this instruction moves the sensor
+from the previous car and set it into the new car.
+*/
 upsert:
 INSERT INTO Sensor (id, location, vehicleId)
 VALUES (?, ?, ?)
 ON CONFLICT(id) DO
 UPDATE SET location=excluded.location, vehicleId=excluded.vehicleId;
-
-updateVehicleId:
-UPDATE Sensor SET vehicleId = ? WHERE id = ?;
-
-delete:
-DELETE FROM Sensor WHERE id = ?;
 
 deleteByVehicle:
 DELETE FROM Sensor WHERE rowid IN (
@@ -29,10 +27,13 @@ DELETE FROM Sensor WHERE rowid IN (
     WHERE Vehicle.uuid = ?
 );
 
+deleteByVehicleAndLocation:
+DELETE FROM Sensor WHERE vehicleId = ? AND location IN ?;
+
 selectByVehicleAndLocation:
 SELECT Sensor.* FROM Sensor
 INNER JOIN Vehicle ON Sensor.vehicleId = Vehicle.uuid
-WHERE Vehicle.uuid = ? AND location = ?;
+WHERE Vehicle.uuid = ? AND location IN ?;
 
 countByVehicle:
 SELECT COUNT(Sensor.rowid) FROM Sensor

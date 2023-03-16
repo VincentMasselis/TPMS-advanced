@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.data.car.ioc
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import app.cash.sqldelight.ColumnAdapter
+import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
@@ -29,23 +30,11 @@ internal object Module {
 
     @Provides
     fun tyreLocationAdapter() = object : ColumnAdapter<SensorLocation, Long> {
-
-        override fun decode(databaseValue: Long): SensorLocation =
-            SensorLocation.from(databaseValue)
-
-        override fun encode(value: SensorLocation): Long = value.toLong()
-
-        @Suppress("MagicNumber")
-        private fun SensorLocation.toLong(): Long = when (this) {
-            SensorLocation.FRONT_LEFT -> 0
-            SensorLocation.FRONT_RIGHT -> 1
-            SensorLocation.REAR_LEFT -> 2
-            SensorLocation.REAR_RIGHT -> 3
-        }
-
-        private fun SensorLocation.Companion.from(long: Long) = SensorLocation
+        override fun decode(databaseValue: Long): SensorLocation = SensorLocation
             .values()
-            .first { it.toLong() == long }
+            .first { it.ordinal.toLong() == databaseValue }
+
+        override fun encode(value: SensorLocation): Long = value.ordinal.toLong()
     }
 
     @Provides
@@ -107,6 +96,7 @@ internal object Module {
         driver,
         VehicleAdapter = Vehicle.Adapter(
             uuidAdapter,
+            EnumColumnAdapter(),
             pressureAdapter,
             pressureAdapter,
             temperatureAdapter,

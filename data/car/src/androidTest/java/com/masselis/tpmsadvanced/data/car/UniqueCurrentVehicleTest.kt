@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
@@ -51,33 +52,33 @@ internal class UniqueCurrentVehicleTest {
     @Test
     fun insert1() {
         val uuid = UUID.randomUUID()
-        vehicleQueries.insert(uuid, "test", false)
+        vehicleQueries.insert(uuid, Vehicle.Kind.CAR, "test", false)
         assertTrue { carList().first { it.uuid == uuid }.isFavourite.not() }
     }
 
     @Test
     fun insert2() {
-        vehicleQueries.insert(UUID.randomUUID(), "test", true)
+        vehicleQueries.insert(UUID.randomUUID(), Vehicle.Kind.CAR, "test", true)
     }
 
     @Test
     fun insert3() {
-        vehicleQueries.insert(UUID.randomUUID(), "test", false)
-        vehicleQueries.insert(UUID.randomUUID(), "test", true)
+        vehicleQueries.insert(UUID.randomUUID(), Vehicle.Kind.CAR, "test", false)
+        vehicleQueries.insert(UUID.randomUUID(), Vehicle.Kind.CAR, "test", true)
         assertEquals(3, carList().size)
     }
 
     @Test
     fun insert4() {
-        vehicleQueries.insert(UUID.randomUUID(), "test", true)
-        vehicleQueries.insert(UUID.randomUUID(), "test", false)
+        vehicleQueries.insert(UUID.randomUUID(), Vehicle.Kind.CAR, "test", true)
+        vehicleQueries.insert(UUID.randomUUID(), Vehicle.Kind.CAR, "test", false)
         assertEquals(3, carList().size)
     }
 
     @Test
     fun update1() {
         val uuid = UUID.randomUUID()
-        vehicleQueries.insert(uuid, "TEST", false)
+        vehicleQueries.insert(uuid, Vehicle.Kind.CAR, "TEST", false)
         vehicleQueries.setAsFavourite(true, uuid)
         assertTrue { carList().first { it.uuid == uuid }.isFavourite }
     }
@@ -100,14 +101,14 @@ internal class UniqueCurrentVehicleTest {
     @Test
     fun delete2() {
         val uuid = UUID.randomUUID()
-        vehicleQueries.insert(uuid, "TEST", true)
+        vehicleQueries.insert(uuid, Vehicle.Kind.CAR, "TEST", true)
         vehicleQueries.delete(uuid)
     }
 
     @Test
     fun delete3() {
         val uuid = UUID.randomUUID()
-        vehicleQueries.insert(uuid, "TEST", true)
+        vehicleQueries.insert(uuid, Vehicle.Kind.CAR, "TEST", true)
         vehicleQueries.delete(uuid)
         carList().forEach { vehicleQueries.delete(it.uuid) }
     }
@@ -115,7 +116,7 @@ internal class UniqueCurrentVehicleTest {
     @Test
     fun delete4() {
         val uuid = UUID.randomUUID()
-        vehicleQueries.insert(uuid, "TEST", false)
+        vehicleQueries.insert(uuid, Vehicle.Kind.CAR, "TEST", false)
         vehicleQueries.delete(uuid)
         carList().forEach { vehicleQueries.delete(it.uuid) }
     }
@@ -128,7 +129,7 @@ internal class UniqueCurrentVehicleTest {
         vehicleQueries.setAsFavourite(false, carList().first().uuid)
         assertUniqueCurrent()
         val uuid = UUID.randomUUID()
-        vehicleQueries.insert(uuid, "TEST", false)
+        vehicleQueries.insert(uuid, Vehicle.Kind.CAR, "TEST", false)
         assertEquals(2, carList().size)
         assertUniqueCurrent()
         vehicleQueries.setAsFavourite(true, uuid)

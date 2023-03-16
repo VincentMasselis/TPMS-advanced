@@ -37,7 +37,7 @@ internal class CurrentVehicleTextViewModel @Inject constructor(
         currentVehicleUseCase.setAsCurrent(vehicle)
     }
 
-    fun insert(carName: String) = viewModelScope.launch {
-        currentVehicleUseCase.insertAsCurrent(carName)
+    fun insert(carName: String, kind: Vehicle.Kind) = viewModelScope.launch {
+        currentVehicleUseCase.insertAsCurrent(carName, kind)
     }
 }

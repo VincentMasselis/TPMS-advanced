@@ -6,13 +6,13 @@ import javax.inject.Inject
 
 internal class BoundSensorTyreUseCase @Inject constructor(
     private val tyreUseCaseImpl: TyreUseCaseImpl,
-    private val boundSensorUseCase: BoundSensorUseCase,
+    private val sensorBindingUseCase: SensorBindingUseCase,
 ) : TyreUseCase {
 
     override fun listen() = tyreUseCaseImpl
         .listen()
         .filter {
-            val favId = boundSensorUseCase.boundSensor().first()?.id ?: return@filter true
+            val favId = sensorBindingUseCase.boundSensor().first()?.id ?: return@filter true
             favId == it.id
         }
 

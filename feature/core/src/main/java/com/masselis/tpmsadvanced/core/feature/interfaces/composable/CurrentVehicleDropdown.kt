@@ -1,5 +1,5 @@
 @file:Suppress("NAME_SHADOWING")
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
@@ -39,7 +39,8 @@ import kotlinx.coroutines.delay
 @Composable
 public fun CurrentVehicleDropdown(
     modifier: Modifier = Modifier,
-): Unit = CurrentVehicleDropdown(modifier, viewModel { FeatureCoreComponent.currentVehicleTextViewModel })
+): Unit =
+    CurrentVehicleDropdown(modifier, viewModel { FeatureCoreComponent.currentVehicleTextViewModel })
 
 @Composable
 internal fun CurrentVehicleDropdown(
@@ -75,7 +76,7 @@ internal fun CurrentVehicleDropdown(
     if (askNewVehicle)
         AddVehicle(
             onDismissRequest = { askNewVehicle = false },
-            onVehicleAdd = { viewModel.insert(it) }
+            onVehicleAdd = viewModel::insert
         )
 }
 
@@ -117,7 +118,7 @@ private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
 @Composable
 private fun AddVehicle(
     onDismissRequest: () -> Unit,
-    onVehicleAdd: (name: String) -> Unit,
+    onVehicleAdd: (name: String, kind: Vehicle.Kind) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -138,7 +139,7 @@ private fun AddVehicle(
         dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
         confirmButton = {
             TextButton(
-                onClick = { onVehicleAdd(vehicleName); onDismissRequest() },
+                onClick = { onVehicleAdd(vehicleName, TODO()); onDismissRequest() },
                 content = { Text(text = "Add") }
             )
         }

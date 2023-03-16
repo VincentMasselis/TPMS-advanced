@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreScope
 import com.masselis.tpmsadvanced.data.car.interfaces.TyreDatabase
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Tyre
@@ -19,13 +20,14 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
 @TyreScope
 public class TyreUseCaseImpl @Inject internal constructor(
-    private val carId: UUID,
-    private val location: SensorLocation,
+    @Named("base") private val vehicle: Vehicle,
+    private val locations: Set<SensorLocation>,
     private val tyreDatabase: TyreDatabase,
     private val scanner: BluetoothLeScanner,
     scope: CoroutineScope
@@ -39,14 +41,17 @@ public class TyreUseCaseImpl @Inject internal constructor(
         // frame. To avoid saving the same value multiple times into the database, a debounce is
         // applied to fetch only the latest value.
         .debounce(1.seconds)
-        .onEach { tyre -> tyreDatabase.insert(tyre, carId) }
+        .onEach { tyre -> tyreDatabase.insert(tyre, vehicle.uuid) }
         .shareIn(
             scope,
             SharingStarted.WhileSubscribed()
         )
-        .onStart { tyreDatabase.latestByTyreLocationByVehicle(location, carId)?.also { emit(it) } }
+        .onStart {
+            tyreDatabase.latestByTyreLocationByVehicle(locations, vehicle.uuid)
+                ?.also { emit(it) }
+        }
 
     override fun listen(): Flow<Tyre> = flow
 
-    private fun Flow<Tyre>.filterLocation() = filter { it.location == location }
+    private fun Flow<Tyre>.filterLocation() = filter { locations.contains(it.location) }
 }

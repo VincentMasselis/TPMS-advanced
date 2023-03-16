@@ -19,21 +19,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModelImpl
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @Composable
 public fun Vehicle(modifier: Modifier = Modifier) {
     Vehicle(
         modifier,
-        viewModel { FeatureCoreComponent.currentVehicleComponentViewModel }
+        viewModel { FeatureCoreComponent.currentVehicleComponentViewModelImpl }
     )
 }
 
@@ -42,7 +48,7 @@ public fun Vehicle(modifier: Modifier = Modifier) {
 internal fun Vehicle(
     modifier: Modifier = Modifier,
     viewModel: CurrentVehicleComponentViewModel = viewModel {
-        FeatureCoreComponent.currentVehicleComponentViewModel
+        FeatureCoreComponent.currentVehicleComponentViewModelImpl
     }
 ) {
     KeepScreenOn()

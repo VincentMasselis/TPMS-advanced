@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
@@ -24,13 +24,13 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 @Composable
 public fun VehicleRangeSettings(modifier: Modifier = Modifier): Unit = VehicleRangeSettings(
     modifier,
-    viewModel { FeatureCoreComponent.currentVehicleComponentViewModel }
+    viewModel { FeatureCoreComponent.currentVehicleComponentViewModelImpl }
 )
 
 @Composable
 internal fun VehicleRangeSettings(
     modifier: Modifier = Modifier,
-    viewModel: CurrentVehicleComponentViewModel = viewModel { FeatureCoreComponent.currentVehicleComponentViewModel }
+    viewModel: CurrentVehicleComponentViewModelImpl = viewModel { FeatureCoreComponent.currentVehicleComponentViewModelImpl }
 ) {
     val component by viewModel.stateFlow.collectAsState()
     CompositionLocalProvider(LocalVehicleComponent provides component) {
