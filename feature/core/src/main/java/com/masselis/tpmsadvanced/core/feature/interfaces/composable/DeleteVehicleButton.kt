@@ -9,7 +9,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,33 +19,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleAlertViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
-import kotlinx.coroutines.channels.consumeEach
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
 
 @Suppress("NAME_SHADOWING")
 @Composable
-internal fun DeleteVehicle(
+internal fun DeleteVehicleButton(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.hashCode()}") {
-        vehicleComponent.deleteVehicleViewModel
+        vehicleComponent.deleteVehicleViewModel.build(createSavedStateHandle())
     }
 ) {
+    val navController = LocalHomeNavController.current
     val state = viewModel.stateFlow.collectAsState().value
     val vehicle = when (val state = state) {
-        DeleteVehicleViewModel.State.Loading -> return
-        is DeleteVehicleViewModel.State.DeletableVehicle -> state.vehicle
-        is DeleteVehicleViewModel.State.LatestVehicle -> state.vehicle
+        State.Loading -> return
+        State.Leave -> {
+            navController.popBackStack()
+            return
+        }
+        is State.NotDeletableVehicle -> state.vehicle
+        is State.DeletableVehicle -> state.vehicle
     }
     var showDeleteDialog by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
         OutlinedButton(
-            enabled = state is DeleteVehicleViewModel.State.DeletableVehicle,
+            enabled = state is State.DeletableVehicle,
             modifier = Modifier.align(Alignment.TopEnd),
             onClick = { showDeleteDialog = true }
         ) {
@@ -56,37 +61,27 @@ internal fun DeleteVehicle(
         }
     }
     if (showDeleteDialog)
-        DeleteVehicleDialog({ showDeleteDialog = false })
+        DeleteVehicleDialog(
+            vehicle = vehicle,
+            onDismissRequest = { showDeleteDialog = false },
+            onDelete = { viewModel.delete() }
+        )
 }
 
 @Composable
 private fun DeleteVehicleDialog(
+    vehicle: Vehicle,
     onDismissRequest: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: DeleteVehicleAlertViewModel = viewModel(key = "DeleteVehicleAlertViewModel_${vehicleComponent.hashCode()}") {
-        vehicleComponent.deleteVehicleAlertViewModel
-    }
 ) {
-    val navController = LocalHomeNavController.current
-    val state by viewModel.stateFlow.collectAsState()
-    val vehicleState = when (state) {
-        is DeleteVehicleAlertViewModel.State.Vehicle -> state as DeleteVehicleAlertViewModel.State.Vehicle
-    }
     AlertDialog(
         text = {
-            Text("Do you really want to delete the car \"${vehicleState.vehicle.name}\" ?\nThis action cannot be undone !")
+            Text("Do you really want to delete the car \"${vehicle.name}\" ?\nThis action cannot be undone !")
         },
         onDismissRequest = onDismissRequest,
         dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
-        confirmButton = { TextButton(onClick = { viewModel.delete() }) { Text("Delete \"${vehicleState.vehicle.name}\"") } },
+        confirmButton = { TextButton(onClick = onDelete) { Text("Delete \"${vehicle.name}\"") } },
         modifier = modifier
     )
-    LaunchedEffect("EVENTS") {
-        viewModel.eventChannel.consumeEach {
-            when (it) {
-                DeleteVehicleAlertViewModel.Event.Leave -> navController.popBackStack()
-            }
-        }
-    }
 }

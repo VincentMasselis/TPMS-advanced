@@ -1,7 +1,6 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleAlertViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.model.ManySensor
@@ -45,6 +44,5 @@ internal abstract class VehicleComponent {
 
     abstract val clearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory
     abstract val vehicleSettingsViewModel: VehicleSettingsViewModel.Factory
-    abstract val deleteVehicleViewModel: DeleteVehicleViewModel
-    abstract val deleteVehicleAlertViewModel: DeleteVehicleAlertViewModel
+    abstract val deleteVehicleViewModel: DeleteVehicleViewModel.Factory
 }

@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleAlertViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
@@ -101,10 +100,6 @@ private class DemoVehicleComponent : VehicleComponent() {
         get() = TODO("Not yet implemented")
     override val vehicleSettingsViewModel: VehicleSettingsViewModel.Factory
         get() = TODO("Not yet implemented")
-    override val bindSensorDialogViewModelFactory: BindSensorDialogViewModel.Factory
-        get() = TODO("Not yet implemented")
-    override val deleteVehicleViewModel: DeleteVehicleViewModel
-        get() = TODO("Not yet implemented")
-    override val deleteVehicleAlertViewModel: DeleteVehicleAlertViewModel
+    override val deleteVehicleViewModel: DeleteVehicleViewModel.Factory
         get() = TODO("Not yet implemented")
 }

@@ -10,13 +10,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.common.Fraction
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModelImpl
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.Separator
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
@@ -24,13 +25,15 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 @Composable
 public fun VehicleRangeSettings(modifier: Modifier = Modifier): Unit = VehicleRangeSettings(
     modifier,
-    viewModel { FeatureCoreComponent.currentVehicleComponentViewModelImpl }
+    viewModel { FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle()) }
 )
 
 @Composable
 internal fun VehicleRangeSettings(
     modifier: Modifier = Modifier,
-    viewModel: CurrentVehicleComponentViewModelImpl = viewModel { FeatureCoreComponent.currentVehicleComponentViewModelImpl }
+    viewModel: CurrentVehicleComponentViewModel = viewModel {
+        FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
+    }
 ) {
     val component by viewModel.stateFlow.collectAsState()
     CompositionLocalProvider(LocalVehicleComponent provides component) {
@@ -43,7 +46,7 @@ internal fun VehicleRangeSettings(
             Separator()
             ClearBoundSensorsButton(Modifier.fillMaxWidth())
             Separator()
-            DeleteVehicle(Modifier.fillMaxWidth())
+            DeleteVehicleButton(Modifier.fillMaxWidth())
         }
     }
 }

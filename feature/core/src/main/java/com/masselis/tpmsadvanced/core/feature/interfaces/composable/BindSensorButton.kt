@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
@@ -24,6 +25,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorBut
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.feature.model.ManySensor
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 
 @Composable
 internal fun BindSensorButton(
@@ -57,7 +59,7 @@ internal fun BindSensorButton(
     if (bondRequest != null)
         BindSensorDialog(
             bondRequest = bondRequest!!,
-            onBind = viewModel::bind,
+            onBind = { viewModel.bind() ; bondRequest = null},
             onDismissRequest = { bondRequest = null }
         )
 }
@@ -90,5 +92,31 @@ private fun BindSensorDialog(
                 content = { Text("Add to favorites") }
             )
         }
+    )
+}
+
+@Preview
+@Composable
+private fun BindSensorButtonNewBindingPreview() {
+    BindSensorButton(
+        manySensor = ManySensor.Located(SensorLocation.REAR_LEFT),
+        vehicleComponent = PreviewVehicleComponent(),
+        viewModel = previewBindSensorViewModel(State.RequestBond.NewBinding(previewSensor))
+    )
+}
+
+@Preview
+@Composable
+private fun BindSensorButtonAlreadyBoundPreview() {
+    BindSensorButton(
+        manySensor = ManySensor.Located(SensorLocation.REAR_LEFT),
+        vehicleComponent = PreviewVehicleComponent(),
+        viewModel = previewBindSensorViewModel(
+            State.RequestBond.AlreadyBound(
+                previewSensor,
+                previewVehicle,
+                previewVehicle
+            )
+        )
     )
 }

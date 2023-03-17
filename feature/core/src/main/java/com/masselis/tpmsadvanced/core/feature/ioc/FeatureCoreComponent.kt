@@ -1,10 +1,9 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModelImpl
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleTextViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleListDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.unit.ioc.FeatureUnitComponent
 import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
@@ -54,13 +53,10 @@ public interface FeatureCoreComponent {
         internal lateinit var preconditionsViewModel: PreconditionsViewModel.Factory
 
         @Inject
-        internal lateinit var currentVehicleTextViewModel: CurrentVehicleTextViewModel
+        internal lateinit var currentVehicleDropdownViewModel: CurrentVehicleDropdownViewModel.Factory
 
         @Inject
-        internal lateinit var vehicleListDropdownViewModel: VehicleListDropdownViewModel
-
-        @Inject
-        internal lateinit var currentVehicleComponentViewModelImpl: CurrentVehicleComponentViewModelImpl
+        internal lateinit var currentVehicleComponentViewModel: CurrentVehicleComponentViewModel.Factory
 
         init {
             @Suppress("LeakingThis")
