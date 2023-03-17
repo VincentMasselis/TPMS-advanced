@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.core.feature.ioc
 
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import javax.inject.Qualifier
-import kotlin.annotation.AnnotationRetention.*
+import kotlin.annotation.AnnotationRetention.RUNTIME
 
 @Qualifier
 @Retention(RUNTIME)

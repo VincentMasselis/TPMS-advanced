@@ -9,7 +9,7 @@ import dagger.assisted.AssistedInject
 
 internal class CurrentVehicleComponentViewModel @AssistedInject constructor(
     currentVehicleUseCase: CurrentVehicleUseCase,
-    @Assisted savedStateHandle: SavedStateHandle,
+    @Suppress("UNUSED_PARAMETER") @Assisted savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     @AssistedFactory

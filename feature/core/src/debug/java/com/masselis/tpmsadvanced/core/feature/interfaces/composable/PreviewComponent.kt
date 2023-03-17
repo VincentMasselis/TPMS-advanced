@@ -41,6 +41,7 @@ internal class PreviewTyreComponent(
         }
 ) : TyreComponent()
 
+@Suppress("LongParameterList")
 internal class PreviewVehicleComponent(
     override val findTyreComponentUseCase: FindTyreComponentUseCase =
         mockk<FindTyreComponentUseCase>().also {

@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
 import com.masselis.tpmsadvanced.core.common.Fraction

@@ -96,12 +96,12 @@ internal object Module {
         driver,
         VehicleAdapter = Vehicle.Adapter(
             uuidAdapter,
+            pressureAdapter,
+            pressureAdapter,
+            temperatureAdapter,
+            temperatureAdapter,
+            temperatureAdapter,
             EnumColumnAdapter(),
-            pressureAdapter,
-            pressureAdapter,
-            temperatureAdapter,
-            temperatureAdapter,
-            temperatureAdapter
         ),
         SensorAdapter = Sensor.Adapter(IntColumnAdapter, sensorLocationAdapter, uuidAdapter),
         TyreAdapter = Tyre.Adapter(
@@ -110,7 +110,7 @@ internal object Module {
             pressureAdapter,
             temperatureAdapter,
             uShortAdapter,
-            uuidAdapter
+            uuidAdapter,
         )
     )
 }

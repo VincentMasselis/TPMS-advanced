@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 internal class DeleteVehicleViewModel @AssistedInject constructor(
     private val vehicleUseCase: VehicleUseCase,
     vehicleCountUseCase: VehicleCountUseCase,
-    @Assisted savedStateHandle: SavedStateHandle
+    @Suppress("UNUSED_PARAMETER") @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     @AssistedFactory

@@ -6,14 +6,14 @@ import kotlin.Boolean;
 
 CREATE TABLE Vehicle(
     uuid TEXT AS UUID NOT NULL PRIMARY KEY,
-    kind TEXT AS Kind NOT NULL,
     name TEXT NOT NULL,
     isFavourite INTEGER AS Boolean NOT NULL,
     lowPressure REAL AS Pressure NOT NULL DEFAULT 100,
     highPressure REAL AS Pressure NOT NULL DEFAULT 300,
     lowTemp REAL AS Temperature NOT NULL DEFAULT 20,
     normalTemp REAL AS Temperature NOT NULL DEFAULT 45,
-    highTemp REAL AS Temperature NOT NULL DEFAULT 90
+    highTemp REAL AS Temperature NOT NULL DEFAULT 90,
+    kind TEXT AS Kind NOT NULL DEFAULT "Car"
 );
 
 -- This succession of triggers ensure there is always exactly 1 car with isFavourite set to 1

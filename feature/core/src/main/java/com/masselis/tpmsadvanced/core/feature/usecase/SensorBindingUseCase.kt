@@ -16,6 +16,7 @@ internal class SensorBindingUseCase @Inject constructor(
     private val sensorDatabase: SensorDatabase,
     private val locations: Set<SensorLocation>,
 ) {
+    @Suppress("SpreadOperator")
     fun boundSensor() = sensorDatabase
         .selectByVehicleAndLocationFlow(vehicle.uuid, *locations.toTypedArray())
         .distinctUntilChanged()

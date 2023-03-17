@@ -32,13 +32,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-@Suppress("NAME_SHADOWING")
+@Suppress("NAME_SHADOWING", "LongMethod", "CyclomaticComplexMethod")
 @Composable
 internal fun TyreStat(
     manySensor: ManySensor,
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: TyreStatsViewModel = viewModel(key = "TyreStatsViewModel_${vehicleComponent.hashCode()}_${manySensor.name}") {
+    viewModel: TyreStatsViewModel = viewModel(
+        key = "TyreStatsViewModel_${vehicleComponent.hashCode()}_${manySensor.name}"
+    ) {
         vehicleComponent.tyreComponent(manySensor).tyreStatViewModelFactory
             .build(createSavedStateHandle())
     }
@@ -104,20 +106,5 @@ internal fun TyreStat(
             color = color,
             modifier = Modifier.align(alignment),
         )
-    }
-}
-
-
-@Preview
-@Composable
-private fun TyreStatPreview() {
-    LazyRow {
-        items(previewTyreStatViewModelStates) {
-            TyreStat(
-                manySensor = ManySensor.Located(SensorLocation.REAR_RIGHT),
-                vehicleComponent = PreviewVehicleComponent(),
-                viewModel = previewTyreStatViewModel(it),
-            )
-        }
     }
 }

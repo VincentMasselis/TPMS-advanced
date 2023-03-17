@@ -98,8 +98,18 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         .mapToOneOrNull(IO)
 
     private companion object {
-        val mapper: (UUID, Vehicle.Kind, String, Boolean, Pressure, Pressure, Temperature, Temperature, Temperature) -> Vehicle =
-            { uuid, kind, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp ->
+        val mapper: (
+            UUID,
+            String,
+            Boolean,
+            Pressure,
+            Pressure,
+            Temperature,
+            Temperature,
+            Temperature,
+            Vehicle.Kind
+        ) -> Vehicle =
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind ->
                 Vehicle(
                     uuid,
                     kind,

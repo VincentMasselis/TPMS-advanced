@@ -7,7 +7,10 @@ import com.masselis.tpmsadvanced.data.car.Database
 import com.masselis.tpmsadvanced.data.car.model.Sensor
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.*
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -28,6 +31,7 @@ public class SensorDatabase @Inject internal constructor(
      * [FRONT_RIGHT] sensor will automatically remove the [FRONT_LEFT] sensor because a motorcycle
      * only have 2 front wheels.
      */
+    @Suppress("CyclomaticComplexMethod")
     public suspend fun upsert(
         sensor: Sensor,
         vehicleId: UUID,

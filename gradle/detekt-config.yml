@@ -11,7 +11,15 @@ style:
       - 'Composable'
   DestructuringDeclarationWithTooManyEntries:
     # I disagree with https://detekt.dev/docs/rules/style/#destructuringdeclarationwithtoomanyentries
-    maxDestructuringEntries: 10
+    maxDestructuringEntries: 16 # Constraint Layout's createRefs() allow up to 16
+  UnusedPrivateMember:
+    active: true
+    ignoreAnnotated:
+      - 'Preview'
 complexity:
   LongParameterList:
     functionThreshold: 10
+    ignoreAnnotated:
+      - 'Compose'
+  TooManyFunctions:
+    ignorePrivate: true

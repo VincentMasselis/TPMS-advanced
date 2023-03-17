@@ -1,0 +1,60 @@
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation;
+import java.util.UUID;
+
+ALTER TABLE Car RENAME TO Vehicle;
+
+ALTER TABLE Vehicle ADD kind TEXT NOT NULL DEFAULT "Car";
+
+PRAGMA foreign_keys=off;
+
+BEGIN TRANSACTION;
+
+ALTER TABLE Sensor RENAME TO Sensor_old;
+
+CREATE TABLE Sensor(
+    id INTEGER NOT NULL PRIMARY KEY,
+    location INTEGER NOT NULL,
+    vehicleId TEXT NOT NULL,
+    FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE,
+    UNIQUE(location, vehicleId)
+);
+
+INSERT INTO Sensor (id, location, vehicleId)
+  SELECT id, location, carId
+  FROM Sensor_old;
+
+DROP TABLE Sensor_old;
+
+ALTER TABLE Tyre RENAME TO Tyre_old;
+
+CREATE TABLE Tyre(
+    id INTEGER NOT NULL,
+    timestamp REAL NOT NULL,
+    location INTEGER NOT NULL,
+    pressure REAL NOT NULL,
+    temperature REAL NOT NULL,
+    battery INTEGER NOT NULL,
+    isAlarm INTEGER NOT NULL,
+    vehicleId TEXT NOT NULL,
+    FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE
+);
+
+INSERT INTO Tyre (id, timestamp, location, pressure, temperature, battery, isAlarm, vehicleId)
+  SELECT id, timestamp, location, pressure, temperature, battery, isAlarm, carId
+  FROM Tyre_old;
+
+DROP TABLE Tyre_old;
+
+COMMIT;
+
+PRAGMA foreign_keys=on;
+
+CREATE TRIGGER IF NOT EXISTS no_vehicle_delete
+    BEFORE DELETE
+    ON Vehicle
+    WHEN (SELECT COUNT(*) FROM Vehicle) = 1
+BEGIN
+    SELECT RAISE(IGNORE);
+END;
+
+DROP TRIGGER no_car_delete;

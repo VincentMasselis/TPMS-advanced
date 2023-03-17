@@ -18,6 +18,7 @@ import dagger.Lazy
 import javax.inject.Inject
 import javax.inject.Named
 
+@Suppress("LongParameterList")
 public class FindTyreComponentUseCase @Inject internal constructor(
     @Named("base") private val vehicle: Vehicle,
     @TyreLocationQualifier(FRONT_LEFT) private val frontLeft: Lazy<TyreComponent>,
@@ -29,6 +30,7 @@ public class FindTyreComponentUseCase @Inject internal constructor(
     @TyreSideQualifier(LEFT) private val left: Lazy<TyreComponent>,
     @TyreSideQualifier(RIGHT) private val right: Lazy<TyreComponent>,
 ) {
+    @Suppress("MaxLineLength")
     internal fun find(location: SensorLocation): TyreComponent {
         when (vehicle.kind) {
             Vehicle.Kind.CAR -> {}
@@ -51,6 +53,7 @@ public class FindTyreComponentUseCase @Inject internal constructor(
         }.get()
     }
 
+    @Suppress("MaxLineLength")
     internal fun find(axle: SensorLocation.Axle): TyreComponent {
         when (vehicle.kind) {
             Vehicle.Kind.CAR -> error("Cannot request for an axle for a car, use a specific tyre location instead")
@@ -71,6 +74,7 @@ public class FindTyreComponentUseCase @Inject internal constructor(
         }.get()
     }
 
+    @Suppress("MaxLineLength")
     internal fun find(side: SensorLocation.Side): TyreComponent {
         when (vehicle.kind) {
             Vehicle.Kind.CAR -> error("Cannot request a side for a car, use a specific tyre location instead")
