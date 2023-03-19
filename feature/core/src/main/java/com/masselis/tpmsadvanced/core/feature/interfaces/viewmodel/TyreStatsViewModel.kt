@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature

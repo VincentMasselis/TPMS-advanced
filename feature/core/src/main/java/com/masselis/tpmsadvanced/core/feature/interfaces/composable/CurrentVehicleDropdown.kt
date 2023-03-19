@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
@@ -70,7 +71,7 @@ internal fun CurrentVehicleDropdown(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier
+        modifier.testTag("vehicle_dropdown")
     ) {
         Row(
             verticalAlignment = Alignment.Bottom,
@@ -117,13 +118,15 @@ private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
                     onNewCurrent(currentVehicle)
                     onDismissRequest()
                 },
+                modifier = Modifier.testTag(currentVehicle.name)
             )
         }
         DropdownMenuItem(
-            text = { Text(text = "Add a car", Modifier.weight(1f)) },
+            text = { Text(text = "Add a vehicle", Modifier.weight(1f)) },
             trailingIcon = { Icon(Icons.Filled.AddCircle, contentDescription = null) },
             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
             onClick = { onAskNewVehicle(); onDismissRequest() },
+            modifier = Modifier.testTag("add_vehicle")
         )
     }
 }
@@ -141,21 +144,24 @@ private fun AddVehicle(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
-        title = { Text(text = "Add a new car") },
+        title = { Text(text = "Add a new vehicle") },
         text = {
             Column(modifier = Modifier.selectableGroup()) {
                 OutlinedTextField(
-                    label = { Text(text = "Car name") },
+                    label = { Text(text = "Vehicle name") },
                     value = vehicleName,
                     onValueChange = { vehicleName = it },
                     singleLine = true,
-                    modifier = Modifier.focusRequester(focusRequester)
+                    modifier = Modifier
+                        .testTag("vehicle_name")
+                        .focusRequester(focusRequester)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Vehicle.Kind.values().forEach { kind ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
+                            .testTag(kind.name)
                             .padding(8.dp)
                             .selectable(
                                 selected = currentKind == kind,
@@ -165,7 +171,7 @@ private fun AddVehicle(
                     ) {
                         RadioButton(
                             selected = currentKind == kind,
-                            onClick = null
+                            onClick = null,
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(

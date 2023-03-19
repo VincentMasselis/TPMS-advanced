@@ -13,7 +13,7 @@ CREATE TABLE Vehicle(
     lowTemp REAL AS Temperature NOT NULL DEFAULT 20,
     normalTemp REAL AS Temperature NOT NULL DEFAULT 45,
     highTemp REAL AS Temperature NOT NULL DEFAULT 90,
-    kind TEXT AS Kind NOT NULL DEFAULT "Car"
+    kind TEXT AS Kind NOT NULL DEFAULT "CAR"
 );
 
 -- This succession of triggers ensure there is always exactly 1 car with isFavourite set to 1

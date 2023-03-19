@@ -3,7 +3,7 @@ import java.util.UUID;
 
 ALTER TABLE Car RENAME TO Vehicle;
 
-ALTER TABLE Vehicle ADD kind TEXT NOT NULL DEFAULT "Car";
+ALTER TABLE Vehicle ADD kind TEXT NOT NULL DEFAULT "CAR";
 
 PRAGMA foreign_keys=off;
 
