@@ -31,7 +31,7 @@ dependencies {
     api 'com.google.android.material:material:1.8.0'
     // Integration with activities
     api 'androidx.activity:activity-compose:1.6.1'
-    api "androidx.fragment:fragment:1.5.5"
+    api "androidx.fragment:fragment-ktx:1.5.5"
     // Layout
     api "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     // Navigation

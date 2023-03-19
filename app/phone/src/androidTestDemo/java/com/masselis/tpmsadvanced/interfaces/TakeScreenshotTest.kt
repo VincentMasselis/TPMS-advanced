@@ -8,7 +8,16 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleAddButton
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleKindRadio
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleTextField
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownMenu
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.MOTORCYCLE
+import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.settings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
@@ -33,16 +42,15 @@ internal class TakeScreenshotTest {
 
     @Before
     fun setup() = runTest {
-        composeTestRule.onNodeWithTag("vehicle_dropdown").performClick()
+        composeTestRule.onNodeWithTag(dropdownMenu).performClick()
         try {
-            composeTestRule.onNodeWithTag("Motorcycle").assertExists()
-            composeTestRule.onNodeWithTag("vehicle_dropdown").performClick()
+            composeTestRule.onNodeWithTag(dropdownEntry("Motorcycle")).assertExists()
+            composeTestRule.onNodeWithTag(dropdownMenu).performClick()
         } catch (_: AssertionError) {
-            composeTestRule.onNodeWithTag("add_vehicle").performClick()
-            composeTestRule.onNodeWithTag("vehicle_name").performTextInput("Motorcycle")
-            composeTestRule.onNodeWithTag(Vehicle.Kind.MOTORCYCLE.name).performClick()
-            composeTestRule.onNodeWithText("Add").performClick()
-            //delay(1.seconds)
+            composeTestRule.onNodeWithTag(dropdownEntryAddVehicle).performClick()
+            composeTestRule.onNodeWithTag(dialogAddVehicleTextField).performTextInput("Motorcycle")
+            composeTestRule.onNodeWithTag(dialogAddVehicleKindRadio(MOTORCYCLE)).performClick()
+            composeTestRule.onNodeWithTag(dialogAddVehicleAddButton).performClick()
         }
     }
 
@@ -71,13 +79,13 @@ internal class TakeScreenshotTest {
         }
         delay(500.milliseconds)
         capture("${prefix}main")
-        composeTestRule.onNodeWithTag("settings").performClick()
+        composeTestRule.onNodeWithTag(settings).performClick()
         delay(500.milliseconds)
         capture("${prefix}settings")
     }
 
     private fun chooseVehicle(name: String) {
-        composeTestRule.onNodeWithTag("vehicle_dropdown").performClick()
-        composeTestRule.onNodeWithTag(name).performClick()
+        composeTestRule.onNodeWithTag(dropdownMenu).performClick()
+        composeTestRule.onNodeWithTag(dropdownEntry(name)).performClick()
     }
 }

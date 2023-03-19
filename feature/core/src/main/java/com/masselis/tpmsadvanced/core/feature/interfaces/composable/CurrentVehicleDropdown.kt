@@ -41,6 +41,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleKindRadio
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleTextField
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownMenu
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
@@ -71,7 +76,7 @@ internal fun CurrentVehicleDropdown(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier.testTag("vehicle_dropdown")
+        modifier.testTag(dropdownMenu)
     ) {
         Row(
             verticalAlignment = Alignment.Bottom,
@@ -110,15 +115,15 @@ private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
         onDismissRequest = onDismissRequest,
         modifier = modifier.exposedDropdownSize(false)
     ) {
-        vehicleList.forEach { currentVehicle ->
+        vehicleList.forEach { vehicle ->
             DropdownMenuItem(
-                text = { Text(currentVehicle.name, Modifier.weight(1f)) },
+                text = { Text(vehicle.name, Modifier.weight(1f)) },
                 contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                 onClick = {
-                    onNewCurrent(currentVehicle)
+                    onNewCurrent(vehicle)
                     onDismissRequest()
                 },
-                modifier = Modifier.testTag(currentVehicle.name)
+                modifier = Modifier.testTag(dropdownEntry(vehicle.name))
             )
         }
         DropdownMenuItem(
@@ -126,7 +131,7 @@ private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
             trailingIcon = { Icon(Icons.Filled.AddCircle, contentDescription = null) },
             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
             onClick = { onAskNewVehicle(); onDismissRequest() },
-            modifier = Modifier.testTag("add_vehicle")
+            modifier = Modifier.testTag(dropdownEntryAddVehicle)
         )
     }
 }
@@ -153,7 +158,7 @@ private fun AddVehicle(
                     onValueChange = { vehicleName = it },
                     singleLine = true,
                     modifier = Modifier
-                        .testTag("vehicle_name")
+                        .testTag(dialogAddVehicleTextField)
                         .focusRequester(focusRequester)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -161,7 +166,7 @@ private fun AddVehicle(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .testTag(kind.name)
+                            .testTag(dialogAddVehicleKindRadio(kind))
                             .padding(8.dp)
                             .selectable(
                                 selected = currentKind == kind,
@@ -200,4 +205,14 @@ private fun AddVehicle(
         delay(200)
         focusRequester.requestFocus()
     }
+}
+
+public object CurrentVehicleDropdownTags {
+    public const val dropdownMenu: String = "vehicle_dropdown"
+    public fun dropdownEntry(vehicleName: String): String = "dropdown_entry_$vehicleName"
+    public const val dropdownEntryAddVehicle: String = "dropdown_item_add_vehicle"
+    public const val dialogAddVehicleTextField: String = "dialog_add_vehicle_text_field"
+    public fun dialogAddVehicleKindRadio(kind: Vehicle.Kind): String =
+        "dialog_add_vehicle_kind_radio_${kind.name}"
+    public const val dialogAddVehicleAddButton: String = "dialog_add_vehicle_add_button"
 }

@@ -27,6 +27,7 @@ import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdown
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Vehicle
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
+import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.settings
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -106,7 +107,7 @@ private fun TopAppBar() {
                     }
                     IconButton(
                         onClick = { navController.navigate(Paths.Settings.path) },
-                        Modifier.testTag("settings")
+                        Modifier.testTag(settings)
                     ) {
                         Icon(
                             ImageBitmap.imageResource(R.drawable.ic_car_cog_black_24dp),
@@ -133,4 +134,8 @@ internal sealed class Paths(val path: String) {
             else -> throw IllegalArgumentException("Unknown path $string")
         }
     }
+}
+
+public object HomeTags {
+    public const val settings: String = "home_settings"
 }
