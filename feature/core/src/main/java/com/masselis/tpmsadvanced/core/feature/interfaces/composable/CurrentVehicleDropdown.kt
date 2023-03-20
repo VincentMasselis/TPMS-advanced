@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleAddButton
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleKindRadio
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleTextField
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
@@ -197,7 +198,8 @@ private fun AddVehicle(
             TextButton(
                 enabled = vehicleName.isBlank().not() && currentKind != null,
                 onClick = { onVehicleAdd(vehicleName, currentKind!!) },
-                content = { Text(text = "Add") }
+                content = { Text(text = "Add") },
+                modifier = Modifier.testTag(dialogAddVehicleAddButton)
             )
         }
     )
