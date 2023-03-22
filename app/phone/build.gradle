@@ -62,9 +62,10 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
+    implementation(project(":core:debug-ui"))
+    implementation(project(":data:app"))
     implementation(project(":feature:core"))
     implementation(project(":feature:qrcode"))
-    implementation(project(":core:debug-ui"))
 
     testImplementation(project(":core:test"))
     androidTestUtil 'androidx.test.services:test-services:1.4.2'

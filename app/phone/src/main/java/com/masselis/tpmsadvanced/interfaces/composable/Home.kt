@@ -1,5 +1,9 @@
 package com.masselis.tpmsadvanced.interfaces.composable
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -12,12 +16,30 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,15 +49,40 @@ import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdown
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Vehicle
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
+import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.settings
+import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent
+import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel.SpotlightEvent
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
+import kotlinx.coroutines.channels.consumeEach
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun Home() {
+internal fun Home(
+    viewModel: HomeViewModel = viewModel {
+        AppPhoneComponent.homeViewModel.build(createSavedStateHandle())
+    }
+) {
     CompositionLocalProvider(LocalHomeNavController provides rememberNavController()) {
+        var offsetToFocus by remember { mutableStateOf<Offset?>(null) }
+        var showCarListDropdownSpotlight by remember { mutableStateOf(false) }
         Scaffold(
-            topBar = { TopAppBar() },
+            topBar = {
+                TopAppBar(
+                    titleModifier = Modifier.onGloballyPositioned { coordinates ->
+                        if (offsetToFocus != null) return@onGloballyPositioned
+                        coordinates.positionInRoot()
+                            .takeIf { it != Offset.Unspecified }
+                            ?.let { topLeft ->
+                                Offset(
+                                    topLeft.x + coordinates.size.width.div(2),
+                                    topLeft.y + coordinates.size.height.div(2)
+                                )
+                            }
+                            ?.also { offsetToFocus = it }
+                    },
+                )
+            },
             content = { paddingValues ->
                 NavHost(
                     navController = LocalHomeNavController.current as NavHostController,
@@ -56,13 +103,46 @@ internal fun Home() {
                 }
             }
         )
+        if (offsetToFocus != null)
+            AnimatedVisibility(
+                visible = showCarListDropdownSpotlight,
+                enter = fadeIn(spring(0f)),
+                exit = fadeOut()
+            ) {
+                with(LocalDensity.current) {
+                    Spotlight(
+                        center = offsetToFocus!!,
+                        radius = 100.dp.toPx(),
+                        text = AnnotatedString("Something new is waiting for you here,\nclick on \"Add a vehicle ⊕\""),
+                        textPadding = 8.dp.toPx(),
+                        textStyle = TextStyle.Default.copy(
+                            color = Color.White,
+                            fontSize = 21.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        ),
+                        onSpotlight = { showCarListDropdownSpotlight = false }
+                    )
+                }
+            }
+        LaunchedEffect("EVENT") {
+            viewModel.eventChannel.consumeEach {
+                when (it) {
+                    SpotlightEvent.CarListDropdown ->
+                        showCarListDropdownSpotlight = true
+                }
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("LongMethod")
 @Composable
-private fun TopAppBar() {
+private fun TopAppBar(
+    modifier: Modifier = Modifier,
+    titleModifier: Modifier = Modifier,
+) {
     val navController = LocalHomeNavController.current
     val currentPath = navController.currentBackStackEntryAsState()
         .value
@@ -72,7 +152,7 @@ private fun TopAppBar() {
     CenterAlignedTopAppBar(
         title = {
             when (currentPath) {
-                Paths.Home -> CurrentVehicleDropdown()
+                Paths.Home -> CurrentVehicleDropdown(titleModifier)
                 Paths.Settings -> Text(text = "Settings")
                 Paths.QrCode, null -> {}
             }
@@ -117,7 +197,8 @@ private fun TopAppBar() {
                 }
                 Paths.Settings, Paths.QrCode, null -> {}
             }
-        }
+        },
+        modifier = modifier
     )
 }
 

@@ -1,5 +1,4 @@
 @file:Suppress("NAME_SHADOWING")
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
@@ -46,7 +45,6 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleTextField
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownMenu
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
@@ -64,6 +62,7 @@ public fun CurrentVehicleDropdown(
     })
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CurrentVehicleDropdown(
     modifier: Modifier = Modifier,
@@ -77,7 +76,8 @@ internal fun CurrentVehicleDropdown(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier.testTag(dropdownMenu)
+        modifier = modifier
+            .testTag(CurrentVehicleDropdownTags.dropdownMenu)
     ) {
         Row(
             verticalAlignment = Alignment.Bottom,
@@ -101,6 +101,7 @@ internal fun CurrentVehicleDropdown(
         )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("NAME_SHADOWING")
 @Composable
 private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
@@ -137,6 +138,7 @@ private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("LongMethod")
 @Composable
 private fun AddVehicle(
@@ -216,5 +218,6 @@ public object CurrentVehicleDropdownTags {
     public const val dialogAddVehicleTextField: String = "dialog_add_vehicle_text_field"
     public fun dialogAddVehicleKindRadio(kind: Vehicle.Kind): String =
         "dialog_add_vehicle_kind_radio_${kind.name}"
+
     public const val dialogAddVehicleAddButton: String = "dialog_add_vehicle_add_button"
 }
