@@ -26,7 +26,7 @@ internal abstract class VehicleComponent {
         fun build(@BindsInstance @Named("base") vehicle: Vehicle): VehicleComponent
     }
 
-    @Scope
+    @javax.inject.Scope
     annotation class Scope
 
     protected abstract val findTyreComponentUseCase: FindTyreComponentUseCase

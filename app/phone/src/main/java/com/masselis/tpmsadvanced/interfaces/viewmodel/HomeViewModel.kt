@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 internal class HomeViewModel @AssistedInject constructor(
     noveltyUseCase: NoveltyUseCase,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    @Suppress("UnusedPrivateMember") @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     @AssistedFactory

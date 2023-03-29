@@ -57,6 +57,7 @@ import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel.SpotlightEve
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
 import kotlinx.coroutines.channels.consumeEach
 
+@Suppress("LongMethod")
 @Composable
 internal fun Home(
     viewModel: HomeViewModel = viewModel {

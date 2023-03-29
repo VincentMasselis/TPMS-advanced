@@ -12,6 +12,7 @@ internal class NoveltyUseCase @Inject constructor(
 
     fun consumeShowCarKind(): Boolean = with(appPreferences) {
         // Current version targets the right version code
+        @Suppress("MagicNumber")
         runningVersionCode == 1020L
                 // Current apk is an update
                 && isFreshInstallation.not()

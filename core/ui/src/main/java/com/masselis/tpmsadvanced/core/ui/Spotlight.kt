@@ -30,7 +30,6 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
@@ -38,6 +37,8 @@ import kotlin.math.ceil
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
+
+@Suppress("LongMethod")
 @OptIn(ExperimentalTextApi::class)
 @Composable
 public fun Spotlight(
@@ -156,8 +157,10 @@ private fun PreviewSpotlightLongText() {
             .background(Color.Cyan)
     ) {
         with(LocalDensity.current) {
-            val string =
-                remember { AnnotatedString("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") }
+            val string = remember {
+                @Suppress("MaxLineLength")
+                AnnotatedString("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+            }
             Spotlight(
                 center = Offset(50.dp.toPx(), 100.dp.toPx()),
                 radius = 50.dp.toPx(),
@@ -170,41 +173,3 @@ private fun PreviewSpotlightLongText() {
         }
     }
 }
-
-/*
-@Preview
-@Composable
-private fun PreviewSpotlightPlaced() {
-    SubcomposeLayout(
-        Modifier
-            .fillMaxSize()
-            .background(Color.Cyan)
-    ) { constraints ->
-        val sourcePlaceable = subcompose(SlotsEnum.Main) {
-            Text(
-                text = "Focus on me",
-                modifier = Modifier.offset(250.dp, 250.dp)
-            )
-        }.map { it.measure(constraints) }.last()
-
-        val spotlightPlaceable = subcompose(SlotsEnum.Dependent) {
-            with(LocalDensity.current) {
-                val string = remember { AnnotatedString("Check this out") }
-                Spotlight(
-                    center = Offset(100.dp.toPx(), 100.dp.toPx()),
-                    radius = 50.dp.toPx(),
-                    text = string,
-                    textPadding = 8.dp.toPx(),
-                    textStyle = TextStyle.Default.copy(fontWeight = FontWeight.Bold),
-                )
-            }
-        }.map { it.measure(constraints) }.last()
-
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            sourcePlaceable.place(0, 0)
-            spotlightPlaceable.place(0, 0)
-        }
-    }
-}
-
-private enum class SlotsEnum { Main, Dependent }*/

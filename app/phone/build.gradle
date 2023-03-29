@@ -28,7 +28,7 @@ android {
         namespace 'com.masselis.tpmsadvanced'
 
         versionCode tpmsAdvancedVersionCode()
-        versionName "1.0"
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // The next line enables the ability to store files when capturing screenshots

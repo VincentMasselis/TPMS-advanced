@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.core.feature.ioc.TyreScope
+import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
 import com.masselis.tpmsadvanced.data.car.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
@@ -24,7 +24,7 @@ import javax.inject.Named
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
-@TyreScope
+@TyreComponent.Scope
 public class TyreUseCaseImpl @Inject internal constructor(
     @Named("base") private val vehicle: Vehicle,
     private val locations: Set<SensorLocation>,

@@ -29,7 +29,7 @@ internal class VehicleUseCase @Inject constructor(
     init {
         database
             .selectByUuid(vehicle.uuid)
-            .onEach { mutableStateFlow.value }
+            .onEach { mutableStateFlow.value = it }
             .launchIn(scope)
     }
 
