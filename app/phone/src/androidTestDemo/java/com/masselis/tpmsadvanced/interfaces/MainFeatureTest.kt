@@ -60,7 +60,7 @@ internal class MainFeatureTest {
             settings {
                 assert(isClearFavouritesEnabled())
                 clearFavourites()
-                assert(isClearFavouritesEnabled().not())
+                composeTestRule.waitUntil { isClearFavouritesEnabled().not() }
                 leave()
             }
             dropdownMenu {

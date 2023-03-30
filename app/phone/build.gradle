@@ -83,7 +83,7 @@ tasks.whenTaskAdded { instrumentedTestTask ->
         task clearScreenshotPhoneFolder(type: Exec) {
             description = 'Clears the phone\'s screenshot folder'
             instrumentedTestTask.dependsOn clearScreenshotPhoneFolder
-            commandLine 'adb', 'shell', 'rm -rf /sdcard/googletest/test_outputfiles'
+            commandLine android.getAdbExe(), 'shell', 'rm -rf /sdcard/googletest/test_outputfiles'
         }
         task downloadScreenshots(type: Exec) {
             dependsOn instrumentedTestTask
@@ -92,7 +92,7 @@ tasks.whenTaskAdded { instrumentedTestTask ->
                 delete layout.buildDirectory.dir("test_outputfiles")
                 mkdir layout.buildDirectory.dir("test_outputfiles")
             }
-            commandLine 'adb', 'pull', '/sdcard/googletest/test_outputfiles', "$buildDir"
+            commandLine android.getAdbExe(), 'pull', '/sdcard/googletest/test_outputfiles', "$buildDir"
         }
         task copyScreenshot(type: Copy) {
             dependsOn downloadScreenshots

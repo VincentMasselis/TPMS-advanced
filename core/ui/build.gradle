@@ -15,7 +15,7 @@ android {
 
 dependencies {
     api project(":core:common")
-    api "androidx.savedstate:savedstate-ktx:1.2.0"
+    api "androidx.savedstate:savedstate-ktx:1.2.1"
     api "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     api "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     api "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
@@ -27,11 +27,11 @@ dependencies {
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     api "androidx.compose.foundation:foundation"
     // Material Design
-    api 'androidx.compose.material3:material3:1.1.0-alpha08'
+    api 'androidx.compose.material3:material3:1.1.0-beta01'
     api 'com.google.android.material:material:1.8.0'
     // Integration with activities
-    api 'androidx.activity:activity-compose:1.6.1'
-    api "androidx.fragment:fragment-ktx:1.5.5"
+    api 'androidx.activity:activity-compose:1.7.0'
+    api "androidx.fragment:fragment-ktx:1.5.6"
     // Layout
     api "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     // Navigation
