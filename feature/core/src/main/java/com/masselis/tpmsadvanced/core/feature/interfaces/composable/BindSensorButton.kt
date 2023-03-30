@@ -16,10 +16,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags.Button.tag
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags.Dialog.addToFavoritesTag
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags.Dialog.cancelTag
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
@@ -40,7 +44,7 @@ internal fun BindSensorButton(
 ) {
     val state by viewModel.stateFlow.collectAsState(State.Empty)
     var bondRequest by remember { mutableStateOf<State.RequestBond?>(null) }
-    Box(modifier = modifier) {
+    Box(modifier = modifier.testTag(tag(manySensor))) {
         when (val state = state) {
             State.Empty -> {}
             is State.RequestBond ->
@@ -57,7 +61,7 @@ internal fun BindSensorButton(
     if (bondRequest != null)
         BindSensorDialog(
             bondRequest = bondRequest!!,
-            onBind = { viewModel.bind() ; bondRequest = null},
+            onBind = { viewModel.bind(); bondRequest = null },
             onDismissRequest = { bondRequest = null }
         )
 }
@@ -83,12 +87,31 @@ private fun BindSensorDialog(
             )
         },
         onDismissRequest = onDismissRequest,
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest,
+                content = { Text("Cancel") },
+                modifier = Modifier.testTag(cancelTag)
+            )
+        },
         confirmButton = {
             TextButton(
                 onClick = onBind,
-                content = { Text("Add to favorites") }
+                content = { Text("Add to favorites") },
+                modifier = Modifier.testTag(addToFavoritesTag)
             )
         }
     )
+}
+
+public object BindSensorTags {
+    public object Button {
+        public fun tag(manySensor: ManySensor): String =
+            "bindSensorButton_${manySensor.name}"
+    }
+
+    public object Dialog {
+        public const val addToFavoritesTag: String = "BindSensor_Dialog_addToFavoritesTag"
+        public const val cancelTag: String = "BindSensor_Dialog_cancel"
+    }
 }

@@ -40,9 +40,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleAddButton
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleKindRadio
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dialogAddVehicleTextField
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.addButton
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.cancelButton
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.kindRadio
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.textField
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
@@ -161,7 +162,7 @@ private fun AddVehicle(
                     onValueChange = { vehicleName = it },
                     singleLine = true,
                     modifier = Modifier
-                        .testTag(dialogAddVehicleTextField)
+                        .testTag(textField)
                         .focusRequester(focusRequester)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -169,7 +170,7 @@ private fun AddVehicle(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .testTag(dialogAddVehicleKindRadio(kind))
+                            .testTag(kindRadio(kind))
                             .padding(8.dp)
                             .selectable(
                                 selected = currentKind == kind,
@@ -195,13 +196,19 @@ private fun AddVehicle(
                 }
             }
         },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest,
+                content = { Text("Cancel") },
+                modifier = Modifier.testTag(cancelButton)
+            )
+        },
         confirmButton = {
             TextButton(
                 enabled = vehicleName.isBlank().not() && currentKind != null,
                 onClick = { onVehicleAdd(vehicleName, currentKind!!) },
                 content = { Text(text = "Add") },
-                modifier = Modifier.testTag(dialogAddVehicleAddButton)
+                modifier = Modifier.testTag(addButton)
             )
         }
     )
@@ -215,9 +222,14 @@ public object CurrentVehicleDropdownTags {
     public const val dropdownMenu: String = "vehicle_dropdown"
     public fun dropdownEntry(vehicleName: String): String = "dropdown_entry_$vehicleName"
     public const val dropdownEntryAddVehicle: String = "dropdown_item_add_vehicle"
-    public const val dialogAddVehicleTextField: String = "dialog_add_vehicle_text_field"
-    public fun dialogAddVehicleKindRadio(kind: Vehicle.Kind): String =
-        "dialog_add_vehicle_kind_radio_${kind.name}"
 
-    public const val dialogAddVehicleAddButton: String = "dialog_add_vehicle_add_button"
+    public object AddVehicle {
+        public const val textField: String = "dialog_add_vehicle_text_field"
+        public fun kindRadio(kind: Vehicle.Kind): String =
+            "dialog_add_vehicle_kind_radio_${kind.name}"
+
+        public const val addButton: String = "dialog_add_vehicle_add_button"
+        public const val cancelButton: String = "dialog_add_vehicle_cancel_button"
+
+    }
 }

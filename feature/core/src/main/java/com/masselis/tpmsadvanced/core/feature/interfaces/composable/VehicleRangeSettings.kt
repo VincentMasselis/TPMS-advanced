@@ -160,5 +160,3 @@ private fun LowTemp(
         unit = unit,
     ) { showLowTempDialog = false }
 }
-
-

@@ -4,21 +4,21 @@ import androidx.compose.runtime.Stable
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 
 @Stable
-internal sealed interface ManySensor {
-    val name: String
+public sealed interface ManySensor {
+    public val name: String
 
     @JvmInline
-    value class Located(val location: SensorLocation) : ManySensor {
+    public value class Located(public val location: SensorLocation) : ManySensor {
         override val name: String get() = location.name
     }
 
     @JvmInline
-    value class Axle(val axle: SensorLocation.Axle) : ManySensor {
+    public value class Axle(public val axle: SensorLocation.Axle) : ManySensor {
         override val name: String get() = axle.name
     }
 
     @JvmInline
-    value class Side(val side: SensorLocation.Side) : ManySensor {
+    public value class Side(public val side: SensorLocation.Side) : ManySensor {
         override val name: String get() = side.name
     }
 }

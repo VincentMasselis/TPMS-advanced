@@ -19,6 +19,7 @@ internal class DeleteVehicleUseCase @Inject constructor(
     suspend fun delete() {
         database.setIsCurrent(database.selectAll().first { it.uuid != vehicle.uuid }.uuid, true)
         GlobalScope.launch {
+            database.prepareDelete(vehicle.uuid)
             delay(1.seconds)
             database.delete(vehicle.uuid)
         }

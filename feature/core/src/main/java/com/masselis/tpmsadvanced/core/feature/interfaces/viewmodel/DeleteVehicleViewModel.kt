@@ -4,12 +4,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.DeleteVehicleUseCase
-import com.masselis.tpmsadvanced.core.feature.usecase.VehicleCountUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleCountStateFlowUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleStateFlowUseCase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -18,9 +21,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 internal class DeleteVehicleViewModel @AssistedInject constructor(
-    private val vehicleStateFlowUseCase: VehicleStateFlowUseCase,
     private val deleteVehicleUseCase: DeleteVehicleUseCase,
-    vehicleCountUseCase: VehicleCountUseCase,
+    vehicleStateFlowUseCase: VehicleStateFlowUseCase,
+    vehicleCountStateFlowUseCase: VehicleCountStateFlowUseCase,
     @Suppress("UNUSED_PARAMETER") @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -30,22 +33,27 @@ internal class DeleteVehicleViewModel @AssistedInject constructor(
     }
 
     sealed class State {
-        object Loading : State()
-        data class NotDeletableVehicle(val vehicle: Vehicle) : State()
-        data class DeletableVehicle(val vehicle: Vehicle) : State()
-        object Leave : State()
+        abstract val vehicle: Vehicle
+
+        data class NotDeletableVehicle(override val vehicle: Vehicle) : State()
+        data class DeletableVehicle(override val vehicle: Vehicle) : State()
     }
 
-    private val mutableStateFlow = MutableStateFlow<State>(State.Loading)
+    sealed class Event {
+        object Leave : Event()
+    }
+
+    private val mutableStateFlow = MutableStateFlow(
+        computeState(vehicleStateFlowUseCase.value, vehicleCountStateFlowUseCase.value)
+    )
     val stateFlow = mutableStateFlow.asStateFlow()
 
+    private val channel = Channel<Event>(BUFFERED)
+    val eventChannel = channel as ReceiveChannel<Event>
+
     init {
-        combine(vehicleStateFlowUseCase, vehicleCountUseCase.count()) { vehicle, count ->
-            when (count) {
-                1 -> State.NotDeletableVehicle(vehicle)
-                else -> State.DeletableVehicle(vehicle)
-            }
-        }.onEach { mutableStateFlow.value = it }
+        combine(vehicleStateFlowUseCase, vehicleCountStateFlowUseCase, ::computeState)
+            .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)
     }
 
@@ -54,7 +62,12 @@ internal class DeleteVehicleViewModel @AssistedInject constructor(
             if (stateFlow.value !is State.DeletableVehicle)
                 return@launch
             deleteVehicleUseCase.delete()
-            mutableStateFlow.value = State.Leave
+            channel.send(Event.Leave)
         }
+    }
+
+    private fun computeState(vehicle: Vehicle, count: Long) = when (count) {
+        1L -> State.NotDeletableVehicle(vehicle)
+        else -> State.DeletableVehicle(vehicle)
     }
 }

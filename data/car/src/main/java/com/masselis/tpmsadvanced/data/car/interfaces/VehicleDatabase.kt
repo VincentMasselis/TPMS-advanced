@@ -71,6 +71,10 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         queries.updateHighTemp(highTemp, uuid)
     }
 
+    public suspend fun prepareDelete(uuid: UUID): Unit = withContext(IO) {
+        queries.updateIsDeleting(true, uuid)
+    }
+
     public suspend fun delete(uuid: UUID): Unit = withContext(IO) {
         queries.delete(uuid)
     }
@@ -80,6 +84,10 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         .mapToOne(IO)
 
     public fun currentVehicle(): Vehicle = queries.currentFavourite(mapper).executeAsOne()
+
+    public fun count(): Long = queries.count().executeAsOne()
+
+    public fun countFlow(): Flow<Long> = queries.count().asFlow().mapToOne(IO)
 
     public fun selectAllFlow(): Flow<List<Vehicle>> = queries.selectAll(mapper)
         .asFlow()
@@ -107,9 +115,10 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
             Temperature,
             Temperature,
             Temperature,
-            Vehicle.Kind
+            Vehicle.Kind,
+            Boolean,
         ) -> Vehicle =
-            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind ->
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _ ->
                 Vehicle(
                     uuid,
                     kind,

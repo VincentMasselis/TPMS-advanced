@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
 }
-apply from : "${project.rootDir}/gradle/dagger.gradle"
+apply from: "${project.rootDir}/gradle/dagger.gradle"
 
 if (isDecrypted) {
     // Needs the google-services.json file to work
@@ -31,8 +31,14 @@ android {
         versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        // The next line enables the ability to store files when capturing screenshots
-        testInstrumentationRunnerArguments useTestStorageService: 'true'
+        // `useTestStorageService` enables the ability to store files when capturing screenshots.
+        // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
+        // each test invocation. This command ensures that the app's state is completely cleared
+        // between tests.
+        testInstrumentationRunnerArguments useTestStorageService: 'true', clearPackageData: 'true'
+        testOptions {
+            execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        }
     }
     signingConfigs {
         if (isDecrypted)
