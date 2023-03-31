@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.interfaces
 
 import android.app.UiModeManager.MODE_NIGHT_NO
 import android.app.UiModeManager.MODE_NIGHT_YES
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.*
@@ -19,12 +20,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 internal class TakeScreenshotTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule(RootActivity::class.java)
+    val composeTestRule = createAndroidComposeRule<RootActivity>()
 
     private fun capture(name: String) = composeTestRule
         .onRoot()
@@ -32,36 +32,31 @@ internal class TakeScreenshotTest {
         .asAndroidBitmap()
         .writeToTestStorage(name)
 
-    @Before
-    fun setup() {
+    @Test
+    fun lightModeScreenshots() {
         composeTestRule.home {
             dropdownMenu {
-                if (exists("Motorcycle"))
-                    close()
-                else {
-                    addVehicle {
-                        setVehicleName("Motorcycle")
-                        setKind(MOTORCYCLE)
-                        add()
-                    }
-                }
+                select("My car")
             }
+            takeScreenshots(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 
     @Test
-    fun lightModeScreenshots() = runTest {
-        chooseVehicle("My car")
-        takeScreenshots(AppCompatDelegate.MODE_NIGHT_NO)
+    fun darkModeScreenshots() {
+        composeTestRule.home {
+            dropdownMenu {
+                addVehicle {
+                    setVehicleName("Motorcycle")
+                    setKind(MOTORCYCLE)
+                    add()
+                }
+            }
+            takeScreenshots(AppCompatDelegate.MODE_NIGHT_YES)
+        }
     }
 
-    @Test
-    fun darkModeScreenshots() = runTest {
-        chooseVehicle("Motorcycle")
-        takeScreenshots(AppCompatDelegate.MODE_NIGHT_YES)
-    }
-
-    private suspend fun takeScreenshots(@AppCompatDelegate.NightMode mode: Int) = runTest {
+    private fun Home.takeScreenshots(@AppCompatDelegate.NightMode mode: Int) {
         composeTestRule.activityRule.scenario.apply {
             onActivity {
                 AppCompatDelegate.setDefaultNightMode(mode)
@@ -73,22 +68,11 @@ internal class TakeScreenshotTest {
             MODE_NIGHT_YES -> "dark_"
             else -> throw IllegalArgumentException()
         }
-        delay(500.milliseconds)
         capture("${prefix}main")
-        composeTestRule.home {
-            settings {
-                composeTestRule.waitForIdle()
-                capture("${prefix}settings")
-                leave()
-            }
-        }
-    }
-
-    private fun chooseVehicle(name: String) {
-        composeTestRule.home {
-            dropdownMenu {
-                select(name)
-            }
+        settings {
+            composeTestRule.waitForIdle()
+            capture("${prefix}settings")
+            leave()
         }
     }
 }

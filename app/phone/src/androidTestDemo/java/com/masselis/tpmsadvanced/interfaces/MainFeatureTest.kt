@@ -4,7 +4,10 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.masselis.tpmsadvanced.core.feature.model.ManySensor
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.CAR
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.interfaces.Home.Companion.home
 import org.junit.Rule
 import org.junit.Test
@@ -14,7 +17,7 @@ import org.junit.runner.RunWith
 internal class MainFeatureTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule(RootActivity::class.java)
+    val composeTestRule = createAndroidComposeRule<RootActivity>()
 
     @Test
     fun mainFeatures() {
@@ -31,14 +34,14 @@ internal class MainFeatureTest {
             dropdownMenu {
                 addVehicle {
                     setVehicleName("Car")
-                    setKind(Vehicle.Kind.CAR)
+                    setKind(CAR)
                     add()
                 }
             }
             dropdownMenu {
                 addVehicle {
                     setVehicleName("Motorcycle")
-                    setKind(Vehicle.Kind.MOTORCYCLE)
+                    setKind(MOTORCYCLE)
                     add()
                 }
             }
@@ -49,14 +52,14 @@ internal class MainFeatureTest {
             dropdownMenu {
                 select("Car")
             }
-            assert(isBindSensorAvailable(ManySensor.Located(SensorLocation.FRONT_LEFT)))
-            bindSensorDialog(ManySensor.Located(SensorLocation.FRONT_LEFT)) {
+            assert(isBindSensorAvailable(ManySensor.Located(FRONT_LEFT)))
+            bindSensorDialog(ManySensor.Located(FRONT_LEFT)) {
                 cancel()
             }
-            bindSensorDialog(ManySensor.Located(SensorLocation.FRONT_LEFT)) {
+            bindSensorDialog(ManySensor.Located(FRONT_LEFT)) {
                 addToFavorites()
             }
-            assert(isBindSensorAvailable(ManySensor.Located(SensorLocation.FRONT_LEFT)).not())
+            assert(isBindSensorAvailable(ManySensor.Located(FRONT_LEFT)).not())
             settings {
                 assert(isClearFavouritesEnabled())
                 clearFavourites()

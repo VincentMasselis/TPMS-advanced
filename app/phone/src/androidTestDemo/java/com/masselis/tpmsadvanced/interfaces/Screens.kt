@@ -24,7 +24,6 @@ internal class Home private constructor(
 
     fun dropdownMenu(block: DropdownMenu.() -> Unit) {
         dropdownMenu.performClick()
-        composeTestRule.waitForIdle()
         DropdownMenu().block()
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(dropdownEntryAddVehicle).assertDoesNotExist()
@@ -33,9 +32,12 @@ internal class Home private constructor(
     inner class DropdownMenu {
         private val addVehicle get() = composeTestRule.onNodeWithTag(dropdownEntryAddVehicle)
 
+        init {
+            composeTestRule.waitUntilExactlyOneExists(hasTestTag(dropdownEntryAddVehicle))
+        }
+
         fun addVehicle(block: AddVehicle.() -> Unit) {
             addVehicle.performClick()
-            composeTestRule.waitForIdle()
             AddVehicle().block()
             composeTestRule.waitForIdle()
             addVehicle.assertDoesNotExist()
@@ -58,6 +60,10 @@ internal class Home private constructor(
                 get() = composeTestRule.onNodeWithTag(CurrentVehicleDropdownTags.AddVehicle.addButton)
             private val cancelButton
                 get() = composeTestRule.onNodeWithTag(CurrentVehicleDropdownTags.AddVehicle.cancelButton)
+
+            init {
+                composeTestRule.waitUntilExactlyOneExists(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.addButton))
+            }
 
             fun setVehicleName(name: String) {
                 textField.performTextInput(name)
@@ -89,7 +95,6 @@ internal class Home private constructor(
 
     fun bindSensorDialog(manySensor: ManySensor, block: BindSensorDialog.() -> Unit) {
         bindSensorButton(manySensor).performClick()
-        composeTestRule.waitForIdle()
         BindSensorDialog().block()
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(BindSensorTags.Dialog.addToFavoritesTag)
@@ -101,6 +106,10 @@ internal class Home private constructor(
             get() = composeTestRule.onNodeWithTag(BindSensorTags.Dialog.addToFavoritesTag)
         private val cancelTag
             get() = composeTestRule.onNodeWithTag(BindSensorTags.Dialog.cancelTag)
+
+        init {
+            composeTestRule.waitUntilExactlyOneExists(hasTestTag(BindSensorTags.Dialog.addToFavoritesTag))
+        }
 
         fun addToFavorites() = addToFavoritesTag.performClick()
         fun cancel() = cancelTag.performClick()
@@ -120,17 +129,19 @@ internal class Home private constructor(
             get() = composeTestRule.onNodeWithTag(ClearBoundSensorsButtonTags.tag)
 
         fun deleteVehicle(block: DeleteVehicleDialog.() -> Unit) {
+            deleteVehicleButton.performScrollTo()
             deleteVehicleButton.performClick()
-            composeTestRule.waitForIdle()
             DeleteVehicleDialog().block()
-            composeTestRule.waitForIdle()
             composeTestRule.waitUntilDoesNotExist(hasTestTag(DeleteVehicleButtonTags.Dialog.delete))
         }
 
         fun isVehicleDeleteEnabled() =
             deleteVehicleButton.check(isEnabled())
 
-        fun clearFavourites() = clearFavouritesButton.performClick()
+        fun clearFavourites() {
+            clearFavouritesButton.performScrollTo()
+            clearFavouritesButton.performClick()
+        }
 
         fun isClearFavouritesEnabled() = clearFavouritesButton.check(isEnabled())
 
@@ -141,6 +152,10 @@ internal class Home private constructor(
                 get() = composeTestRule.onNodeWithTag(DeleteVehicleButtonTags.Dialog.delete)
             private val cancelButton
                 get() = composeTestRule.onNodeWithTag(DeleteVehicleButtonTags.Dialog.cancel)
+
+            init {
+                composeTestRule.waitUntilExactlyOneExists(hasTestTag(DeleteVehicleButtonTags.Dialog.delete))
+            }
 
             fun delete() = deleteButton.performClick()
 
