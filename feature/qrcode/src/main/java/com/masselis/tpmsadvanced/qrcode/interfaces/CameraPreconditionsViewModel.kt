@@ -44,7 +44,7 @@ internal class CameraPreconditionsViewModel @AssistedInject constructor(
 
     init {
         trigger
-            .map {
+            .map { _ ->
                 qrCodeAnalyserUseCase.missingPermission()
                     ?.let { State.MissingPermission(it) }
                     ?: State.Ready

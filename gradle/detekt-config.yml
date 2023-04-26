@@ -23,3 +23,9 @@ complexity:
       - 'Composable'
   TooManyFunctions:
     ignorePrivate: true
+potential-bugs:
+  UnsafeCallOnNullableType:
+    active: false
+coroutines:
+  InjectDispatcher:
+    active: false

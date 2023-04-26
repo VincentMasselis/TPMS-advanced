@@ -2,7 +2,7 @@ subprojects {
     // Detekt configuration
     plugins.apply 'io.gitlab.arturbosch.detekt'
     detekt {
-        buildUponDefaultConfig = true
+        buildUponDefaultConfig = true // Merges the default detekt conf file with detekt-config.yml
         config = files("${rootProject.rootDir}/gradle/detekt-config.yml")
     }
 
@@ -17,8 +17,7 @@ subprojects {
                     targetSdk 33
 
                     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-                    if (plugins.hasPlugin("com.android.library"))
-                        consumerProguardFiles "consumer-rules.pro"
+                    if (plugins.hasPlugin("com.android.library")) consumerProguardFiles "consumer-rules.pro"
                 }
                 compileOptions {
                     sourceCompatibility JavaVersion.VERSION_11
@@ -53,7 +52,7 @@ subprojects {
                 }
                 if (buildFeatures.compose == true) {
                     dependencies {
-                        lintChecks("com.slack.lint.compose:compose-lint-checks:1.1.1")
+                        lintChecks("com.slack.lint.compose:compose-lint-checks:1.2.0")
                     }
                 }
                 packagingOptions {

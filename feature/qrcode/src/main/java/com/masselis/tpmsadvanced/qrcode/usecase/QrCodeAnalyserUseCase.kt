@@ -40,7 +40,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor(private val context: Co
     private val executor = Executors.newCachedThreadPool()
 
     @Suppress("MagicNumber")
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(FlowPreview::class)
     fun analyse(controller: CameraController) = callbackFlow<List<Barcode>> {
         controller.setImageAnalysisAnalyzer(
             executor,
@@ -58,7 +58,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor(private val context: Co
         .filter { it.valueType == Barcode.TYPE_TEXT }
         .mapNotNull { it.rawValue }
         .mapNotNull { regex.find(it)?.groupValues?.subList(1, 5) }
-        .map { it.map { it.decodeHex().toByteArray() } }
+        .map { it.map { stringHex -> stringHex.decodeHex().toByteArray() } }
         .map { idsBytes ->
             idsBytes.map { idBytes ->
                 ByteBuffer

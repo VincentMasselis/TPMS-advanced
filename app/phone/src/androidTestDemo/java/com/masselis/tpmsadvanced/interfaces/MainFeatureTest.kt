@@ -19,6 +19,7 @@ internal class MainFeatureTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<RootActivity>()
 
+    @Suppress("LongMethod")
     @Test
     fun mainFeatures() {
         composeTestRule.home {

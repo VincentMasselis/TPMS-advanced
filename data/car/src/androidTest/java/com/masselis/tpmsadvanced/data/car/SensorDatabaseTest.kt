@@ -7,7 +7,10 @@ import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.data.car.model.Sensor
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.*
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -40,7 +43,8 @@ internal class SensorDatabaseTest {
     private fun assertSensorId(id: Int, vehicleUuid: UUID, vararg location: SensorLocation) =
         assertEquals(
             id,
-            sensorQueries.selectByVehicleAndLocation(vehicleUuid, location.toList())
+            sensorQueries
+                .selectByVehicleAndLocation(vehicleUuid, location.toList())
                 .executeAsOne()
                 .id
         )

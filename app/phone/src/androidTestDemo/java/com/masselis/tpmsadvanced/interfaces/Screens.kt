@@ -1,7 +1,19 @@
+@file:Suppress("MatchingDeclarationName")
 package com.masselis.tpmsadvanced.interfaces
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.ComposeTimeoutException
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.ClearBoundSensorsButtonTags
@@ -83,6 +95,7 @@ internal class Home private constructor(
 
     private fun bindSensorButton(manySensor: ManySensor): SemanticsNodeInteraction {
         try {
+            @Suppress("MagicNumber")
             composeTestRule.waitUntil(1_000) { false }
         } catch (_: ComposeTimeoutException) {
 
@@ -101,6 +114,7 @@ internal class Home private constructor(
             .assertDoesNotExist()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     inner class BindSensorDialog {
         private val addToFavoritesTag
             get() = composeTestRule.onNodeWithTag(BindSensorTags.Dialog.addToFavoritesTag)
@@ -164,6 +178,7 @@ internal class Home private constructor(
     }
 
     companion object {
+        @Suppress("MemberNameEqualsClassName")
         internal fun ComposeTestRule.home(block: Home.() -> Unit) {
             Home(this).block()
         }
