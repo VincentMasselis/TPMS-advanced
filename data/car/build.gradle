@@ -26,7 +26,7 @@ dependencies {
     api(project(":data:record"))
 
     androidTestImplementation(project(":core:android-test"))
-    androidTestUtil 'androidx.test:orchestrator:1.4.2'
+    androidTestUtil "androidx.test:orchestrator:$testServicesVersion"
 }
 
 sqldelight {

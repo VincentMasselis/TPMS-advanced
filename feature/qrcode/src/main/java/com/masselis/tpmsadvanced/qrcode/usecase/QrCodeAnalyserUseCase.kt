@@ -14,6 +14,7 @@ import com.masselis.tpmsadvanced.data.car.model.Sensor
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.asFlow
@@ -39,7 +40,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor(private val context: Co
     private val executor = Executors.newCachedThreadPool()
 
     @Suppress("MagicNumber")
-    @OptIn(FlowPreview::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun analyse(controller: CameraController) = callbackFlow<List<Barcode>> {
         controller.setImageAnalysisAnalyzer(
             executor,

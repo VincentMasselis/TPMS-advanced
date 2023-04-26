@@ -75,7 +75,8 @@ dependencies {
     implementation(project(":feature:qrcode"))
 
     testImplementation(project(":core:test"))
-    androidTestUtil 'androidx.test.services:test-services:1.4.2'
+    androidTestUtil "androidx.test:orchestrator:$testServicesVersion"
+    androidTestUtil "androidx.test.services:test-services:$testServicesVersion"
     androidTestImplementation(project(":core:android-test"))
 }
 
