@@ -20,18 +20,12 @@ subprojects {
                     if (plugins.hasPlugin("com.android.library")) consumerProguardFiles "consumer-rules.pro"
                 }
                 compileOptions {
-                    sourceCompatibility JavaVersion.VERSION_11
-                    targetCompatibility JavaVersion.VERSION_11
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
                 }
                 if (plugins.hasPlugin("org.jetbrains.kotlin.android")) {
-                    kotlin {
-                        jvmToolchain {
-                            // Prevents gradle warnings when generating kapt stubs
-                            languageVersion.set(JavaLanguageVersion.of(11))
-                        }
-                    }
                     kotlinOptions {
-                        jvmTarget = '11'
+                        jvmTarget = JavaVersion.VERSION_17.toString()
                         freeCompilerArgs += ['-Xexplicit-api=strict', '-opt-in=kotlin.RequiresOptIn']
                     }
                 }
