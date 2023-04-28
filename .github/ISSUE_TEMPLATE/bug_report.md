@@ -28,5 +28,11 @@ If applicable, add screenshots to help explain your problem.
  - OS: [e.g. Android 12]
  - App version code [e.g. 1020, check the app's setting to find that code]
 
+**Stacktrace (if applicable)**
+The complete stacktrace of the crash if any was fired.
+```
+Copy-paste the stacktrace here
+```
+
 **Additional context**
 Add any other context about the problem here.
