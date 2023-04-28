@@ -1,5 +1,3 @@
-@file:Suppress("NAME_SHADOWING")
-
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
 import androidx.compose.foundation.layout.Column
@@ -103,7 +101,6 @@ internal fun CurrentVehicleDropdown(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("NAME_SHADOWING")
 @Composable
 private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
     isExpanded: Boolean,

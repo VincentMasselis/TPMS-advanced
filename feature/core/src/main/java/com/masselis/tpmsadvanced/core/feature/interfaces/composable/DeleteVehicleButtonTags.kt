@@ -35,7 +35,6 @@ import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import kotlinx.coroutines.channels.consumeEach
 
-@Suppress("NAME_SHADOWING")
 @Composable
 internal fun DeleteVehicleButton(
     modifier: Modifier = Modifier,

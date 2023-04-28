@@ -1,4 +1,4 @@
-@file:Suppress("NAME_SHADOWING", "LongMethod")
+@file:Suppress("LongMethod")
 
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 

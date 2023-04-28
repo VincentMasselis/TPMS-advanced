@@ -1,5 +1,3 @@
-@file:Suppress("NAME_SHADOWING")
-
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
 import androidx.compose.foundation.lazy.LazyRow

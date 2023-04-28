@@ -1,20 +1,36 @@
-@file:Suppress("NAME_SHADOWING", "LongMethod")
+@file:Suppress("LongMethod")
 
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.content.Intent.ACTION_VIEW
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.createSavedStateHandle
@@ -216,7 +232,7 @@ private fun SingleAxleTrailer(
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
-            carConst,
+            askHelp,
             tyreBox,
             tyreLeft,
             leftStats,
@@ -225,16 +241,11 @@ private fun SingleAxleTrailer(
             rightStats,
             rightBinding,
         ) = createRefs()
-        Image(
-            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-            contentDescription = null,
-            modifier = Modifier
-                .aspectRatio(208f / 462f)
-                .constrainAs(carConst) {
-                    centerTo(parent)
-                    height = Dimension.percent(.7f)
-                }
+        BackgroundImageAskHelp(
+            Modifier.constrainAs(askHelp) {
+                end.linkTo(parent.end, 8.dp)
+                bottom.linkTo(parent.bottom, 4.dp)
+            }
         )
         Box(
             Modifier
@@ -313,7 +324,7 @@ private fun Motorcycle(
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
-            carConst,
+            askHelp,
             tyreBox,
             tyreFront,
             frontStats,
@@ -322,16 +333,11 @@ private fun Motorcycle(
             rearStats,
             rearBinding,
         ) = createRefs()
-        Image(
-            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-            contentDescription = null,
-            modifier = Modifier
-                .aspectRatio(208f / 462f)
-                .constrainAs(carConst) {
-                    centerTo(parent)
-                    height = Dimension.percent(.7f)
-                }
+        BackgroundImageAskHelp(
+            Modifier.constrainAs(askHelp) {
+                end.linkTo(parent.end, 8.dp)
+                bottom.linkTo(parent.bottom, 4.dp)
+            }
         )
         Box(
             Modifier
@@ -409,7 +415,7 @@ private fun TadpoleThreadWheeler(
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
-            carConst,
+            askHelp,
             tyreBox,
             frontLeft,
             frontLeftStats,
@@ -421,16 +427,11 @@ private fun TadpoleThreadWheeler(
             rearStats,
             rearBinding,
         ) = createRefs()
-        Image(
-            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-            contentDescription = null,
-            modifier = Modifier
-                .aspectRatio(208f / 462f)
-                .constrainAs(carConst) {
-                    centerTo(parent)
-                    height = Dimension.percent(.7f)
-                }
+        BackgroundImageAskHelp(
+            Modifier.constrainAs(askHelp) {
+                end.linkTo(parent.end, 8.dp)
+                bottom.linkTo(parent.bottom, 4.dp)
+            }
         )
         Box(
             Modifier
@@ -531,7 +532,7 @@ private fun DeltaThreeWheeler(
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
-            carConst,
+            askHelp,
             tyreBox,
             tyreFront,
             frontStats,
@@ -543,16 +544,11 @@ private fun DeltaThreeWheeler(
             rearRightStats,
             rearRightBinding
         ) = createRefs()
-        Image(
-            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-            contentDescription = null,
-            modifier = Modifier
-                .aspectRatio(208f / 462f)
-                .constrainAs(carConst) {
-                    centerTo(parent)
-                    height = Dimension.percent(.7f)
-                }
+        BackgroundImageAskHelp(
+            Modifier.constrainAs(askHelp) {
+                end.linkTo(parent.end, 8.dp)
+                bottom.linkTo(parent.bottom, 4.dp)
+            }
         )
         Box(
             Modifier
@@ -642,5 +638,51 @@ private fun DeltaThreeWheeler(
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun BackgroundImageAskHelp(
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        Text(
+            text = "This app is built by its community,\nThis screen needs a background image",
+            fontWeight = FontWeight.Light,
+            fontSize = 10.sp,
+            lineHeight = 13.sp,
+            textAlign = TextAlign.End,
+        )
+        Spacer(Modifier.width(8.dp))
+        OutlinedButton(
+            onClick = {
+                try {
+                    context.startActivity(
+                        Intent(
+                            ACTION_VIEW,
+                            Uri.parse("https://github.com/VincentMasselis/TPMS-advanced/issues/new?labels=enhancement&template=vehicle-background-image-proposal.md")
+                        )
+                    )
+                } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(context, "No web browser found", Toast.LENGTH_LONG).show()
+                }
+            },
+            contentPadding = PaddingValues(
+                top = 4.dp,
+                bottom = 4.dp,
+                start = 12.dp,
+                end = 12.dp
+            ),
+            content = {
+                Text(
+                    text = "Help us",
+                    fontSize = 12.sp,
+                )
+            }
+        )
     }
 }
