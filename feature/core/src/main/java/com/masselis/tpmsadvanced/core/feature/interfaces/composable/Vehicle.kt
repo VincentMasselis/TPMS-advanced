@@ -664,10 +664,17 @@ private fun BackgroundImageAskHelp(
                     context.startActivity(
                         Intent(
                             ACTION_VIEW,
-                            Uri.parse("https://github.com/VincentMasselis/TPMS-advanced/issues/new?labels=enhancement&template=vehicle-background-image-proposal.md")
+                            Uri.parse(
+                                "https://github.com/" +
+                                        "VincentMasselis/" +
+                                        "TPMS-advanced/" +
+                                        "issues/" +
+                                        "new?" +
+                                        "labels=enhancement&template=vehicle-background-image-proposal.md"
+                            )
                         )
                     )
-                } catch (e: ActivityNotFoundException) {
+                } catch (_: ActivityNotFoundException) {
                     Toast.makeText(context, "No web browser found", Toast.LENGTH_LONG).show()
                 }
             },
