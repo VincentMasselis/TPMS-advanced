@@ -4,7 +4,7 @@ task fetchAllTags(type: Exec) {
 }
 
 task gitTagVersion(type: Exec, dependsOn: fetchAllTags) {
-    commandLine 'git', 'tag', "vc${tpmsAdvancedVersionCode()}"
+    commandLine 'git', 'tag', "vc${tpmsAdvancedVersionCode}"
 }
 
 task gitPushTag(type: Exec, dependsOn: gitTagVersion) {
