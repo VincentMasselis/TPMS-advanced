@@ -7,8 +7,8 @@ import groovy.lang.GString
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("dagger")
 }
-apply(from = "${project.rootDir}/gradle/dagger.gradle")
 
 val isDecrypted: Boolean by rootProject.extra
 if (isDecrypted) {
@@ -52,7 +52,7 @@ android {
             create("release") {
                 val APP_KEY_ALIAS: String by rootProject.extra
                 val APP_KEY_STORE_PWD: String by rootProject.extra
-                val APP_KEYSTORE_LOCATION: String by rootProject.extra
+                val APP_KEYSTORE_LOCATION: GString by rootProject.extra // TODO
                 keyAlias = APP_KEY_ALIAS
                 keyPassword = APP_KEY_STORE_PWD
                 storeFile = file(APP_KEYSTORE_LOCATION)
@@ -95,7 +95,6 @@ dependencies {
     androidTestImplementation(project(":core:android-test"))
 }
 
-lateinit var copyScreenshot: Task
 tasks.whenTaskAdded {
     if (name == "connectedDemoDebugAndroidTest") {
         val connectedDemoDebugAndroidTest = this
@@ -122,7 +121,7 @@ tasks.whenTaskAdded {
                 buildDir
             )
         }
-        copyScreenshot = task<Copy>("copyScreenshot") {
+        task<Copy>("copyScreenshot") {
             dependsOn(downloadTestOutputFiles)
             group = "publishing"
             description =
@@ -151,7 +150,7 @@ if (isDecrypted) afterEvaluate {
     // Play store listing must depends on the task which generates screenshots
     tasks.filter { it.name.startsWith("publish") && it.name.endsWith("Listing") }
         .forEach { publishListing ->
-            publishListing.dependsOn(copyScreenshot)
+            publishListing.dependsOn("copyScreenshot")
         }
 
     // Removes dependency which updates the play store listing when publishing a new app in beta

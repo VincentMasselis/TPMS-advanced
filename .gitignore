@@ -26,3 +26,4 @@ local.properties
 .idea/kotlinc.xml
 .idea/compiler.xml
 .idea/kotlinScripting.xml
+buildSrc/build/**

@@ -29,12 +29,13 @@ task<Delete>("clean") {
 
 var isDecrypted by extra(false)
 try {
-    apply(from = "secrets/keys.gradle.kts")
+    apply(from = "secrets/keys.gradle")
     isDecrypted = true
     println("Project secrets decrypted")
 } catch (_: Exception) {
     println("Project secrets encrypted")
 }
 
-apply(from = "gradle/gittag.gradle")
-apply(from = "gradle/android-conf.gradle")
+apply(plugin = "gittag")
+subprojects { apply(plugin = "detekt") }
+subprojects { apply(plugin = "android-conf") }
