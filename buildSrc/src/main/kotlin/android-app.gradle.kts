@@ -1,4 +1,3 @@
-
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -7,4 +6,12 @@ plugins {
 
 android {
     base(this)
+}
+
+afterEvaluate {
+    if (android.buildFeatures.compose ?: false) {
+        dependencies {
+            lintChecks("com.slack.lint.compose:compose-lint-checks:1.2.0")
+        }
+    }
 }
