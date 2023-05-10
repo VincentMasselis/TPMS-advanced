@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
 }
-apply from : "${project.rootDir}/gradle/dagger.gradle"
+apply from: "${project.rootDir}/gradle/dagger.gradle"
 
 if (isDecrypted) {
     // Needs the google-services.json file to work
@@ -28,11 +28,17 @@ android {
         namespace 'com.masselis.tpmsadvanced'
 
         versionCode tpmsAdvancedVersionCode()
-        versionName "1.0"
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        // The next line enables the ability to store files when capturing screenshots
-        testInstrumentationRunnerArguments useTestStorageService: 'true'
+        // `useTestStorageService` enables the ability to store files when capturing screenshots.
+        // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
+        // each test invocation. This command ensures that the app's state is completely cleared
+        // between tests.
+        testInstrumentationRunnerArguments useTestStorageService: 'true', clearPackageData: 'true'
+        testOptions {
+            execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        }
     }
     signingConfigs {
         if (isDecrypted)
@@ -53,6 +59,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "$composeCompilerVersion"
@@ -62,12 +69,14 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
+    implementation(project(":core:debug-ui"))
+    implementation(project(":data:app"))
     implementation(project(":feature:core"))
     implementation(project(":feature:qrcode"))
-    implementation(project(":core:debug-ui"))
 
     testImplementation(project(":core:test"))
-    androidTestUtil 'androidx.test.services:test-services:1.4.2'
+    androidTestUtil "androidx.test:orchestrator:$testServicesVersion"
+    androidTestUtil "androidx.test.services:test-services:$testServicesVersion"
     androidTestImplementation(project(":core:android-test"))
 }
 
@@ -76,7 +85,7 @@ tasks.whenTaskAdded { instrumentedTestTask ->
         task clearScreenshotPhoneFolder(type: Exec) {
             description = 'Clears the phone\'s screenshot folder'
             instrumentedTestTask.dependsOn clearScreenshotPhoneFolder
-            commandLine 'adb', 'shell', 'rm -rf /sdcard/googletest/test_outputfiles'
+            commandLine android.getAdbExe(), 'shell', 'rm -rf /sdcard/googletest/test_outputfiles'
         }
         task downloadScreenshots(type: Exec) {
             dependsOn instrumentedTestTask
@@ -85,7 +94,7 @@ tasks.whenTaskAdded { instrumentedTestTask ->
                 delete layout.buildDirectory.dir("test_outputfiles")
                 mkdir layout.buildDirectory.dir("test_outputfiles")
             }
-            commandLine 'adb', 'pull', '/sdcard/googletest/test_outputfiles', "$buildDir"
+            commandLine android.getAdbExe(), 'pull', '/sdcard/googletest/test_outputfiles', "$buildDir"
         }
         task copyScreenshot(type: Copy) {
             dependsOn downloadScreenshots

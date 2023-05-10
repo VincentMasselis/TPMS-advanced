@@ -1,0 +1,122 @@
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind;
+import com.masselis.tpmsadvanced.data.record.model.Pressure;
+import com.masselis.tpmsadvanced.data.record.model.Temperature;
+import java.util.UUID;
+import kotlin.Boolean;
+
+CREATE TABLE Vehicle(
+    uuid TEXT AS UUID NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    isFavourite INTEGER AS Boolean NOT NULL,
+    lowPressure REAL AS Pressure NOT NULL DEFAULT 100,
+    highPressure REAL AS Pressure NOT NULL DEFAULT 300,
+    lowTemp REAL AS Temperature NOT NULL DEFAULT 20,
+    normalTemp REAL AS Temperature NOT NULL DEFAULT 45,
+    highTemp REAL AS Temperature NOT NULL DEFAULT 90,
+    kind TEXT AS Kind NOT NULL DEFAULT "CAR",
+    isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0
+);
+
+-- This succession of triggers ensure there is always exactly 1 car with isFavourite set to 1
+
+CREATE TRIGGER IF NOT EXISTS new_favourite_insert
+    AFTER INSERT ON Vehicle
+    WHEN new.isFavourite = 1
+BEGIN
+    UPDATE Vehicle SET isFavourite = 0 WHERE isFavourite = 1 AND uuid != new.uuid;
+END;
+
+CREATE TRIGGER IF NOT EXISTS new_favourite_update
+    AFTER UPDATE OF isFavourite
+    ON Vehicle
+    WHEN new.isFavourite = 1
+BEGIN
+    UPDATE Vehicle SET isFavourite = 0 WHERE isFavourite = 1 AND uuid != new.uuid;
+END;
+
+CREATE TRIGGER IF NOT EXISTS no_favourite_update
+    AFTER UPDATE OF isFavourite
+    ON Vehicle
+    WHEN (SELECT COUNT(*) FROM Vehicle WHERE isFavourite = 1) = 0
+BEGIN
+    UPDATE Vehicle SET isFavourite = 1 WHERE rowid IN (SELECT rowid FROM Vehicle LIMIT 1);
+END;
+
+CREATE TRIGGER IF NOT EXISTS no_vehicle_delete
+    BEFORE DELETE
+    ON Vehicle
+    WHEN (SELECT COUNT(*) FROM Vehicle) = 1
+BEGIN
+    SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS no_favourite_delete
+    AFTER DELETE
+    ON Vehicle
+    WHEN old.isFavourite = 1
+BEGIN
+    UPDATE Vehicle SET isFavourite = 1 WHERE rowid IN (SELECT rowid FROM Vehicle LIMIT 1);
+END;
+
+-- This statement is put in the end because SQLDelight executes the triggers before the statements
+
+INSERT INTO Vehicle(uuid, kind, name, isFavourite) VALUES ("466b2e13-e33a-4adf-a101-a920140a29a1","CAR", "My car",1);
+
+insert:
+INSERT INTO Vehicle(uuid, kind, name, isFavourite) VALUES (?,?,?,?);
+
+selectLowPressureByVehicleId:
+SELECT lowPressure FROM Vehicle WHERE uuid = ?;
+
+updateLowPressure:
+UPDATE Vehicle SET lowPressure = ? WHERE uuid = ?;
+
+selectHighPressureByVehicleId:
+SELECT highPressure FROM Vehicle WHERE uuid = ?;
+
+updateHighPressure:
+UPDATE Vehicle SET highPressure = ? WHERE uuid = ?;
+
+selectLowTempByVehicleId:
+SELECT lowTemp FROM Vehicle WHERE uuid = ?;
+
+updateLowTemp:
+UPDATE Vehicle SET lowTemp = ? WHERE uuid = ?;
+
+selectNormalTempByVehicleId:
+SELECT normalTemp FROM Vehicle WHERE uuid = ?;
+
+updateNormalTemp:
+UPDATE Vehicle SET normalTemp = ? WHERE uuid = ?;
+
+selectHighTempByVehicleId:
+SELECT highTemp FROM Vehicle WHERE uuid = ?;
+
+updateHighTemp:
+UPDATE Vehicle SET highTemp = ? WHERE uuid = ?;
+
+updateIsDeleting:
+UPDATE Vehicle SET isDeleting = ? WHERE uuid = ?;
+
+delete:
+DELETE FROM Vehicle WHERE uuid = ?;
+
+setAsFavourite:
+UPDATE Vehicle SET isFavourite = ? WHERE uuid = ?;
+
+currentFavourite:
+SELECT * FROM Vehicle WHERE isFavourite = 1;
+
+selectAll:
+SELECT * FROM Vehicle WHERE isDeleting = 0;
+
+count:
+SELECT count(uuid) FROM Vehicle WHERE isDeleting = 0;
+
+selectByUuid:
+SELECT * FROM Vehicle WHERE uuid = ?;
+
+selectBySensorId:
+SELECT Vehicle.* FROM Vehicle
+INNER JOIN Sensor ON Sensor.vehicleId = Vehicle.uuid
+WHERE Sensor.id = ?;

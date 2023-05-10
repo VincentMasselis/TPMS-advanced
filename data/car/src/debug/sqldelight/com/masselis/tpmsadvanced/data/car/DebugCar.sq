@@ -1,5 +1,0 @@
-favouriteCount:
-SELECT COUNT(*) FROM Car WHERE isFavourite = 1;
-
-carList:
-SELECT * FROM Car;

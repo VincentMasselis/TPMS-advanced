@@ -19,7 +19,7 @@ plugins {
     id 'com.google.firebase.crashlytics' version '2.9.1' apply false
     id 'com.github.triplet.play' version '3.7.0' apply false
     id 'app.cash.sqldelight' version "$sqlDelightVersion" apply false
-    id "io.gitlab.arturbosch.detekt" version "1.22.0"
+    id "io.gitlab.arturbosch.detekt" version "1.23.0-RC3"
     id "dev.shreyaspatil.compose-compiler-report-generator" version "1.0.0" apply false
 }
 
@@ -30,8 +30,10 @@ task clean(type: Delete) {
 try {
     apply from: 'secrets/keys.gradle'
     ext.isDecrypted = true
+    println("Project secrets decrypted")
 } catch (Exception ignored) {
     ext.isDecrypted = false
+    println("Project secrets encrypted")
 }
 
 apply from: 'gradle/gittag.gradle'

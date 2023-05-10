@@ -21,5 +21,7 @@ dependencies {
     api(project(":data:car"))
     api(project(":feature:unit"))
 
+    implementation(project(":core:debug-ui"))
+
     testImplementation(project(":core:test"))
 }

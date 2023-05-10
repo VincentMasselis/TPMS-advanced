@@ -27,7 +27,7 @@ jobs:
       - name: Build everything and run unit tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build --scan
+          arguments: build detektMain detektTest --scan # Unlike "detekt", "detektMain" and "detektTest" fail if an issue is still present
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v2
@@ -48,6 +48,13 @@ jobs:
         with:
           name: Detekt-reports
           path: "**/build/reports/detekt/*.html"
+
+      - name: APKs
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: APKs
+          path: "**/build/outputs/apk/**/*.apk"
 
   instrumented_test_n_screenshots:
     name: Run instrumented tests and take screenshots

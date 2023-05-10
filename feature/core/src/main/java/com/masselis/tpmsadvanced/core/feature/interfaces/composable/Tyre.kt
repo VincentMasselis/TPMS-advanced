@@ -26,8 +26,8 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.core.feature.model.ManySensor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -36,11 +36,11 @@ private val evaluator = ArgbEvaluator()
 
 @Composable
 internal fun Tyre(
-    location: SensorLocation,
+    manySensor: ManySensor,
     modifier: Modifier = Modifier,
-    carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${carComponent.hashCode()}_${location.name}") {
-        carComponent.tyreComponent(location).tyreViewModelFactory.build(createSavedStateHandle())
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
+    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${vehicleComponent.hashCode()}_${manySensor.name}") {
+        vehicleComponent.tyreComponent(manySensor).tyreViewModelFactory.build(createSavedStateHandle())
     },
 ) {
     val state by viewModel.stateFlow.collectAsState()

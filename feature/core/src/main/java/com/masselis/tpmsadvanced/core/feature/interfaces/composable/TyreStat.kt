@@ -20,24 +20,24 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel.State
-import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.core.feature.model.ManySensor
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-@Suppress("NAME_SHADOWING")
+@Suppress("NAME_SHADOWING", "LongMethod", "CyclomaticComplexMethod")
 @Composable
 internal fun TyreStat(
-    location: SensorLocation,
+    manySensor: ManySensor,
     modifier: Modifier = Modifier,
-    carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: TyreStatsViewModel = viewModel(key = "TyreStatsViewModel_${carComponent.hashCode()}_${location.name}") {
-        carComponent.tyreComponent(location).tyreStatViewModelFactory
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
+    viewModel: TyreStatsViewModel = viewModel(
+        key = "TyreStatsViewModel_${vehicleComponent.hashCode()}_${manySensor.name}"
+    ) {
+        vehicleComponent.tyreComponent(manySensor).tyreStatViewModelFactory
             .build(createSavedStateHandle())
     }
 ) {
@@ -71,9 +71,16 @@ internal fun TyreStat(
         isVisible = true
     val alignment by remember {
         derivedStateOf {
-            when (location) {
-                FRONT_LEFT, REAR_LEFT -> Alignment.End
-                FRONT_RIGHT, REAR_RIGHT -> Alignment.Start
+            when (manySensor) {
+                is ManySensor.Axle -> Alignment.Start
+                is ManySensor.Located -> when (manySensor.location.side) {
+                    LEFT -> Alignment.End
+                    RIGHT -> Alignment.Start
+                }
+                is ManySensor.Side -> when (manySensor.side) {
+                    LEFT -> Alignment.End
+                    RIGHT -> Alignment.Start
+                }
             }
         }
     }

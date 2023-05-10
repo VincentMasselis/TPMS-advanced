@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'app.cash.sqldelight'
 }
-apply from : "${project.rootDir}/gradle/dagger.gradle"
+apply from: "${project.rootDir}/gradle/dagger.gradle"
 
 android {
     namespace 'com.masselis.tpmsadvanced.data.car'
@@ -26,7 +26,7 @@ dependencies {
     api(project(":data:record"))
 
     androidTestImplementation(project(":core:android-test"))
-    androidTestUtil 'androidx.test:orchestrator:1.4.2'
+    androidTestUtil "androidx.test:orchestrator:$testServicesVersion"
 }
 
 sqldelight {
@@ -34,9 +34,8 @@ sqldelight {
         Database {
             packageName = "com.masselis.tpmsadvanced.data.car"
             dialect("app.cash.sqldelight:sqlite-3-24-dialect:$sqlDelightVersion")
-            // Uncomment this when the first release with a database will be pushed
-            // verifyMigrations = true
-            // schemaOutputDirectory = file("src/main/sqldelight")
+            verifyMigrations = true
+            schemaOutputDirectory = file("src/main/sqldelight")
         }
     }
 }
