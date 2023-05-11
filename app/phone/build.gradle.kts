@@ -5,8 +5,7 @@ import com.github.triplet.gradle.play.PlayPublisherExtension
 import groovy.lang.GString
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    id("android-app")
     id("dagger")
 }
 

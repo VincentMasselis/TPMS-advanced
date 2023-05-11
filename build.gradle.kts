@@ -38,4 +38,3 @@ try {
 
 apply(plugin = "gittag")
 subprojects { apply(plugin = "detekt") }
-subprojects { apply(plugin = "android-conf") }

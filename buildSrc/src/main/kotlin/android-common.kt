@@ -1,12 +1,13 @@
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Action
+import org.gradle.api.JavaVersion
 import org.gradle.api.JavaVersion.VERSION_17
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-internal fun Project.base(android: BaseExtension) =
+fun Project.base(android: BaseExtension) {
     with(android) {
         compileSdkVersion(33)
         defaultConfig {
@@ -47,14 +48,21 @@ internal fun Project.base(android: BaseExtension) =
                 "META-INF/*.kotlin_module",
             )
         }
-    }.also {
-        tasks.withType<KotlinCompile>().all {
-            kotlinOptions {
-                jvmTarget = VERSION_17.toString()
-                freeCompilerArgs += listOf(
-                    "-Xexplicit-api=strict",
-                    "-opt-in=kotlin.RequiresOptIn"
-                )
+    }
+    tasks.withType<KotlinCompile>().all {
+        kotlinOptions {
+            jvmTarget = VERSION_17.toString()
+            freeCompilerArgs += listOf(
+                "-Xexplicit-api=strict",
+                "-opt-in=kotlin.RequiresOptIn"
+            )
+        }
+    }
+    afterEvaluate {
+        if (android.buildFeatures.compose ?: false) {
+            dependencies {
+                add("lintChecks", "com.slack.lint.compose:compose-lint-checks:1.2.0")
             }
         }
     }
+}

@@ -4,6 +4,5 @@ plugins {
 
 detekt {
     buildUponDefaultConfig = true
-    @Suppress("DEPRECATION")
-    config = files("${rootProject.rootDir}/gradle/detekt-config.yml")
+    config.from("${rootProject.projectDir}/buildSrc/detekt-config.yml")
 }
