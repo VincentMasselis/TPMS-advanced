@@ -1,6 +1,5 @@
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Action
-import org.gradle.api.JavaVersion
 import org.gradle.api.JavaVersion.VERSION_17
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
@@ -13,6 +12,7 @@ fun Project.base(android: BaseExtension) {
         defaultConfig {
             minSdk = 27
             targetSdk = 33
+            buildToolsVersion("33.0.2")
 
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
