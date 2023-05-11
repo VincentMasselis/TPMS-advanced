@@ -107,12 +107,13 @@ tasks.whenTaskAdded {
                 "rm -rf /sdcard/googletest/test_outputfiles"
             )
         }
+        val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
         val downloadTestOutputFiles = task<Exec>("downloadTestOutputFiles") {
             dependsOn(connectedDemoDebugAndroidTest)
             description = "Download screenshot folder from the phone"
             doFirst {
-                delete(layout.buildDirectory.dir("test_outputfiles"))
-                mkdir(layout.buildDirectory.dir("test_outputfiles"))
+                delete(outputFilesDir)
+                mkdir(outputFilesDir)
             }
             commandLine(
                 android.adbExecutable,
@@ -128,19 +129,16 @@ tasks.whenTaskAdded {
                 "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
             val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
             doFirst { mkdir(path) }
-            from(layout.buildDirectory.dir("test_outputfiles"))
+            from(outputFilesDir)
             into(path)
-            rename { filename ->
-                if (filename.startsWith("light_main"))
-                    "1.png"
-                else if (filename.startsWith("light_settings"))
-                    "2.png"
-                else if (filename.startsWith("dark_main"))
-                    "3.png"
-                else if (filename.startsWith("dark_settings"))
-                    "4.png"
-                else
-                    filename
+            eachFile {
+                when {
+                    name.startsWith("light_main") -> name = "1.png"
+                    name.startsWith("light_settings") -> name = "2.png"
+                    name.startsWith("dark_main") -> name = "3.png"
+                    name.startsWith("dark_settings") -> name = "4.png"
+                    else -> exclude()
+                }
             }
         }
     }
