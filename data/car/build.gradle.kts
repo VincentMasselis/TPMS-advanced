@@ -4,7 +4,6 @@ plugins {
     id("dagger")
 }
 
-@Suppress("UnstableApiUsage")
 android {
     namespace = "com.masselis.tpmsadvanced.data.car"
     defaultConfig {
@@ -13,10 +12,7 @@ android {
         // that the app's state is completely cleared between tests.
         testInstrumentationRunnerArguments += "clearPackageData" to "true"
     }
-
-    testOptions {
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
-    }
+    testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
 }
 
 

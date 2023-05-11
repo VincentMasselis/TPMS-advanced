@@ -45,8 +45,8 @@ android {
             "useTestStorageService" to "true",
             "clearPackageData" to "true"
         )
-        testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
+    testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
     signingConfigs {
         if (isDecrypted)
             create("release") {

@@ -21,17 +21,19 @@ fun Project.base(android: BaseExtension) {
             targetCompatibility = VERSION_17
         }
         flavorDimensions("mode")
-        productFlavors {
-            create("demo") {
-                dimension = "mode"
+        "demo".also { demoFlavorName ->
+            productFlavors {
+                create(demoFlavorName) {
+                    dimension = "mode"
+                }
+                create("normal") {
+                    dimension = "mode"
+                }
             }
-            create("normal") {
-                dimension = "mode"
+            variantFilter = Action {
+                if (flavors.any { it.name == demoFlavorName } && buildType.name == "release")
+                    ignore = true
             }
-        }
-        variantFilter = Action {
-            if (flavors.map { it.name }.contains("demo") && buildType.name == "release")
-                ignore = true
         }
         packagingOptions {
             resources.excludes += setOf(
