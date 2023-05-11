@@ -2,7 +2,6 @@
 
 import com.github.triplet.gradle.androidpublisher.ResolutionStrategy.AUTO
 import com.github.triplet.gradle.play.PlayPublisherExtension
-import groovy.lang.GString
 
 plugins {
     id("android-app")
@@ -42,8 +41,10 @@ android {
         // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
         // each test invocation. This command ensures that the app's state is completely cleared
         // between tests.
-        testInstrumentationRunnerArguments += "useTestStorageService" to "true"
-        testInstrumentationRunnerArguments += "clearPackageData" to "true"
+        testInstrumentationRunnerArguments += listOf(
+            "useTestStorageService" to "true",
+            "clearPackageData" to "true"
+        )
         testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
     signingConfigs {
@@ -51,7 +52,7 @@ android {
             create("release") {
                 val APP_KEY_ALIAS: String by rootProject.extra
                 val APP_KEY_STORE_PWD: String by rootProject.extra
-                val APP_KEYSTORE_LOCATION: GString by rootProject.extra // TODO
+                val APP_KEYSTORE_LOCATION: String by rootProject.extra
                 keyAlias = APP_KEY_ALIAS
                 keyPassword = APP_KEY_STORE_PWD
                 storeFile = file(APP_KEYSTORE_LOCATION)
