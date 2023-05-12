@@ -136,7 +136,6 @@ private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("LongMethod")
 @Composable
 private fun AddVehicle(

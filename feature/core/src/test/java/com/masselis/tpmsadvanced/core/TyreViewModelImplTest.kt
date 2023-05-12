@@ -15,7 +15,6 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -29,7 +28,6 @@ import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class TyreViewModelImplTest {
 
     @get:Rule

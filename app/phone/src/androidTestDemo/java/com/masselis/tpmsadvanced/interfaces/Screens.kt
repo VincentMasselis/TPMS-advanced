@@ -1,7 +1,6 @@
 @file:Suppress("MatchingDeclarationName")
 package com.masselis.tpmsadvanced.interfaces
 
-import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
@@ -94,12 +93,7 @@ internal class Home private constructor(
 
 
     private fun bindSensorButton(manySensor: ManySensor): SemanticsNodeInteraction {
-        try {
-            @Suppress("MagicNumber")
-            composeTestRule.waitUntil(1_000) { false }
-        } catch (_: ComposeTimeoutException) {
-
-        }
+        composeTestRule.waitForIdle()
         return composeTestRule.onNodeWithTag(BindSensorTags.Button.tag(manySensor))
     }
 

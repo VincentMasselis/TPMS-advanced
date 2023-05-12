@@ -13,4 +13,5 @@ dependencies {
     api("androidx.arch.core:core-testing:2.2.0")
     api("io.mockk:mockk:1.13.4")
     api("org.jetbrains.kotlin:kotlin-test")
+    api("app.cash.turbine:turbine:0.13.0")
 }

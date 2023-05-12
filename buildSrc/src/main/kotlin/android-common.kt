@@ -61,7 +61,7 @@ fun Project.base(android: BaseExtension) {
         }
     }
     afterEvaluate {
-        if (android.buildFeatures.compose ?: false) {
+        if (android.buildFeatures.compose == true) {
             dependencies {
                 add("lintChecks", "com.slack.lint.compose:compose-lint-checks:1.2.0")
             }
