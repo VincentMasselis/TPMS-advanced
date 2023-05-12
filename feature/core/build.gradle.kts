@@ -1,16 +1,15 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    id("android-lib")
+    id("dagger")
 }
-apply from : "${project.rootDir}/gradle/dagger.gradle"
 
+@Suppress("UnstableApiUsage")
 android {
-    namespace 'com.masselis.tpmsadvanced.core'
-    buildFeatures {
-        compose true
-    }
+    namespace = "com.masselis.tpmsadvanced.core"
+    buildFeatures.compose = true
     composeOptions {
-        kotlinCompilerExtensionVersion = "$composeCompilerVersion"
+        val composeCompilerVersion: String by project
+        kotlinCompilerExtensionVersion = composeCompilerVersion
     }
 }
 
