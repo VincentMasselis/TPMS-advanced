@@ -14,6 +14,12 @@ runs:
       shell: bash
       run: |
         #!/usr/bin/env bash
+        
+        # The current version of the runner macos-latest contains a bugged version of homebrew, keep
+        # this line until a version greater than 20230509 is released. Check for releases 
+        # here: https://github.com/actions/runner-images/releases .
+        # Link to the bug: https://github.com/actions/runner-images/issues/7581
+        brew update
 
         brew install intel-haxm android-commandlinetools android-platform-tools
         
@@ -22,7 +28,7 @@ runs:
 
         # Create emulator
         echo "no" | avdmanager create avd -n android_emulator -d 19 --package 'system-images;android-27;default;x86_64'
-    
+        
         # list emulator
         echo "Available emulator"
         $ANDROID_HOME/emulator/emulator -list-avds
