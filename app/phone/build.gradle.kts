@@ -154,10 +154,12 @@ if (isDecrypted) afterEvaluate {
     // Removes dependency which updates the play store listing when publishing a new app in beta
     // because the play store listing reflects the app in production, not the beta.
     tasks.filter { it.name.startsWith("publish") && it.name.endsWith("Apps") }
-        .forEach { task ->
-            task.setDependsOn(task.dependsOn.filter {
-                (name.startsWith("publish") && name.endsWith("Listing")).not()
-            })
+        .forEach { publishApps ->
+            @Suppress("NAME_SHADOWING")
+            publishApps.dependsOn.removeIf {
+                val it = it as? Task ?: (it as Provider<*>).get() as Task
+                it.name.startsWith("publish") && it.name.endsWith("Listing")
+            }
         }
 
     // Create the task compareLocalVersionCodeWithPlayStore

@@ -21,12 +21,6 @@ internal class TakeScreenshotTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<RootActivity>()
 
-    private fun capture(name: String) = composeTestRule
-        .onRoot()
-        .captureToImage()
-        .asAndroidBitmap()
-        .writeToTestStorage(name)
-
     @Test
     fun lightModeScreenshots() {
         composeTestRule.home {
@@ -63,9 +57,14 @@ internal class TakeScreenshotTest {
         }
         capture("${prefix}main")
         settings {
-            composeTestRule.waitForIdle()
             capture("${prefix}settings")
             leave()
         }
     }
+
+    private fun capture(name: String) = composeTestRule
+        .onRoot()
+        .captureToImage()
+        .asAndroidBitmap()
+        .writeToTestStorage(name)
 }

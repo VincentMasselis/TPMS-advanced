@@ -56,7 +56,8 @@ fun Project.base(android: BaseExtension) {
             jvmTarget = VERSION_17.toString()
             freeCompilerArgs += listOf(
                 "-Xexplicit-api=strict",
-                "-opt-in=kotlin.RequiresOptIn"
+                "-opt-in=kotlin.RequiresOptIn",
+                "-Xcontext-receivers"
             )
         }
     }
