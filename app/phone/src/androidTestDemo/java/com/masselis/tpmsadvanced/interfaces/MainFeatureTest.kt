@@ -3,10 +3,8 @@ package com.masselis.tpmsadvanced.interfaces
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.masselis.tpmsadvanced.core.feature.model.ManySensor
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.CAR
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.MOTORCYCLE
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.interfaces.Home.Companion.home
 import org.junit.Rule
@@ -60,7 +58,7 @@ internal class MainFeatureTest {
             bindSensorDialog(ManySensor.Located(FRONT_LEFT)) {
                 addToFavorites()
             }
-            assert(isBindSensorAvailable(ManySensor.Located(FRONT_LEFT)).not())
+            composeTestRule.waitUntil { isBindSensorAvailable(ManySensor.Located(FRONT_LEFT)).not() }
             settings {
                 assert(isClearFavouritesEnabled())
                 clearFavourites()

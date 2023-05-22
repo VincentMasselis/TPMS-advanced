@@ -155,10 +155,13 @@ if (isDecrypted) afterEvaluate {
     // because the play store listing reflects the app in production, not the beta.
     tasks.filter { it.name.startsWith("publish") && it.name.endsWith("Apps") }
         .forEach { publishApps ->
-            @Suppress("NAME_SHADOWING")
             publishApps.dependsOn.removeIf {
-                val it = it as? Task ?: (it as Provider<*>).get() as Task
-                it.name.startsWith("publish") && it.name.endsWith("Listing")
+                // Unlike Kotlin, Groovy is able to get the task name of the current dependency even
+                // if the dependency is nested into the gradle class "Provider". On its side, with
+                // Kotlin, you have to unwrap the task before asking for its name which is not as
+                // simple as Groovy so I prefer to use "withGroovyBuilder" in this case.
+                val taskName = it.withGroovyBuilder { "getName"() } as String
+                taskName.startsWith("publish") && taskName.endsWith("Listing")
             }
         }
 
