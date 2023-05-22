@@ -14,6 +14,7 @@ import com.masselis.tpmsadvanced.data.car.model.Sensor
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.asFlow
@@ -57,7 +58,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor(private val context: Co
         .filter { it.valueType == Barcode.TYPE_TEXT }
         .mapNotNull { it.rawValue }
         .mapNotNull { regex.find(it)?.groupValues?.subList(1, 5) }
-        .map { it.map { it.decodeHex().toByteArray() } }
+        .map { it.map { stringHex -> stringHex.decodeHex().toByteArray() } }
         .map { idsBytes ->
             idsBytes.map { idBytes ->
                 ByteBuffer

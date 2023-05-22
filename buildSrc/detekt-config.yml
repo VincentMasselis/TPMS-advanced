@@ -1,0 +1,31 @@
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - 'Composable'
+style:
+  UnnecessaryAbstractClass:
+    ignoreAnnotated:
+      - 'Component'
+  MagicNumber:
+    ignoreAnnotated:
+      - 'Composable'
+  DestructuringDeclarationWithTooManyEntries:
+    # I disagree with https://detekt.dev/docs/rules/style/#destructuringdeclarationwithtoomanyentries
+    maxDestructuringEntries: 16 # Constraint Layout's createRefs() allow up to 16
+  UnusedPrivateMember:
+    active: true
+    ignoreAnnotated:
+      - 'Preview'
+complexity:
+  LongParameterList:
+    functionThreshold: 10
+    ignoreAnnotated:
+      - 'Composable'
+  TooManyFunctions:
+    ignorePrivate: true
+potential-bugs:
+  UnsafeCallOnNullableType:
+    active: false
+coroutines:
+  InjectDispatcher:
+    active: false

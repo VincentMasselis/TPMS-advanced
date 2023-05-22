@@ -1,0 +1,13 @@
+name: Setup project and android
+description: Specific steps to checkout the project and setup the environment
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Setup Android SDK Tools
+      uses: android-actions/setup-android@v2

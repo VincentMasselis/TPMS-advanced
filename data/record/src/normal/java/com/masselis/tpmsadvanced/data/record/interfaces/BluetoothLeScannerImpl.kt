@@ -27,7 +27,7 @@ import androidx.core.content.getSystemService
 import androidx.core.util.size
 import com.masselis.tpmsadvanced.core.common.asFlow
 import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
+import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
@@ -54,7 +54,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
-@SingleInstance
+@DataRecordComponent.Scope
 internal class BluetoothLeScannerImpl @Inject internal constructor(
     private val context: Context
 ) : BluetoothLeScanner {

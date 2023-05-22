@@ -3,14 +3,15 @@ package com.masselis.tpmsadvanced.data.car.ioc
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import app.cash.sqldelight.ColumnAdapter
+import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.data.car.Car
 import com.masselis.tpmsadvanced.data.car.Database
 import com.masselis.tpmsadvanced.data.car.Sensor
 import com.masselis.tpmsadvanced.data.car.Tyre
+import com.masselis.tpmsadvanced.data.car.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature
@@ -29,23 +30,11 @@ internal object Module {
 
     @Provides
     fun tyreLocationAdapter() = object : ColumnAdapter<SensorLocation, Long> {
-
-        override fun decode(databaseValue: Long): SensorLocation =
-            SensorLocation.from(databaseValue)
-
-        override fun encode(value: SensorLocation): Long = value.toLong()
-
-        @Suppress("MagicNumber")
-        private fun SensorLocation.toLong(): Long = when (this) {
-            SensorLocation.FRONT_LEFT -> 0
-            SensorLocation.FRONT_RIGHT -> 1
-            SensorLocation.REAR_LEFT -> 2
-            SensorLocation.REAR_RIGHT -> 3
-        }
-
-        private fun SensorLocation.Companion.from(long: Long) = SensorLocation
+        override fun decode(databaseValue: Long): SensorLocation = SensorLocation
             .values()
-            .first { it.toLong() == long }
+            .first { it.ordinal.toLong() == databaseValue }
+
+        override fun encode(value: SensorLocation): Long = value.ordinal.toLong()
     }
 
     @Provides
@@ -68,7 +57,7 @@ internal object Module {
         override fun encode(value: UShort): Long = value.toLong()
     }
 
-    @SingleInstance
+    @DataVehicleComponent.Scope
     @Provides
     fun driver(): SqlDriver = AndroidSqliteDriver(
         schema = Database.Schema,
@@ -94,7 +83,7 @@ internal object Module {
         }
     )
 
-    @SingleInstance
+    @DataVehicleComponent.Scope
     @Provides
     fun database(
         driver: SqlDriver,
@@ -105,13 +94,14 @@ internal object Module {
         uShortAdapter: ColumnAdapter<UShort, Long>,
     ) = Database(
         driver,
-        CarAdapter = Car.Adapter(
+        VehicleAdapter = Vehicle.Adapter(
             uuidAdapter,
             pressureAdapter,
             pressureAdapter,
             temperatureAdapter,
             temperatureAdapter,
-            temperatureAdapter
+            temperatureAdapter,
+            EnumColumnAdapter(),
         ),
         SensorAdapter = Sensor.Adapter(IntColumnAdapter, sensorLocationAdapter, uuidAdapter),
         TyreAdapter = Tyre.Adapter(
@@ -120,7 +110,7 @@ internal object Module {
             pressureAdapter,
             temperatureAdapter,
             uShortAdapter,
-            uuidAdapter
+            uuidAdapter,
         )
     )
 }

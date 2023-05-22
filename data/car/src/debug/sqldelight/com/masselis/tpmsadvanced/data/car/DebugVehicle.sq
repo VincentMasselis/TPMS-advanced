@@ -1,0 +1,5 @@
+favouriteCount:
+SELECT COUNT(*) FROM Vehicle WHERE isFavourite = 1;
+
+carList:
+SELECT * FROM Vehicle;

@@ -12,32 +12,40 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.ClearBoundSensorsButtonTags.tag
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.CarComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 
 @Composable
 internal fun ClearBoundSensorsButton(
     modifier: Modifier = Modifier,
-    carComponent: CarComponent = LocalCarComponent.current,
-    viewModel: ClearBoundSensorsViewModel = viewModel(key = "ClearBoundSensorsButton_${carComponent.hashCode()}") {
-        carComponent.clearBoundSensorsViewModel.build(createSavedStateHandle())
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
+    viewModel: ClearBoundSensorsViewModel = viewModel(key = "ClearBoundSensorsButton_${vehicleComponent.hashCode()}") {
+        vehicleComponent.clearBoundSensorsViewModel.build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     Box(modifier = modifier) {
         OutlinedButton(
             enabled = state is ClearBoundSensorsViewModel.State.ClearingPossible,
-            modifier = Modifier.align(Alignment.TopEnd),
-            onClick = { viewModel.clear() }
+            onClick = { viewModel.clear() },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .testTag(tag),
         ) {
             Icon(ImageVector.vectorResource(id = R.drawable.link_variant_remove), null)
             Spacer(Modifier.width(6.dp))
             Text(text = "Clear favourites")
         }
     }
+}
+
+public object ClearBoundSensorsButtonTags {
+    public const val tag: String = "ClearBoundSensorsButtonTags_tag"
 }

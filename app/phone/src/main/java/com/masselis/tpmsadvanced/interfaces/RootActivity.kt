@@ -4,17 +4,20 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
-import com.masselis.tpmsadvanced.interfaces.composable.Main
-import com.masselis.tpmsadvanced.interfaces.composable.TpmsAdvancedTheme
 import com.masselis.tpmsadvanced.core.ui.LocalKeepScreenOnCounter
 import com.masselis.tpmsadvanced.core.ui.ScreenOnCounter
+import com.masselis.tpmsadvanced.interfaces.composable.Main
+import com.masselis.tpmsadvanced.interfaces.composable.TpmsAdvancedTheme
 import java.util.concurrent.atomic.AtomicInteger
 
-internal class RootActivity : ComponentActivity(), ScreenOnCounter {
+internal class RootActivity : AppCompatActivity(), ScreenOnCounter {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
+        @Suppress("CAST_NEVER_SUCCEEDS")
+        (this as ComponentActivity).setContent {
             CompositionLocalProvider(LocalKeepScreenOnCounter provides this) {
                 TpmsAdvancedTheme {
                     Main()

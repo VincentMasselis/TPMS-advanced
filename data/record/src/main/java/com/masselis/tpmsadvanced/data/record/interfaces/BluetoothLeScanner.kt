@@ -4,10 +4,7 @@ import com.masselis.tpmsadvanced.data.record.model.Tyre
 import kotlinx.coroutines.flow.Flow
 
 public interface BluetoothLeScanner {
-    @Suppress("MemberVisibilityCanBePrivate")
-    public class ScanFailed(public val reason: Int) : Exception() {
-        override fun toString(): String = "ScanFailed(reason=$reason)"
-    }
+    public class ScanFailed(reason: Int) : Exception("ScanFailed(reason=$reason)")
 
     public fun highDutyScan(): Flow<Tyre>
     public fun normalScan(): Flow<Tyre>

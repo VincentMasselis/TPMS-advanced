@@ -4,15 +4,22 @@ import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import dagger.Component
 
-@SingleInstance
+@DataUnitComponent.Scope
 @Component(
     dependencies = [CoreCommonComponent::class]
 )
-public abstract class DataUnitComponent {
+public interface DataUnitComponent {
     @Component.Factory
-    internal abstract class Factory {
-        abstract fun build(coreCommonComponent: CoreCommonComponent): DataUnitComponent
+    public interface Factory {
+        public fun build(coreCommonComponent: CoreCommonComponent = CoreCommonComponent): DataUnitComponent
     }
 
-    public abstract val unitPreferences: UnitPreferences
+    public val unitPreferences: UnitPreferences
+
+    @javax.inject.Scope
+    public annotation class Scope
+
+    public companion object : DataUnitComponent by DaggerDataUnitComponent
+        .factory()
+        .build()
 }

@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.qrcode.usecase.QrCodeAnalyserUseCase
 import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
+import com.masselis.tpmsadvanced.qrcode.usecase.QrCodeAnalyserUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -44,7 +44,7 @@ internal class CameraPreconditionsViewModel @AssistedInject constructor(
 
     init {
         trigger
-            .map {
+            .map { _ ->
                 qrCodeAnalyserUseCase.missingPermission()
                     ?.let { State.MissingPermission(it) }
                     ?: State.Ready

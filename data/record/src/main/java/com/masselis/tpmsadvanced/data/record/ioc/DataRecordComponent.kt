@@ -4,16 +4,23 @@ import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
 import dagger.Component
 
-@SingleInstance
+@DataRecordComponent.Scope
 @Component(
     dependencies = [CoreCommonComponent::class],
     modules = [Module::class]
 )
-public abstract class DataRecordComponent {
+public interface DataRecordComponent {
     @Component.Factory
-    internal abstract class Factory {
-        abstract fun build(coreCommonComponent: CoreCommonComponent): DataRecordComponent
+    public interface Factory {
+        public fun build(coreCommonComponent: CoreCommonComponent = CoreCommonComponent): DataRecordComponent
     }
 
-    public abstract val bluetoothLeScanner: BluetoothLeScanner
+    public val bluetoothLeScanner: BluetoothLeScanner
+
+    @javax.inject.Scope
+    public annotation class Scope
+
+    public companion object : DataRecordComponent by DaggerDataRecordComponent
+        .factory()
+        .build()
 }

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.RangeSlider
@@ -26,7 +25,6 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.fahrenhei
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PressureRangeSlider(
     onInfo: () -> Unit,

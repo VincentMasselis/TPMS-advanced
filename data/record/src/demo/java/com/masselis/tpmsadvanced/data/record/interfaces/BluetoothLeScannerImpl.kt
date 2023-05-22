@@ -1,79 +1,66 @@
 package com.masselis.tpmsadvanced.data.record.interfaces
 
 import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.data.record.ioc.SingleInstance
+import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
-import kotlin.random.Random
-import kotlin.time.Duration.Companion.seconds
 
-@SingleInstance
+@DataRecordComponent.Scope
 internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner {
 
-    private val pressures = listOf(
+    private val frontLeft = Tyre(
+        now(),
+        SensorLocation.FRONT_LEFT,
+        SensorLocation.FRONT_LEFT.ordinal,
         0.4f.bar,
-        1.6f.bar,
-        2.0f.bar,
-        2.8f.bar,
-        4.0f.bar
-    )
-
-    private val temperatures = listOf(
         15f.celsius,
-        20f.celsius,
-        35f.celsius,
-        70f.celsius,
-        95f.celsius
+        100u,
+        false
     )
 
-    private val random = Random(9847946)
+    private val frontRight = Tyre(
+        now(),
+        SensorLocation.FRONT_RIGHT,
+        SensorLocation.FRONT_RIGHT.ordinal,
+        1.6f.bar,
+        20f.celsius,
+        75u,
+        false
+    )
 
-    private fun createTyre(): Tyre {
-        val location = SensorLocation.values().random(random)
-        return Tyre(
-            now(),
-            location,
-            location.ordinal,
-            pressures.random(random),
-            temperatures.random(random),
-            100u,
-            false
-        )
-    }
+    private val rearLeft = Tyre(
+        now(),
+        SensorLocation.REAR_LEFT,
+        SensorLocation.REAR_LEFT.ordinal,
+        2.0f.bar,
+        35f.celsius,
+        50u,
+        false
+    )
 
-    private val startTyres = mutableMapOf<SensorLocation, Tyre>().apply {
-        while (SensorLocation.values().size != count()) {
-            val tyre = createTyre()
-            put(tyre.location, tyre)
+    private val rearRight = Tyre(
+        now(),
+        SensorLocation.REAR_RIGHT,
+        SensorLocation.REAR_RIGHT.ordinal,
+        2.8f.bar,
+        95f.celsius,
+        25u,
+        false
+    )
+
+    private val source = channelFlow {
+        listOf(frontLeft, frontRight, rearLeft, rearRight).forEach {
+            send(it)
         }
+        awaitClose { }
     }
-
-    private val source = (0..Int.MAX_VALUE)
-        .asFlow()
-        .transform {
-            emit(createTyre())
-            delay(5.seconds)
-        }
-        .onStart { emitAll(startTyres.values.asFlow()) }
-        .shareIn(
-            CoroutineScope(Dispatchers.Unconfined),
-            SharingStarted.Lazily,
-            startTyres.size + 1
-        )
 
     override fun highDutyScan(): Flow<Tyre> = source
 

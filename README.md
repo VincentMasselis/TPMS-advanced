@@ -1,3 +1,5 @@
+[![Develop](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/develop.yml/badge.svg)](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/develop.yml)
+
 # TPMS-advanced
 
 Android app for Bluetooth Low Energy TPMS sensors made by Sysgration
@@ -20,6 +22,8 @@ the [Play Store](https://play.google.com/store/apps/details?id=com.masselis.tpms
 
 ## What's next ?
 
+* Handle 4+ wheels use cases like trailers or 6 wheels pickups ([link to issue](https://github.com/VincentMasselis/TPMS-advanced/issues/4))
+* Run in background
 * Temperature history
 * Automatic startup in background when connected to the car's radio in bluetooth
 * Add support for other BLE Sensors
