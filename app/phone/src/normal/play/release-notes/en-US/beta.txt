@@ -1,0 +1,9 @@
+v1.1:
+- Multi vehicle layout support
+- Improved performance on the main screen
+v1.0:
+- Real time temperature and pressure
+- Customizable alerts
+- Dark/Light mode
+- Temperature and pressure units
+- Favorites sensors
