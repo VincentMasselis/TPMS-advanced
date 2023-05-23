@@ -24,9 +24,6 @@ internal class TakeScreenshotTest {
     @Test
     fun lightModeScreenshots() {
         composeTestRule.home {
-            dropdownMenu {
-                select("My car")
-            }
             takeScreenshots(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }

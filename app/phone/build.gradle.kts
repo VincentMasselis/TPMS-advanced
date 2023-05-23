@@ -128,7 +128,6 @@ tasks.whenTaskAdded {
             description =
                 "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
             val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
-            doFirst { mkdir(path) }
             from(outputFilesDir)
             into(path)
             eachFile {
@@ -146,9 +145,13 @@ tasks.whenTaskAdded {
 
 if (isDecrypted) afterEvaluate {
     // Play store listing must depends on the task which generates screenshots
-    tasks.filter { it.name.startsWith("publish") && it.name.endsWith("Listing") }
-        .forEach { publishListing ->
-            publishListing.dependsOn("copyScreenshot")
+    tasks.filter { it.name.startsWith("generate") && it.name.endsWith("PlayResources") }
+        .forEach { generatePlayResources ->
+            // generatePlayResources is a task used by "publishListing" which watch at the
+            // "phone-screenshots" folder in order to check if changes was made. The task
+            // "generatePlayResources" must be launched after "copyScreenshot" otherwise no
+            // screenshot will be uploaded at all.
+            generatePlayResources.dependsOn("copyScreenshot")
         }
 
     // Removes dependency which updates the play store listing when publishing a new app in beta
