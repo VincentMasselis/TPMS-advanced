@@ -94,8 +94,10 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             callback
         )
         awaitClose {
-            leScanner.flushPendingScanResults(callback)
-            leScanner.stopScan(callback)
+            if (bluetoothAdapter?.isEnabled == true) {
+                leScanner.flushPendingScanResults(callback)
+                leScanner.stopScan(callback)
+            }
         }
     }.flowOn(Dispatchers.Main) // System's BluetoothLeScanner class as issues if called on a background thread
         .mapNotNull { result -> result.scanRecord?.manufacturerSpecificData?.takeIf { it.size > 0 } }
