@@ -26,18 +26,21 @@ import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
 import androidx.core.util.size
 import com.masselis.tpmsadvanced.core.common.asFlow
+import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
+import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
@@ -46,11 +49,13 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.UUID.fromString
 import javax.inject.Inject
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
@@ -58,6 +63,8 @@ import kotlin.time.Duration.Companion.seconds
 internal class BluetoothLeScannerImpl @Inject internal constructor(
     private val context: Context
 ) : BluetoothLeScanner {
+
+    private var lastStartScan = Duration.ZERO
 
     private val bluetoothAdapter get() = context.getSystemService<BluetoothManager>()?.adapter
 
@@ -77,6 +84,12 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 close(BluetoothLeScanner.ScanFailed(errorCode))
             }
         }
+
+        // Anti-spam mechanism to avoid an exception when requesting 6 scans within a 30s frame
+        delay(5.seconds - (System.currentTimeMillis().milliseconds - lastStartScan))
+        // Delay elapsed, set lastStartScan to the current timestamp
+        lastStartScan = System.currentTimeMillis().milliseconds
+
         val leScanner = bluetoothAdapter!!.bluetoothLeScanner
         leScanner.startScan(
             listOf(
@@ -113,6 +126,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
 
     override fun normalScan(): Flow<Tyre> = balancedScanFlow
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun Flow<Raw>.shared() = this
         .map { raw ->
             @Suppress("MagicNumber")
@@ -139,12 +153,12 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 raw.alarm() == PRESSURE_ALARM_BYTE
             )
         }
+        .materializeCompletion()
         .shareIn(
-            CoroutineScope(Dispatchers.Default),
-            // Anti-spam mechanism to avoid an exception when requesting 6 scans within a 30s frame
-            SharingStarted.WhileSubscribed(5.seconds, Duration.ZERO),
-            0
+            GlobalScope + Dispatchers.Default,
+            SharingStarted.WhileSubscribed(),
         )
+        .dematerializeCompletion()
 
     @JvmInline
     @Suppress("MagicNumber")
