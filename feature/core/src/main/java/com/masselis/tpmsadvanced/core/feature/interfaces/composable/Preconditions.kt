@@ -2,7 +2,6 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,14 +46,9 @@ internal fun InternalPreconditions(
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        "ready"
+        startDestination = "ready",
+        modifier = modifier,
     ) {
-        composable("chip_is_off") {
-            ChipIsOff(
-                bluetoothState = bluetoothState,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
         composable("missing_permission") {
             MissingPermission(
                 text = @Suppress("MaxLineLength") "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
@@ -63,21 +57,25 @@ internal fun InternalPreconditions(
                 modifier = Modifier.fillMaxSize(),
             )
         }
+        composable("chip_is_off") {
+            ChipIsOff(
+                bluetoothState = bluetoothState,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         composable("ready") {
             ready()
         }
     }
-    Box(modifier) {
-        when {
-            permissionState.allPermissionsGranted.not() ->
-                navController.navigate("missing_permission") { popUpTo(0) }
+    when {
+        permissionState.allPermissionsGranted.not() ->
+            navController.navigate("missing_permission") { popUpTo(0) }
 
-            bluetoothState.isEnabled.not() ->
-                navController.navigate("chip_is_off") { popUpTo(0) }
+        bluetoothState.isEnabled.not() ->
+            navController.navigate("chip_is_off") { popUpTo(0) }
 
-            else ->
-                navController.navigate("ready") { popUpTo(0) }
-        }
+        else ->
+            navController.navigate("ready") { popUpTo(0) }
     }
 }
 

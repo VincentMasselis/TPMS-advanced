@@ -26,6 +26,9 @@ internal interface TyreViewModel {
         // Shows a blinking red tyre, could be an alert for the temperature or the pressure
         @Parcelize
         object Alerting : State()
+
+        @Parcelize
+        object DetectionIssue : State()
     }
 
     val stateFlow: StateFlow<State>
