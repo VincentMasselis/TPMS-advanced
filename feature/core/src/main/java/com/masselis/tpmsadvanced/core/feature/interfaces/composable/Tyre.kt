@@ -48,6 +48,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private val evaluator = ArgbEvaluator()
 
+@Suppress("LongMethod")
 @Composable
 internal fun Tyre(
     manySensor: ManySensor,

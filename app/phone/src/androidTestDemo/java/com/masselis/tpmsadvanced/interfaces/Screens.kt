@@ -174,6 +174,7 @@ internal class Home private constructor(
     companion object {
         @Suppress("MemberNameEqualsClassName")
         internal fun ComposeTestRule.home(block: Home.() -> Unit) {
+            waitForIdle()
             Home(this).block()
         }
 

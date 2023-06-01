@@ -7,9 +7,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 
+
 internal class PreconditionsViewModel @AssistedInject constructor(
     private val bluetoothLeScanner: BluetoothLeScanner,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    @Suppress("UnusedPrivateProperty") @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     @AssistedFactory

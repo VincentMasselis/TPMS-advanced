@@ -1,7 +1,6 @@
 package com.masselis.tpmsadvanced.qrcode.usecase
 
 import android.Manifest.permission.CAMERA
-import android.content.Context
 import androidx.camera.mlkit.vision.MlKitAnalyzer
 import androidx.camera.view.CameraController
 import androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED
@@ -28,7 +27,7 @@ import java.nio.ByteOrder
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
-internal class QrCodeAnalyserUseCase @Inject constructor(private val context: Context) {
+internal class QrCodeAnalyserUseCase @Inject constructor() {
 
     private val scanner = BarcodeScannerOptions.Builder()
         .setBarcodeFormats(Barcode.FORMAT_QR_CODE)

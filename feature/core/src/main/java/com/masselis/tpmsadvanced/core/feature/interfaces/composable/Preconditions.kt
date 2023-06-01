@@ -50,8 +50,9 @@ internal fun InternalPreconditions(
         modifier = modifier,
     ) {
         composable("missing_permission") {
+            @Suppress("MaxLineLength")
             MissingPermission(
-                text = @Suppress("MaxLineLength") "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
+                text = "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
                 refusedText = "Failed to obtain permission, please update this in the app's system settings",
                 permissionState = permissionState,
                 modifier = Modifier.fillMaxSize(),

@@ -9,7 +9,7 @@ import dagger.assisted.AssistedInject
 
 internal class CameraPreconditionsViewModel @AssistedInject constructor(
     private val qrCodeAnalyserUseCase: QrCodeAnalyserUseCase,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    @Suppress("UnusedPrivateProperty") @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     @AssistedFactory
     interface Factory {
