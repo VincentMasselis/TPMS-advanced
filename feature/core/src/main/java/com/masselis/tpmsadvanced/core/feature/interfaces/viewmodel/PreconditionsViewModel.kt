@@ -19,4 +19,6 @@ internal class PreconditionsViewModel @AssistedInject constructor(
     }
 
     fun requiredPermission() = bluetoothLeScanner.missingPermission()
+
+    fun isBluetoothRequired() = bluetoothLeScanner.isBluetoothRequired
 }

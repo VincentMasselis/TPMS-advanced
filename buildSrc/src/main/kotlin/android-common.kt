@@ -21,17 +21,15 @@ fun Project.base(android: BaseExtension) {
             targetCompatibility = VERSION_17
         }
         flavorDimensions("mode")
-        "demo".also { demoFlavorName ->
-            productFlavors {
-                create(demoFlavorName) {
-                    dimension = "mode"
-                }
-                create("normal") {
-                    dimension = "mode"
-                }
+        productFlavors {
+            val demo = create("demo") {
+                dimension = "mode"
+            }
+            create("normal") {
+                dimension = "mode"
             }
             variantFilter = Action {
-                if (flavors.any { it.name == demoFlavorName } && buildType.name == "release")
+                if (flavors.any { it.name == demo.name } && buildType.name == "release")
                     ignore = true
             }
         }

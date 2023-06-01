@@ -176,6 +176,8 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             throw IllegalArgumentException()
     }.filter { checkSelfPermission(context, it) != PERMISSION_GRANTED }
 
+    override val isBluetoothRequired = true
+
     @OptIn(ExperimentalUnsignedTypes::class)
     companion object {
         private val SYSGRATION_SERVICE_UUID = ParcelUuid(

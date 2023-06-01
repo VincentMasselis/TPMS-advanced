@@ -10,4 +10,6 @@ public interface BluetoothLeScanner {
     public fun normalScan(): Flow<Tyre>
 
     public fun missingPermission(): List<String>
+
+    public val isBluetoothRequired: Boolean
 }

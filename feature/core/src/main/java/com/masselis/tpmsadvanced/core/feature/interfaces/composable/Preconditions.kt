@@ -72,7 +72,7 @@ internal fun InternalPreconditions(
         permissionState.allPermissionsGranted.not() ->
             navController.navigate("missing_permission") { popUpTo(0) }
 
-        bluetoothState.isEnabled.not() ->
+        viewModel.isBluetoothRequired() && bluetoothState.isEnabled.not() ->
             navController.navigate("chip_is_off") { popUpTo(0) }
 
         else ->

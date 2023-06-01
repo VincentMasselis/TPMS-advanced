@@ -9,7 +9,6 @@ import com.masselis.tpmsadvanced.data.record.model.Tyre
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 @DataRecordComponent.Scope
@@ -67,4 +66,6 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
     override fun normalScan(): Flow<Tyre> = source
 
     override fun missingPermission(): List<String> = emptyList()
+
+    override val isBluetoothRequired = false
 }
