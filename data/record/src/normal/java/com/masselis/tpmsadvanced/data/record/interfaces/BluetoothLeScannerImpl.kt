@@ -5,10 +5,6 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED
-import android.bluetooth.BluetoothAdapter.ERROR
-import android.bluetooth.BluetoothAdapter.EXTRA_STATE
-import android.bluetooth.BluetoothAdapter.STATE_ON
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
@@ -17,7 +13,6 @@ import android.bluetooth.le.ScanSettings
 import android.bluetooth.le.ScanSettings.MATCH_MODE_AGGRESSIVE
 import android.bluetooth.le.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT
 import android.content.Context
-import android.content.IntentFilter
 import android.os.Build
 import android.os.ParcelUuid
 import androidx.annotation.RequiresPermission
@@ -25,7 +20,6 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
 import androidx.core.util.size
-import com.masselis.tpmsadvanced.core.common.asFlow
 import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
 import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.core.common.now
@@ -46,7 +40,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -182,13 +175,6 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             @Suppress("ThrowingExceptionsWithoutMessageOrCause")
             throw IllegalArgumentException()
     }.filter { checkSelfPermission(context, it) != PERMISSION_GRANTED }
-
-    override fun isChipTurnedOn(): Flow<Boolean> = IntentFilter(ACTION_STATE_CHANGED)
-        .asFlow()
-        .map { it.getIntExtra(EXTRA_STATE, ERROR) }
-        .filter { it != ERROR }
-        .map { it == STATE_ON }
-        .onStart { emit(bluetoothAdapter?.isEnabled ?: false) }
 
     @OptIn(ExperimentalUnsignedTypes::class)
     companion object {

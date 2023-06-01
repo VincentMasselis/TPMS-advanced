@@ -67,6 +67,4 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
     override fun normalScan(): Flow<Tyre> = source
 
     override fun missingPermission(): List<String> = emptyList()
-
-    override fun isChipTurnedOn(): Flow<Boolean> = flowOf(true)
 }
