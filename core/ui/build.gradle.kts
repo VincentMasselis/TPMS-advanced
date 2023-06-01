@@ -2,14 +2,9 @@ plugins {
     id("android-lib")
 }
 
-@Suppress("UnstableApiUsage")
 android {
     namespace = "com.masselis.tpmsadvanced.core.ui"
-    buildFeatures.compose = true
-    composeOptions {
-        val composeCompilerVersion: String by project
-        kotlinCompilerExtensionVersion = composeCompilerVersion
-    }
+    enableCompose(this)
 }
 
 dependencies {

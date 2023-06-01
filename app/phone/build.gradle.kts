@@ -71,13 +71,9 @@ android {
         }
     }
     buildFeatures {
-        compose = true
         buildConfig = true
     }
-    composeOptions {
-        val composeCompilerVersion: String by project
-        kotlinCompilerExtensionVersion = composeCompilerVersion
-    }
+    enableCompose(this)
 }
 
 dependencies {

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.masselis.tpmsadvanced.core.feature.unit"
+    namespace = "com.masselis.tpmsadvanced.core.feature.background"
     enableCompose(this)
 }
 

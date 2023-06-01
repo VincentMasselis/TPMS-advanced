@@ -1,5 +1,19 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     `kotlin-dsl`
+}
+
+tasks.withType<KotlinCompile>().all {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+        options.freeCompilerArgs.addAll(
+            listOf(
+                "-Xexplicit-api=strict",
+                "-opt-in=kotlin.RequiresOptIn",
+            )
+        )
+    }
 }
 
 dependencies {
