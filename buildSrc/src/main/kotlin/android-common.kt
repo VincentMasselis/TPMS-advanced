@@ -2,7 +2,9 @@ import com.android.build.gradle.BaseExtension
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion.VERSION_17
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -21,17 +23,15 @@ fun Project.base(android: BaseExtension) {
             targetCompatibility = VERSION_17
         }
         flavorDimensions("mode")
-        "demo".also { demoFlavorName ->
-            productFlavors {
-                create(demoFlavorName) {
-                    dimension = "mode"
-                }
-                create("normal") {
-                    dimension = "mode"
-                }
+        productFlavors {
+            val demo by creating {
+                dimension = "mode"
+            }
+            create("normal") {
+                dimension = "mode"
             }
             variantFilter = Action {
-                if (flavors.any { it.name == demoFlavorName } && buildType.name == "release")
+                if (flavors.any { it.name == demo.name } && buildType.name == "release")
                     ignore = true
             }
         }

@@ -50,6 +50,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Vehicle
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
+import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.settings
 import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
@@ -168,7 +169,8 @@ private fun TopAppBar(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = null
                             )
-                        }
+                        },
+                        modifier = Modifier.testTag(backButton)
                     )
                 }
                 Paths.Home, null -> {}
@@ -220,4 +222,5 @@ internal sealed class Paths(val path: String) {
 
 public object HomeTags {
     public const val settings: String = "home_settings"
+    public const val backButton: String = "back_button"
 }

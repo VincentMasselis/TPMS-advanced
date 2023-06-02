@@ -1,9 +1,6 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.bluetooth.BluetoothAdapter
-import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,61 +9,83 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.core.ui.BluetoothState
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
-import com.masselis.tpmsadvanced.core.ui.OnLifecycleEvent
-import kotlinx.collections.immutable.toImmutableList
+import com.masselis.tpmsadvanced.core.ui.rememberBluetoothState
 
 @Composable
 public fun Preconditions(
-    ready: @Composable () -> Unit
-): Unit = InternalPreconditions(ready)
+    modifier: Modifier = Modifier,
+    ready: @Composable () -> Unit,
+): Unit = InternalPreconditions(ready, modifier)
 
-@Suppress("NAME_SHADOWING")
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun InternalPreconditions(
     ready: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: PreconditionsViewModel = viewModel {
         FeatureCoreComponent.preconditionsViewModel.build(createSavedStateHandle())
     }
 ) {
-    OnLifecycleEvent { _, event ->
-        if (event == Lifecycle.Event.ON_RESUME)
-            viewModel.trigger()
-    }
-    val state by viewModel.stateFlow.collectAsState()
-    when (val state = state) {
-        State.Loading -> {}
-        State.BluetoothChipTurnedOff -> ChipIsOff(modifier = Modifier.fillMaxSize())
-        is State.MissingPermission -> MissingPermission(
+    val permissionState = rememberMultiplePermissionsState(viewModel.requiredPermission())
+    val bluetoothState = rememberBluetoothState()
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = "ready",
+        modifier = modifier,
+    ) {
+        composable("missing_permission") {
             @Suppress("MaxLineLength")
-            "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
-            "Failed to obtain permission, please update this in the app's system settings",
-            missingPermissions = state.permissions.toImmutableList(),
-            modifier = Modifier.fillMaxSize(),
-        ) { viewModel.trigger() }
-        State.Ready -> ready()
+            MissingPermission(
+                text = "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
+                refusedText = "Failed to obtain permission, please update this in the app's system settings",
+                permissionState = permissionState,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+        composable("chip_is_off") {
+            ChipIsOff(
+                bluetoothState = bluetoothState,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        composable("ready") {
+            ready()
+        }
+    }
+    when {
+        permissionState.allPermissionsGranted.not() ->
+            navController.navigate("missing_permission") { popUpTo(0) }
+
+        viewModel.isBluetoothRequired() && bluetoothState.isEnabled.not() ->
+            navController.navigate("chip_is_off") { popUpTo(0) }
+
+        else ->
+            navController.navigate("ready") { popUpTo(0) }
     }
 }
 
 @SuppressLint("MissingPermission")
 @Composable
 private fun ChipIsOff(
+    bluetoothState: BluetoothState,
     modifier: Modifier = Modifier
 ) {
-    val activity = LocalContext.current as Activity
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -81,7 +100,7 @@ private fun ChipIsOff(
                 .padding(bottom = 8.dp)
         )
         FilledTonalButton(onClick = {
-            activity.startActivity(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+            bluetoothState.askEnable()
         }) {
             Text("Enable bluetooth")
         }
