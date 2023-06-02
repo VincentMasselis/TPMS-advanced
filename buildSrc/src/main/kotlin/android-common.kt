@@ -2,7 +2,9 @@ import com.android.build.gradle.BaseExtension
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion.VERSION_17
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -22,7 +24,7 @@ fun Project.base(android: BaseExtension) {
         }
         flavorDimensions("mode")
         productFlavors {
-            val demo = create("demo") {
+            val demo by creating {
                 dimension = "mode"
             }
             create("normal") {
