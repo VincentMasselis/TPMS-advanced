@@ -20,4 +20,6 @@ dependencies {
     api("androidx.compose.ui:ui-test-junit4")
     api("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     api("org.jetbrains.kotlin:kotlin-test")
+    api("androidx.test.uiautomator:uiautomator:2.3.0-alpha03")
+
 }
