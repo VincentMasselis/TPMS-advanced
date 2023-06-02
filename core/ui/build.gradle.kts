@@ -16,6 +16,8 @@ dependencies {
     api("androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion")
     api("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     api("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
+    api("androidx.lifecycle:lifecycle-process:$lifecycleVersion")
+
 
     api("androidx.compose.ui:ui")
     api("androidx.compose.ui:ui-tooling-preview")

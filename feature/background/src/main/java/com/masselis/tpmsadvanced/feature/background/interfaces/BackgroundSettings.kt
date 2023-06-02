@@ -38,6 +38,7 @@ public fun BackgroundSettings(
     )
 }
 
+@Suppress("CyclomaticComplexMethod")
 @Composable
 internal fun BackgroundSettings(
     vehicle: Vehicle,

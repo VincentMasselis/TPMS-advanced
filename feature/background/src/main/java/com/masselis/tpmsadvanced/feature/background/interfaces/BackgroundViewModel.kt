@@ -1,11 +1,8 @@
 package com.masselis.tpmsadvanced.feature.background.interfaces
 
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Parcelable
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
@@ -59,9 +56,7 @@ internal class BackgroundViewModel @AssistedInject constructor(
     fun isPermissionGrant() = checkForPermissionUseCase.isPermissionGrant()
 
     fun monitor() {
-        requiredPermission()
-            ?.let { ContextCompat.checkSelfPermission(appContext, it) }
-            ?.also { assert(it == PERMISSION_GRANTED) }
+        assert(checkForPermissionUseCase.isPermissionGrant())
         viewModelScope.launch {
             database.updateIsBackgroundMonitor(true, vehicle.uuid)
         }
