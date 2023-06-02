@@ -13,7 +13,8 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
-import androidx.test.espresso.Espresso
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.ClearBoundSensorsButtonTags
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags
@@ -153,7 +154,7 @@ internal class Home private constructor(
 
         fun isClearFavouritesEnabled() = clearFavouritesButton.check(isEnabled())
 
-        fun leave() = Espresso.pressBack()
+        fun leave() = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).pressBack()
 
         inner class DeleteVehicleDialog {
             private val deleteButton
