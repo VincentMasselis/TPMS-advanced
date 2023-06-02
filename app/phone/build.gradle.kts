@@ -84,6 +84,7 @@ dependencies {
     implementation(project(":data:app"))
     implementation(project(":feature:core"))
     implementation(project(":feature:qrcode"))
+    implementation(project(":feature:background"))
 
     testImplementation(project(":core:test"))
     androidTestUtil("androidx.test:orchestrator:$testServicesVersion")

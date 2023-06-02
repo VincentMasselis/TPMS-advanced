@@ -3,7 +3,6 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,33 +20,36 @@ import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.Separator
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
+import com.masselis.tpmsadvanced.feature.background.interfaces.BackgroundSettings
 
 @Composable
-public fun VehicleRangeSettings(modifier: Modifier = Modifier): Unit = VehicleRangeSettings(
+public fun VehicleSettings(
+    modifier: Modifier = Modifier
+): Unit = VehicleSettings(
     modifier,
     viewModel { FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle()) }
 )
 
 @Composable
-internal fun VehicleRangeSettings(
+internal fun VehicleSettings(
     modifier: Modifier = Modifier,
     viewModel: CurrentVehicleComponentViewModel = viewModel {
         FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
     }
 ) {
     val component by viewModel.stateFlow.collectAsState()
-    CompositionLocalProvider(LocalVehicleComponent provides component) {
-        Column(modifier) {
-            PressureRange(component)
-            Separator()
-            HighTemp(component)
-            NormalTemp(component)
-            LowTemp(component)
-            Separator()
-            ClearBoundSensorsButton(Modifier.fillMaxWidth())
-            Separator()
-            DeleteVehicleButton(Modifier.fillMaxWidth())
-        }
+    Column(modifier) {
+        PressureRange(component)
+        Separator()
+        HighTemp(component)
+        NormalTemp(component)
+        LowTemp(component)
+        Separator()
+        BackgroundSettings(component.vehicle)
+        Separator()
+        ClearBoundSensorsButton(component, Modifier.fillMaxWidth())
+        Separator()
+        DeleteVehicleButton(component, Modifier.fillMaxWidth())
     }
 }
 

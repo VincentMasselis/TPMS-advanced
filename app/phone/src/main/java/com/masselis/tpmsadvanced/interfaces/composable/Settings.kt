@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.BuildConfig
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.VehicleRangeSettings
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.VehicleSettings
 import com.masselis.tpmsadvanced.core.feature.unit.interfaces.UnitsSettings
 import com.masselis.tpmsadvanced.core.ui.Separator
 
@@ -29,7 +29,7 @@ internal fun Settings(
 ) {
     UnitsSettings()
     Separator()
-    VehicleRangeSettings()
+    VehicleSettings()
     Separator()
     Box(Modifier.fillMaxWidth()) {
         Text(

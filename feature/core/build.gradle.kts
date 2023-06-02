@@ -14,6 +14,7 @@ dependencies {
     api(project(":data:record"))
     api(project(":data:car"))
     api(project(":feature:unit"))
+    api(project(":feature:background"))
 
     implementation(project(":core:debug-ui"))
 

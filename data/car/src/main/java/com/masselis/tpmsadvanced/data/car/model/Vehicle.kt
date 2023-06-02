@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature
 import kotlinx.parcelize.Parcelize
-import java.util.*
+import java.util.UUID
 
 @Parcelize
 public data class Vehicle(
@@ -16,6 +16,7 @@ public data class Vehicle(
     public val lowTemp: Temperature,
     public val normalTemp: Temperature,
     public val highTemp: Temperature,
+    public val isBackgroundMonitor: Boolean,
 ) : Parcelable {
     public enum class Kind {
         /**
