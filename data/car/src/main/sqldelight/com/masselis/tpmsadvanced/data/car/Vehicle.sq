@@ -108,6 +108,9 @@ UPDATE Vehicle SET isBackgroundMonitor = ? WHERE uuid = ?;
 updateIsBackgroundMonitorList:
 UPDATE Vehicle SET isBackgroundMonitor = ? WHERE uuid IN ?;
 
+updateEveryIsBackgroundMonitorToFalse:
+UPDATE Vehicle SET isBackgroundMonitor = 0 WHERE isBackgroundMonitor = 1;
+
 delete:
 DELETE FROM Vehicle WHERE uuid = ?;
 
@@ -119,6 +122,9 @@ SELECT * FROM Vehicle WHERE isFavourite = 1;
 
 selectAll:
 SELECT * FROM Vehicle WHERE isDeleting = 0;
+
+selectAllIsBackgroundMonitor:
+SELECT isBackgroundMonitor FROM Vehicle;
 
 count:
 SELECT count(uuid) FROM Vehicle WHERE isDeleting = 0;

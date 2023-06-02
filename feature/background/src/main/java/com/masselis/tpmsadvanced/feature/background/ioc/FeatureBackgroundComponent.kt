@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.feature.background.ioc
 
 import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.BackgroundViewModel
+import com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
 import dagger.Component
 import javax.inject.Inject
@@ -22,6 +23,8 @@ public interface FeatureBackgroundComponent {
     public annotation class Scope
 
     public fun inject(injectable: Injectable)
+
+    public fun inject(injectable: MonitorService)
 
     public companion object : Injectable()
 

@@ -101,6 +101,10 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
             queries.updateIsBackgroundMonitorList(isBackgroundMonitor, uuids)
         }
 
+    public suspend fun updateEveryIsBackgroundMonitorToFalse(): Unit = withContext(IO) {
+        queries.updateEveryIsBackgroundMonitorToFalse()
+    }
+
     public fun currentVehicleFlow(): Flow<Vehicle> = queries.currentFavourite(mapper)
         .asFlow()
         .mapToOne(IO)
@@ -112,6 +116,11 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
     public fun countFlow(): Flow<Long> = queries.count().asFlow().mapToOne(IO)
 
     public fun selectAllFlow(): Flow<List<Vehicle>> = queries.selectAll(mapper)
+        .asFlow()
+        .mapToList(IO)
+
+    public fun selectAllIsBackgroundMonitor(): Flow<List<Boolean>> = queries
+        .selectAllIsBackgroundMonitor()
         .asFlow()
         .mapToList(IO)
 
