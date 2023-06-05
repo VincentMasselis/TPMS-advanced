@@ -1,17 +1,18 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-@VehicleComponent.Scope
+@OptIn(DelicateCoroutinesApi::class)
+@FeatureCoreComponent.Scope
 internal class VehicleCountStateFlowUseCase @Inject constructor(
     vehicleDatabase: VehicleDatabase,
-    scope: CoroutineScope
 ) : StateFlow<Long> by vehicleDatabase
     .countFlow()
-    .stateIn(scope, SharingStarted.Eagerly, vehicleDatabase.count())
+    .stateIn(GlobalScope, SharingStarted.Eagerly, vehicleDatabase.count())

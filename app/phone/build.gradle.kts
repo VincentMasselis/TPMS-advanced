@@ -83,6 +83,7 @@ dependencies {
     implementation(project(":core:debug-ui"))
     implementation(project(":data:app"))
     implementation(project(":feature:core"))
+    implementation(project(":feature:unit"))
     implementation(project(":feature:qrcode"))
     implementation(project(":feature:background"))
 

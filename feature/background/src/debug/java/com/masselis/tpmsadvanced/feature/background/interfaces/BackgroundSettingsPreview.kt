@@ -13,8 +13,11 @@ import java.util.UUID
 internal fun BackgroundSettingsPreview() {
     BackgroundSettings(
         mockk {
-            every { uuid } returns UUID.randomUUID()
-            every { name } returns "MOCK"
+            every { vehicle } returns
+                    mockk {
+                        every { uuid } returns UUID.randomUUID()
+                        every { name } returns "MOCK"
+                    }
         },
         viewModel = mockk(relaxed = true) {
             every { stateFlow } returns MutableStateFlow(State.MonitorDisabled)

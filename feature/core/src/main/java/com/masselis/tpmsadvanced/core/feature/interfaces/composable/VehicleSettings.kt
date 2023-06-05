@@ -20,18 +20,20 @@ import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.Separator
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
-import com.masselis.tpmsadvanced.feature.background.interfaces.BackgroundSettings
 
 @Composable
 public fun VehicleSettings(
+    backgroundSettings: @Composable (VehicleComponent) -> Unit,
     modifier: Modifier = Modifier
 ): Unit = VehicleSettings(
+    backgroundSettings,
     modifier,
     viewModel { FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle()) }
 )
 
 @Composable
 internal fun VehicleSettings(
+    backgroundSettings: @Composable (VehicleComponent) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CurrentVehicleComponentViewModel = viewModel {
         FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
@@ -45,7 +47,7 @@ internal fun VehicleSettings(
         NormalTemp(component)
         LowTemp(component)
         Separator()
-        BackgroundSettings(component.vehicle)
+        backgroundSettings(component)
         Separator()
         ClearBoundSensorsButton(component, Modifier.fillMaxWidth())
         Separator()

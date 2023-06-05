@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.feature.background.ioc
 
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.BackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService
@@ -10,13 +11,17 @@ import javax.inject.Inject
 @FeatureBackgroundComponent.Scope
 @Component(
     dependencies = [
-        DataVehicleComponent::class
+        DataVehicleComponent::class,
+        FeatureCoreComponent::class
     ]
 )
 public interface FeatureBackgroundComponent {
     @Component.Factory
     public interface Factory {
-        public fun build(dataVehicleComponent: DataVehicleComponent = DataVehicleComponent): FeatureBackgroundComponent
+        public fun build(
+            dataVehicleComponent: DataVehicleComponent = DataVehicleComponent,
+            featureCoreComponent: FeatureCoreComponent = FeatureCoreComponent
+        ): FeatureBackgroundComponent
     }
 
     @javax.inject.Scope
@@ -34,6 +39,7 @@ public interface FeatureBackgroundComponent {
 
         @Inject
         internal lateinit var checkForPermissionUseCase: CheckForPermissionUseCase
+
         @Inject
         internal lateinit var backgroundViewModel: BackgroundViewModel.Factory
 

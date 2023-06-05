@@ -4,72 +4,70 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import androidx.core.app.NotificationChannelCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.NotificationManagerCompat.IMPORTANCE_MIN
-import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.core.feature.background.R
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
+import com.masselis.tpmsadvanced.feature.background.ioc.DaggerBackgroundVehicleComponent
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.plus
 import javax.inject.Inject
 
 public class MonitorService : Service() {
 
     @Inject
     internal lateinit var vehiclesToMonitorUseCase: VehiclesToMonitorUseCase
-    private val notificationManager = NotificationManagerCompat.from(appContext)
+
+    @Inject
+    internal lateinit var vehicleComponentFactory: VehicleComponent.Factory
+
+    private val monitoring = mutableListOf<BackgroundVehicleComponent>()
     private lateinit var scope: CoroutineScope
 
     init {
         FeatureBackgroundComponent.inject(this)
-        NotificationManagerCompat.from(appContext).createNotificationChannel(
-            NotificationChannelCompat
-                .Builder(channelName, IMPORTANCE_MIN)
-                .setName("Monitor service")
-                .build()
-        )
     }
 
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
-        scope = CoroutineScope(Dispatchers.Main)
+        scope = CoroutineScope(Dispatchers.Default)
         vehiclesToMonitorUseCase
             .ignoredAndMonitored()
             .onEach { (ignored, monitored) ->
-                monitored.forEachIndexed { index, vehicle ->
-                    if (index == 0)
-                        startForeground(vehicle.uuid.hashCode(), notification(vehicle))
-                    else
-                        notificationManager.notify(vehicle.uuid.hashCode(), notification(vehicle))
+                // Removes entries from `monitoring`
+                monitoring.removeIf { monitoring ->
+                    ignored.any { it.uuid == monitoring.vehicle.uuid }
+                        .also { toRemove -> if (toRemove) monitoring.scope.cancel() }
                 }
-                ignored.forEach { notificationManager.cancel(it.uuid.hashCode()) }
+
+                // Add entries into `monitoring`
+                val monitoringUuids = monitoring.map { comp -> comp.vehicle.uuid }
+                monitored
+                    .filter { monitoringUuids.contains(it.uuid).not() }
+                    .map {
+                        vehicleComponentFactory.build(
+                            it,
+                            scope + Job(scope.coroutineContext[Job])
+                        )
+                    }
+                    .map { DaggerBackgroundVehicleComponent.factory().build(it, this) }
+                    .onEach { it.serviceNotifier }
+                    .forEach { monitoring.add(it) }
             }
             .launchIn(scope)
     }
 
     override fun onDestroy() {
         scope.cancel(null)
+        monitoring.clear()
         super.onDestroy()
     }
 
-    private fun notification(vehicle: Vehicle) = NotificationCompat
-        .Builder(appContext, channelName)
-        .setSmallIcon(R.drawable.car_tire_alert)
-        .setPriority(NotificationCompat.PRIORITY_MIN)
-        .setContentText("Monitoring ${vehicle.name}")
-        .build()
-
     override fun onBind(intent: Intent?): IBinder? = null
-
-    internal companion object {
-        private const val channelName = "MONITOR_SERVICE"
-    }
 }

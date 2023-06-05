@@ -21,7 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
 import kotlinx.coroutines.delay
@@ -35,9 +35,12 @@ internal fun TyreStat(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: TyreStatsViewModel = viewModel(
-        key = "TyreStatsViewModel_${vehicleComponent.hashCode()}_${manySensor.name}"
+        key = "TyreStatsViewModel_${vehicleComponent.hashCode()}_${manySensor}"
     ) {
-        vehicleComponent.tyreComponent(manySensor).tyreStatViewModelFactory
+        vehicleComponent
+            .findTyreComponentUseCase
+            .find(manySensor)
+            .tyreStatViewModelFactory
             .build(createSavedStateHandle())
     }
 ) {

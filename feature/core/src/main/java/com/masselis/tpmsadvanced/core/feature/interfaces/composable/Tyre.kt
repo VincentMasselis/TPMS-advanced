@@ -40,8 +40,8 @@ import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
 import com.masselis.tpmsadvanced.core.ui.restartApp
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -54,8 +54,12 @@ internal fun Tyre(
     manySensor: ManySensor,
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${vehicleComponent.hashCode()}_${manySensor.name}") {
-        vehicleComponent.tyreComponent(manySensor).tyreViewModelFactory.build(createSavedStateHandle())
+    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${vehicleComponent.hashCode()}_${manySensor}") {
+        vehicleComponent
+            .findTyreComponentUseCase
+            .find(manySensor)
+            .tyreViewModelFactory
+            .build(createSavedStateHandle())
     },
 ) {
     val state by viewModel.stateFlow.collectAsState()

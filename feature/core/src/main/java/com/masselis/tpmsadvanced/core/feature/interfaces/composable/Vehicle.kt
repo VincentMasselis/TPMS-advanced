@@ -38,9 +38,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT

@@ -16,9 +16,10 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewM
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature
@@ -95,6 +96,8 @@ private class DemoVehicleComponent : VehicleComponent() {
     override val carFlow: StateFlow<Vehicle>
         get() = TODO("Not yet implemented")
     override val scope: CoroutineScope
+        get() = TODO("Not yet implemented")
+    override val vehicleRangesUseCase: VehicleRangesUseCase
         get() = TODO("Not yet implemented")
     override val clearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory
         get() = TODO("Not yet implemented")

@@ -10,8 +10,9 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettin
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
@@ -39,15 +40,16 @@ internal class PreviewTyreComponent(
             override fun build(savedStateHandle: SavedStateHandle): BindSensorButtonViewModel =
                 previewBindSensorViewModel()
         }
-) : TyreComponent()
+) : TyreComponent() {
+    override val tyreAtmosphereUseCase: TyreAtmosphereUseCase
+        get() = TODO("Not yet implemented")
+}
 
 @Suppress("LongParameterList")
 internal class PreviewVehicleComponent(
     override val findTyreComponentUseCase: FindTyreComponentUseCase =
         mockk<FindTyreComponentUseCase>().also {
-            every { it.find(any<SensorLocation>()) } returns PreviewTyreComponent()
-            every { it.find(any<SensorLocation.Axle>()) } returns PreviewTyreComponent()
-            every { it.find(any<SensorLocation.Side>()) } returns PreviewTyreComponent()
+            every { it.find(any()) } returns PreviewTyreComponent()
         },
     override val vehicle: Vehicle = previewVehicle,
     override val carFlow: StateFlow<Vehicle> = MutableStateFlow(previewVehicle),
@@ -66,4 +68,7 @@ internal class PreviewVehicleComponent(
             override fun build(savedStateHandle: SavedStateHandle): DeleteVehicleViewModel =
                 previewDeleteVehicleViewModel()
         }
-) : VehicleComponent()
+) : VehicleComponent() {
+    override val vehicleRangesUseCase: VehicleRangesUseCase
+        get() = TODO("Not yet implemented")
+}

@@ -22,29 +22,31 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.BackgroundViewModel.State
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 
 @Composable
 public fun BackgroundSettings(
-    vehicle: Vehicle,
+    component: VehicleComponent,
     modifier: Modifier = Modifier
 ) {
     BackgroundSettings(
-        vehicle,
+        component,
         modifier,
-        viewModel { FeatureBackgroundComponent.backgroundViewModel.build(vehicle) }
+        viewModel(key = "BackgroundViewModel_${component.vehicle.uuid}") {
+            FeatureBackgroundComponent.backgroundViewModel.build(component.vehicle)
+        }
     )
 }
 
 @Suppress("CyclomaticComplexMethod")
 @Composable
 internal fun BackgroundSettings(
-    vehicle: Vehicle,
+    component: VehicleComponent,
     modifier: Modifier = Modifier,
-    viewModel: BackgroundViewModel = viewModel {
-        FeatureBackgroundComponent.backgroundViewModel.build(vehicle)
+    viewModel: BackgroundViewModel = viewModel(key = "BackgroundViewModel_${component.vehicle.uuid}") {
+        FeatureBackgroundComponent.backgroundViewModel.build(component.vehicle)
     }
 ) {
     val activity = LocalContext.current as Activity
@@ -56,7 +58,7 @@ internal fun BackgroundSettings(
     val state by viewModel.stateFlow.collectAsState()
     Row(modifier) {
         Text(
-            text = "Monitor ${vehicle.name} when the app is in background",
+            text = "Monitor ${component.vehicle.name} when the app is in background",
             modifier = Modifier
                 .weight(1f)
                 .align(Alignment.CenterVertically)

@@ -13,4 +13,5 @@ dependencies {
     api(project(":core:common"))
     api(project(":core:debug-ui"))
     api(project(":data:car"))
+    api(project(":feature:core"))
 }

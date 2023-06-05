@@ -4,7 +4,6 @@ import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
-import com.masselis.tpmsadvanced.core.feature.unit.ioc.FeatureUnitComponent
 import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
@@ -21,7 +20,6 @@ import javax.inject.Inject
         DataRecordComponent::class,
         DataUnitComponent::class,
         DataVehicleComponent::class,
-        FeatureUnitComponent::class,
     ]
 )
 public interface FeatureCoreComponent {
@@ -33,12 +31,13 @@ public interface FeatureCoreComponent {
             dataRecordComponent: DataRecordComponent = DataRecordComponent,
             dataUnitComponent: DataUnitComponent = DataUnitComponent,
             dataVehicleComponent: DataVehicleComponent = DataVehicleComponent,
-            featureUnitComponent: FeatureUnitComponent = FeatureUnitComponent,
         ): FeatureCoreComponent
     }
 
     @javax.inject.Scope
     public annotation class Scope
+
+    public val vehicleComponentFactory: VehicleComponent.Factory
 
     public fun inject(injectable: Injectable)
 

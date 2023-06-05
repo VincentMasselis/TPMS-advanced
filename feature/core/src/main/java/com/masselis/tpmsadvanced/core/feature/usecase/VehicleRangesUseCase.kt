@@ -3,6 +3,8 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.record.model.Pressure
+import com.masselis.tpmsadvanced.data.record.model.Temperature
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,17 +18,22 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
 @VehicleComponent.Scope
-internal class VehicleRangesUseCase @Inject constructor(
+public class VehicleRangesUseCase @Inject internal constructor(
     @Named("base") private val vehicle: Vehicle,
     private val database: VehicleDatabase,
     scope: CoroutineScope
 ) {
 
-    val lowPressure = MutableStateFlow(database.selectLowPressure(vehicle.uuid))
-    val highPressure = MutableStateFlow(database.selectHighPressure(vehicle.uuid))
-    val lowTemp = MutableStateFlow(database.selectLowTemp(vehicle.uuid))
-    val normalTemp = MutableStateFlow(database.selectNormalTemp(vehicle.uuid))
-    val highTemp = MutableStateFlow(database.selectHighTemp(vehicle.uuid))
+    public val lowPressure: MutableStateFlow<Pressure> =
+        MutableStateFlow(database.selectLowPressure(vehicle.uuid))
+    public val highPressure: MutableStateFlow<Pressure> =
+        MutableStateFlow(database.selectHighPressure(vehicle.uuid))
+    public val lowTemp: MutableStateFlow<Temperature> =
+        MutableStateFlow(database.selectLowTemp(vehicle.uuid))
+    public val normalTemp: MutableStateFlow<Temperature> =
+        MutableStateFlow(database.selectNormalTemp(vehicle.uuid))
+    public val highTemp: MutableStateFlow<Temperature> =
+        MutableStateFlow(database.selectHighTemp(vehicle.uuid))
 
     init {
         lowPressure

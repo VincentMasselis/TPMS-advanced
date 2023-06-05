@@ -27,7 +27,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTa
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.*
 
 @Composable
 internal fun BindSensorButton(
@@ -35,9 +35,9 @@ internal fun BindSensorButton(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: BindSensorButtonViewModel = viewModel(
-        key = "BindSensorButtonViewModel_${vehicleComponent.hashCode()}_${manySensor.name}"
+        key = "BindSensorButtonViewModel_${vehicleComponent.hashCode()}_${manySensor}"
     ) {
-        vehicleComponent.tyreComponent(manySensor)
+        vehicleComponent.findTyreComponentUseCase.find(manySensor)
             .bindSensorButtonViewModelFactory
             .build(createSavedStateHandle())
     }
@@ -107,7 +107,7 @@ private fun BindSensorDialog(
 public object BindSensorTags {
     public object Button {
         public fun tag(manySensor: ManySensor): String =
-            "bindSensorButton_${manySensor.name}"
+            "bindSensorButton_${manySensor}"
     }
 
     public object Dialog {
