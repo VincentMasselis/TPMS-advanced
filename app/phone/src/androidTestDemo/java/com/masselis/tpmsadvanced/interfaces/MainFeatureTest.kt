@@ -60,7 +60,7 @@ internal class MainFeatureTest {
             }
             composeTestRule.waitUntil { isBindSensorAvailable(ManySensor.Located(FRONT_LEFT)).not() }
             settings {
-                assert(isClearFavouritesEnabled())
+                composeTestRule.waitUntil { isClearFavouritesEnabled() }
                 clearFavourites()
                 composeTestRule.waitUntil { isClearFavouritesEnabled().not() }
                 leave()
