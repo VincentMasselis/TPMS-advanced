@@ -1,3 +1,5 @@
+v1.2:
+- Monitor your vehicle even if the app is in background
 v1.1.1:
 - Fixed crash if the bluetooth scan fails
 v1.1:
