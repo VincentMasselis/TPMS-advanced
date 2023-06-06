@@ -16,8 +16,8 @@ internal class VehiclesToMonitorUseCase @Inject constructor(
                 .groupBy { it.isBackgroundMonitor }
                 .let {
                     Pair(
-                        it.getValue(false),
-                        it.getValue(true)
+                        it[false] ?: emptyList(),
+                        it[true] ?: emptyList()
                     )
                 }
         }

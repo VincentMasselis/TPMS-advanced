@@ -1,8 +1,10 @@
 package com.masselis.tpmsadvanced.feature.background.ioc
 
 import android.app.Service
+import com.masselis.tpmsadvanced.core.common.InternalDaggerImplementation
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier
 import dagger.BindsInstance
 import dagger.Component
@@ -11,16 +13,28 @@ import javax.inject.Named
 
 @BackgroundVehicleComponent.Scope
 @Component(
-    dependencies = [VehicleComponent::class]
+    dependencies = [
+        VehicleComponent::class,
+        DataUnitComponent::class,
+    ]
 )
 internal abstract class BackgroundVehicleComponent {
 
     @Component.Factory
-    interface Factory {
-        fun build(
+    abstract class Factory {
+        @InternalDaggerImplementation
+        abstract fun daggerOnlyBuild(
+            @BindsInstance foregroundService: Service?,
             vehicleComponent: VehicleComponent,
-            @BindsInstance service: Service,
+            dataUnitComponent: DataUnitComponent = DataUnitComponent,
         ): BackgroundVehicleComponent
+
+        @OptIn(InternalDaggerImplementation::class)
+        fun build(
+            foregroundService: Service?,
+            vehicleComponent: VehicleComponent
+        ) = daggerOnlyBuild(foregroundService, vehicleComponent)
+            .apply { serviceNotifier } // Creates an instance of `ServiceNotifier` after build.
     }
 
     @javax.inject.Scope
@@ -29,6 +43,7 @@ internal abstract class BackgroundVehicleComponent {
     @get:Named("base")
     abstract val vehicle: Vehicle
     abstract val scope: CoroutineScope
+    abstract val foregroundService: Service?
 
     abstract val serviceNotifier: ServiceNotifier
 }

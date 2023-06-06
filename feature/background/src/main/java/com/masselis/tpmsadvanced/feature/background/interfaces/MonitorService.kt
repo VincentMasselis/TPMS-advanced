@@ -46,18 +46,26 @@ public class MonitorService : Service() {
                         .also { toRemove -> if (toRemove) monitoring.scope.cancel() }
                 }
 
+                // Check if any `ServiceNotifier` is working has foreground service
+                val hasForegroundService = monitoring.any { it.foregroundService != null }
+
                 // Add entries into `monitoring`
-                val monitoringUuids = monitoring.map { comp -> comp.vehicle.uuid }
-                monitored
-                    .filter { monitoringUuids.contains(it.uuid).not() }
+                monitoring.map { comp -> comp.vehicle.uuid }
+                    .let { monitoringUuids ->
+                        monitored.filter { monitoringUuids.contains(it.uuid).not() }
+                    }
                     .map {
                         vehicleComponentFactory.build(
                             it,
-                            scope + Job(scope.coroutineContext[Job])
+                            scope + Job(scope.coroutineContext[Job]) // Creates a child scope
                         )
                     }
-                    .map { DaggerBackgroundVehicleComponent.factory().build(it, this) }
-                    .onEach { it.serviceNotifier }
+                    .mapIndexed { index, it ->
+                        if (index == 0 && hasForegroundService.not())
+                            DaggerBackgroundVehicleComponent.factory().build(this, it)
+                        else
+                            DaggerBackgroundVehicleComponent.factory().build(null, it)
+                    }
                     .forEach { monitoring.add(it) }
             }
             .launchIn(scope)
