@@ -1,10 +1,8 @@
 package com.masselis.tpmsadvanced.feature.background.interfaces
 
 import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.Service
-import android.content.ComponentName
 import android.content.Intent
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -15,6 +13,8 @@ import androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_MAX
 import androidx.core.app.ServiceCompat.STOP_FOREGROUND_REMOVE
 import androidx.core.app.ServiceCompat.stopForeground
+import androidx.core.app.TaskStackBuilder
+import androidx.core.net.toUri
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.feature.background.R
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
@@ -117,17 +117,15 @@ internal class ServiceNotifier @Inject constructor(
                         }
                     )
                     .setContentIntent(
-                        PendingIntent.getActivity(
-                            appContext,
-                            0,
-                            Intent().apply {
-                                component = ComponentName(
-                                    appContext,
-                                    "com.masselis.tpmsadvanced.interfaces.RootActivity"
+                        TaskStackBuilder.create(appContext).run {
+                            addNextIntentWithParentStack(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    "tpmsadvanced://main/${vehicle.uuid}".toUri(),
                                 )
-                            },
-                            FLAG_IMMUTABLE,
-                        )
+                            )
+                            getPendingIntent(0, FLAG_IMMUTABLE)
+                        }
                     )
                     .setSubText(vehicle.name)
                     .build()

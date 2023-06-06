@@ -45,6 +45,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdown
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Vehicle
@@ -57,6 +58,7 @@ import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel.SpotlightEvent
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
 import kotlinx.coroutines.channels.consumeEach
+import java.util.UUID
 
 @Suppress("LongMethod")
 @Composable
@@ -93,8 +95,19 @@ internal fun Home(
                     val modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                    composable(Paths.Home.path) {
-                        Vehicle(modifier = modifier)
+                    composable(
+                        route = Paths.Home.path,
+                        deepLinks = listOf(navDeepLink {
+                            uriPattern = "tpmsadvanced://main/{uuid}"
+                        }),
+                    ) { navBackStackEntry ->
+                        Vehicle(
+                            modifier = modifier,
+                            uuid = navBackStackEntry
+                                .arguments
+                                ?.getString("uuid")
+                                ?.let { UUID.fromString(it) }
+                        )
                     }
                     composable(Paths.QrCode.path) {
                         QrCodeScan(modifier = modifier)
@@ -173,6 +186,7 @@ private fun TopAppBar(
                         modifier = Modifier.testTag(backButton)
                     )
                 }
+
                 Paths.Home, null -> {}
             }
         },
@@ -198,6 +212,7 @@ private fun TopAppBar(
                         )
                     }
                 }
+
                 Paths.Settings, Paths.QrCode, null -> {}
             }
         },

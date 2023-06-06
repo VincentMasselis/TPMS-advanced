@@ -11,8 +11,10 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 import java.util.UUID.randomUUID
 import javax.inject.Inject
 
@@ -37,6 +39,15 @@ internal class CurrentVehicleUseCase @Inject constructor(
             .filter { it.uuid != mutableStateFlow.value.vehicle.uuid }
             .onEach { mutableStateFlow.value = factory.build(it) }
             .launchIn(GlobalScope)
+    }
+
+    internal suspend fun setAsCurrent(uuid: UUID) {
+        if(uuid == flow.value.vehicle.uuid)
+            return
+        database
+            .selectByUuid(uuid)
+            .first()
+            .let { setAsCurrent(it) }
     }
 
     internal suspend fun setAsCurrent(vehicle: Vehicle) = database.setIsCurrent(vehicle.uuid, true)

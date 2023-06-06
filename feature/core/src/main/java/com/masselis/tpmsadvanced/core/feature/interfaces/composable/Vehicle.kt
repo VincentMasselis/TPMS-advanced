@@ -21,6 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -49,11 +52,16 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
+import java.util.UUID
 
 @Composable
-public fun Vehicle(modifier: Modifier = Modifier) {
+public fun Vehicle(
+    modifier: Modifier = Modifier,
+    uuid: UUID? = null,
+) {
     Vehicle(
         modifier,
+        uuid,
         viewModel {
             FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
         }
@@ -64,10 +72,16 @@ public fun Vehicle(modifier: Modifier = Modifier) {
 @Composable
 internal fun Vehicle(
     modifier: Modifier = Modifier,
+    uuid: UUID? = null,
     viewModel: CurrentVehicleComponentViewModel = viewModel {
         FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
     }
 ) {
+    var hasUuidToSet by rememberSaveable { mutableStateOf(uuid) }
+    hasUuidToSet
+        ?.also(viewModel::setCurrent)
+        ?.also { hasUuidToSet = null }
+
     KeepScreenOn()
     val component by viewModel.stateFlow.collectAsState()
     CompositionLocalProvider(LocalVehicleComponent provides component) {
