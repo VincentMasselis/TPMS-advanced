@@ -1,3 +1,8 @@
 /build
 /release/**
-**/play
+src/*/play/*
+!src/*/play/release-notes
+src/*/play/release-notes/*
+!src/*/play/release-notes/en-US
+src/*/play/release-notes/en-US/*
+!src/*/play/release-notes/en-US/beta.txt

@@ -18,6 +18,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -87,6 +88,7 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                         when (atmosphere.temperature) {
                             in Temperature(NEGATIVE_INFINITY)..lowTemp ->
                                 State.Normal.BlueToGreen(Fraction(0f))
+
                             in lowTemp..normalTemp ->
                                 State.Normal.BlueToGreen(
                                     Fraction(
@@ -95,6 +97,7 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                                             .div(normalTemp.celsius - lowTemp.celsius)
                                     )
                                 )
+
                             in normalTemp..highTemp ->
                                 State.Normal.GreenToRed(
                                     Fraction(
@@ -103,8 +106,10 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                                             .div(highTemp.celsius - normalTemp.celsius)
                                     )
                                 )
+
                             in highTemp..Temperature(POSITIVE_INFINITY) ->
                                 State.Alerting
+
                             else ->
                                 @Suppress("ThrowingExceptionsWithoutMessageOrCause")
                                 throw IllegalArgumentException()
@@ -117,7 +122,8 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                     .also { delay(it) }
                 emit(State.NotDetected)
             }
-        }.onEach { state.value = it }
+        }.catch { emit(State.DetectionIssue) }
+            .onEach { state.value = it }
             .launchIn(viewModelScope)
     }
 

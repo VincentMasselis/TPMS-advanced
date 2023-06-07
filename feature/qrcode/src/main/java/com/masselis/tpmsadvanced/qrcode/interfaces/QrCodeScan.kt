@@ -23,16 +23,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
-import com.masselis.tpmsadvanced.core.ui.OnLifecycleEvent
 import com.masselis.tpmsadvanced.qrcode.R
-import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel.State
 import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun QrCodeScan(
@@ -42,7 +40,7 @@ public fun QrCodeScan(
     viewModel { FeatureQrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle()) },
 )
 
-@Suppress("NAME_SHADOWING")
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun QrCodeScan(
     modifier: Modifier = Modifier,
@@ -50,20 +48,16 @@ internal fun QrCodeScan(
         FeatureQrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle())
     },
 ) {
-    OnLifecycleEvent { _, event ->
-        if (event == Lifecycle.Event.ON_RESUME)
-            viewModel.trigger()
-    }
-    val state by viewModel.stateFlow.collectAsState()
-    when (val state = state) {
-        State.Loading -> {}
-        is State.MissingPermission -> MissingPermission(
-            "TPMS Advanced need you to approve a permission to scan the QR Code",
-            "Failed to obtain permission, please update this in the app's system settings to continue",
-            persistentListOf(state.permission),
+    val permissionState = rememberMultiplePermissionsState(listOf(viewModel.requiredPermissions()))
+    when {
+        permissionState.allPermissionsGranted.not() -> MissingPermission(
+            text = "TPMS Advanced need you to approve a permission to scan the QR Code",
+            refusedText = "Failed to obtain permission, please update this in the app's system settings to continue",
+            permissionState = permissionState,
             modifier = modifier,
-        ) { viewModel.trigger() }
-        State.Ready -> Preview(
+        )
+
+        else -> Preview(
             modifier = modifier
         )
     }

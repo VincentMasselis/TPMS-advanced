@@ -34,7 +34,7 @@ android {
         namespace = "com.masselis.tpmsadvanced"
 
         versionCode = tpmsAdvancedVersionCode
-        versionName = "1.1"
+        versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
@@ -128,7 +128,6 @@ tasks.whenTaskAdded {
             description =
                 "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
             val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
-            doFirst { mkdir(path) }
             from(outputFilesDir)
             into(path)
             eachFile {
@@ -145,6 +144,15 @@ tasks.whenTaskAdded {
 }
 
 if (isDecrypted) afterEvaluate {
+    tasks.filter { it.name.startsWith("generate") && it.name.endsWith("PlayResources") }
+        .forEach { generatePlayResources ->
+            // generatePlayResources is a task used by "publishListing" which watch at the
+            // "phone-screenshots" folder in order to check if changes was made. The task
+            // "generatePlayResources" must be launched after "copyScreenshot" otherwise no
+            // screenshot will be uploaded at all.
+            generatePlayResources.mustRunAfter("copyScreenshot")
+        }
+
     // Play store listing must depends on the task which generates screenshots
     tasks.filter { it.name.startsWith("publish") && it.name.endsWith("Listing") }
         .forEach { publishListing ->
@@ -155,10 +163,13 @@ if (isDecrypted) afterEvaluate {
     // because the play store listing reflects the app in production, not the beta.
     tasks.filter { it.name.startsWith("publish") && it.name.endsWith("Apps") }
         .forEach { publishApps ->
-            @Suppress("NAME_SHADOWING")
             publishApps.dependsOn.removeIf {
-                val it = it as? Task ?: (it as Provider<*>).get() as Task
-                it.name.startsWith("publish") && it.name.endsWith("Listing")
+                // Unlike Kotlin, Groovy is able to get the task name of the current dependency even
+                // if the dependency is nested into the gradle class "Provider". On its side, with
+                // Kotlin, you have to unwrap the task before asking for its name which is not as
+                // simple as Groovy so I prefer to use "withGroovyBuilder" in this case.
+                val taskName = it.withGroovyBuilder { "getName"() } as String
+                taskName.startsWith("publish") && taskName.endsWith("Listing")
             }
         }
 

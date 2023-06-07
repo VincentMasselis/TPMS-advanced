@@ -44,6 +44,7 @@ internal val previewTyreViewModelStates = listOf(
     TyreViewModel.State.Normal.GreenToRed(Fraction(0.5f)),
     TyreViewModel.State.Normal.GreenToRed(Fraction(1f)),
     TyreViewModel.State.Alerting,
+    TyreViewModel.State.DetectionIssue,
 )
 
 internal fun previewTyreStatViewModel(

@@ -17,6 +17,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -104,17 +105,18 @@ internal class TyreStatsViewModel @AssistedInject constructor(
                             atmosphere.temperature,
                             temperatureUnit
                         )
+
                         in highTemp.celsius..POSITIVE_INFINITY -> State.Alerting(
                             atmosphere.pressure,
                             pressureUnit,
                             atmosphere.temperature,
                             temperatureUnit
                         )
-                        else ->
-                            @Suppress("ThrowingExceptionsWithoutMessageOrCause")
-                            throw IllegalArgumentException()
+
+                        else -> error("Unreachable state")
                     }
             }
+            .catch { emit(State.NotDetected) }
             .onEach { state.value = it }
             .launchIn(viewModelScope)
     }

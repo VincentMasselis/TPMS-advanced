@@ -1,5 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
+import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
+import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
 import com.masselis.tpmsadvanced.data.car.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
@@ -40,10 +42,12 @@ public class TyreUseCaseImpl @Inject internal constructor(
         // perturbations when using `distinctUntilChangedBy`.
         .distinctUntilChangedBy { it.copy(timestamp = 0.0) }
         .onEach { tyre -> tyreDatabase.insert(tyre, vehicle.uuid) }
+        .materializeCompletion()
         .shareIn(
             scope,
             SharingStarted.WhileSubscribed()
         )
+        .dematerializeCompletion()
         .onStart {
             tyreDatabase.latestByTyreLocationByVehicle(locations, vehicle.uuid)
                 ?.also { emit(it) }

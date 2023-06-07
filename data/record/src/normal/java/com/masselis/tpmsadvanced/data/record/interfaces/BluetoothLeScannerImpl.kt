@@ -5,10 +5,6 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED
-import android.bluetooth.BluetoothAdapter.ERROR
-import android.bluetooth.BluetoothAdapter.EXTRA_STATE
-import android.bluetooth.BluetoothAdapter.STATE_ON
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
@@ -17,7 +13,6 @@ import android.bluetooth.le.ScanSettings
 import android.bluetooth.le.ScanSettings.MATCH_MODE_AGGRESSIVE
 import android.bluetooth.le.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT
 import android.content.Context
-import android.content.IntentFilter
 import android.os.Build
 import android.os.ParcelUuid
 import androidx.annotation.RequiresPermission
@@ -25,32 +20,35 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
 import androidx.core.util.size
-import com.masselis.tpmsadvanced.core.common.asFlow
+import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
+import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.record.model.Tyre
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.UUID.fromString
 import javax.inject.Inject
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
@@ -58,6 +56,8 @@ import kotlin.time.Duration.Companion.seconds
 internal class BluetoothLeScannerImpl @Inject internal constructor(
     private val context: Context
 ) : BluetoothLeScanner {
+
+    private var lastStartScan = Duration.ZERO
 
     private val bluetoothAdapter get() = context.getSystemService<BluetoothManager>()?.adapter
 
@@ -77,6 +77,12 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 close(BluetoothLeScanner.ScanFailed(errorCode))
             }
         }
+
+        // Anti-spam mechanism to avoid an exception when requesting 6 scans within a 30s frame
+        delay(5.seconds - (System.currentTimeMillis().milliseconds - lastStartScan))
+        // Delay elapsed, set lastStartScan to the current timestamp
+        lastStartScan = System.currentTimeMillis().milliseconds
+
         val leScanner = bluetoothAdapter!!.bluetoothLeScanner
         leScanner.startScan(
             listOf(
@@ -94,8 +100,10 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             callback
         )
         awaitClose {
-            leScanner.flushPendingScanResults(callback)
-            leScanner.stopScan(callback)
+            if (bluetoothAdapter?.isEnabled == true) {
+                leScanner.flushPendingScanResults(callback)
+                leScanner.stopScan(callback)
+            }
         }
     }.flowOn(Dispatchers.Main) // System's BluetoothLeScanner class as issues if called on a background thread
         .mapNotNull { result -> result.scanRecord?.manufacturerSpecificData?.takeIf { it.size > 0 } }
@@ -111,6 +119,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
 
     override fun normalScan(): Flow<Tyre> = balancedScanFlow
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun Flow<Raw>.shared() = this
         .map { raw ->
             @Suppress("MagicNumber")
@@ -137,12 +146,12 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 raw.alarm() == PRESSURE_ALARM_BYTE
             )
         }
+        .materializeCompletion()
         .shareIn(
-            CoroutineScope(Dispatchers.Default),
-            // Anti-spam mechanism to avoid an exception when requesting 6 scans within a 30s frame
-            SharingStarted.WhileSubscribed(5.seconds, Duration.ZERO),
-            0
+            GlobalScope + Dispatchers.Default,
+            SharingStarted.WhileSubscribed(),
         )
+        .dematerializeCompletion()
 
     @JvmInline
     @Suppress("MagicNumber")
@@ -167,12 +176,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             throw IllegalArgumentException()
     }.filter { checkSelfPermission(context, it) != PERMISSION_GRANTED }
 
-    override fun isChipTurnedOn(): Flow<Boolean> = IntentFilter(ACTION_STATE_CHANGED)
-        .asFlow()
-        .map { it.getIntExtra(EXTRA_STATE, ERROR) }
-        .filter { it != ERROR }
-        .map { it == STATE_ON }
-        .onStart { emit(bluetoothAdapter?.isEnabled ?: false) }
+    override val isBluetoothRequired = true
 
     @OptIn(ExperimentalUnsignedTypes::class)
     companion object {

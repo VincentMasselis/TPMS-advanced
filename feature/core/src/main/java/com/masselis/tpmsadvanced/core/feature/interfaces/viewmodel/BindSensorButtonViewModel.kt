@@ -15,6 +15,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -79,6 +80,7 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
                 else
                     flowOf(State.Empty)
             }
+            .catch { emit(State.Empty) }
             .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)
     }
