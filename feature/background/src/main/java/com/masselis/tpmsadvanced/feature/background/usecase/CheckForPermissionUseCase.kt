@@ -8,11 +8,9 @@ import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
-import dagger.Lazy
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +18,6 @@ import javax.inject.Inject
 @FeatureBackgroundComponent.Scope
 internal class CheckForPermissionUseCase @Inject constructor(
     database: VehicleDatabase,
-    foregroundServiceUseCase: Lazy<ForegroundServiceUseCase>
 ) {
 
     val requiredPermission =
@@ -28,20 +25,9 @@ internal class CheckForPermissionUseCase @Inject constructor(
         else null
 
     init {
-        // The rules are simple:
-        // * If the permission is revoked every `isBackgroundMonitor` must be set to `false` and
-        //   the apps always restarts
-        // * If the permission is grant, `isBackgroundMonitor` could be `true` or `false`
-        // * A permission could be grant at runtime
         GlobalScope.launch(IO) {
-            if (isPermissionGrant().not()) {
+            if (isPermissionGrant().not())
                 database.updateEveryIsBackgroundMonitorToFalse()
-                // If any `isBackgroundMonitor` is set to true, that's mean the permission was grant
-                database.selectAllIsBackgroundMonitor()
-                    .first { it.any { isMonitoring -> isMonitoring } }
-            }
-            // ForegroundServiceUseCase can only run if the permission is granted
-            foregroundServiceUseCase.get()
         }
     }
 

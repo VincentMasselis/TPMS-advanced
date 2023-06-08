@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.feature.background.interfaces
+package com.masselis.tpmsadvanced.feature.background.interfaces.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -23,30 +23,31 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.feature.background.interfaces.BackgroundViewModel.State
+import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel
+import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel.State
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 
 @Composable
-public fun BackgroundSettings(
+public fun AutomaticBackgroundSettings(
     component: VehicleComponent,
     modifier: Modifier = Modifier
 ) {
-    BackgroundSettings(
+    AutomaticBackgroundSettings(
         component,
         modifier,
         viewModel(key = "BackgroundViewModel_${component.vehicle.uuid}") {
-            FeatureBackgroundComponent.backgroundViewModel.build(component.vehicle)
+            FeatureBackgroundComponent.automaticBackgroundViewModel.build(component.vehicle)
         }
     )
 }
 
 @Suppress("CyclomaticComplexMethod")
 @Composable
-internal fun BackgroundSettings(
+internal fun AutomaticBackgroundSettings(
     component: VehicleComponent,
     modifier: Modifier = Modifier,
-    viewModel: BackgroundViewModel = viewModel(key = "BackgroundViewModel_${component.vehicle.uuid}") {
-        FeatureBackgroundComponent.backgroundViewModel.build(component.vehicle)
+    viewModel: AutomaticBackgroundViewModel = viewModel(key = "BackgroundViewModel_${component.vehicle.uuid}") {
+        FeatureBackgroundComponent.automaticBackgroundViewModel.build(component.vehicle)
     }
 ) {
     val activity = LocalContext.current as Activity

@@ -55,6 +55,7 @@ public class MonitorService : Service() {
                         monitored.filter { monitoringUuids.contains(it.uuid).not() }
                     }
                     .map {
+                        // TODO Do NOT allow the building of 2 different instances of `VehicleComponent` for the same vehicle otherwise `VehicleRangesUseCase` will be duplicated
                         vehicleComponentFactory.build(
                             it,
                             scope + Job(scope.coroutineContext[Job]) // Creates a child scope

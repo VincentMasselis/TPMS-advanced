@@ -2,9 +2,11 @@ package com.masselis.tpmsadvanced.feature.background.ioc
 
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
-import com.masselis.tpmsadvanced.feature.background.interfaces.BackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService
+import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel
+import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
+import com.masselis.tpmsadvanced.feature.background.usecase.ForegroundServiceUseCase
 import dagger.Component
 import javax.inject.Inject
 
@@ -41,7 +43,13 @@ public interface FeatureBackgroundComponent {
         internal lateinit var checkForPermissionUseCase: CheckForPermissionUseCase
 
         @Inject
-        internal lateinit var backgroundViewModel: BackgroundViewModel.Factory
+        internal lateinit var foregroundServiceUseCase: ForegroundServiceUseCase
+
+        @Inject
+        internal lateinit var automaticBackgroundViewModel: AutomaticBackgroundViewModel.Factory
+
+        @Inject
+        internal lateinit var manualBackgroundViewModel: ManualBackgroundViewModel.Factory
 
         init {
             @Suppress("LeakingThis")

@@ -6,7 +6,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -27,7 +26,8 @@ import javax.inject.Inject
 @OptIn(DelicateCoroutinesApi::class)
 @FeatureBackgroundComponent.Scope
 internal class ForegroundServiceUseCase @Inject constructor(
-    vehicleDatabase: VehicleDatabase
+    vehiclesToMonitorUseCase: VehiclesToMonitorUseCase,
+    checkForPermissionUseCase: CheckForPermissionUseCase,
 ) {
 
     init {
@@ -47,12 +47,14 @@ internal class ForegroundServiceUseCase @Inject constructor(
                 lifecycle.addObserver(observer)
                 awaitClose { lifecycle.removeObserver(observer) }
             }.flowOn(Main),
-            vehicleDatabase.selectAllIsBackgroundMonitor()
-                .map { it.any { isMonitoring -> isMonitoring } }
+            vehiclesToMonitorUseCase.ignoredAndMonitored()
+                .map { (_, monitored) -> monitored.isNotEmpty() }
                 .distinctUntilChanged()
         ) { isAppVisible, isMonitorRequired ->
-            if (isAppVisible.not() && isMonitorRequired)
-                appContext.startForegroundService(serviceIntent)
+            if (checkForPermissionUseCase.isPermissionGrant()
+                && isAppVisible.not()
+                && isMonitorRequired
+            ) appContext.startForegroundService(serviceIntent)
             else
                 appContext.stopService(serviceIntent)
         }.launchIn(GlobalScope + IO)

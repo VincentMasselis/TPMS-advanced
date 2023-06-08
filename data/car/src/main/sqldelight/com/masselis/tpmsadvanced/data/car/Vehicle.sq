@@ -123,9 +123,6 @@ SELECT * FROM Vehicle WHERE isFavourite = 1;
 selectAll:
 SELECT * FROM Vehicle WHERE isDeleting = 0;
 
-selectAllIsBackgroundMonitor:
-SELECT isBackgroundMonitor FROM Vehicle;
-
 count:
 SELECT count(uuid) FROM Vehicle WHERE isDeleting = 0;
 

@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.feature.background.interfaces
+package com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel
 
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
-internal class BackgroundViewModel @AssistedInject constructor(
+internal class AutomaticBackgroundViewModel @AssistedInject constructor(
     private val database: VehicleDatabase,
     private val checkForPermissionUseCase: CheckForPermissionUseCase,
     @Assisted private val vehicle: Vehicle
@@ -25,7 +25,7 @@ internal class BackgroundViewModel @AssistedInject constructor(
 
     @AssistedFactory
     internal interface Factory {
-        fun build(vehicle: Vehicle): BackgroundViewModel
+        fun build(vehicle: Vehicle): AutomaticBackgroundViewModel
     }
 
     sealed class State : Parcelable {

@@ -23,8 +23,8 @@ import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 
 @Composable
 public fun VehicleSettings(
-    backgroundSettings: @Composable (VehicleComponent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
 ): Unit = VehicleSettings(
     backgroundSettings,
     modifier,
@@ -46,8 +46,10 @@ internal fun VehicleSettings(
         HighTemp(component)
         NormalTemp(component)
         LowTemp(component)
-        Separator()
-        backgroundSettings(component)
+        if (backgroundSettings !== backgroundSettingsPlaceholder) {
+            Separator()
+            backgroundSettings(component)
+        }
         Separator()
         ClearBoundSensorsButton(component, Modifier.fillMaxWidth())
         Separator()
@@ -164,3 +166,5 @@ private fun LowTemp(
         unit = unit,
     ) { showLowTempDialog = false }
 }
+
+private val backgroundSettingsPlaceholder: @Composable (VehicleComponent) -> Unit = {}

@@ -119,11 +119,6 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         .asFlow()
         .mapToList(IO)
 
-    public fun selectAllIsBackgroundMonitor(): Flow<List<Boolean>> = queries
-        .selectAllIsBackgroundMonitor()
-        .asFlow()
-        .mapToList(IO)
-
     public fun selectAll(): List<Vehicle> = queries.selectAll(mapper).executeAsList()
 
     public fun selectByUuid(vehicleId: UUID): Flow<Vehicle> =

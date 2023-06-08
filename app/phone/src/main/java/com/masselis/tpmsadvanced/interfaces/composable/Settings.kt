@@ -18,7 +18,6 @@ import com.masselis.tpmsadvanced.BuildConfig
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.VehicleSettings
 import com.masselis.tpmsadvanced.core.feature.unit.interfaces.UnitsSettings
 import com.masselis.tpmsadvanced.core.ui.Separator
-import com.masselis.tpmsadvanced.feature.background.interfaces.BackgroundSettings
 
 @Composable
 internal fun Settings(
@@ -31,7 +30,7 @@ internal fun Settings(
     UnitsSettings()
     Separator()
     VehicleSettings(
-        { BackgroundSettings(it) }
+        // backgroundSettings = { AutomaticBackgroundSettings(it) }
     )
     Separator()
     Box(Modifier.fillMaxWidth()) {
