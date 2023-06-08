@@ -1,4 +1,5 @@
 @file:Suppress("MatchingDeclarationName")
+
 package com.masselis.tpmsadvanced.interfaces
 
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -19,7 +20,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.DeleteVehicleButtonTags
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.*
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 import com.masselis.tpmsadvanced.data.car.model.Vehicle as VehicleModel
 

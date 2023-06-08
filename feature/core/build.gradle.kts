@@ -13,6 +13,7 @@ dependencies {
     api(project(":core:ui"))
     api(project(":data:record"))
     api(project(":data:car"))
+    api(project(":data:app"))
 
     implementation(project(":core:debug-ui"))
 

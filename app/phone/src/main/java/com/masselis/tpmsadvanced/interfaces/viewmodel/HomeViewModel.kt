@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.interfaces.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.interfaces.usecase.NoveltyUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -31,7 +31,7 @@ internal class HomeViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            if (noveltyUseCase.consumeShowCarKind())
+            if (noveltyUseCase.consume("car_kind", 1020L))
                 channel.send(SpotlightEvent.CarListDropdown)
         }
     }
