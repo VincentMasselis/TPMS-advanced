@@ -2,8 +2,10 @@ package com.masselis.tpmsadvanced.feature.background.interfaces
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.PendingIntent.getBroadcast
 import android.app.Service
 import android.content.Intent
+import android.content.IntentFilter
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_LOW
@@ -16,6 +18,7 @@ import androidx.core.app.ServiceCompat.stopForeground
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import com.masselis.tpmsadvanced.core.common.appContext
+import com.masselis.tpmsadvanced.core.common.asFlow
 import com.masselis.tpmsadvanced.core.feature.background.R
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
@@ -26,9 +29,11 @@ import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.S
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -104,6 +109,7 @@ internal class ServiceNotifier @Inject constructor(
                             is PressureAlert, is TemperatureAlert -> PRIORITY_MAX
                         }
                     )
+                    .setSubText(vehicle.name)
                     .setContentText(
                         when (state) {
                             NoAlert -> "Your tyres are OK"
@@ -127,7 +133,20 @@ internal class ServiceNotifier @Inject constructor(
                             getPendingIntent(0, FLAG_IMMUTABLE)
                         }
                     )
-                    .setSubText(vehicle.name)
+                    .addAction(
+                        NotificationCompat.Action.Builder(
+                            null,
+                            "Close",
+                            getBroadcast(
+                                appContext,
+                                0,
+                                Intent(ACTION_DISABLE_MONITORING).apply {
+                                    putExtra(EXTRA_VEHICLE_UUID, vehicle.uuid.toString())
+                                },
+                                FLAG_IMMUTABLE
+                            )
+                        ).build()
+                    )
                     .build()
             }
             .onEach {
@@ -138,6 +157,12 @@ internal class ServiceNotifier @Inject constructor(
                 foregroundService?.let { stopForeground(it, STOP_FOREGROUND_REMOVE) }
                     ?: notificationManager.cancel(vehicle.uuid.hashCode())
             }
+            .launchIn(scope)
+
+        IntentFilter(ACTION_DISABLE_MONITORING)
+            .asFlow()
+            .filter { it.getStringExtra(EXTRA_VEHICLE_UUID) == vehicle.uuid.toString() }
+            .onEach { scope.cancel() }
             .launchIn(scope)
     }
 
@@ -154,5 +179,7 @@ internal class ServiceNotifier @Inject constructor(
     internal companion object {
         private const val channelNameWhenOk = "MONITOR_SERVICE_WHEN_OK"
         private const val channelNameForAlerts = "MONITOR_SERVICE_FOR_ALERT"
+        private const val ACTION_DISABLE_MONITORING = "DISABLE_VEHICLE_MONITORING"
+        private const val EXTRA_VEHICLE_UUID = "VEHICLE_UUID"
     }
 }
