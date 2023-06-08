@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
 import androidx.lifecycle.SavedStateHandle
+import com.masselis.tpmsadvanced.core.common.InternalDaggerImplementation
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
@@ -45,6 +46,7 @@ internal class PreviewTyreComponent(
         get() = TODO("Not yet implemented")
 }
 
+@OptIn(InternalDaggerImplementation::class)
 @Suppress("LongParameterList")
 internal class PreviewVehicleComponent(
     override val findTyreComponentUseCase: FindTyreComponentUseCase =
@@ -69,6 +71,8 @@ internal class PreviewVehicleComponent(
                 previewDeleteVehicleViewModel()
         }
 ) : VehicleComponent() {
+    override val release: () -> Unit
+        get() = TODO("Not yet implemented")
     override val vehicleRangesUseCase: VehicleRangesUseCase
         get() = TODO("Not yet implemented")
 }

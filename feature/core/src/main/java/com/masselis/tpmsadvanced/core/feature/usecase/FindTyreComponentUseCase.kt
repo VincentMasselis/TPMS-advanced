@@ -28,7 +28,8 @@ public class FindTyreComponentUseCase @Inject internal constructor(
     @TyreAxleQualifier(REAR) private val rear: Lazy<TyreComponent>,
     @TyreSideQualifier(LEFT) private val left: Lazy<TyreComponent>,
     @TyreSideQualifier(RIGHT) private val right: Lazy<TyreComponent>,
-) {
+) : (Vehicle.ManySensor) -> TyreComponent {
+
     @Suppress("MaxLineLength")
     public fun find(manySensor: Vehicle.ManySensor): TyreComponent {
         if (vehicle.kind.locations.contains(manySensor).not())
@@ -52,4 +53,7 @@ public class FindTyreComponentUseCase @Inject internal constructor(
             }
         }.get()
     }
+
+    override fun invoke(p1: Vehicle.ManySensor): TyreComponent = find(p1)
+
 }

@@ -8,7 +8,6 @@ import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier
 import dagger.BindsInstance
 import dagger.Component
-import kotlinx.coroutines.CoroutineScope
 import javax.inject.Named
 
 @BackgroundVehicleComponent.Scope
@@ -16,6 +15,9 @@ import javax.inject.Named
     dependencies = [
         VehicleComponent::class,
         DataUnitComponent::class,
+    ],
+    modules = [
+        BackgroundVehicleModule::class
     ]
 )
 internal abstract class BackgroundVehicleComponent {
@@ -42,7 +44,9 @@ internal abstract class BackgroundVehicleComponent {
 
     @get:Named("base")
     abstract val vehicle: Vehicle
-    abstract val scope: CoroutineScope
+
+    @get:Named("background_vehicle_component")
+    abstract val release: () -> Unit
     abstract val foregroundService: Service?
 
     abstract val serviceNotifier: ServiceNotifier

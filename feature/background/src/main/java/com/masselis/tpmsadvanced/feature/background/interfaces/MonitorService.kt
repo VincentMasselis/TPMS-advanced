@@ -11,11 +11,9 @@ import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundCompone
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.plus
 import javax.inject.Inject
 
 public class MonitorService : Service() {
@@ -43,7 +41,7 @@ public class MonitorService : Service() {
                 // Removes entries from `monitoring`
                 monitoring.removeIf { monitoring ->
                     ignored.any { it.uuid == monitoring.vehicle.uuid }
-                        .also { toRemove -> if (toRemove) monitoring.scope.cancel() }
+                        .also { toRemove -> if (toRemove) monitoring.release() }
                 }
 
                 // Check if any `ServiceNotifier` is working has foreground service
@@ -54,13 +52,7 @@ public class MonitorService : Service() {
                     .let { monitoringUuids ->
                         monitored.filter { monitoringUuids.contains(it.uuid).not() }
                     }
-                    .map {
-                        // TODO Do NOT allow the building of 2 different instances of `VehicleComponent` for the same vehicle otherwise `VehicleRangesUseCase` will be duplicated
-                        vehicleComponentFactory.build(
-                            it,
-                            scope + Job(scope.coroutineContext[Job]) // Creates a child scope
-                        )
-                    }
+                    .map { vehicleComponentFactory.build(it) }
                     .mapIndexed { index, it ->
                         if (index == 0 && hasForegroundService.not())
                             DaggerBackgroundVehicleComponent.factory().build(this, it)

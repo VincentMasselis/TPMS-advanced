@@ -42,10 +42,10 @@ public interface FeatureCoreComponent {
     public annotation class Scope
 
     public val noveltyUseCase: NoveltyUseCase
-
     public val vehicleComponentFactory: VehicleComponent.Factory
 
     public fun inject(injectable: Injectable)
+    public fun inject(injectable: VehicleComponent.Factory)
 
     public companion object : Injectable()
 

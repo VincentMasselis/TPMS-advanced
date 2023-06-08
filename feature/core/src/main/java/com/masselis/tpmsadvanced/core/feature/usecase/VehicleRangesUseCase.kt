@@ -20,8 +20,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @VehicleComponent.Scope
 public class VehicleRangesUseCase @Inject internal constructor(
     @Named("base") private val vehicle: Vehicle,
-    private val database: VehicleDatabase,
-    scope: CoroutineScope
+    @Named("vehicle_component") scope: CoroutineScope,
+    database: VehicleDatabase,
 ) {
 
     public val lowPressure: MutableStateFlow<Pressure> =

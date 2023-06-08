@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.masselis.tpmsadvanced.core.common.InternalDaggerImplementation
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewModel
@@ -88,12 +89,15 @@ internal fun TemperatureInfo(
     )
 }
 
+@OptIn(InternalDaggerImplementation::class)
 private class DemoVehicleComponent : VehicleComponent() {
     override val findTyreComponentUseCase: FindTyreComponentUseCase
         get() = TODO("Not yet implemented")
     override val vehicle: Vehicle
         get() = TODO("Not yet implemented")
     override val carFlow: StateFlow<Vehicle>
+        get() = TODO("Not yet implemented")
+    override val release: () -> Unit
         get() = TODO("Not yet implemented")
     override val scope: CoroutineScope
         get() = TODO("Not yet implemented")

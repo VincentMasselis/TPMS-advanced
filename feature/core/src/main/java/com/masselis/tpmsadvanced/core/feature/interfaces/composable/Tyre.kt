@@ -56,8 +56,7 @@ internal fun Tyre(
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${vehicleComponent.hashCode()}_${manySensor}") {
         vehicleComponent
-            .findTyreComponentUseCase
-            .find(manySensor)
+            .findTyreComponentUseCase(manySensor)
             .tyreViewModelFactory
             .build(createSavedStateHandle())
     },

@@ -14,8 +14,8 @@ import javax.inject.Named
 @VehicleComponent.Scope
 internal class VehicleStateFlowUseCase @Inject constructor(
     @Named("base") vehicle: Vehicle,
+    @Named("vehicle_component") scope: CoroutineScope,
     database: VehicleDatabase,
-    scope: CoroutineScope,
 ) : StateFlow<Vehicle> by database
     .selectByUuid(vehicle.uuid)
     .stateIn(scope, SharingStarted.Eagerly, vehicle)

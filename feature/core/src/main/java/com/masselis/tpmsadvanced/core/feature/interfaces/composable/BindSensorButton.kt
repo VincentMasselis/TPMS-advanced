@@ -37,7 +37,7 @@ internal fun BindSensorButton(
     viewModel: BindSensorButtonViewModel = viewModel(
         key = "BindSensorButtonViewModel_${vehicleComponent.hashCode()}_${manySensor}"
     ) {
-        vehicleComponent.findTyreComponentUseCase.find(manySensor)
+        vehicleComponent.findTyreComponentUseCase(manySensor)
             .bindSensorButtonViewModelFactory
             .build(createSavedStateHandle())
     }

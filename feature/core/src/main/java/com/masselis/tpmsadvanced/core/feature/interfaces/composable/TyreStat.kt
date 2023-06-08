@@ -38,8 +38,7 @@ internal fun TyreStat(
         key = "TyreStatsViewModel_${vehicleComponent.hashCode()}_${manySensor}"
     ) {
         vehicleComponent
-            .findTyreComponentUseCase
-            .find(manySensor)
+            .findTyreComponentUseCase(manySensor)
             .tyreStatViewModelFactory
             .build(createSavedStateHandle())
     }
@@ -51,6 +50,7 @@ internal fun TyreStat(
             Pair(state.pressure, state.pressureUnit),
             Pair(state.temperature, state.temperatureUnit)
         )
+
         is State.Alerting -> Pair(
             Pair(state.pressure, state.pressureUnit),
             Pair(state.temperature, state.temperatureUnit)
@@ -80,6 +80,7 @@ internal fun TyreStat(
                     LEFT -> Alignment.End
                     RIGHT -> Alignment.Start
                 }
+
                 is ManySensor.Side -> when (manySensor.side) {
                     LEFT -> Alignment.End
                     RIGHT -> Alignment.Start

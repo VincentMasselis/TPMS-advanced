@@ -29,7 +29,6 @@ import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.S
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -48,7 +47,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @BackgroundVehicleComponent.Scope
 internal class ServiceNotifier @Inject constructor(
     @Named("base") vehicle: Vehicle,
-    scope: CoroutineScope,
+    @Named("background_vehicle_component") scope: CoroutineScope,
+    @Named("background_vehicle_component") release: () -> Unit,
     findTyreComponentUseCase: FindTyreComponentUseCase,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
@@ -162,7 +162,7 @@ internal class ServiceNotifier @Inject constructor(
         IntentFilter(ACTION_DISABLE_MONITORING)
             .asFlow()
             .filter { it.getStringExtra(EXTRA_VEHICLE_UUID) == vehicle.uuid.toString() }
-            .onEach { scope.cancel() }
+            .onEach { release() }
             .launchIn(scope)
     }
 
