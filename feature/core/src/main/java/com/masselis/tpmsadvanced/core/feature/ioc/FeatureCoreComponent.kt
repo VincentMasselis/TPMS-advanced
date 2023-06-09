@@ -4,6 +4,7 @@ import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
+import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
 import com.masselis.tpmsadvanced.data.app.ioc.DataAppComponent
 import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
@@ -41,8 +42,9 @@ public interface FeatureCoreComponent {
     @javax.inject.Scope
     public annotation class Scope
 
-    public val noveltyUseCase: NoveltyUseCase
     public val vehicleComponentFactory: VehicleComponent.Factory
+    public val currentVehicleUseCase: CurrentVehicleUseCase
+    public val noveltyUseCase: NoveltyUseCase
 
     public fun inject(injectable: Injectable)
     public fun inject(injectable: VehicleComponent.Factory)

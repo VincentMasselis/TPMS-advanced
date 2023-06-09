@@ -27,6 +27,7 @@ import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.*
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
+import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine
@@ -48,7 +49,7 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class ServiceNotifier @Inject constructor(
     @Named("base") vehicle: Vehicle,
     @Named("background_vehicle_component") scope: CoroutineScope,
-    @Named("background_vehicle_component") release: () -> Unit,
+    vehiclesToMonitorUseCase: VehiclesToMonitorUseCase,
     findTyreComponentUseCase: FindTyreComponentUseCase,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
@@ -123,23 +124,22 @@ internal class ServiceNotifier @Inject constructor(
                         }
                     )
                     .setContentIntent(
-                        TaskStackBuilder.create(appContext).run {
-                            addNextIntentWithParentStack(
+                        TaskStackBuilder.create(appContext)
+                            .addNextIntentWithParentStack(
                                 Intent(
                                     Intent.ACTION_VIEW,
                                     "tpmsadvanced://main/${vehicle.uuid}".toUri(),
                                 )
                             )
-                            getPendingIntent(0, FLAG_IMMUTABLE)
-                        }
+                            .getPendingIntent(vehicle.uuid.hashCode(), FLAG_IMMUTABLE)
                     )
                     .addAction(
                         NotificationCompat.Action.Builder(
                             null,
-                            "Close",
+                            "Stop",
                             getBroadcast(
                                 appContext,
-                                0,
+                                vehicle.uuid.hashCode(),
                                 Intent(ACTION_DISABLE_MONITORING).apply {
                                     putExtra(EXTRA_VEHICLE_UUID, vehicle.uuid.toString())
                                 },
@@ -147,6 +147,7 @@ internal class ServiceNotifier @Inject constructor(
                             )
                         ).build()
                     )
+                    .setAutoCancel(false)
                     .build()
             }
             .onEach {
@@ -154,7 +155,7 @@ internal class ServiceNotifier @Inject constructor(
                     ?: notificationManager.notify(vehicle.uuid.hashCode(), it)
             }
             .onCompletion {
-                foregroundService?.let { stopForeground(it, STOP_FOREGROUND_REMOVE) }
+                foregroundService?.also { stopForeground(it, STOP_FOREGROUND_REMOVE) }
                     ?: notificationManager.cancel(vehicle.uuid.hashCode())
             }
             .launchIn(scope)
@@ -162,7 +163,7 @@ internal class ServiceNotifier @Inject constructor(
         IntentFilter(ACTION_DISABLE_MONITORING)
             .asFlow()
             .filter { it.getStringExtra(EXTRA_VEHICLE_UUID) == vehicle.uuid.toString() }
-            .onEach { release() }
+            .onEach { vehiclesToMonitorUseCase.disableManual(vehicle.uuid) }
             .launchIn(scope)
     }
 

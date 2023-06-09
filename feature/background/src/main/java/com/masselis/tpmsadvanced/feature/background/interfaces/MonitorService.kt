@@ -14,6 +14,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import okio.withLock
+import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
 
 public class MonitorService : Service() {
@@ -25,6 +27,7 @@ public class MonitorService : Service() {
     internal lateinit var vehicleComponentFactory: VehicleComponent.Factory
 
     private val monitoring = mutableListOf<BackgroundVehicleComponent>()
+    private val lock = ReentrantLock()
     private lateinit var scope: CoroutineScope
 
     init {
@@ -38,35 +41,37 @@ public class MonitorService : Service() {
         vehiclesToMonitorUseCase
             .ignoredAndMonitored()
             .onEach { (ignored, monitored) ->
-                // Removes entries from `monitoring`
-                monitoring.removeIf { monitoring ->
-                    ignored.any { it.uuid == monitoring.vehicle.uuid }
-                        .also { toRemove -> if (toRemove) monitoring.release() }
+                lock.withLock {
+                    // Removes entries from `monitoring`
+                    monitoring.removeIf { monitoring ->
+                        ignored.any { it.uuid == monitoring.vehicle.uuid }
+                            .also { toRemove -> if (toRemove) monitoring.release() }
+                    }
+
+                    // Check if any `ServiceNotifier` is working has foreground service
+                    val hasForegroundService = monitoring.any { it.foregroundService != null }
+
+                    // Add entries into `monitoring`
+                    monitoring.map { comp -> comp.vehicle.uuid }
+                        .let { monitoringUuids ->
+                            monitored.filter { monitoringUuids.contains(it.uuid).not() }
+                        }
+                        .map { vehicleComponentFactory.build(it) }
+                        .mapIndexed { index, it ->
+                            if (index == 0 && hasForegroundService.not())
+                                DaggerBackgroundVehicleComponent.factory().build(this, it)
+                            else
+                                DaggerBackgroundVehicleComponent.factory().build(null, it)
+                        }
+                        .forEach { monitoring.add(it) }
                 }
-
-                // Check if any `ServiceNotifier` is working has foreground service
-                val hasForegroundService = monitoring.any { it.foregroundService != null }
-
-                // Add entries into `monitoring`
-                monitoring.map { comp -> comp.vehicle.uuid }
-                    .let { monitoringUuids ->
-                        monitored.filter { monitoringUuids.contains(it.uuid).not() }
-                    }
-                    .map { vehicleComponentFactory.build(it) }
-                    .mapIndexed { index, it ->
-                        if (index == 0 && hasForegroundService.not())
-                            DaggerBackgroundVehicleComponent.factory().build(this, it)
-                        else
-                            DaggerBackgroundVehicleComponent.factory().build(null, it)
-                    }
-                    .forEach { monitoring.add(it) }
             }
             .launchIn(scope)
     }
 
     override fun onDestroy() {
         scope.cancel(null)
-        monitoring.clear()
+        lock.withLock { monitoring.clear() }
         super.onDestroy()
     }
 

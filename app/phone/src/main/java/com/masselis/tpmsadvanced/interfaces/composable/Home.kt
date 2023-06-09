@@ -51,6 +51,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Vehicle
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
+import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.settings
 import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent
@@ -193,6 +194,7 @@ private fun TopAppBar(
         actions = {
             when (currentPath) {
                 Paths.Home -> {
+                    ManualBackgroundIconButton()
                     IconButton(
                         onClick = { navController.navigate(Paths.QrCode.path) },
                         Modifier.testTag("qrcode")

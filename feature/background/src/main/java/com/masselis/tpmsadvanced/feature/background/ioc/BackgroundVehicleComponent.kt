@@ -15,6 +15,7 @@ import javax.inject.Named
     dependencies = [
         VehicleComponent::class,
         DataUnitComponent::class,
+        FeatureBackgroundComponent::class,
     ],
     modules = [
         BackgroundVehicleModule::class
@@ -29,6 +30,7 @@ internal abstract class BackgroundVehicleComponent {
             @BindsInstance foregroundService: Service?,
             vehicleComponent: VehicleComponent,
             dataUnitComponent: DataUnitComponent = DataUnitComponent,
+            featureBackgroundComponent: FeatureBackgroundComponent = FeatureBackgroundComponent,
         ): BackgroundVehicleComponent
 
         @OptIn(InternalDaggerImplementation::class)

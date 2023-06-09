@@ -9,6 +9,7 @@ import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import dagger.BindsInstance
+import dagger.Lazy
 import dagger.Subcomponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +30,7 @@ public abstract class VehicleComponent {
     public abstract class Factory protected constructor() {
 
         @Inject
-        internal lateinit var componentsUseCase: ActiveVehicleComponentsUseCase
+        internal lateinit var componentsUseCase: Lazy<ActiveVehicleComponentsUseCase>
 
         init {
             @Suppress("LeakingThis")
@@ -41,7 +42,7 @@ public abstract class VehicleComponent {
             @BindsInstance @Named("base") vehicle: Vehicle,
         ): VehicleComponent
 
-        public fun build(vehicle: Vehicle): VehicleComponent = componentsUseCase.hold(vehicle)
+        public fun build(vehicle: Vehicle): VehicleComponent = componentsUseCase.get().hold(vehicle)
     }
 
     @javax.inject.Scope

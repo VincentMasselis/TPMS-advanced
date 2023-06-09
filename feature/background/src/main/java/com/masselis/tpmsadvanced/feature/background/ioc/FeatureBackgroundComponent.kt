@@ -7,6 +7,7 @@ import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.Automat
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
 import com.masselis.tpmsadvanced.feature.background.usecase.ForegroundServiceUseCase
+import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
 import dagger.Component
 import javax.inject.Inject
 
@@ -32,6 +33,8 @@ public interface FeatureBackgroundComponent {
     public fun inject(injectable: Injectable)
 
     public fun inject(injectable: MonitorService)
+
+    public val vehiclesToMonitorUseCase: VehiclesToMonitorUseCase
 
     public companion object : Injectable()
 

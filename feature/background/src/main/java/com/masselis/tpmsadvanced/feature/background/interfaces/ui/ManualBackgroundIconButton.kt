@@ -21,35 +21,28 @@ import androidx.core.net.toUri
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.background.R
-import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 
 @Composable
 public fun ManualBackgroundIconButton(
-    component: VehicleComponent,
     modifier: Modifier = Modifier
 ) {
     ManualBackgroundIconButton(
-        component,
         modifier,
         viewModel {
             FeatureBackgroundComponent
                 .manualBackgroundViewModel
-                .build(component.vehicle, createSavedStateHandle())
+                .build(createSavedStateHandle())
         }
     )
 }
 
 @Composable
 internal fun ManualBackgroundIconButton(
-    component: VehicleComponent,
     modifier: Modifier = Modifier,
     viewModel: ManualBackgroundViewModel = viewModel {
-        FeatureBackgroundComponent.manualBackgroundViewModel.build(
-            component.vehicle,
-            createSavedStateHandle()
-        )
+        FeatureBackgroundComponent.manualBackgroundViewModel.build(createSavedStateHandle())
     }
 ) {
     val activity = LocalContext.current as Activity
