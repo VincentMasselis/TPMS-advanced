@@ -34,35 +34,40 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
         manuals.value = (manuals.value - vehicleUuid).toSortedSet()
     }
 
-    public fun ignoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
-        combine(
-            currentVehicleUseCase
-                .flow
-                .map { it.vehicle },
-            isAppVisibleFlow
-        ) { current, isVisible -> current.takeIf { isVisible } },
-        vehicleDatabase
-            .selectAllFlow()
-            .map { vehicles ->
-                vehicles
-                    .groupBy { it.isBackgroundMonitor }
-                    .let {
-                        Pair(
-                            it[false] ?: emptyList(),
-                            it[true] ?: emptyList()
-                        )
-                    }
-            }
-            .flowOn(Default),
+    public fun expectedIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
+        vehicleDatabase.selectAllFlow().map { vehicles ->
+            vehicles
+                .groupBy { it.isBackgroundMonitor }
+                .let {
+                    Pair(
+                        it[false] ?: emptyList(),
+                        it[true] ?: emptyList()
+                    )
+                }
+        },
         manuals
             .map { it.map { uuid -> vehicleDatabase.selectByUuid(uuid).first() } },
-    ) { displayedVehicle, (automaticIgnored, automaticMonitored), manuals ->
-        val monitored = (automaticMonitored + manuals)
-            .distinctBy { it.uuid }
-            .filter { it.uuid != displayedVehicle?.uuid } // Do not monitor the vehicle if it is already displayed
+    ) { (automaticIgnored, automaticMonitored), manuals ->
         Pair(
-            with(monitored.map { it.uuid }) { automaticIgnored.filter { contains(it.uuid).not() } },
-            monitored
+            // Removes from automaticIgnored the devices with were added to manuals
+            manuals.map { it.uuid }.run { automaticIgnored.filter { contains(it.uuid).not() } },
+            // Merges automaticMonitored and manual list
+            (automaticMonitored + manuals).distinctBy { it.uuid }
         )
-    }
+    }.flowOn(Default)
+
+    @Suppress("NAME_SHADOWING")
+    public fun realtimeIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
+        currentVehicleUseCase.flow.map { it.vehicle },
+        isAppVisibleFlow,
+        expectedIgnoredAndMonitored(),
+    ) { current, isAppVisible, (ignored, monitored) ->
+        val current = current.takeIf { isAppVisible }
+        Pair(
+            // Adds to ignored list if the current is already displayed
+            (ignored + current).filterNotNull(),
+            // Do not monitor the vehicle if it is already displayed
+            monitored.filter { it.uuid != current?.uuid }
+        )
+    }.flowOn(Default)
 }

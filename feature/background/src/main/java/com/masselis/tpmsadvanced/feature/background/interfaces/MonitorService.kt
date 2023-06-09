@@ -39,7 +39,7 @@ public class MonitorService : Service() {
         super.onCreate()
         scope = CoroutineScope(Dispatchers.Default)
         vehiclesToMonitorUseCase
-            .ignoredAndMonitored()
+            .realtimeIgnoredAndMonitored()
             .onEach { (ignored, monitored) ->
                 lock.withLock {
                     // Removes entries from `monitoring`

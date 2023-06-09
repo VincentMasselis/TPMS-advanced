@@ -22,7 +22,7 @@ internal class ForegroundServiceUseCase @Inject constructor(
 ) {
 
     init {
-        vehiclesToMonitorUseCase.ignoredAndMonitored()
+        vehiclesToMonitorUseCase.realtimeIgnoredAndMonitored()
             .map { (_, monitored) -> monitored.isNotEmpty() }
             .distinctUntilChanged()
             .onEach { isMonitorRequired ->
