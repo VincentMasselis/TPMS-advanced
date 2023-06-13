@@ -34,14 +34,17 @@ internal class ManualBackgroundViewModel @AssistedInject constructor(
 
     sealed class State : Parcelable {
         @Parcelize
-        object Enable : State()
+        object Loading : State()
 
         @Parcelize
-        object Disable : State()
+        object Idle : State()
+
+        @Parcelize
+        object Monitoring : State()
     }
 
     private val mutableStateFlow = savedStateHandle
-        .getLiveData<State>("STATE", State.Disable)
+        .getLiveData<State>("STATE", State.Loading)
         .asMutableStateFlow()
     val stateFlow = mutableStateFlow.asStateFlow()
 
@@ -54,8 +57,8 @@ internal class ManualBackgroundViewModel @AssistedInject constructor(
                 .map { (_, monitored) -> monitored }
         ) { current, monitored -> monitored.map { it.uuid }.contains(current.vehicle.uuid) }
             .map { currentIsMonitored ->
-                if (currentIsMonitored) State.Disable
-                else State.Enable
+                if (currentIsMonitored) State.Monitoring
+                else State.Idle
             }
             .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)

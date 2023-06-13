@@ -54,10 +54,6 @@ internal fun ManualBackgroundIconButton(
 
     fun monitor() {
         viewModel.monitor()
-        activity.overridePendingTransition(
-            R.anim.manual_background_in,
-            R.anim.manual_background_out
-        )
         activity.finish()
     }
 
@@ -65,42 +61,47 @@ internal fun ManualBackgroundIconButton(
         if (isGrant) monitor()
         else hasRefusedPermission = true
     }
-    AnimatedVisibility(state is State.Enable) {
-        IconButton(
-            onClick = {
-                when {
-                    hasRefusedPermission ->
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            .apply { addCategory(Intent.CATEGORY_DEFAULT) }
-                            .apply { data = "package:${activity.packageName}".toUri() }
-                            .apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
-                            .apply { addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY) }
-                            .apply { addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
-                            .also { activity.startActivity(it) }
+    // Only create an open animation when the state is different from Loading. If AnimatedVisibility
+    // is called with Loading, reaching Idle or Monitoring for the first time will play an animation
+    // while I only want to animate when the button is tap.
+    if (state != State.Loading) {
+        AnimatedVisibility(state is State.Idle) {
+            IconButton(
+                onClick = {
+                    when {
+                        hasRefusedPermission ->
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                .apply { addCategory(Intent.CATEGORY_DEFAULT) }
+                                .apply { data = "package:${activity.packageName}".toUri() }
+                                .apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+                                .apply { addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY) }
+                                .apply { addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
+                                .also { activity.startActivity(it) }
 
-                    viewModel.isPermissionGrant().not() ->
-                        launcher.launch(viewModel.requiredPermission())
+                        viewModel.isPermissionGrant().not() ->
+                            launcher.launch(viewModel.requiredPermission())
 
-                    else -> monitor()
-                }
-            },
-            modifier.testTag("put_in_background_button")
-        ) {
-            Icon(
-                ImageVector.vectorResource(R.drawable.format_vertical_align_center),
-                contentDescription = null,
-            )
+                        else -> monitor()
+                    }
+                },
+                modifier.testTag("put_in_background_button")
+            ) {
+                Icon(
+                    ImageVector.vectorResource(R.drawable.format_vertical_align_center),
+                    contentDescription = null,
+                )
+            }
         }
-    }
-    AnimatedVisibility(state is State.Disable) {
-        IconButton(
-            onClick = viewModel::disableMonitoring,
-            modifier.testTag("cancel_background_button")
-        ) {
-            Icon(
-                ImageVector.vectorResource(R.drawable.cancel),
-                contentDescription = null,
-            )
+        AnimatedVisibility(state is State.Monitoring) {
+            IconButton(
+                onClick = viewModel::disableMonitoring,
+                modifier.testTag("cancel_background_button")
+            ) {
+                Icon(
+                    ImageVector.vectorResource(R.drawable.cancel),
+                    contentDescription = null,
+                )
+            }
         }
     }
 }
