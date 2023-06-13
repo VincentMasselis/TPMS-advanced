@@ -5,7 +5,6 @@ import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.getBroadcast
 import android.app.Service
 import android.content.Intent
-import android.content.IntentFilter
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_LOW
@@ -18,7 +17,6 @@ import androidx.core.app.ServiceCompat.stopForeground
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.core.common.asFlow
 import com.masselis.tpmsadvanced.core.feature.background.R
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
@@ -27,13 +25,11 @@ import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.*
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
-import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -49,7 +45,6 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class ServiceNotifier @Inject constructor(
     @Named("base") vehicle: Vehicle,
     @Named("background_vehicle_component") scope: CoroutineScope,
-    vehiclesToMonitorUseCase: VehiclesToMonitorUseCase,
     findTyreComponentUseCase: FindTyreComponentUseCase,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
@@ -140,9 +135,7 @@ internal class ServiceNotifier @Inject constructor(
                             getBroadcast(
                                 appContext,
                                 vehicle.uuid.hashCode(),
-                                Intent(ACTION_DISABLE_MONITORING).apply {
-                                    putExtra(EXTRA_VEHICLE_UUID, vehicle.uuid.toString())
-                                },
+                                DisableMonitorBroadcastReceiver.intent(vehicle.uuid),
                                 FLAG_IMMUTABLE
                             )
                         ).build()
@@ -159,12 +152,6 @@ internal class ServiceNotifier @Inject constructor(
                     ?: notificationManager.cancel(vehicle.uuid.hashCode())
             }
             .launchIn(scope)
-
-        IntentFilter(ACTION_DISABLE_MONITORING)
-            .asFlow()
-            .filter { it.getStringExtra(EXTRA_VEHICLE_UUID) == vehicle.uuid.toString() }
-            .onEach { vehiclesToMonitorUseCase.disableManual(vehicle.uuid) }
-            .launchIn(scope)
     }
 
     sealed interface State {
@@ -180,7 +167,5 @@ internal class ServiceNotifier @Inject constructor(
     internal companion object {
         private const val channelNameWhenOk = "MONITOR_SERVICE_WHEN_OK"
         private const val channelNameForAlerts = "MONITOR_SERVICE_FOR_ALERT"
-        private const val ACTION_DISABLE_MONITORING = "DISABLE_VEHICLE_MONITORING"
-        private const val EXTRA_VEHICLE_UUID = "VEHICLE_UUID"
     }
 }

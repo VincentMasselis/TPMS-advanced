@@ -68,4 +68,8 @@ internal class ManualBackgroundViewModel @AssistedInject constructor(
     fun monitor() = viewModelScope.launch {
         vehiclesToMonitorUseCase.enableManual(currentVehicleUseCase.flow.first().vehicle.uuid)
     }
+
+    fun disableMonitoring() = viewModelScope.launch {
+        vehiclesToMonitorUseCase.disableManual(currentVehicleUseCase.flow.first().vehicle.uuid)
+    }
 }

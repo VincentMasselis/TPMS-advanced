@@ -5,6 +5,7 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -53,6 +54,10 @@ internal fun ManualBackgroundIconButton(
 
     fun monitor() {
         viewModel.monitor()
+        activity.overridePendingTransition(
+            R.anim.manual_background_in,
+            R.anim.manual_background_out
+        )
         activity.finish()
     }
 
@@ -60,7 +65,7 @@ internal fun ManualBackgroundIconButton(
         if (isGrant) monitor()
         else hasRefusedPermission = true
     }
-    if (state is State.Enable)
+    AnimatedVisibility(state is State.Enable) {
         IconButton(
             onClick = {
                 when {
@@ -86,4 +91,16 @@ internal fun ManualBackgroundIconButton(
                 contentDescription = null,
             )
         }
+    }
+    AnimatedVisibility(state is State.Disable) {
+        IconButton(
+            onClick = viewModel::disableMonitoring,
+            modifier.testTag("cancel_background_button")
+        ) {
+            Icon(
+                ImageVector.vectorResource(R.drawable.cancel),
+                contentDescription = null,
+            )
+        }
+    }
 }

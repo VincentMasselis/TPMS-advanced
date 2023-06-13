@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.feature.background.ioc
 
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
+import com.masselis.tpmsadvanced.feature.background.interfaces.DisableMonitorBroadcastReceiver
 import com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
@@ -33,6 +34,8 @@ public interface FeatureBackgroundComponent {
     public fun inject(injectable: Injectable)
 
     public fun inject(injectable: MonitorService)
+
+    public fun inject(disableMonitorBroadcastReceiver: DisableMonitorBroadcastReceiver)
 
     public val vehiclesToMonitorUseCase: VehiclesToMonitorUseCase
 
