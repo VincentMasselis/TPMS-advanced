@@ -17,7 +17,7 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature
 import dagger.Provides
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
-import java.util.*
+import java.util.UUID
 
 @dagger.Module
 internal object Module {
@@ -68,9 +68,12 @@ internal object Module {
 
             val delegate = AndroidSqliteDriver.Callback(Database.Schema)
 
-            override fun onOpen(db: SupportSQLiteDatabase) {
-                delegate.onOpen(db)
-                db.execSQL("PRAGMA foreign_keys=ON;")
+            override fun onConfigure(db: SupportSQLiteDatabase) {
+                delegate.onConfigure(db)
+                db.setForeignKeyConstraintsEnabled(true)
+                // Increase SQLite performance, see https://developer.android.com/topic/performance/sqlite-performance-best-practices
+                db.enableWriteAheadLogging()
+                db.execSQL("PRAGMA synchronous = NORMAL")
             }
 
             override fun onCreate(db: SupportSQLiteDatabase) {
