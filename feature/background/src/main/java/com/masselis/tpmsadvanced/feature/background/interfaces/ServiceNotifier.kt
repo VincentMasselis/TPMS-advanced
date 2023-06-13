@@ -23,7 +23,9 @@ import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
-import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.*
+import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.NoAlert
+import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.PressureAlert
+import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.TemperatureAlert
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -147,7 +149,7 @@ internal class ServiceNotifier @Inject constructor(
                 foregroundService?.startForeground(vehicle.uuid.hashCode(), it)
                     ?: notificationManager.notify(vehicle.uuid.hashCode(), it)
             }
-            .onCompletion {
+            .onCompletion { _ ->
                 foregroundService?.also { stopForeground(it, STOP_FOREGROUND_REMOVE) }
                     ?: notificationManager.cancel(vehicle.uuid.hashCode())
             }

@@ -40,8 +40,8 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
                 .groupBy { it.isBackgroundMonitor }
                 .let {
                     Pair(
-                        it[false] ?: emptyList(),
-                        it[true] ?: emptyList()
+                        it[false].orEmpty(),
+                        it[true].orEmpty()
                     )
                 }
         },

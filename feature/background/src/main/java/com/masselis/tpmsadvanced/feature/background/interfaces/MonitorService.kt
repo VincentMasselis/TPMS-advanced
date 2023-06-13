@@ -57,11 +57,13 @@ public class MonitorService : Service() {
                             monitored.filter { monitoringUuids.contains(it.uuid).not() }
                         }
                         .map { vehicleComponentFactory.build(it) }
-                        .mapIndexed { index, it ->
+                        .mapIndexed { index, vehicleComponent ->
                             if (index == 0 && hasForegroundService.not())
-                                DaggerBackgroundVehicleComponent.factory().build(this, it)
+                                DaggerBackgroundVehicleComponent.factory()
+                                    .build(this, vehicleComponent)
                             else
-                                DaggerBackgroundVehicleComponent.factory().build(null, it)
+                                DaggerBackgroundVehicleComponent.factory()
+                                    .build(null, vehicleComponent)
                         }
                         .forEach { monitoring.add(it) }
                 }

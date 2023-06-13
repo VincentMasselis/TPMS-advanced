@@ -31,6 +31,7 @@ internal class HomeViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
+            @Suppress("MagicNumber")
             if (noveltyUseCase.consume("car_kind", 1020L))
                 channel.send(SpotlightEvent.CarListDropdown)
         }
