@@ -30,11 +30,11 @@ internal class Home private constructor(
     private val composeTestRule: ComposeTestRule
 ) {
 
-    private val dropdownMenu get() = composeTestRule.onNodeWithTag(CurrentVehicleDropdownTags.dropdownMenu)
-    private val settingsButton get() = composeTestRule.onNodeWithTag(HomeTags.settings)
+    private val carListDropdownMenu get() = composeTestRule.onNodeWithTag(CurrentVehicleDropdownTags.dropdownMenu)
+    private val actionOverflowButton get() = composeTestRule.onNodeWithTag(HomeTags.Actions.overflow)
 
     fun dropdownMenu(block: DropdownMenu.() -> Unit) {
-        dropdownMenu.performClick()
+        carListDropdownMenu.performClick()
         DropdownMenu().block()
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(dropdownEntryAddVehicle).assertDoesNotExist()
@@ -62,7 +62,7 @@ internal class Home private constructor(
             .onNodeWithTag(dropdownEntry(vehicleName))
             .performClick()
 
-        fun close() = dropdownMenu.performClick()
+        fun close() = carListDropdownMenu.performClick()
 
         inner class AddVehicle {
             private val textField
@@ -123,10 +123,21 @@ internal class Home private constructor(
         fun cancel() = cancelTag.performClick()
     }
 
-    fun settings(block: Settings.() -> Unit) {
-        settingsButton.performClick()
-        Settings().block()
-        composeTestRule.waitUntilExactlyOneExists(hasTestTag(HomeTags.settings))
+    fun actionOverflow(block: OverflowMenu.() -> Unit) {
+        actionOverflowButton.performClick()
+        OverflowMenu().block()
+        composeTestRule.waitUntilDoesNotExist(hasTestTag(HomeTags.Actions.Overflow.name))
+    }
+
+    inner class OverflowMenu {
+        private val settings
+            get() = composeTestRule.onNodeWithTag(HomeTags.Actions.Overflow.settings)
+
+        fun settings(block: Settings.() -> Unit) {
+            settings.performClick()
+            Settings().block()
+            composeTestRule.waitUntilExactlyOneExists(hasTestTag(HomeTags.Actions.overflow))
+        }
     }
 
     inner class Settings {

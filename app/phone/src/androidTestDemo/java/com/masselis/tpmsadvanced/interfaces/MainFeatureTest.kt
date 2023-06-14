@@ -21,9 +21,11 @@ internal class MainFeatureTest {
     @Test
     fun mainFeatures() {
         composeTestRule.home {
-            settings {
-                assert(isVehicleDeleteEnabled().not())
-                leave()
+            actionOverflow {
+                settings {
+                    assert(isVehicleDeleteEnabled().not())
+                    leave()
+                }
             }
             dropdownMenu {
                 addVehicle {
@@ -59,21 +61,25 @@ internal class MainFeatureTest {
                 addToFavorites()
             }
             composeTestRule.waitUntil { isBindSensorAvailable(ManySensor.Located(FRONT_LEFT)).not() }
-            settings {
-                composeTestRule.waitUntil { isClearFavouritesEnabled() }
-                clearFavourites()
-                composeTestRule.waitUntil { isClearFavouritesEnabled().not() }
-                leave()
+            actionOverflow {
+                settings {
+                    composeTestRule.waitUntil { isClearFavouritesEnabled() }
+                    clearFavourites()
+                    composeTestRule.waitUntil { isClearFavouritesEnabled().not() }
+                    leave()
+                }
             }
             dropdownMenu {
                 select("My car")
             }
-            settings {
-                deleteVehicle {
-                    cancel()
-                }
-                deleteVehicle {
-                    delete()
+            actionOverflow {
+                settings {
+                    deleteVehicle {
+                        cancel()
+                    }
+                    deleteVehicle {
+                        delete()
+                    }
                 }
             }
             dropdownMenu {

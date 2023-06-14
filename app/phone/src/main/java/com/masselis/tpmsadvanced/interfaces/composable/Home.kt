@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,14 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,14 +45,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
-import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdown
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Vehicle
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
-import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.settings
 import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel.SpotlightEvent
@@ -126,6 +123,7 @@ internal fun Home(
                 exit = fadeOut()
             ) {
                 with(LocalDensity.current) {
+                    @Suppress("MaxLineLength")
                     Spotlight(
                         center = offsetToFocus!!,
                         radius = 50.dp.toPx(),
@@ -192,25 +190,42 @@ private fun TopAppBar(
             }
         },
         actions = {
+            var showMenu by remember { mutableStateOf(false) }
             when (currentPath) {
                 Paths.Home -> {
-                    ManualBackgroundIconButton(modifier = manualBackgroundButtonModifier)
+                    ManualBackgroundIconButton(
+                        modifier = manualBackgroundButtonModifier
+                            .testTag(HomeTags.Actions.manualBackground)
+                    )
                     IconButton(
-                        onClick = { navController.navigate(Paths.QrCode.path) },
-                        Modifier.testTag("qrcode")
+                        onClick = { showMenu = true },
+                        Modifier.testTag(HomeTags.Actions.overflow)
                     ) {
                         Icon(
-                            ImageVector.vectorResource(R.drawable.qrcode),
+                            Icons.Default.MoreVert,
                             contentDescription = null,
                         )
                     }
-                    IconButton(
-                        onClick = { navController.navigate(Paths.Settings.path) },
-                        Modifier.testTag(settings)
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                        modifier = Modifier.testTag(HomeTags.Actions.Overflow.name)
                     ) {
-                        Icon(
-                            ImageBitmap.imageResource(R.drawable.ic_car_cog_black_24dp),
-                            contentDescription = null,
+                        DropdownMenuItem(
+                            text = { Text("Scan QRCode") },
+                            onClick = {
+                                showMenu = false
+                                navController.navigate(Paths.QrCode.path)
+                            },
+                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.qrCode)
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Settings") },
+                            onClick = {
+                                showMenu = false
+                                navController.navigate(Paths.Settings.path)
+                            },
+                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.settings)
                         )
                     }
                 }
@@ -238,6 +253,16 @@ internal sealed class Paths(val path: String) {
 }
 
 public object HomeTags {
-    public const val settings: String = "home_settings"
+    public object Actions {
+        public const val manualBackground: String = "put_in_manual_background"
+        public const val overflow: String = "overflow_menu_icon"
+
+        public object Overflow {
+            public const val name: String = "overflow_menu"
+            public const val qrCode: String = "action_qr_code"
+            public const val settings: String = "action_settings"
+        }
+    }
+
     public const val backButton: String = "back_button"
 }
