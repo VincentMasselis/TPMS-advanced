@@ -1,13 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    extra.set("tpmsAdvancedVersionCode", run {
-        val stdout = java.io.ByteArrayOutputStream()
-        exec {
-            commandLine("git", "rev-list", "--first-parent", "--count", "origin/main")
-            standardOutput = stdout
-        }
-        stdout.toString().trim().toInt() + 1000
-    })
+    extra.set("tpmsAdvancedVersionCode", providers.of(CommitCountValueSource::class) {}.get())
 }
 
 plugins {

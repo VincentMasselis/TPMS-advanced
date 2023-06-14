@@ -98,29 +98,16 @@ dependencies {
 tasks.whenTaskAdded {
     if (name == "connectedDemoDebugAndroidTest") {
         val connectedDemoDebugAndroidTest = this
-        task<Exec>("clearTestOutputFilesFolder") {
+        task<ClearTestOutputFilesFolder>("clearTestOutputFilesFolder") {
             connectedDemoDebugAndroidTest.dependsOn(this)
-            description = "Clears the phone\'s screenshot folder"
-            commandLine(
-                android.adbExecutable,
-                "shell",
-                "rm -rf /sdcard/googletest/test_outputfiles"
-            )
+            adbExecutable.set(android.adbExecutable)
         }
+
         val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
-        val downloadTestOutputFiles = task<Exec>("downloadTestOutputFiles") {
+        val downloadTestOutputFiles = task<DownloadTestOutputFiles>("downloadTestOutputFiles") {
             dependsOn(connectedDemoDebugAndroidTest)
-            description = "Download screenshot folder from the phone"
-            doFirst {
-                delete(outputFilesDir)
-                mkdir(outputFilesDir)
-            }
-            commandLine(
-                android.adbExecutable,
-                "pull",
-                "/sdcard/googletest/test_outputfiles",
-                buildDir
-            )
+            adbExecutable.set(android.adbExecutable)
+            destination.set(outputFilesDir)
         }
         task<Copy>("copyScreenshot") {
             dependsOn(downloadTestOutputFiles)
@@ -177,19 +164,10 @@ if (isDecrypted) afterEvaluate {
     tasks
         .single { it.name == "processNormalReleaseVersionCodes" }
         .let { processNormalReleaseVersionCodes ->
-            task("compareLocalVersionCodeWithPlayStore") {
+            task<CompareLocalVersionCodeWithPlayStore>("compareLocalVersionCodeWithPlayStore") {
                 dependsOn(processNormalReleaseVersionCodes)
-                group = "publishing"
-                description =
-                    "Ensure the artifact to be promoted by promoteArtifact will be generated from the current commit"
-                doLast {
-                    val playStoreVc =
-                        file("$buildDir/intermediates/gpp/normalRelease/available-version-codes.txt")
-                            .readText()
-                            .trim()
-                            .toInt() - 1
-                    assert(playStoreVc == tpmsAdvancedVersionCode)
-                }
+                availableVersionCodeFile.set(file("$buildDir/intermediates/gpp/normalRelease/available-version-codes.txt"))
+                currentVc.set(tpmsAdvancedVersionCode)
             }
         }
         .also { compareLocalVersionCodeWithPlayStore ->
