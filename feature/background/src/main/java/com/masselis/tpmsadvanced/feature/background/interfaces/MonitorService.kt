@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import okio.withLock
 import java.util.concurrent.locks.ReentrantLock
@@ -68,12 +69,12 @@ public class MonitorService : Service() {
                         .forEach { monitoring.add(it) }
                 }
             }
+            .onCompletion { lock.withLock { monitoring.clear() } }
             .launchIn(scope)
     }
 
     override fun onDestroy() {
         scope.cancel(null)
-        lock.withLock { monitoring.clear() }
         super.onDestroy()
     }
 

@@ -23,7 +23,7 @@ internal class HomeViewModel @AssistedInject constructor(
     }
 
     sealed class SpotlightEvent {
-        object CarListDropdown : SpotlightEvent()
+        object ManualMonitorDropdown : SpotlightEvent()
     }
 
     private val channel = Channel<SpotlightEvent>(BUFFERED)
@@ -32,8 +32,8 @@ internal class HomeViewModel @AssistedInject constructor(
     init {
         viewModelScope.launch {
             @Suppress("MagicNumber")
-            if (noveltyUseCase.consume("car_kind", 1020L))
-                channel.send(SpotlightEvent.CarListDropdown)
+            if (noveltyUseCase.consume("manual_monitor", 1022L))
+                channel.send(SpotlightEvent.ManualMonitorDropdown)
         }
     }
 

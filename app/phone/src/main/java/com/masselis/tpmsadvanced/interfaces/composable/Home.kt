@@ -70,11 +70,11 @@ internal fun Home(
 ) {
     CompositionLocalProvider(LocalHomeNavController provides rememberNavController()) {
         var offsetToFocus by remember { mutableStateOf<Offset?>(null) }
-        var showCarListDropdownSpotlight by remember { mutableStateOf(false) }
+        var showManualMonitoringSpotlight by remember { mutableStateOf(false) }
         Scaffold(
             topBar = {
                 TopAppBar(
-                    titleModifier = Modifier.onGloballyPositioned { coordinates ->
+                    manualBackgroundButtonModifier = Modifier.onGloballyPositioned { coordinates ->
                         if (offsetToFocus != null) return@onGloballyPositioned
                         coordinates.positionInRoot()
                             .takeIf { it != Offset.Unspecified }
@@ -121,31 +121,31 @@ internal fun Home(
         )
         if (offsetToFocus != null)
             AnimatedVisibility(
-                visible = showCarListDropdownSpotlight,
+                visible = showManualMonitoringSpotlight,
                 enter = fadeIn(spring(0f)),
                 exit = fadeOut()
             ) {
                 with(LocalDensity.current) {
                     Spotlight(
                         center = offsetToFocus!!,
-                        radius = 100.dp.toPx(),
-                        text = AnnotatedString("Something new is waiting for you here,\nclick on \"Add a vehicle ⊕\""),
+                        radius = 50.dp.toPx(),
+                        text = AnnotatedString("Something new is waiting for you,\nTap this button to monitor your vehicle while the app is in background"),
                         textPadding = 8.dp.toPx(),
                         textStyle = TextStyle.Default.copy(
                             color = Color.White,
-                            fontSize = 21.sp,
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
                         ),
-                        onSpotlight = { showCarListDropdownSpotlight = false }
+                        onSpotlight = { showManualMonitoringSpotlight = false }
                     )
                 }
             }
         LaunchedEffect("EVENT") {
             viewModel.eventChannel.consumeEach {
                 when (it) {
-                    SpotlightEvent.CarListDropdown ->
-                        showCarListDropdownSpotlight = true
+                    SpotlightEvent.ManualMonitorDropdown ->
+                        showManualMonitoringSpotlight = true
                 }
             }
         }
@@ -157,7 +157,7 @@ internal fun Home(
 @Composable
 private fun TopAppBar(
     modifier: Modifier = Modifier,
-    titleModifier: Modifier = Modifier,
+    manualBackgroundButtonModifier: Modifier = Modifier
 ) {
     val navController = LocalHomeNavController.current
     val currentPath = navController.currentBackStackEntryAsState()
@@ -168,7 +168,7 @@ private fun TopAppBar(
     CenterAlignedTopAppBar(
         title = {
             when (currentPath) {
-                Paths.Home -> CurrentVehicleDropdown(titleModifier)
+                Paths.Home -> CurrentVehicleDropdown()
                 Paths.Settings -> Text(text = "Settings")
                 Paths.QrCode, null -> {}
             }
@@ -194,7 +194,7 @@ private fun TopAppBar(
         actions = {
             when (currentPath) {
                 Paths.Home -> {
-                    ManualBackgroundIconButton()
+                    ManualBackgroundIconButton(modifier = manualBackgroundButtonModifier)
                     IconButton(
                         onClick = { navController.navigate(Paths.QrCode.path) },
                         Modifier.testTag("qrcode")
