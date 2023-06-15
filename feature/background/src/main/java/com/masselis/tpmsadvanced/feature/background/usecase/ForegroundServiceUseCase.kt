@@ -1,7 +1,6 @@
 package com.masselis.tpmsadvanced.feature.background.usecase
 
 import android.content.Intent
-import androidx.core.content.ContextCompat.startForegroundService
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
@@ -32,7 +31,7 @@ internal class ForegroundServiceUseCase @Inject constructor(
             .flowOn(IO)
             .onEach { isMonitorRequired ->
                 if (checkForPermissionUseCase.isPermissionGrant() && isMonitorRequired)
-                    startForegroundService(appContext, serviceIntent)
+                    appContext.startService(serviceIntent)
                 else
                     appContext.stopService(serviceIntent)
             }

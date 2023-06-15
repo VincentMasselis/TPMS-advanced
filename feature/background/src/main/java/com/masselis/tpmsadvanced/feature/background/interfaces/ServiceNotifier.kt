@@ -76,7 +76,7 @@ internal class ServiceNotifier @Inject constructor(
                 combine(
                     combine(comps.map { it.second.tyreAtmosphereUseCase.listen() }) { it }
                         .onStart { emit(emptyArray()) }
-                        .debounce(300.milliseconds),
+                        .debounce(100.milliseconds),
                     vehicleRangesUseCase.highTemp,
                     vehicleRangesUseCase.lowPressure,
                     vehicleRangesUseCase.highPressure,
