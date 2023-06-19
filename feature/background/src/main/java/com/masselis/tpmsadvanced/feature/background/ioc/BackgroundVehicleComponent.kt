@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.feature.background.ioc
 
 import android.app.Service
 import com.masselis.tpmsadvanced.core.common.InternalDaggerImplementation
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
@@ -36,9 +37,11 @@ internal abstract class BackgroundVehicleComponent {
         @OptIn(InternalDaggerImplementation::class)
         fun build(
             foregroundService: Service?,
-            vehicleComponent: VehicleComponent
-        ) = daggerOnlyBuild(foregroundService, vehicleComponent)
-            .apply { serviceNotifier } // Creates an instance of `ServiceNotifier` after build.
+            vehicle: Vehicle
+        ) = daggerOnlyBuild(
+            foregroundService,
+            FeatureCoreComponent.vehicleComponentFactory.build(vehicle)
+        ).apply { serviceNotifier } // Creates an instance of `ServiceNotifier` after build.
     }
 
     @javax.inject.Scope

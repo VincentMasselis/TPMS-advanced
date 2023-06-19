@@ -11,7 +11,7 @@ import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
 @Preview
 @Composable
 private fun CarPreview() {
-    Vehicle(
+    CurrentVehicle(
         modifier = Modifier.fillMaxSize(),
         viewModel = previewCurrentVehicleComponent()
     )
@@ -20,7 +20,7 @@ private fun CarPreview() {
 @Preview
 @Composable
 private fun SingleAxleTrailerPreview() {
-    Vehicle(
+    CurrentVehicle(
         modifier = Modifier.fillMaxSize(),
         viewModel = previewCurrentVehicleComponent(
             PreviewVehicleComponent(
@@ -33,7 +33,7 @@ private fun SingleAxleTrailerPreview() {
 @Preview
 @Composable
 private fun MotorcyclePreview() {
-    Vehicle(
+    CurrentVehicle(
         modifier = Modifier.fillMaxSize(),
         viewModel = previewCurrentVehicleComponent(
             PreviewVehicleComponent(
@@ -46,7 +46,7 @@ private fun MotorcyclePreview() {
 @Preview
 @Composable
 private fun TadpoleThreadWheelerPreview() {
-    Vehicle(
+    CurrentVehicle(
         modifier = Modifier.fillMaxSize(),
         viewModel = previewCurrentVehicleComponent(
             PreviewVehicleComponent(
@@ -59,7 +59,7 @@ private fun TadpoleThreadWheelerPreview() {
 @Preview
 @Composable
 private fun DeltaThreadWheelerPreview() {
-    Vehicle(
+    CurrentVehicle(
         modifier = Modifier.fillMaxSize(),
         viewModel = previewCurrentVehicleComponent(
             PreviewVehicleComponent(

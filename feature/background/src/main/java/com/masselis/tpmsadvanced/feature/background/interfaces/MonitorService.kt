@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
 import com.masselis.tpmsadvanced.feature.background.ioc.DaggerBackgroundVehicleComponent
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
@@ -23,9 +22,6 @@ public class MonitorService : Service() {
 
     @Inject
     internal lateinit var vehiclesToMonitorUseCase: VehiclesToMonitorUseCase
-
-    @Inject
-    internal lateinit var vehicleComponentFactory: VehicleComponent.Factory
 
     private val monitoring = mutableListOf<BackgroundVehicleComponent>()
     private val lock = ReentrantLock()
@@ -57,14 +53,13 @@ public class MonitorService : Service() {
                         .let { monitoringUuids ->
                             monitored.filter { monitoringUuids.contains(it.uuid).not() }
                         }
-                        .map { vehicleComponentFactory.build(it) }
-                        .mapIndexed { index, vehicleComponent ->
+                        .mapIndexed { index, vehicle ->
                             if (index == 0 && hasForegroundService.not())
                                 DaggerBackgroundVehicleComponent.factory()
-                                    .build(this, vehicleComponent)
+                                    .build(this, vehicle)
                             else
                                 DaggerBackgroundVehicleComponent.factory()
-                                    .build(null, vehicleComponent)
+                                    .build(null, vehicle)
                         }
                         .forEach { monitoring.add(it) }
                 }

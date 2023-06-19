@@ -45,8 +45,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdown
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Vehicle
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
@@ -99,9 +99,9 @@ internal fun Home(
                             uriPattern = "tpmsadvanced://main/{uuid}"
                         }),
                     ) { navBackStackEntry ->
-                        Vehicle(
+                        CurrentVehicle(
                             modifier = modifier,
-                            uuid = navBackStackEntry
+                            newCurrentVehicle = navBackStackEntry
                                 .arguments
                                 ?.getString("uuid")
                                 ?.let { UUID.fromString(it) }

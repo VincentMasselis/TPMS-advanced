@@ -41,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor
@@ -55,13 +56,13 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
 import java.util.UUID
 
 @Composable
-public fun Vehicle(
+public fun CurrentVehicle(
     modifier: Modifier = Modifier,
-    uuid: UUID? = null,
+    newCurrentVehicle: UUID? = null,
 ) {
-    Vehicle(
+    CurrentVehicle(
         modifier,
-        uuid,
+        newCurrentVehicle,
         viewModel {
             FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
         }
@@ -70,20 +71,30 @@ public fun Vehicle(
 
 @Suppress("LongMethod")
 @Composable
-internal fun Vehicle(
+internal fun CurrentVehicle(
     modifier: Modifier = Modifier,
-    uuid: UUID? = null,
+    newCurrentVehicle: UUID? = null,
     viewModel: CurrentVehicleComponentViewModel = viewModel {
         FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
     }
 ) {
-    var hasUuidToSet by rememberSaveable { mutableStateOf(uuid) }
+    var hasUuidToSet by rememberSaveable { mutableStateOf(newCurrentVehicle) }
     hasUuidToSet
         ?.also(viewModel::setCurrent)
         ?.also { hasUuidToSet = null }
-
-    KeepScreenOn()
     val component by viewModel.stateFlow.collectAsState()
+    Vehicle(
+        component = component,
+        modifier = modifier
+    )
+}
+
+@Composable
+public fun Vehicle(
+    component: VehicleComponent,
+    modifier: Modifier = Modifier,
+) {
+    KeepScreenOn()
     CompositionLocalProvider(LocalVehicleComponent provides component) {
         when (component.vehicle.kind) {
             Kind.CAR -> Car(modifier)

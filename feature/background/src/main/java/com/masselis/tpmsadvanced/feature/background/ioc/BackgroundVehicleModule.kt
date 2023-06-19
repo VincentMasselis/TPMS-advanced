@@ -20,7 +20,11 @@ internal object BackgroundVehicleModule {
 
     @Provides
     @Named("background_vehicle_component")
-    fun release(@Named("background_vehicle_component") scope: CoroutineScope): () -> Unit = {
+    fun release(
+        @Named("background_vehicle_component") scope: CoroutineScope,
+        @Named("vehicle_component") vehicleComponentRelease: () -> Unit
+    ): () -> Unit = {
         scope.cancel()
+        vehicleComponentRelease()
     }
 }
