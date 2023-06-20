@@ -45,12 +45,14 @@ public interface FeatureBackgroundComponent {
         FeatureBackgroundComponent by DaggerFeatureBackgroundComponent.factory()
             .build() {
 
+        // Theses use cases do stuff in background when initialized
         @Inject
         internal lateinit var checkForPermissionUseCase: CheckForPermissionUseCase
 
         @Inject
         internal lateinit var foregroundServiceUseCase: ForegroundServiceUseCase
 
+        // View models
         @Inject
         internal lateinit var automaticBackgroundViewModel: AutomaticBackgroundViewModel.Factory
 

@@ -27,8 +27,8 @@ internal class ForegroundServiceUseCase @Inject constructor(
     init {
         vehiclesToMonitorUseCase.realtimeIgnoredAndMonitored()
             .map { (_, monitored) -> monitored.isNotEmpty() }
-            .distinctUntilChanged()
             .flowOn(IO)
+            .distinctUntilChanged()
             .onEach { isMonitorRequired ->
                 if (checkForPermissionUseCase.isPermissionGrant() && isMonitorRequired)
                     appContext.startService(serviceIntent)

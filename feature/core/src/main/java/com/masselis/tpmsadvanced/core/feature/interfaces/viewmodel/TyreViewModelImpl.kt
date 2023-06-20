@@ -50,10 +50,10 @@ internal class TyreViewModelImpl @AssistedInject constructor(
         ): TyreViewModelImpl
     }
 
-    private val state = savedStateHandle
+    private val mutableStateFlow = savedStateHandle
         .getLiveData<State>("STATE", State.NotDetected)
         .asMutableStateFlow()
-    override val stateFlow = state.asStateFlow()
+    override val stateFlow = mutableStateFlow.asStateFlow()
 
     private val obsoleteTimeout = obsoleteTimeoutJava.toKotlinDuration()
 
@@ -123,7 +123,7 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                 emit(State.NotDetected)
             }
         }.catch { emit(State.DetectionIssue) }
-            .onEach { state.value = it }
+            .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)
     }
 

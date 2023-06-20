@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
-import com.masselis.tpmsadvanced.core.feature.usecase.ActiveVehicleComponentsUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleStateFlowUseCase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import dagger.Module
@@ -20,13 +19,4 @@ internal object VehicleModule {
     @Named("vehicle_component")
     @VehicleComponent.Scope
     fun scope() = CoroutineScope(SupervisorJob())
-
-    @Provides
-    @Named("vehicle_component")
-    fun release(
-        @Named("base") vehicle: Vehicle,
-        componentsUseCase: ActiveVehicleComponentsUseCase
-    ): () -> Unit = {
-        componentsUseCase.release(vehicle)
-    }
 }

@@ -23,20 +23,26 @@ import androidx.core.net.toUri
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.background.R
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.LocalVehicleComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel.State
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 
 @Composable
 public fun ManualBackgroundIconButton(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    component: VehicleComponent = LocalVehicleComponent.current,
 ) {
     ManualBackgroundIconButton(
-        modifier,
-        viewModel {
+        modifier = modifier,
+        component = component,
+        viewModel = viewModel(
+            key = "ManualBackgroundViewModel_${component.vehicle.uuid}"
+        ) {
             FeatureBackgroundComponent
                 .manualBackgroundViewModel
-                .build(createSavedStateHandle())
+                .build(component.vehicle, createSavedStateHandle())
         }
     )
 }
@@ -44,8 +50,12 @@ public fun ManualBackgroundIconButton(
 @Composable
 internal fun ManualBackgroundIconButton(
     modifier: Modifier = Modifier,
+    component: VehicleComponent = LocalVehicleComponent.current,
     viewModel: ManualBackgroundViewModel = viewModel {
-        FeatureBackgroundComponent.manualBackgroundViewModel.build(createSavedStateHandle())
+        FeatureBackgroundComponent.manualBackgroundViewModel.build(
+            component.vehicle,
+            createSavedStateHandle()
+        )
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()

@@ -4,7 +4,7 @@ import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -15,4 +15,4 @@ internal class VehicleCountStateFlowUseCase @Inject constructor(
     vehicleDatabase: VehicleDatabase,
 ) : StateFlow<Long> by vehicleDatabase
     .countFlow()
-    .stateIn(GlobalScope, SharingStarted.Eagerly, vehicleDatabase.count())
+    .stateIn(GlobalScope, Eagerly, vehicleDatabase.count())

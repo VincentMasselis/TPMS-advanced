@@ -1,7 +1,6 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
 import androidx.lifecycle.SavedStateHandle
-import com.masselis.tpmsadvanced.core.common.InternalDaggerImplementation
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
@@ -16,11 +15,9 @@ import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.time.Duration
-import kotlin.coroutines.EmptyCoroutineContext
 
 
 internal class PreviewTyreComponent(
@@ -46,16 +43,14 @@ internal class PreviewTyreComponent(
         get() = TODO("Not yet implemented")
 }
 
-@OptIn(InternalDaggerImplementation::class)
 @Suppress("LongParameterList")
 internal class PreviewVehicleComponent(
-    override val findTyreComponentUseCase: FindTyreComponentUseCase =
+    override val tyreComponent: FindTyreComponentUseCase =
         mockk<FindTyreComponentUseCase>().also {
             every { it.find(any()) } returns PreviewTyreComponent()
         },
     override val vehicle: Vehicle = previewVehicle,
     override val carFlow: StateFlow<Vehicle> = MutableStateFlow(previewVehicle),
-    override val scope: CoroutineScope = CoroutineScope(EmptyCoroutineContext),
     override val clearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory =
         object : ClearBoundSensorsViewModel.Factory {
             override fun build(savedStateHandle: SavedStateHandle): ClearBoundSensorsViewModel =
@@ -71,8 +66,6 @@ internal class PreviewVehicleComponent(
                 previewDeleteVehicleViewModel()
         }
 ) : VehicleComponent() {
-    override val release: () -> Unit
-        get() = TODO("Not yet implemented")
     override val vehicleRangesUseCase: VehicleRangesUseCase
         get() = TODO("Not yet implemented")
 }

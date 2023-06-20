@@ -50,7 +50,7 @@ internal class CurrentVehicleDropdownViewModel @AssistedInject constructor(
 
     init {
         combine(
-            currentVehicleUseCase.flow.flatMapLatest { it.carFlow },
+            currentVehicleUseCase.flatMapLatest { it.carFlow },
             vehicleListUseCase.vehicleListFlow
         ) { current, list ->
             State.Vehicles(current, list.sortedBy { it.name })

@@ -35,9 +35,9 @@ internal fun BindSensorButton(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: BindSensorButtonViewModel = viewModel(
-        key = "BindSensorButtonViewModel_${vehicleComponent.hashCode()}_${manySensor}"
+        key = "BindSensorButtonViewModel_${vehicleComponent.vehicle.uuid}_${manySensor}"
     ) {
-        vehicleComponent.findTyreComponentUseCase(manySensor)
+        vehicleComponent.tyreComponent(manySensor)
             .bindSensorButtonViewModelFactory
             .build(createSavedStateHandle())
     }
@@ -79,6 +79,7 @@ private fun BindSensorDialog(
                 when (bondRequest) {
                     is State.RequestBond.NewBinding ->
                         "When a sensor is set as favorite, TPMS Advanced will only display this sensor for this tyre"
+
                     is State.RequestBond.AlreadyBound ->
                         @Suppress("MaxLineLength")
                         "This sensor will be removed from the car \"${bondRequest.currentVehicle.name}\"" +

@@ -121,7 +121,7 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
 
     public fun selectAll(): List<Vehicle> = queries.selectAll(mapper).executeAsList()
 
-    public fun selectByUuid(vehicleId: UUID): Flow<Vehicle> =
+    public fun selectByUuidFlow(vehicleId: UUID): Flow<Vehicle> =
         queries.selectByUuid(vehicleId, mapper)
             .asFlow()
             .mapToOne(IO)

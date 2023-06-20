@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,7 +37,7 @@ internal fun InternalPreconditions(
     ready: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PreconditionsViewModel = viewModel {
-        FeatureCoreComponent.preconditionsViewModel.build(createSavedStateHandle())
+        FeatureCoreComponent.preconditionsViewModel
     }
 ) {
     val permissionState = rememberMultiplePermissionsState(viewModel.requiredPermission())

@@ -46,7 +46,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @BackgroundVehicleComponent.Scope
 internal class ServiceNotifier @Inject constructor(
     @Named("base") vehicle: Vehicle,
-    @Named("background_vehicle_component") scope: CoroutineScope,
+    scope: CoroutineScope,
     findTyreComponentUseCase: FindTyreComponentUseCase,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
@@ -71,10 +71,10 @@ internal class ServiceNotifier @Inject constructor(
         vehicle
             .kind
             .locations
-            .map { it to findTyreComponentUseCase.find(it) }
+            .map { findTyreComponentUseCase(it) }
             .let { comps ->
                 combine(
-                    combine(comps.map { it.second.tyreAtmosphereUseCase.listen() }) { it }
+                    combine(comps.map { it.tyreAtmosphereUseCase.listen() }) { it }
                         .onStart { emit(emptyArray()) }
                         .debounce(100.milliseconds),
                     vehicleRangesUseCase.highTemp,

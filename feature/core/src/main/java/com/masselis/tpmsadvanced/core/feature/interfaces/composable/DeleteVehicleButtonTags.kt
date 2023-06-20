@@ -37,9 +37,9 @@ import kotlinx.coroutines.channels.consumeEach
 
 @Composable
 internal fun DeleteVehicleButton(
-    vehicleComponent: VehicleComponent,
     modifier: Modifier = Modifier,
-    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.hashCode()}") {
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
+    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.vehicle.uuid}") {
         vehicleComponent.deleteVehicleViewModel.build(createSavedStateHandle())
     }
 ) {

@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,9 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -47,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdown
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.LocalVehicleComponent
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
@@ -61,11 +61,13 @@ import java.util.UUID
 @Suppress("LongMethod")
 @Composable
 internal fun Home(
-    viewModel: HomeViewModel = viewModel {
-        AppPhoneComponent.homeViewModel.build(createSavedStateHandle())
-    }
+    viewModel: HomeViewModel = viewModel { AppPhoneComponent.homeViewModel }
 ) {
-    CompositionLocalProvider(LocalHomeNavController provides rememberNavController()) {
+    val navController = rememberNavController()
+    CompositionLocalProvider(
+        LocalVehicleComponent provides viewModel.vehicleComponentStateFlow.collectAsState().value,
+        LocalHomeNavController provides navController,
+    ) {
         var offsetToFocus by remember { mutableStateOf<Offset?>(null) }
         var showManualMonitoringSpotlight by remember { mutableStateOf(false) }
         Scaffold(
@@ -87,7 +89,7 @@ internal fun Home(
             },
             content = { paddingValues ->
                 NavHost(
-                    navController = LocalHomeNavController.current as NavHostController,
+                    navController = navController,
                     startDestination = Paths.Home.path
                 ) {
                     val modifier = Modifier
@@ -99,13 +101,15 @@ internal fun Home(
                             uriPattern = "tpmsadvanced://main/{uuid}"
                         }),
                     ) { navBackStackEntry ->
-                        CurrentVehicle(
-                            modifier = modifier,
-                            newCurrentVehicle = navBackStackEntry
-                                .arguments
-                                ?.getString("uuid")
-                                ?.let { UUID.fromString(it) }
-                        )
+                        // TODO The argument uuid is still used when
+                        // viewModel.vehicleComponentStateFlow.collectAsState() triggers
+                        navBackStackEntry
+                            .arguments
+                            ?.getString("uuid")
+                            ?.let { UUID.fromString(it) }
+                            ?.also(viewModel::setCurrentVehicle)
+
+                        CurrentVehicle(modifier = modifier)
                     }
                     composable(Paths.QrCode.path) {
                         QrCodeScan(modifier = modifier)

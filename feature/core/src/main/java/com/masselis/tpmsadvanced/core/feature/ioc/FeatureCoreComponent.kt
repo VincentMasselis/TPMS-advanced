@@ -1,7 +1,6 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
@@ -57,13 +56,10 @@ public interface FeatureCoreComponent {
             .build() {
 
         @Inject
-        internal lateinit var preconditionsViewModel: PreconditionsViewModel.Factory
+        internal lateinit var preconditionsViewModel: PreconditionsViewModel
 
         @Inject
         internal lateinit var currentVehicleDropdownViewModel: CurrentVehicleDropdownViewModel.Factory
-
-        @Inject
-        internal lateinit var currentVehicleComponentViewModel: CurrentVehicleComponentViewModel.Factory
 
         init {
             @Suppress("LeakingThis")

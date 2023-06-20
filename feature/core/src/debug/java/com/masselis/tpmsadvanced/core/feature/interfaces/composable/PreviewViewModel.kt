@@ -5,7 +5,6 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
@@ -105,12 +104,6 @@ internal fun previewDeleteVehicleViewModel(
 }
 
 // ------------- Feature core component
-
-internal fun previewCurrentVehicleComponent(
-    component: VehicleComponent = PreviewVehicleComponent()
-) = mockk<CurrentVehicleComponentViewModel> {
-    every { stateFlow } returns MutableStateFlow(component)
-}
 
 internal fun previewCurrentVehicleDropdownViewModel(
     state: CurrentVehicleDropdownViewModel.State = CurrentVehicleDropdownViewModel.State.Vehicles(

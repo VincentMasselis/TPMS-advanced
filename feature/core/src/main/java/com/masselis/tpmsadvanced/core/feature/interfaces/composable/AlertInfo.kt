@@ -26,7 +26,6 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -91,15 +90,11 @@ internal fun TemperatureInfo(
 
 @OptIn(InternalDaggerImplementation::class)
 private class DemoVehicleComponent : VehicleComponent() {
-    override val findTyreComponentUseCase: FindTyreComponentUseCase
+    override val tyreComponent: FindTyreComponentUseCase
         get() = TODO("Not yet implemented")
     override val vehicle: Vehicle
         get() = TODO("Not yet implemented")
     override val carFlow: StateFlow<Vehicle>
-        get() = TODO("Not yet implemented")
-    override val release: () -> Unit
-        get() = TODO("Not yet implemented")
-    override val scope: CoroutineScope
         get() = TODO("Not yet implemented")
     override val vehicleRangesUseCase: VehicleRangesUseCase
         get() = TODO("Not yet implemented")

@@ -19,7 +19,7 @@ internal interface AppPhoneComponent {
     @javax.inject.Scope
     annotation class Scope
 
-    val homeViewModel: HomeViewModel.Factory
+    val homeViewModel: HomeViewModel
 
     companion object : AppPhoneComponent by DaggerAppPhoneComponent
         .factory()

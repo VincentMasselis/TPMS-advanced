@@ -46,7 +46,7 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
                 }
         },
         manuals
-            .map { it.map { uuid -> vehicleDatabase.selectByUuid(uuid).first() } },
+            .map { it.map { uuid -> vehicleDatabase.selectByUuidFlow(uuid).first() } },
     ) { (automaticIgnored, automaticMonitored), manuals ->
         Pair(
             // Removes from automaticIgnored the devices with were added to manuals
@@ -58,7 +58,7 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
 
     @Suppress("NAME_SHADOWING")
     public fun realtimeIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
-        currentVehicleUseCase.flow.map { it.vehicle },
+        currentVehicleUseCase.map { it.vehicle },
         isAppVisibleFlow,
         expectedIgnoredAndMonitored(),
     ) { current, isAppVisible, (ignored, monitored) ->

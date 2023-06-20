@@ -4,14 +4,13 @@ import com.masselis.tpmsadvanced.core.common.InternalDaggerImplementation
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
-import com.masselis.tpmsadvanced.core.feature.usecase.ActiveVehicleComponentsUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleComponentCacheUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import dagger.BindsInstance
 import dagger.Lazy
 import dagger.Subcomponent
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import java.util.*
 import javax.inject.Inject
@@ -30,7 +29,7 @@ public abstract class VehicleComponent {
     public abstract class Factory protected constructor() {
 
         @Inject
-        internal lateinit var componentsUseCase: Lazy<ActiveVehicleComponentsUseCase>
+        internal lateinit var componentsUseCase: Lazy<VehicleComponentCacheUseCase>
 
         init {
             @Suppress("LeakingThis")
@@ -38,29 +37,22 @@ public abstract class VehicleComponent {
         }
 
         @InternalDaggerImplementation
-        internal abstract fun daggerBuild(
+        internal abstract fun daggerOnlyBuild(
             @BindsInstance @Named("base") vehicle: Vehicle,
         ): VehicleComponent
 
-        public fun build(vehicle: Vehicle): VehicleComponent = componentsUseCase.get().hold(vehicle)
+        public fun build(vehicle: Vehicle): VehicleComponent = componentsUseCase.get().find(vehicle)
     }
 
     @javax.inject.Scope
     internal annotation class Scope
 
-    @get:Named("vehicle_component")
-    public abstract val release: () -> Unit
-
-
     @get:Named("base")
     public abstract val vehicle: Vehicle
     public abstract val carFlow: StateFlow<Vehicle>
 
-    @get:Named("vehicle_component")
-    public abstract val scope: CoroutineScope
-
     public abstract val vehicleRangesUseCase: VehicleRangesUseCase
-    public abstract val findTyreComponentUseCase: FindTyreComponentUseCase
+    public abstract val tyreComponent: FindTyreComponentUseCase
 
     internal abstract val clearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory
     internal abstract val vehicleSettingsViewModel: VehicleSettingsViewModel.Factory

@@ -18,12 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -36,11 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
@@ -53,38 +43,13 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
-import java.util.UUID
 
 @Composable
 public fun CurrentVehicle(
     modifier: Modifier = Modifier,
-    newCurrentVehicle: UUID? = null,
 ) {
-    CurrentVehicle(
-        modifier,
-        newCurrentVehicle,
-        viewModel {
-            FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
-        }
-    )
-}
-
-@Suppress("LongMethod")
-@Composable
-internal fun CurrentVehicle(
-    modifier: Modifier = Modifier,
-    newCurrentVehicle: UUID? = null,
-    viewModel: CurrentVehicleComponentViewModel = viewModel {
-        FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
-    }
-) {
-    var hasUuidToSet by rememberSaveable { mutableStateOf(newCurrentVehicle) }
-    hasUuidToSet
-        ?.also(viewModel::setCurrent)
-        ?.also { hasUuidToSet = null }
-    val component by viewModel.stateFlow.collectAsState()
     Vehicle(
-        component = component,
+        component = LocalVehicleComponent.current,
         modifier = modifier
     )
 }
@@ -95,14 +60,12 @@ public fun Vehicle(
     modifier: Modifier = Modifier,
 ) {
     KeepScreenOn()
-    CompositionLocalProvider(LocalVehicleComponent provides component) {
-        when (component.vehicle.kind) {
-            Kind.CAR -> Car(modifier)
-            Kind.SINGLE_AXLE_TRAILER -> SingleAxleTrailer(modifier)
-            Kind.MOTORCYCLE -> Motorcycle(modifier)
-            Kind.TADPOLE_THREE_WHEELER -> TadpoleThreadWheeler(modifier)
-            Kind.DELTA_THREE_WHEELER -> DeltaThreeWheeler(modifier)
-        }
+    when (component.vehicle.kind) {
+        Kind.CAR -> Car(modifier)
+        Kind.SINGLE_AXLE_TRAILER -> SingleAxleTrailer(modifier)
+        Kind.MOTORCYCLE -> Motorcycle(modifier)
+        Kind.TADPOLE_THREE_WHEELER -> TadpoleThreadWheeler(modifier)
+        Kind.DELTA_THREE_WHEELER -> DeltaThreeWheeler(modifier)
     }
 }
 

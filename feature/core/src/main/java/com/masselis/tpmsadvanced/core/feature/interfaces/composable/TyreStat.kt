@@ -6,7 +6,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,10 +34,10 @@ internal fun TyreStat(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: TyreStatsViewModel = viewModel(
-        key = "TyreStatsViewModel_${vehicleComponent.hashCode()}_${manySensor}"
+        key = "TyreStatsViewModel_${vehicleComponent.vehicle.uuid}_${manySensor}"
     ) {
         vehicleComponent
-            .findTyreComponentUseCase(manySensor)
+            .tyreComponent(manySensor)
             .tyreStatViewModelFactory
             .build(createSavedStateHandle())
     }
@@ -72,19 +71,17 @@ internal fun TyreStat(
         }
     } else
         isVisible = true
-    val alignment by remember {
-        derivedStateOf {
-            when (manySensor) {
-                is ManySensor.Axle -> Alignment.Start
-                is ManySensor.Located -> when (manySensor.location.side) {
-                    LEFT -> Alignment.End
-                    RIGHT -> Alignment.Start
-                }
+    val alignment = remember {
+        when (manySensor) {
+            is ManySensor.Axle -> Alignment.Start
+            is ManySensor.Located -> when (manySensor.location.side) {
+                LEFT -> Alignment.End
+                RIGHT -> Alignment.Start
+            }
 
-                is ManySensor.Side -> when (manySensor.side) {
-                    LEFT -> Alignment.End
-                    RIGHT -> Alignment.Start
-                }
+            is ManySensor.Side -> when (manySensor.side) {
+                LEFT -> Alignment.End
+                RIGHT -> Alignment.Start
             }
         }
     }

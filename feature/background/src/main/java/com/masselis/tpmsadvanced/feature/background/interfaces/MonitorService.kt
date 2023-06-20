@@ -14,8 +14,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
-import okio.withLock
-import java.util.concurrent.locks.ReentrantLock
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 public class MonitorService : Service() {
@@ -24,7 +24,7 @@ public class MonitorService : Service() {
     internal lateinit var vehiclesToMonitorUseCase: VehiclesToMonitorUseCase
 
     private val monitoring = mutableListOf<BackgroundVehicleComponent>()
-    private val lock = ReentrantLock()
+    private val mutex = Mutex()
     private lateinit var scope: CoroutineScope
 
     init {
@@ -38,11 +38,11 @@ public class MonitorService : Service() {
         vehiclesToMonitorUseCase
             .realtimeIgnoredAndMonitored()
             .onEach { (ignored, monitored) ->
-                lock.withLock {
+                mutex.withLock {
                     // Removes entries from `monitoring`
                     monitoring.removeIf { monitoring ->
                         ignored.any { it.uuid == monitoring.vehicle.uuid }
-                            .also { toRemove -> if (toRemove) monitoring.release() }
+                            .also { toRemove -> if (toRemove) monitoring.scope.cancel() }
                     }
 
                     // Check if any `ServiceNotifier` is working has foreground service
@@ -64,7 +64,7 @@ public class MonitorService : Service() {
                         .forEach { monitoring.add(it) }
                 }
             }
-            .onCompletion { lock.withLock { monitoring.clear() } }
+            .onCompletion { mutex.withLock { monitoring.clear() } }
             .launchIn(scope)
     }
 

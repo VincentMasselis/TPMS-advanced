@@ -34,7 +34,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
@@ -147,10 +147,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             )
         }
         .materializeCompletion()
-        .shareIn(
-            GlobalScope + Dispatchers.Default,
-            SharingStarted.WhileSubscribed(),
-        )
+        .shareIn(GlobalScope + Dispatchers.Default, WhileSubscribed())
         .dematerializeCompletion()
 
     @JvmInline
