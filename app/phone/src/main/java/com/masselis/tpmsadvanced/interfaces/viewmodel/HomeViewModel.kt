@@ -4,39 +4,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
-import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
-import kotlinx.coroutines.channels.ReceiveChannel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
-import javax.inject.Inject
 
-internal class HomeViewModel @Inject constructor(
+internal class HomeViewModel @AssistedInject constructor(
     private val currentVehicleUseCase: CurrentVehicleUseCase,
-    noveltyUseCase: NoveltyUseCase,
+    @Assisted expectedVehicle: UUID?,
 ) : ViewModel() {
 
-    sealed class SpotlightEvent {
-        object ManualMonitorDropdown : SpotlightEvent()
+    @AssistedFactory
+    interface Factory {
+        fun build(expectedVehicle: UUID?): HomeViewModel
     }
 
-    private val channel = Channel<SpotlightEvent>(BUFFERED)
-    val eventChannel = channel as ReceiveChannel<SpotlightEvent>
-
-    val vehicleComponentStateFlow: StateFlow<VehicleComponent> = currentVehicleUseCase
-
     init {
-        viewModelScope.launch {
-            @Suppress("MagicNumber")
-            if (noveltyUseCase.consume("manual_monitor", 1022L))
-                channel.send(SpotlightEvent.ManualMonitorDropdown)
+        expectedVehicle?.also {
+            viewModelScope.launch {
+                currentVehicleUseCase.setAsCurrent(it)
+            }
         }
     }
 
-    fun setCurrentVehicle(uuid: UUID) = viewModelScope.launch {
-        currentVehicleUseCase.setAsCurrent(uuid)
-    }
-
+    val vehicleComponentStateFlow: StateFlow<VehicleComponent> = currentVehicleUseCase
 }

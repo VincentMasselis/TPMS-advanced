@@ -99,6 +99,9 @@ UPDATE Vehicle SET highTemp = ? WHERE uuid = ?;
 updateIsDeleting:
 UPDATE Vehicle SET isDeleting = ? WHERE uuid = ?;
 
+deleteIsDeleting:
+DELETE FROM Vehicle WHERE isDeleting = 1;
+
 selectIsBackgroundMonitor:
 SELECT isBackgroundMonitor FROM Vehicle WHERE uuid = ?;
 
@@ -119,6 +122,9 @@ UPDATE Vehicle SET isFavourite = ? WHERE uuid = ?;
 
 currentFavourite:
 SELECT * FROM Vehicle WHERE isFavourite = 1;
+
+selectUuidIsDeleting:
+SELECT uuid FROM Vehicle WHERE isDeleting = 1;
 
 selectAll:
 SELECT * FROM Vehicle WHERE isDeleting = 0;

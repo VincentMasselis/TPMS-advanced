@@ -9,6 +9,7 @@ import com.masselis.tpmsadvanced.core.ui.LocalKeepScreenOnCounter
 import com.masselis.tpmsadvanced.core.ui.ScreenOnCounter
 import com.masselis.tpmsadvanced.interfaces.composable.Main
 import com.masselis.tpmsadvanced.interfaces.composable.TpmsAdvancedTheme
+import java.util.UUID
 
 internal class RootActivity : AppCompatActivity() {
 
@@ -16,11 +17,12 @@ internal class RootActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val expectedVehicle = intent?.data?.pathSegments?.first()?.let { UUID.fromString(it) }
         @Suppress("CAST_NEVER_SUCCEEDS")
         (this as ComponentActivity).setContent {
             CompositionLocalProvider(LocalKeepScreenOnCounter provides counter) {
                 TpmsAdvancedTheme {
-                    Main()
+                    Main(expectedVehicle)
                 }
             }
         }

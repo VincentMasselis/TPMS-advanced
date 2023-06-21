@@ -29,7 +29,7 @@ public class TyreUseCaseImpl @Inject internal constructor(
     private val locations: Set<SensorLocation>,
     private val tyreDatabase: TyreDatabase,
     private val scanner: BluetoothLeScanner,
-    @Named("vehicle_component") scope: CoroutineScope,
+    scope: CoroutineScope,
 ) : TyreUseCase {
 
     private val flow = flow {

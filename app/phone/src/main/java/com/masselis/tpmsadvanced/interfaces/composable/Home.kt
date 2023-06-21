@@ -43,30 +43,45 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navDeepLink
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdown
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.LocalVehicleComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
 import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel.SpotlightEvent
+import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
+import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.SpotlightEvent
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
 import kotlinx.coroutines.channels.consumeEach
 import java.util.UUID
 
-@Suppress("LongMethod")
 @Composable
 internal fun Home(
-    viewModel: HomeViewModel = viewModel { AppPhoneComponent.homeViewModel }
+    expectedVehicle: UUID?,
+    viewModel: HomeViewModel = viewModel(key = "HomeViewModel_$expectedVehicle") {
+        AppPhoneComponent.homeViewModel.build(expectedVehicle)
+    }
+) {
+    val vehicleComponent by viewModel.vehicleComponentStateFlow.collectAsState()
+    VehicleHome(
+        vehicleComponent = vehicleComponent
+    )
+}
+
+@Suppress("LongMethod")
+@Composable
+internal fun VehicleHome(
+    vehicleComponent: VehicleComponent,
+    viewModel: VehicleHomeViewModel = viewModel { AppPhoneComponent.vehicleHomeViewModel }
 ) {
     val navController = rememberNavController()
     CompositionLocalProvider(
-        LocalVehicleComponent provides viewModel.vehicleComponentStateFlow.collectAsState().value,
-        LocalHomeNavController provides navController,
+        LocalVehicleComponent provides vehicleComponent,
+        LocalHomeNavController provides navController
     ) {
         var offsetToFocus by remember { mutableStateOf<Offset?>(null) }
         var showManualMonitoringSpotlight by remember { mutableStateOf(false) }
@@ -90,31 +105,18 @@ internal fun Home(
             content = { paddingValues ->
                 NavHost(
                     navController = navController,
-                    startDestination = Paths.Home.path
+                    startDestination = "${Path.Home(vehicleComponent.vehicle.uuid)}"
                 ) {
                     val modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                    composable(
-                        route = Paths.Home.path,
-                        deepLinks = listOf(navDeepLink {
-                            uriPattern = "tpmsadvanced://main/{uuid}"
-                        }),
-                    ) { navBackStackEntry ->
-                        // TODO The argument uuid is still used when
-                        // viewModel.vehicleComponentStateFlow.collectAsState() triggers
-                        navBackStackEntry
-                            .arguments
-                            ?.getString("uuid")
-                            ?.let { UUID.fromString(it) }
-                            ?.also(viewModel::setCurrentVehicle)
-
+                    composable(route = "${Path.Home(vehicleComponent.vehicle.uuid)}") {
                         CurrentVehicle(modifier = modifier)
                     }
-                    composable(Paths.QrCode.path) {
+                    composable("${Path.QrCode(vehicleComponent.vehicle.uuid)}") {
                         QrCodeScan(modifier = modifier)
                     }
-                    composable(Paths.Settings.path) {
+                    composable("${Path.Settings(vehicleComponent.vehicle.uuid)}") {
                         Settings(modifier = modifier)
                     }
                 }
@@ -166,18 +168,18 @@ private fun TopAppBar(
         .value
         ?.destination
         ?.route
-        ?.let { Paths.from(it) }
+        ?.let { Path.from(it) }
     CenterAlignedTopAppBar(
         title = {
             when (currentPath) {
-                Paths.Home -> CurrentVehicleDropdown()
-                Paths.Settings -> Text(text = "Settings")
-                Paths.QrCode, null -> {}
+                is Path.Home -> CurrentVehicleDropdown()
+                is Path.Settings -> Text(text = "Settings")
+                is Path.QrCode, null -> {}
             }
         },
         navigationIcon = {
             when (currentPath) {
-                Paths.Settings, Paths.QrCode -> {
+                is Path.Settings, is Path.QrCode -> {
                     IconButton(
                         onClick = { navController.popBackStack() },
                         content = {
@@ -190,13 +192,13 @@ private fun TopAppBar(
                     )
                 }
 
-                Paths.Home, null -> {}
+                is Path.Home, null -> {}
             }
         },
         actions = {
             var showMenu by remember { mutableStateOf(false) }
             when (currentPath) {
-                Paths.Home -> {
+                is Path.Home -> {
                     ManualBackgroundIconButton(
                         modifier = manualBackgroundButtonModifier
                             .testTag(HomeTags.Actions.manualBackground)
@@ -219,7 +221,7 @@ private fun TopAppBar(
                             text = { Text("Scan QRCode") },
                             onClick = {
                                 showMenu = false
-                                navController.navigate(Paths.QrCode.path)
+                                navController.navigate("${Path.QrCode(currentPath.vehicleUUID)}")
                             },
                             modifier = Modifier.testTag(HomeTags.Actions.Overflow.qrCode)
                         )
@@ -227,33 +229,18 @@ private fun TopAppBar(
                             text = { Text("Settings") },
                             onClick = {
                                 showMenu = false
-                                navController.navigate(Paths.Settings.path)
+                                navController.navigate("${Path.Settings(currentPath.vehicleUUID)}")
                             },
                             modifier = Modifier.testTag(HomeTags.Actions.Overflow.settings)
                         )
                     }
                 }
 
-                Paths.Settings, Paths.QrCode, null -> {}
+                is Path.Settings, is Path.QrCode, null -> {}
             }
         },
         modifier = modifier
     )
-}
-
-internal sealed class Paths(val path: String) {
-    object Home : Paths("home")
-    object QrCode : Paths("home/qrcode")
-    object Settings : Paths("home/settings")
-
-    companion object {
-        fun from(string: String) = when (string) {
-            "home" -> Home
-            "home/qrcode" -> QrCode
-            "home/settings" -> Settings
-            else -> throw IllegalArgumentException("Unknown path $string")
-        }
-    }
 }
 
 public object HomeTags {

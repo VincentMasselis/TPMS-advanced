@@ -20,7 +20,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @VehicleComponent.Scope
 public class VehicleRangesUseCase @Inject internal constructor(
     @Named("base") private val vehicle: Vehicle,
-    @Named("vehicle_component") scope: CoroutineScope,
+    scope: CoroutineScope,
     database: VehicleDatabase,
 ) {
 

@@ -125,7 +125,7 @@ internal class ServiceNotifier @Inject constructor(
                             .addNextIntentWithParentStack(
                                 Intent(
                                     Intent.ACTION_VIEW,
-                                    "tpmsadvanced://main/${vehicle.uuid}".toUri(),
+                                    "tpmsadvanced://vehicle/${vehicle.uuid}".toUri(),
                                 )
                             )
                             .getPendingIntent(vehicle.uuid.hashCode(), FLAG_IMMUTABLE)

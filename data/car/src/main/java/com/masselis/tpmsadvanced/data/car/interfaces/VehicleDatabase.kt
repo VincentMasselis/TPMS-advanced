@@ -21,6 +21,12 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
 
     private val queries = database.vehicleQueries
 
+    init {
+        // Cleanup the database at launch. There is no risk of useless multiples calls since
+        // VehicleDatabase is annotated `@Reusable`.
+        queries.deleteIsDeleting()
+    }
+
     public suspend fun insert(
         id: UUID,
         kind: Vehicle.Kind,
@@ -114,6 +120,10 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
     public fun count(): Long = queries.count().executeAsOne()
 
     public fun countFlow(): Flow<Long> = queries.count().asFlow().mapToOne(IO)
+
+    public fun selectUuidIsDeleting(): Flow<List<UUID>> = queries.selectUuidIsDeleting()
+        .asFlow()
+        .mapToList(IO)
 
     public fun selectAllFlow(): Flow<List<Vehicle>> = queries.selectAll(mapper)
         .asFlow()
