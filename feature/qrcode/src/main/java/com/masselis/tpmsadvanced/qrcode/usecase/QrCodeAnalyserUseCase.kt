@@ -16,6 +16,7 @@ import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filter
@@ -40,7 +41,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Suppress("MagicNumber")
-    fun analyse(controller: CameraController) = callbackFlow<List<Barcode>> {
+    fun analyse(controller: CameraController): Flow<SensorMap> = callbackFlow<List<Barcode>> {
         controller.setImageAnalysisAnalyzer(
             executor,
             MlKitAnalyzer(
@@ -108,9 +109,9 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
     companion object {
         // Test available here: https://regex101.com/r/c2xslp/1
         private val fourSensorRegex =
-            "([0-9a-fA-F]{6})[&]([0-9a-fA-F]{6})[&]([0-9a-fA-F]{6})[&]([0-9a-fA-F]{6})".toRegex()
+            "([0-9a-fA-F]{6})&([0-9a-fA-F]{6})&([0-9a-fA-F]{6})&([0-9a-fA-F]{6})".toRegex()
 
         private val twoSensorRegex =
-            "([0-9a-fA-F]{6})[&]([0-9a-fA-F]{6})".toRegex()
+            "([0-9a-fA-F]{6})&([0-9a-fA-F]{6})".toRegex()
     }
 }

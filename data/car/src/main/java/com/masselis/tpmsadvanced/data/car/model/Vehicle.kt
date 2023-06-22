@@ -79,6 +79,32 @@ public data class Vehicle(
          * ```
          */
         DELTA_THREE_WHEELER(setOf(Axle(FRONT), Located(REAR_LEFT), Located(REAR_RIGHT)));
+
+        public fun computeLocations(locations: Set<SensorLocation>): Set<ManySensor> = when (this) {
+            CAR -> locations.map { Located(it) }.toSet()
+
+            SINGLE_AXLE_TRAILER -> setOfNotNull(
+                if (locations.any { it.side == LEFT }) Side(LEFT) else null,
+                if (locations.any { it.side == RIGHT }) Side(RIGHT) else null,
+            )
+
+            MOTORCYCLE -> setOfNotNull(
+                if (locations.any { it.axle == FRONT }) Axle(FRONT) else null,
+                if (locations.any { it.axle == REAR }) Axle(REAR) else null,
+            )
+
+            TADPOLE_THREE_WHEELER -> setOfNotNull(
+                if (locations.any { it.axle == FRONT }) Axle(FRONT) else null,
+                locations.firstOrNull { it == REAR_LEFT }?.let { Located(it) },
+                locations.firstOrNull { it == REAR_RIGHT }?.let { Located(it) },
+            )
+
+            DELTA_THREE_WHEELER -> setOfNotNull(
+                locations.firstOrNull { it == FRONT_LEFT }?.let { Located(it) },
+                locations.firstOrNull { it == FRONT_RIGHT }?.let { Located(it) },
+                if (locations.any { it.axle == REAR }) Axle(REAR) else null,
+            )
+        }
     }
 
     public sealed interface ManySensor {

@@ -30,6 +30,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.qrcode.R
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.State
@@ -103,10 +105,68 @@ private fun Preview(
 
         is State.AskForBinding ->
             AlertDialog(
-                text = { Text(text = "Would you add theses sensors as your favourite sensors ?") },
+                text = {
+                    Text(
+                        text = StringBuilder("Would you add theses sensors as your favourite sensors ?")
+                            .apply {
+                                when (state) {
+
+                                    is State.AskForBinding.Compatible -> {}
+
+                                    is State.AskForBinding.Missing -> {
+                                        append("\n\n⚠️ Filled QR Code doesn't contains sensors dedicated to ")
+                                        state.localisations.forEachIndexed { index, location ->
+                                            append("the ")
+                                            when (location) {
+                                                is Vehicle.ManySensor.Located -> {
+                                                    append(
+                                                        when (location.location) {
+                                                            SensorLocation.FRONT_LEFT -> "front left"
+                                                            SensorLocation.FRONT_RIGHT -> "front right"
+                                                            SensorLocation.REAR_LEFT -> "rear left"
+                                                            SensorLocation.REAR_RIGHT -> "rear right"
+                                                        }
+                                                    )
+                                                    append(" wheel")
+                                                }
+
+                                                is Vehicle.ManySensor.Axle -> {
+                                                    append(
+                                                        when (location.axle) {
+                                                            SensorLocation.Axle.FRONT -> "front"
+                                                            SensorLocation.Axle.REAR -> "rear"
+                                                        }
+                                                    )
+                                                    append(" axle")
+                                                }
+
+                                                is Vehicle.ManySensor.Side -> {
+                                                    append(
+                                                        when (location.side) {
+                                                            SensorLocation.Side.LEFT -> "left"
+                                                            SensorLocation.Side.RIGHT -> "right"
+                                                        }
+                                                    )
+                                                    append(" side")
+                                                }
+                                            }
+                                            append(
+                                                when (index) {
+                                                    state.localisations.size - 1 -> "."
+                                                    state.localisations.size - 2 -> " and "
+                                                    else -> ", "
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            .toString()
+                    )
+                },
                 onDismissRequest = { viewModel.scanAgain() },
                 confirmButton = {
-                    TextButton(onClick = { viewModel.bindSensors(state.sensorMap) }) {
+                    TextButton(onClick = { viewModel.bindSensors() }) {
                         Text(text = "Yes")
                     }
                 },
