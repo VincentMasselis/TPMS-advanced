@@ -20,7 +20,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.DeleteVehicleButtonTags
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 import com.masselis.tpmsadvanced.data.car.model.Vehicle as VehicleModel
 
@@ -92,16 +92,16 @@ internal class Home private constructor(
     }
 
 
-    private fun bindSensorButton(manySensor: ManySensor): SemanticsNodeInteraction {
+    private fun bindSensorButton(location: Vehicle.Kind.Location): SemanticsNodeInteraction {
         composeTestRule.waitForIdle()
-        return composeTestRule.onNodeWithTag(BindSensorTags.Button.tag(manySensor))
+        return composeTestRule.onNodeWithTag(BindSensorTags.Button.tag(location))
     }
 
-    fun isBindSensorAvailable(manySensor: ManySensor): Boolean = bindSensorButton(manySensor)
+    fun isBindSensorAvailable(location: Vehicle.Kind.Location): Boolean = bindSensorButton(location)
         .isDisplayed()
 
-    fun bindSensorDialog(manySensor: ManySensor, block: BindSensorDialog.() -> Unit) {
-        bindSensorButton(manySensor).performClick()
+    fun bindSensorDialog(location: Vehicle.Kind.Location, block: BindSensorDialog.() -> Unit) {
+        bindSensorButton(location).performClick()
         BindSensorDialog().block()
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(BindSensorTags.Dialog.addToFavoritesTag)

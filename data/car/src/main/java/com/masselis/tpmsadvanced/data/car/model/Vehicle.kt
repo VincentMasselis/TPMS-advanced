@@ -1,9 +1,10 @@
 package com.masselis.tpmsadvanced.data.car.model
 
 import android.os.Parcelable
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor.Axle
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor.Located
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor.Side
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location.Axle
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location.Side
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location.Wheel
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
@@ -31,7 +32,13 @@ public data class Vehicle(
     public val isBackgroundMonitor: Boolean,
 ) : Parcelable {
 
-    public enum class Kind(public val locations: Set<ManySensor>) {
+    /**
+     * Defines the layout of a vehicle.
+     *
+     * For each [Kind], the property [locations] represent the current layout with a [Set] of
+     * [Location].
+     */
+    public enum class Kind(public val locations: Set<Location>) {
         /**
          * ```
          * N-N
@@ -41,10 +48,10 @@ public data class Vehicle(
          */
         CAR(
             setOf(
-                Located(FRONT_LEFT),
-                Located(FRONT_RIGHT),
-                Located(REAR_LEFT),
-                Located(REAR_RIGHT)
+                Wheel(FRONT_LEFT),
+                Wheel(FRONT_RIGHT),
+                Wheel(REAR_LEFT),
+                Wheel(REAR_RIGHT)
             )
         ),
 
@@ -70,7 +77,7 @@ public data class Vehicle(
          *  N
          * ```
          */
-        TADPOLE_THREE_WHEELER(setOf(Located(FRONT_LEFT), Located(FRONT_RIGHT), Axle(REAR))),
+        TADPOLE_THREE_WHEELER(setOf(Wheel(FRONT_LEFT), Wheel(FRONT_RIGHT), Axle(REAR))),
 
         /**
          * ```
@@ -78,43 +85,58 @@ public data class Vehicle(
          * N-N
          * ```
          */
-        DELTA_THREE_WHEELER(setOf(Axle(FRONT), Located(REAR_LEFT), Located(REAR_RIGHT)));
+        DELTA_THREE_WHEELER(setOf(Axle(FRONT), Wheel(REAR_LEFT), Wheel(REAR_RIGHT)));
 
-        public fun computeLocations(locations: Set<SensorLocation>): Set<ManySensor> = when (this) {
-            CAR -> locations.map { Located(it) }.toSet()
+        /**
+         * Computes the [Set] of [Location] according to the filled [sensorLocations].
+         *
+         * While [locations] returns the complete list of [Location] required for the current [Kind],
+         * [computeLocations] returns only a list of [Location] which were found in the list
+         * [sensorLocations].
+         */
+        @Suppress("CyclomaticComplexMethod")
+        public fun computeLocations(
+            sensorLocations: Set<SensorLocation>
+        ): Set<Location> = when (this) {
+            CAR -> sensorLocations.map { Wheel(it) }.toSet()
 
             SINGLE_AXLE_TRAILER -> setOfNotNull(
-                if (locations.any { it.side == LEFT }) Side(LEFT) else null,
-                if (locations.any { it.side == RIGHT }) Side(RIGHT) else null,
+                if (sensorLocations.any { it.side == LEFT }) Side(LEFT) else null,
+                if (sensorLocations.any { it.side == RIGHT }) Side(RIGHT) else null,
             )
 
             MOTORCYCLE -> setOfNotNull(
-                if (locations.any { it.axle == FRONT }) Axle(FRONT) else null,
-                if (locations.any { it.axle == REAR }) Axle(REAR) else null,
+                if (sensorLocations.any { it.axle == FRONT }) Axle(FRONT) else null,
+                if (sensorLocations.any { it.axle == REAR }) Axle(REAR) else null,
             )
 
             TADPOLE_THREE_WHEELER -> setOfNotNull(
-                if (locations.any { it.axle == FRONT }) Axle(FRONT) else null,
-                locations.firstOrNull { it == REAR_LEFT }?.let { Located(it) },
-                locations.firstOrNull { it == REAR_RIGHT }?.let { Located(it) },
+                if (sensorLocations.any { it.axle == FRONT }) Axle(FRONT) else null,
+                sensorLocations.firstOrNull { it == REAR_LEFT }?.let { Wheel(it) },
+                sensorLocations.firstOrNull { it == REAR_RIGHT }?.let { Wheel(it) },
             )
 
             DELTA_THREE_WHEELER -> setOfNotNull(
-                locations.firstOrNull { it == FRONT_LEFT }?.let { Located(it) },
-                locations.firstOrNull { it == FRONT_RIGHT }?.let { Located(it) },
-                if (locations.any { it.axle == REAR }) Axle(REAR) else null,
+                sensorLocations.firstOrNull { it == FRONT_LEFT }?.let { Wheel(it) },
+                sensorLocations.firstOrNull { it == FRONT_RIGHT }?.let { Wheel(it) },
+                if (sensorLocations.any { it.axle == REAR }) Axle(REAR) else null,
             )
+        }
+
+        /**
+         * Unlike [SensorLocation] which always represents a sensor attached to a wheel, [Location]
+         * represents a [Wheel] an [Axle] or a [Side].
+         */
+        public sealed interface Location {
+            @JvmInline
+            public value class Wheel(public val location: SensorLocation) : Location
+
+            @JvmInline
+            public value class Axle(public val axle: SensorLocation.Axle) : Location
+
+            @JvmInline
+            public value class Side(public val side: SensorLocation.Side) : Location
         }
     }
 
-    public sealed interface ManySensor {
-        @JvmInline
-        public value class Located(public val location: SensorLocation) : ManySensor
-
-        @JvmInline
-        public value class Axle(public val axle: SensorLocation.Axle) : ManySensor
-
-        @JvmInline
-        public value class Side(public val side: SensorLocation.Side) : ManySensor
-    }
 }

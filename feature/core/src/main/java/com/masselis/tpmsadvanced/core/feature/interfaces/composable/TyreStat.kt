@@ -20,7 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
 import kotlinx.coroutines.delay
@@ -30,14 +30,14 @@ import kotlin.time.Duration.Companion.milliseconds
 @Suppress("NAME_SHADOWING", "LongMethod", "CyclomaticComplexMethod")
 @Composable
 internal fun TyreStat(
-    manySensor: ManySensor,
+    location: Location,
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: TyreStatsViewModel = viewModel(
-        key = "TyreStatsViewModel_${vehicleComponent.vehicle.uuid}_${manySensor}"
+        key = "TyreStatsViewModel_${vehicleComponent.vehicle.uuid}_${location}"
     ) {
         vehicleComponent
-            .tyreComponent(manySensor)
+            .tyreComponent(location)
             .tyreStatViewModelFactory
             .build(createSavedStateHandle())
     }
@@ -72,14 +72,14 @@ internal fun TyreStat(
     } else
         isVisible = true
     val alignment = remember {
-        when (manySensor) {
-            is ManySensor.Axle -> Alignment.Start
-            is ManySensor.Located -> when (manySensor.location.side) {
+        when (location) {
+            is Location.Axle -> Alignment.Start
+            is Location.Wheel -> when (location.location.side) {
                 LEFT -> Alignment.End
                 RIGHT -> Alignment.Start
             }
 
-            is ManySensor.Side -> when (manySensor.side) {
+            is Location.Side -> when (location.side) {
                 LEFT -> Alignment.End
                 RIGHT -> Alignment.Start
             }
