@@ -10,6 +10,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -33,17 +36,23 @@ internal class QRCodeViewModel @AssistedInject constructor(
     sealed class State {
         object Scanning : State()
         data class AskForBinding(val sensorMap: SensorMap) : State()
-        object Leave : State()
+    }
+
+    sealed class Event {
+        object Leave : Event()
     }
 
     private val mutableStateFlow = MutableStateFlow<State>(State.Scanning)
     val stateFlow = mutableStateFlow.asStateFlow()
 
+    private val channel = Channel<Event>(BUFFERED)
+    val receiveChannel: ReceiveChannel<Event> = channel
+
     init {
         stateFlow
             .flatMapLatest {
                 when (it) {
-                    State.Leave, is State.AskForBinding -> emptyFlow()
+                    is State.AskForBinding -> emptyFlow()
                     State.Scanning -> qrCodeAnalyserUseCase.analyse(controller)
                 }
             }
@@ -53,7 +62,7 @@ internal class QRCodeViewModel @AssistedInject constructor(
 
     fun bindSensors(ids: SensorMap) = viewModelScope.launch {
         boundSensorMapUseCase.bind(ids)
-        mutableStateFlow.value = State.Leave
+        channel.send(Event.Leave)
     }
 
     fun scanAgain() {

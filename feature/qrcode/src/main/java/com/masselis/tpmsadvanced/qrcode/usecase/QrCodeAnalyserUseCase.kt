@@ -8,7 +8,10 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.masselis.tpmsadvanced.data.car.model.Sensor
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.*
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

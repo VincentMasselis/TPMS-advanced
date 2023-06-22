@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,7 +31,10 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.qrcode.R
+import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.Event
+import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.State
 import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent
+import kotlinx.coroutines.channels.consumeEach
 
 @Composable
 public fun QrCodeScan(
@@ -95,9 +99,9 @@ private fun Preview(
     val viewModel = remember { FeatureQrCodeComponent.qrCodeViewModel.build(controller) }
     val state by viewModel.stateFlow.collectAsState()
     when (val state = state) {
-        QRCodeViewModel.State.Scanning -> {}
+        State.Scanning -> {}
 
-        is QRCodeViewModel.State.AskForBinding ->
+        is State.AskForBinding ->
             AlertDialog(
                 text = { Text(text = "Would you add theses sensors as your favourite sensors ?") },
                 onDismissRequest = { viewModel.scanAgain() },
@@ -112,10 +116,15 @@ private fun Preview(
                     }
                 }
             )
+    }
 
-        QRCodeViewModel.State.Leave ->
-            LocalHomeNavController.current.popBackStack()
-
+    val navController = LocalHomeNavController.current
+    LaunchedEffect(viewModel) {
+        viewModel.receiveChannel.consumeEach {
+            when (it) {
+                Event.Leave -> navController.popBackStack()
+            }
+        }
     }
 }
 
