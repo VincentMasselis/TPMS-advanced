@@ -19,7 +19,6 @@ import org.junit.runner.RunWith
 import java.util.*
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 internal class SensorDatabaseTest {
 

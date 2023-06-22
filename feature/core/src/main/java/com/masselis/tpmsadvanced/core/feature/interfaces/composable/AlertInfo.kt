@@ -88,7 +88,6 @@ internal fun TemperatureInfo(
     )
 }
 
-@OptIn(InternalDaggerImplementation::class)
 private class DemoVehicleComponent : VehicleComponent() {
     override val tyreComponent: FindTyreComponentUseCase
         get() = TODO("Not yet implemented")

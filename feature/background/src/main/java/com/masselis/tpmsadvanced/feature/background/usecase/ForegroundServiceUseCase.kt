@@ -7,7 +7,6 @@ import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundCompone
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -17,7 +16,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
 import javax.inject.Inject
 
-@OptIn(DelicateCoroutinesApi::class, FlowPreview::class)
+@OptIn(DelicateCoroutinesApi::class)
 @FeatureBackgroundComponent.Scope
 internal class ForegroundServiceUseCase @Inject constructor(
     vehiclesToMonitorUseCase: VehiclesToMonitorUseCase,
