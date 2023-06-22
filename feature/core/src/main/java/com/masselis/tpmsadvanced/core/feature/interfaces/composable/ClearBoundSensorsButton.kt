@@ -26,7 +26,9 @@ import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 internal fun ClearBoundSensorsButton(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: ClearBoundSensorsViewModel = viewModel(key = "ClearBoundSensorsButton_${vehicleComponent.hashCode()}") {
+    viewModel: ClearBoundSensorsViewModel = viewModel(
+        key = "ClearBoundSensorsButton_${vehicleComponent.vehicle.uuid}"
+    ) {
         vehicleComponent.clearBoundSensorsViewModel.build(createSavedStateHandle())
     }
 ) {

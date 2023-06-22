@@ -34,7 +34,7 @@ android {
         namespace = "com.masselis.tpmsadvanced"
 
         versionCode = tpmsAdvancedVersionCode
-        versionName = "1.1.1"
+        versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
@@ -71,13 +71,9 @@ android {
         }
     }
     buildFeatures {
-        compose = true
         buildConfig = true
     }
-    composeOptions {
-        val composeCompilerVersion: String by project
-        kotlinCompilerExtensionVersion = composeCompilerVersion
-    }
+    enableCompose(this)
 }
 
 dependencies {
@@ -87,7 +83,9 @@ dependencies {
     implementation(project(":core:debug-ui"))
     implementation(project(":data:app"))
     implementation(project(":feature:core"))
+    implementation(project(":feature:unit"))
     implementation(project(":feature:qrcode"))
+    implementation(project(":feature:background"))
 
     testImplementation(project(":core:test"))
     androidTestUtil("androidx.test:orchestrator:$testServicesVersion")

@@ -20,4 +20,5 @@ dependencies {
     api("androidx.compose.ui:ui-test-junit4")
     api("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     api("org.jetbrains.kotlin:kotlin-test")
+
 }

@@ -3,14 +3,9 @@ plugins {
     id("dagger")
 }
 
-@Suppress("UnstableApiUsage")
 android {
     namespace = "com.masselis.tpmsadvanced.core.feature.unit"
-    buildFeatures.compose = true
-    composeOptions {
-        val composeCompilerVersion: String by project
-        kotlinCompilerExtensionVersion = composeCompilerVersion
-    }
+    enableCompose(this)
 }
 
 dependencies {

@@ -39,7 +39,7 @@ import kotlinx.coroutines.channels.consumeEach
 internal fun DeleteVehicleButton(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.hashCode()}") {
+    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.vehicle.uuid}") {
         vehicleComponent.deleteVehicleViewModel.build(createSavedStateHandle())
     }
 ) {

@@ -3,61 +3,68 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.common.Fraction
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.Separator
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
 
 @Composable
-public fun VehicleRangeSettings(modifier: Modifier = Modifier): Unit = VehicleRangeSettings(
-    modifier,
-    viewModel { FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle()) }
-)
+public fun VehicleSettings(
+    modifier: Modifier = Modifier,
+    backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
+) {
+    VehicleSettings(
+        modifier,
+        backgroundSettings,
+        vehicleComponent,
+        viewModel(key = "VehicleSettingsViewModel_${vehicleComponent.vehicle.uuid}") {
+            vehicleComponent.vehicleSettingsViewModel.build()
+        }
+    )
+}
 
 @Composable
-internal fun VehicleRangeSettings(
+internal fun VehicleSettings(
     modifier: Modifier = Modifier,
-    viewModel: CurrentVehicleComponentViewModel = viewModel {
-        FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
+    backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
+    vehicleSettingsViewModel: VehicleSettingsViewModel = viewModel(
+        key = "VehicleSettingsViewModel_${vehicleComponent.vehicle.uuid}"
+    ) {
+        vehicleComponent.vehicleSettingsViewModel.build()
     }
 ) {
-    val component by viewModel.stateFlow.collectAsState()
-    CompositionLocalProvider(LocalVehicleComponent provides component) {
-        Column(modifier) {
-            PressureRange(component)
+    val component = LocalVehicleComponent.current
+    Column(modifier) {
+        PressureRange(vehicleSettingsViewModel)
+        Separator()
+        HighTemp(vehicleSettingsViewModel)
+        NormalTemp(vehicleSettingsViewModel)
+        LowTemp(vehicleSettingsViewModel)
+        if (backgroundSettings !== backgroundSettingsPlaceholder) {
             Separator()
-            HighTemp(component)
-            NormalTemp(component)
-            LowTemp(component)
-            Separator()
-            ClearBoundSensorsButton(Modifier.fillMaxWidth())
-            Separator()
-            DeleteVehicleButton(Modifier.fillMaxWidth())
+            backgroundSettings(component)
         }
+        Separator()
+        ClearBoundSensorsButton(Modifier.fillMaxWidth())
+        Separator()
+        DeleteVehicleButton(Modifier.fillMaxWidth())
     }
 }
 
 @Composable
-private fun PressureRange(
-    vehicleComponent: VehicleComponent,
-    viewModel: VehicleSettingsViewModel = viewModel(key = "SettingsViewModel_${vehicleComponent.hashCode()}") {
-        vehicleComponent.vehicleSettingsViewModel.build()
-    }
-) {
+private fun PressureRange(viewModel: VehicleSettingsViewModel) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
     val lowPressure by viewModel.lowPressure.collectAsState()
     val highPressure by viewModel.highPressure.collectAsState()
@@ -78,12 +85,7 @@ private fun PressureRange(
 }
 
 @Composable
-private fun HighTemp(
-    vehicleComponent: VehicleComponent,
-    viewModel: VehicleSettingsViewModel = viewModel(key = "SettingsViewModel_${vehicleComponent.hashCode()}") {
-        vehicleComponent.vehicleSettingsViewModel.build()
-    }
-) {
+private fun HighTemp(viewModel: VehicleSettingsViewModel) {
     var showHighTempDialog by remember { mutableStateOf(false) }
     val highTemp by viewModel.highTemp.collectAsState()
     val normalTemp by viewModel.normalTemp.collectAsState()
@@ -106,12 +108,7 @@ private fun HighTemp(
 }
 
 @Composable
-private fun NormalTemp(
-    vehicleComponent: VehicleComponent,
-    viewModel: VehicleSettingsViewModel = viewModel(key = "SettingsViewModel_${vehicleComponent.hashCode()}") {
-        vehicleComponent.vehicleSettingsViewModel.build()
-    }
-) {
+private fun NormalTemp(viewModel: VehicleSettingsViewModel) {
     var showNormalTempDialog by remember { mutableStateOf(false) }
     val lowTemp by viewModel.lowTemp.collectAsState()
     val normalTemp by viewModel.normalTemp.collectAsState()
@@ -135,12 +132,7 @@ private fun NormalTemp(
 }
 
 @Composable
-private fun LowTemp(
-    vehicleComponent: VehicleComponent,
-    viewModel: VehicleSettingsViewModel = viewModel(key = "SettingsViewModel_${vehicleComponent.hashCode()}") {
-        vehicleComponent.vehicleSettingsViewModel.build()
-    }
-) {
+private fun LowTemp(viewModel: VehicleSettingsViewModel) {
     var showLowTempDialog by remember { mutableStateOf(false) }
     val lowTemp by viewModel.lowTemp.collectAsState()
     val normalTemp by viewModel.normalTemp.collectAsState()
@@ -160,3 +152,5 @@ private fun LowTemp(
         unit = unit,
     ) { showLowTempDialog = false }
 }
+
+private val backgroundSettingsPlaceholder: @Composable (VehicleComponent) -> Unit = {}

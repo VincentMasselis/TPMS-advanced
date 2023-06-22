@@ -1,7 +1,6 @@
 package com.masselis.tpmsadvanced.interfaces
 
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -10,31 +9,46 @@ import com.masselis.tpmsadvanced.core.ui.LocalKeepScreenOnCounter
 import com.masselis.tpmsadvanced.core.ui.ScreenOnCounter
 import com.masselis.tpmsadvanced.interfaces.composable.Main
 import com.masselis.tpmsadvanced.interfaces.composable.TpmsAdvancedTheme
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
 
-internal class RootActivity : AppCompatActivity(), ScreenOnCounter {
+internal class RootActivity : AppCompatActivity() {
+
+    private val counter = ScreenOnCounter.Activity()
+
+    private val hasConsumedIntent = AtomicBoolean(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        savedInstanceState
+            ?.getBoolean(STATE_HAS_CONSUMED_INTENT, false)
+            .let { it ?: false }
+            .also { hasConsumedIntent.set(it) }
+
+        val expectedVehicle = intent
+            ?.data
+            ?.pathSegments
+            ?.first()
+            ?.let { UUID.fromString(it) }
+            ?.takeIf { hasConsumedIntent.compareAndSet(false, true) }
+
         @Suppress("CAST_NEVER_SUCCEEDS")
         (this as ComponentActivity).setContent {
-            CompositionLocalProvider(LocalKeepScreenOnCounter provides this) {
+            CompositionLocalProvider(LocalKeepScreenOnCounter provides counter) {
                 TpmsAdvancedTheme {
-                    Main()
+                    Main(expectedVehicle)
                 }
             }
         }
     }
 
-    private val screenOnCounter = AtomicInteger(0)
-
-    override fun increment() {
-        if (screenOnCounter.getAndIncrement() == 0)
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(STATE_HAS_CONSUMED_INTENT, hasConsumedIntent.get())
     }
 
-    override fun decrement() {
-        if (screenOnCounter.decrementAndGet() == 0)
-            window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    companion object {
+        private const val STATE_HAS_CONSUMED_INTENT = "STATE_HAS_CONSUMED_INTENT"
     }
 }

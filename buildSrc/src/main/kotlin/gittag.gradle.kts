@@ -1,15 +1,15 @@
-val fetchAllTags = task<Exec>("fetchAllTags"){
+public val fetchAllTags: Task = task<Exec>("fetchAllTags") {
     commandLine("git", "fetch")
     args("--all", "--tags")
 }
 
-val gitTagVersion = task<Exec>("gitTagVersion")   {
+public val gitTagVersion: Task = task<Exec>("gitTagVersion") {
     dependsOn(fetchAllTags)
     val tpmsAdvancedVersionCode: Int by rootProject.extra
     commandLine("git", "tag", "vc${tpmsAdvancedVersionCode}")
 }
 
-val gitPushTag = task<Exec>("gitPushTag") {
+public val gitPushTag: Task = task<Exec>("gitPushTag") {
     dependsOn(gitTagVersion)
     commandLine("git", "push")
     args("--tags")

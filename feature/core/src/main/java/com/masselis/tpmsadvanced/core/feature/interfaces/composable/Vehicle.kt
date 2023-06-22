@@ -18,9 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -33,14 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
@@ -51,33 +45,27 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
 
 @Composable
-public fun Vehicle(modifier: Modifier = Modifier) {
+public fun CurrentVehicle(
+    modifier: Modifier = Modifier,
+) {
     Vehicle(
-        modifier,
-        viewModel {
-            FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
-        }
+        component = LocalVehicleComponent.current,
+        modifier = modifier
     )
 }
 
-@Suppress("LongMethod")
 @Composable
-internal fun Vehicle(
+public fun Vehicle(
+    component: VehicleComponent,
     modifier: Modifier = Modifier,
-    viewModel: CurrentVehicleComponentViewModel = viewModel {
-        FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
-    }
 ) {
     KeepScreenOn()
-    val component by viewModel.stateFlow.collectAsState()
-    CompositionLocalProvider(LocalVehicleComponent provides component) {
-        when (component.vehicle.kind) {
-            Kind.CAR -> Car(modifier)
-            Kind.SINGLE_AXLE_TRAILER -> SingleAxleTrailer(modifier)
-            Kind.MOTORCYCLE -> Motorcycle(modifier)
-            Kind.TADPOLE_THREE_WHEELER -> TadpoleThreadWheeler(modifier)
-            Kind.DELTA_THREE_WHEELER -> DeltaThreeWheeler(modifier)
-        }
+    when (component.vehicle.kind) {
+        Kind.CAR -> Car(modifier)
+        Kind.SINGLE_AXLE_TRAILER -> SingleAxleTrailer(modifier)
+        Kind.MOTORCYCLE -> Motorcycle(modifier)
+        Kind.TADPOLE_THREE_WHEELER -> TadpoleThreadWheeler(modifier)
+        Kind.DELTA_THREE_WHEELER -> DeltaThreeWheeler(modifier)
     }
 }
 

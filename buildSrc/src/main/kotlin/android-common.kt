@@ -5,10 +5,11 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-fun Project.base(android: BaseExtension) {
+internal fun Project.base(android: BaseExtension) {
     with(android) {
         compileSdkVersion(33)
         defaultConfig {
@@ -61,11 +62,17 @@ fun Project.base(android: BaseExtension) {
             )
         }
     }
-    afterEvaluate {
-        if (android.buildFeatures.compose == true) {
-            dependencies {
-                add("lintChecks", "com.slack.lint.compose:compose-lint-checks:1.2.0")
-            }
+}
+
+public fun Project.enableCompose(android: BaseExtension) {
+    with(android)   {
+        buildFeatures.compose = true
+        composeOptions {
+            val composeCompilerVersion: String by project
+            kotlinCompilerExtensionVersion = composeCompilerVersion
         }
+    }
+    dependencies {
+        add("lintChecks", "com.slack.lint.compose:compose-lint-checks:1.2.0")
     }
 }
