@@ -28,7 +28,7 @@ internal class DeleteVehicleUseCase @Inject constructor(
         )
         GlobalScope.launch(NonCancellable) {
             scope.cancel()
-            database.prepareDelete(vehicle.uuid)
+            database.setIsDeleting(vehicle.uuid)
             delay(1.seconds)
             database.delete(vehicle.uuid)
         }

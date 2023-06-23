@@ -90,9 +90,9 @@ public data class Vehicle(
         /**
          * Computes the [Set] of [Location] according to the filled [sensorLocations].
          *
-         * While [locations] returns the complete list of [Location] required for the current [Kind],
-         * [computeLocations] returns only a list of [Location] which were found in the list
-         * [sensorLocations].
+         * While [locations] returns the complete list of [Location] required for the current
+         * vehicle's [Kind], [computeLocations] returns only a list of [Location] which were found
+         * in the list [sensorLocations].
          */
         @Suppress("CyclomaticComplexMethod")
         public fun computeLocations(
@@ -124,8 +124,8 @@ public data class Vehicle(
         }
 
         /**
-         * Unlike [SensorLocation] which always represents a sensor attached to a wheel, [Location]
-         * represents a [Wheel] an [Axle] or a [Side].
+         * Unlike [SensorLocation] which represents a location from the sensor standpoint, a
+         * [Location] represents a location from a [Vehicle] standpoint.
          */
         public sealed interface Location {
             @JvmInline

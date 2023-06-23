@@ -77,7 +77,7 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         queries.updateHighTemp(highTemp, uuid)
     }
 
-    public suspend fun prepareDelete(uuid: UUID): Unit = withContext(IO) {
+    public suspend fun setIsDeleting(uuid: UUID): Unit = withContext(IO) {
         queries.updateIsDeleting(true, uuid)
     }
 
