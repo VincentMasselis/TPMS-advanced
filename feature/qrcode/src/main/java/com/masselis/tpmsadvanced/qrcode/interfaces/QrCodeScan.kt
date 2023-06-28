@@ -36,7 +36,6 @@ import com.masselis.tpmsadvanced.qrcode.R
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.State
 import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent
-import kotlinx.coroutines.channels.consumeEach
 
 @Composable
 public fun QrCodeScan(
@@ -112,8 +111,8 @@ private fun Preview(
 
     val navController = LocalHomeNavController.current
     LaunchedEffect(viewModel) {
-        viewModel.receiveChannel.consumeEach {
-            when (it) {
+        for (event in viewModel.eventChannel) {
+            when (event) {
                 Event.Leave -> navController.popBackStack()
             }
         }

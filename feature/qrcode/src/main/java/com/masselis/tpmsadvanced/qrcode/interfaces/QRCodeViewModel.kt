@@ -61,7 +61,7 @@ internal class QRCodeViewModel @AssistedInject constructor(
     val stateFlow = mutableStateFlow.asStateFlow()
 
     private val channel = Channel<Event>(BUFFERED)
-    val receiveChannel: ReceiveChannel<Event> = channel
+    val eventChannel: ReceiveChannel<Event> = channel
 
     init {
         stateFlow
