@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.core.common.InternalDaggerImplementation
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewModel
@@ -90,17 +89,17 @@ internal fun TemperatureInfo(
 
 private class DemoVehicleComponent : VehicleComponent() {
     override val tyreComponent: FindTyreComponentUseCase
-        get() = TODO("Not yet implemented")
+        get() = error("Not implemented")
     override val vehicle: Vehicle
-        get() = TODO("Not yet implemented")
+        get() = error("Not implemented")
     override val carFlow: StateFlow<Vehicle>
-        get() = TODO("Not yet implemented")
+        get() = error("Not implemented")
     override val vehicleRangesUseCase: VehicleRangesUseCase
-        get() = TODO("Not yet implemented")
+        get() = error("Not implemented")
     override val clearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory
-        get() = TODO("Not yet implemented")
+        get() = error("Not implemented")
     override val vehicleSettingsViewModel: VehicleSettingsViewModel.Factory
-        get() = TODO("Not yet implemented")
+        get() = error("Not implemented")
     override val deleteVehicleViewModel: DeleteVehicleViewModel.Factory
-        get() = TODO("Not yet implemented")
+        get() = error("Not implemented")
 }

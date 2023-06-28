@@ -98,7 +98,7 @@ public data class Vehicle(
         public fun computeLocations(
             sensorLocations: Set<SensorLocation>
         ): Set<Location> = when (this) {
-            CAR -> sensorLocations.map { Wheel(it) }.toSet()
+            CAR -> sensorLocations.map(::Wheel).toSet()
 
             SINGLE_AXLE_TRAILER -> setOfNotNull(
                 if (sensorLocations.any { it.side == LEFT }) Side(LEFT) else null,
@@ -112,13 +112,13 @@ public data class Vehicle(
 
             TADPOLE_THREE_WHEELER -> setOfNotNull(
                 if (sensorLocations.any { it.axle == FRONT }) Axle(FRONT) else null,
-                sensorLocations.firstOrNull { it == REAR_LEFT }?.let { Wheel(it) },
-                sensorLocations.firstOrNull { it == REAR_RIGHT }?.let { Wheel(it) },
+                sensorLocations.firstOrNull { it == REAR_LEFT }?.let(::Wheel),
+                sensorLocations.firstOrNull { it == REAR_RIGHT }?.let(::Wheel),
             )
 
             DELTA_THREE_WHEELER -> setOfNotNull(
-                sensorLocations.firstOrNull { it == FRONT_LEFT }?.let { Wheel(it) },
-                sensorLocations.firstOrNull { it == FRONT_RIGHT }?.let { Wheel(it) },
+                sensorLocations.firstOrNull { it == FRONT_LEFT }?.let(::Wheel),
+                sensorLocations.firstOrNull { it == FRONT_RIGHT }?.let(::Wheel),
                 if (sensorLocations.any { it.axle == REAR }) Axle(REAR) else null,
             )
         }

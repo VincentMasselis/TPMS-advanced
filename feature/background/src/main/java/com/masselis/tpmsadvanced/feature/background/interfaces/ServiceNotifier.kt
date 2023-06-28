@@ -41,6 +41,8 @@ import javax.inject.Inject
 import javax.inject.Named
 import kotlin.time.Duration.Companion.milliseconds
 
+// TODO ServiceNotifier is the only class used by BackgroundVehicleComponent. Instead of creating a
+//  whole new component only for this, consider using an assisted inject instead
 @OptIn(FlowPreview::class)
 @SuppressLint("MissingPermission")
 @BackgroundVehicleComponent.Scope

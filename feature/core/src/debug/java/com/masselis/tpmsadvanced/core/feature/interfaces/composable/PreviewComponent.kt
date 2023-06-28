@@ -40,7 +40,7 @@ internal class PreviewTyreComponent(
         }
 ) : TyreComponent() {
     override val tyreAtmosphereUseCase: TyreAtmosphereUseCase
-        get() = TODO("Not yet implemented")
+        get() = error("Not implemented")
 }
 
 @Suppress("LongParameterList")
@@ -67,5 +67,5 @@ internal class PreviewVehicleComponent(
         }
 ) : VehicleComponent() {
     override val vehicleRangesUseCase: VehicleRangesUseCase
-        get() = TODO("Not yet implemented")
+        get() = error("Not implemented")
 }

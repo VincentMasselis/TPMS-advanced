@@ -32,8 +32,9 @@ public class FindTyreComponentUseCase @Inject internal constructor(
 
     @Suppress("MaxLineLength")
     public fun find(location: Vehicle.Kind.Location): TyreComponent {
-        if (vehicle.kind.locations.contains(location).not())
-            error("Cannot get a TyreComponent for the filled location $location according to the vehicle kind ${vehicle.kind}")
+        assert(vehicle.kind.locations.contains(location)) {
+            "Cannot get a TyreComponent for the filled location $location according to the vehicle kind ${vehicle.kind}"
+        }
         return when (location) {
             is Vehicle.Kind.Location.Wheel -> when (location.location) {
                 FRONT_LEFT -> frontLeft
