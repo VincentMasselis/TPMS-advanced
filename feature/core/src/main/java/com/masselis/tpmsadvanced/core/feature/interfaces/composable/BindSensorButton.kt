@@ -27,24 +27,24 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTa
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.ManySensor
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location
 
 @Composable
 internal fun BindSensorButton(
-    manySensor: ManySensor,
+    location: Location,
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: BindSensorButtonViewModel = viewModel(
-        key = "BindSensorButtonViewModel_${vehicleComponent.vehicle.uuid}_${manySensor}"
+        key = "BindSensorButtonViewModel_${vehicleComponent.vehicle.uuid}_${location}"
     ) {
-        vehicleComponent.tyreComponent(manySensor)
+        vehicleComponent.tyreComponent(location)
             .bindSensorButtonViewModelFactory
             .build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState(State.Empty)
     var bondRequest by remember { mutableStateOf<State.RequestBond?>(null) }
-    Box(modifier = modifier.testTag(tag(manySensor))) {
+    Box(modifier = modifier.testTag(tag(location))) {
         when (val state = state) {
             State.Empty -> {}
             is State.RequestBond ->
@@ -107,8 +107,8 @@ private fun BindSensorDialog(
 
 public object BindSensorTags {
     public object Button {
-        public fun tag(manySensor: ManySensor): String =
-            "bindSensorButton_${manySensor}"
+        public fun tag(location: Location): String =
+            "bindSensorButton_${location}"
     }
 
     public object Dialog {

@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -29,7 +30,11 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
+import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.qrcode.R
+import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.Event
+import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.State
 import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent
 
 @Composable
@@ -95,28 +100,104 @@ private fun Preview(
     val viewModel = remember { FeatureQrCodeComponent.qrCodeViewModel.build(controller) }
     val state by viewModel.stateFlow.collectAsState()
     when (val state = state) {
-        QRCodeViewModel.State.Scanning -> {}
+        State.Scanning -> {}
 
-        is QRCodeViewModel.State.AskForBinding ->
-            AlertDialog(
-                text = { Text(text = "Would you add theses sensors as your favourite sensors ?") },
-                onDismissRequest = { viewModel.scanAgain() },
-                confirmButton = {
-                    TextButton(onClick = { viewModel.bindSensors(state.sensorMap) }) {
-                        Text(text = "Yes")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { viewModel.scanAgain() }) {
-                        Text(text = "Cancel")
-                    }
-                }
-            )
-
-        QRCodeViewModel.State.Leave ->
-            LocalHomeNavController.current.popBackStack()
-
+        is State.AskForBinding -> BindingAlert(
+            state = state,
+            onDismissRequest = viewModel::scanAgain,
+            onBind = viewModel::bindSensors
+        )
     }
+
+    val navController = LocalHomeNavController.current
+    LaunchedEffect(viewModel) {
+        for (event in viewModel.eventChannel) {
+            when (event) {
+                Event.Leave -> navController.popBackStack()
+            }
+        }
+    }
+}
+
+@Suppress("CyclomaticComplexMethod", "LongMethod")
+@Composable
+private fun BindingAlert(
+    state: State.AskForBinding,
+    onDismissRequest: () -> Unit,
+    onBind: () -> Unit,
+) {
+    AlertDialog(
+        text = {
+            Text(
+                text = StringBuilder("Would you add theses sensors as your favourite sensors ?")
+                    .apply {
+                        when (state) {
+
+                            is State.AskForBinding.Compatible -> {}
+
+                            is State.AskForBinding.Missing -> {
+                                append("\n\n⚠️ Filled QR Code doesn't contains sensors dedicated to ")
+                                state.localisations.forEachIndexed { index, location ->
+                                    append("the ")
+                                    when (location) {
+                                        is Vehicle.Kind.Location.Wheel -> {
+                                            append(
+                                                when (location.location) {
+                                                    SensorLocation.FRONT_LEFT -> "front left"
+                                                    SensorLocation.FRONT_RIGHT -> "front right"
+                                                    SensorLocation.REAR_LEFT -> "rear left"
+                                                    SensorLocation.REAR_RIGHT -> "rear right"
+                                                }
+                                            )
+                                            append(" wheel")
+                                        }
+
+                                        is Vehicle.Kind.Location.Axle -> {
+                                            append(
+                                                when (location.axle) {
+                                                    SensorLocation.Axle.FRONT -> "front"
+                                                    SensorLocation.Axle.REAR -> "rear"
+                                                }
+                                            )
+                                            append(" axle")
+                                        }
+
+                                        is Vehicle.Kind.Location.Side -> {
+                                            append(
+                                                when (location.side) {
+                                                    SensorLocation.Side.LEFT -> "left"
+                                                    SensorLocation.Side.RIGHT -> "right"
+                                                }
+                                            )
+                                            append(" side")
+                                        }
+                                    }
+                                    append(
+                                        when (index) {
+                                            state.localisations.size - 1 -> "."
+                                            state.localisations.size - 2 -> " and "
+                                            else -> ", "
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    .toString()
+            )
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = onBind) {
+                Text(text = "Yes")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = "Cancel")
+            }
+        }
+    )
 }
 
 @Composable

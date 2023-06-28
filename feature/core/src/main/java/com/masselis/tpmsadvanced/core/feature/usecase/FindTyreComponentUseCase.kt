@@ -28,32 +28,33 @@ public class FindTyreComponentUseCase @Inject internal constructor(
     @TyreAxleQualifier(REAR) private val rear: Lazy<TyreComponent>,
     @TyreSideQualifier(LEFT) private val left: Lazy<TyreComponent>,
     @TyreSideQualifier(RIGHT) private val right: Lazy<TyreComponent>,
-) : (Vehicle.ManySensor) -> TyreComponent {
+) : (Vehicle.Kind.Location) -> TyreComponent {
 
     @Suppress("MaxLineLength")
-    public fun find(manySensor: Vehicle.ManySensor): TyreComponent {
-        if (vehicle.kind.locations.contains(manySensor).not())
-            error("Cannot get a TyreComponent for the filled manySensor $manySensor according to the vehicle kind ${vehicle.kind}")
-        return when (manySensor) {
-            is Vehicle.ManySensor.Located -> when (manySensor.location) {
+    public fun find(location: Vehicle.Kind.Location): TyreComponent {
+        assert(vehicle.kind.locations.contains(location)) {
+            "Cannot get a TyreComponent for the filled location $location according to the vehicle kind ${vehicle.kind}"
+        }
+        return when (location) {
+            is Vehicle.Kind.Location.Wheel -> when (location.location) {
                 FRONT_LEFT -> frontLeft
                 FRONT_RIGHT -> frontRight
                 REAR_LEFT -> rearLeft
                 REAR_RIGHT -> rearRight
             }
 
-            is Vehicle.ManySensor.Axle -> when (manySensor.axle) {
+            is Vehicle.Kind.Location.Axle -> when (location.axle) {
                 FRONT -> front
                 REAR -> rear
             }
 
-            is Vehicle.ManySensor.Side -> when (manySensor.side) {
+            is Vehicle.Kind.Location.Side -> when (location.side) {
                 LEFT -> left
                 RIGHT -> right
             }
         }.get()
     }
 
-    override fun invoke(p1: Vehicle.ManySensor): TyreComponent = find(p1)
+    override fun invoke(p1: Vehicle.Kind.Location): TyreComponent = find(p1)
 
 }

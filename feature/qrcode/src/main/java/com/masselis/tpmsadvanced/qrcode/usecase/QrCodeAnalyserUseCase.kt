@@ -8,11 +8,15 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.masselis.tpmsadvanced.data.car.model.Sensor
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filter
@@ -36,8 +40,8 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
     private val executor = Executors.newCachedThreadPool()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    @Suppress("MagicNumber")
-    fun analyse(controller: CameraController) = callbackFlow<List<Barcode>> {
+    @Suppress("MagicNumber", "CyclomaticComplexMethod")
+    fun analyse(controller: CameraController): Flow<SensorMap> = callbackFlow<List<Barcode>> {
         controller.setImageAnalysisAnalyzer(
             executor,
             MlKitAnalyzer(
@@ -53,30 +57,61 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
         .flatMapConcat { it.asFlow() }
         .filter { it.valueType == Barcode.TYPE_TEXT }
         .mapNotNull { it.rawValue }
-        .mapNotNull { regex.find(it)?.groupValues?.subList(1, 5) }
-        .map { it.map { stringHex -> stringHex.decodeHex().toByteArray() } }
-        .map { idsBytes ->
-            idsBytes.map { idBytes ->
-                ByteBuffer
-                    .wrap(byteArrayOf(0x00) + idBytes)
-                    .order(ByteOrder.LITTLE_ENDIAN)
-                    .int
-            }
+        .mapNotNull {
+            fourSensorRegex.find(it)?.groupValues?.subList(1, 5)
+                ?: twoSensorRegex.find(it)?.groupValues?.subList(1, 3)
         }
-        .map { intIds ->
-            SensorMap(
-                Sensor(intIds[0], SensorLocation.FRONT_LEFT),
-                Sensor(intIds[1], SensorLocation.FRONT_RIGHT),
-                Sensor(intIds[2], SensorLocation.REAR_LEFT),
-                Sensor(intIds[3], SensorLocation.REAR_RIGHT)
-            )
+        .map { stringHexs ->
+            stringHexs
+                .map { stringHex ->
+                    Pair(
+                        // Trying to recognize the location with the id of the sensor
+                        when (stringHex.first()) {
+                            '1' -> FRONT_LEFT
+                            '2' -> FRONT_RIGHT
+                            '3' -> REAR_LEFT
+                            '4' -> REAR_RIGHT
+                            else -> null
+                        },
+                        // Converts the hexadecimal id to an int
+                        stringHex
+                            .decodeHex()
+                            .toByteArray()
+                            .let {
+                                ByteBuffer
+                                    .wrap(byteArrayOf(0x00) + it)
+                                    .order(ByteOrder.LITTLE_ENDIAN)
+                                    .int
+                            },
+                    )
+                }
+                .mapIndexed { index, (location, id) ->
+                    Sensor(
+                        id,
+                        // The sensor id didn't provided the location, let's determine it with the
+                        // list index
+                        location ?: when (index) {
+                            0 -> FRONT_LEFT
+                            1 -> FRONT_RIGHT
+                            2 -> REAR_LEFT
+                            3 -> REAR_RIGHT
+                            else -> error("Filled list cannot have more than 4 entries")
+                        }
+                    )
+                }
+                .distinctBy { (_, location) -> location }
+                .let(::SensorMap)
         }
+        .flowOn(Dispatchers.Default)
 
     fun requiredPermission() = CAMERA
 
     companion object {
         // Test available here: https://regex101.com/r/c2xslp/1
-        private val regex =
-            "([0-9a-fA-F]{6})[&]([0-9a-fA-F]{6})[&]([0-9a-fA-F]{6})[&]([0-9a-fA-F]{6})".toRegex()
+        private val fourSensorRegex =
+            "([0-9a-fA-F]{6})&([0-9a-fA-F]{6})&([0-9a-fA-F]{6})&([0-9a-fA-F]{6})".toRegex()
+
+        private val twoSensorRegex =
+            "([0-9a-fA-F]{6})&([0-9a-fA-F]{6})".toRegex()
     }
 }

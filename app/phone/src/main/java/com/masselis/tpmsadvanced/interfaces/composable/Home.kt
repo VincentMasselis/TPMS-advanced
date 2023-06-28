@@ -56,7 +56,6 @@ import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.SpotlightEvent
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
-import kotlinx.coroutines.channels.consumeEach
 import java.util.UUID
 
 @Composable
@@ -145,9 +144,9 @@ internal fun VehicleHome(
                     )
                 }
             }
-        LaunchedEffect("EVENT") {
-            viewModel.eventChannel.consumeEach {
-                when (it) {
+        LaunchedEffect(viewModel) {
+            for (event in viewModel.eventChannel) {
+                when (event) {
                     SpotlightEvent.ManualMonitorDropdown ->
                         showManualMonitoringSpotlight = true
                 }

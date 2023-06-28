@@ -29,7 +29,7 @@ public class SensorDatabase @Inject internal constructor(
      * same location, it replaces it. This method also check the vehicle kind when replacing the
      * sensor. For instance, if [vehicleId] is a motorcycle with [FRONT_LEFT] sensor, putting a new
      * [FRONT_RIGHT] sensor will automatically remove the [FRONT_LEFT] sensor because a motorcycle
-     * only have 2 front wheels.
+     * cannot have 2 front wheels.
      */
     @Suppress("CyclomaticComplexMethod")
     public suspend fun upsert(
