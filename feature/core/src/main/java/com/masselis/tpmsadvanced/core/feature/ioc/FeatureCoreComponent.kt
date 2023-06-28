@@ -5,6 +5,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicl
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
 import com.masselis.tpmsadvanced.data.app.ioc.DataAppComponent
 import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
@@ -44,6 +45,7 @@ public interface FeatureCoreComponent {
     public val vehicleComponentFactory: VehicleComponent.Factory
     public val currentVehicleUseCase: CurrentVehicleUseCase
     public val noveltyUseCase: NoveltyUseCase
+    public val vehicleListUseCase: VehicleListUseCase
 
     public fun inject(injectable: Injectable)
     public fun inject(injectable: VehicleComponent.Factory)
