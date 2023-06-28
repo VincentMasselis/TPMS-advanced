@@ -20,10 +20,10 @@ the [Play Store](https://play.google.com/store/apps/details?id=com.masselis.tpms
 * Show the latest recorded value even after a restart
 * Filter with favourites sensors
 * Supports cars, motorcycles, trailers and 3 wheelers
+* Run in background
 
 ## What's next ?
 
-* Run in background
 * Temperature history
 * Automatic startup in background when connected to the car's radio in bluetooth
 * Add support for other BLE Sensors
