@@ -21,6 +21,7 @@ the [Play Store](https://play.google.com/store/apps/details?id=com.masselis.tpms
 * Filter with favourites sensors
 * Supports cars, motorcycles, trailers and 3 wheelers
 * Run in background
+* Shortcut to access directly to the vehicle
 
 ## What's next ?
 
