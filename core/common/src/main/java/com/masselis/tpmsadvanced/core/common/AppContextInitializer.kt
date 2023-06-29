@@ -8,7 +8,8 @@ import androidx.startup.Initializer
 private lateinit var privateContext: Context
 public val appContext: Context get() = privateContext
 
-internal class AppContextInitializer : Initializer<Context> {
+@Suppress("unused")
+public class AppContextInitializer : Initializer<Context> {
     override fun create(context: Context): Context {
         privateContext = context
         return context

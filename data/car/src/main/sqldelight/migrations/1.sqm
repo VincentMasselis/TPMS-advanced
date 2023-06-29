@@ -1,6 +1,3 @@
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation;
-import java.util.UUID;
-
 ALTER TABLE Car RENAME TO Vehicle;
 
 ALTER TABLE Vehicle ADD kind TEXT NOT NULL DEFAULT "CAR";

@@ -53,9 +53,11 @@ internal class TakeScreenshotTest {
             else -> error("Unknown mode sent $mode")
         }
         capture("${prefix}main")
-        settings {
-            capture("${prefix}settings")
-            leave()
+        actionOverflow {
+            settings {
+                capture("${prefix}settings")
+                leave()
+            }
         }
     }
 

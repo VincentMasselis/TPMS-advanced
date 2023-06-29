@@ -21,6 +21,12 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
 
     private val queries = database.vehicleQueries
 
+    init {
+        // Cleanup the database at launch. There is no risk of useless multiples calls since
+        // VehicleDatabase is annotated `@Reusable`.
+        queries.deleteIsDeleting()
+    }
+
     public suspend fun insert(
         id: UUID,
         kind: Vehicle.Kind,
@@ -71,12 +77,38 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         queries.updateHighTemp(highTemp, uuid)
     }
 
-    public suspend fun prepareDelete(uuid: UUID): Unit = withContext(IO) {
+    public suspend fun setIsDeleting(uuid: UUID): Unit = withContext(IO) {
         queries.updateIsDeleting(true, uuid)
     }
 
     public suspend fun delete(uuid: UUID): Unit = withContext(IO) {
         queries.delete(uuid)
+    }
+
+    public fun selectIsBackgroundMonitor(uuid: UUID): Boolean = queries
+        .selectIsBackgroundMonitor(uuid)
+        .executeAsOne()
+
+    public fun selectIsBackgroundMonitorFlow(uuid: UUID): Flow<Boolean> = queries
+        .selectIsBackgroundMonitor(uuid)
+        .asFlow()
+        .mapToOne(IO)
+
+    public suspend fun updateIsBackgroundMonitor(isBackgroundMonitor: Boolean, uuid: UUID): Unit =
+        withContext(IO) {
+            queries.updateIsBackgroundMonitor(isBackgroundMonitor, uuid)
+        }
+
+    public suspend fun updateIsBackgroundMonitorList(
+        isBackgroundMonitor: Boolean,
+        uuids: List<UUID>
+    ): Unit =
+        withContext(IO) {
+            queries.updateIsBackgroundMonitorList(isBackgroundMonitor, uuids)
+        }
+
+    public suspend fun updateEveryIsBackgroundMonitorToFalse(): Unit = withContext(IO) {
+        queries.updateEveryIsBackgroundMonitorToFalse()
     }
 
     public fun currentVehicleFlow(): Flow<Vehicle> = queries.currentFavourite(mapper)
@@ -89,13 +121,17 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
 
     public fun countFlow(): Flow<Long> = queries.count().asFlow().mapToOne(IO)
 
+    public fun selectUuidIsDeleting(): Flow<List<UUID>> = queries.selectUuidIsDeleting()
+        .asFlow()
+        .mapToList(IO)
+
     public fun selectAllFlow(): Flow<List<Vehicle>> = queries.selectAll(mapper)
         .asFlow()
         .mapToList(IO)
 
     public fun selectAll(): List<Vehicle> = queries.selectAll(mapper).executeAsList()
 
-    public fun selectByUuid(vehicleId: UUID): Flow<Vehicle> =
+    public fun selectByUuidFlow(vehicleId: UUID): Flow<Vehicle> =
         queries.selectByUuid(vehicleId, mapper)
             .asFlow()
             .mapToOne(IO)
@@ -117,8 +153,9 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
             Temperature,
             Vehicle.Kind,
             Boolean,
+            Boolean,
         ) -> Vehicle =
-            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _ ->
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _, isBackgroundMonitor ->
                 Vehicle(
                     uuid,
                     kind,
@@ -127,7 +164,8 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
                     highPressure,
                     lowTemp,
                     normalTemp,
-                    highTemp
+                    highTemp,
+                    isBackgroundMonitor,
                 )
             }
     }

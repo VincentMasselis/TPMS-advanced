@@ -10,7 +10,7 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Tyre
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
@@ -29,7 +29,7 @@ public class TyreUseCaseImpl @Inject internal constructor(
     private val locations: Set<SensorLocation>,
     private val tyreDatabase: TyreDatabase,
     private val scanner: BluetoothLeScanner,
-    scope: CoroutineScope
+    scope: CoroutineScope,
 ) : TyreUseCase {
 
     private val flow = flow {
@@ -43,10 +43,7 @@ public class TyreUseCaseImpl @Inject internal constructor(
         .distinctUntilChangedBy { it.copy(timestamp = 0.0) }
         .onEach { tyre -> tyreDatabase.insert(tyre, vehicle.uuid) }
         .materializeCompletion()
-        .shareIn(
-            scope,
-            SharingStarted.WhileSubscribed()
-        )
+        .shareIn(scope, WhileSubscribed())
         .dematerializeCompletion()
         .onStart {
             tyreDatabase.latestByTyreLocationByVehicle(locations, vehicle.uuid)

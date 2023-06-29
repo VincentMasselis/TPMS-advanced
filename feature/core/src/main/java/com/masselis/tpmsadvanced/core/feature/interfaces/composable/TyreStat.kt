@@ -6,7 +6,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,7 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
 import kotlinx.coroutines.delay
@@ -31,13 +30,15 @@ import kotlin.time.Duration.Companion.milliseconds
 @Suppress("NAME_SHADOWING", "LongMethod", "CyclomaticComplexMethod")
 @Composable
 internal fun TyreStat(
-    manySensor: ManySensor,
+    location: Location,
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: TyreStatsViewModel = viewModel(
-        key = "TyreStatsViewModel_${vehicleComponent.hashCode()}_${manySensor.name}"
+        key = "TyreStatsViewModel_${vehicleComponent.vehicle.uuid}_${location}"
     ) {
-        vehicleComponent.tyreComponent(manySensor).tyreStatViewModelFactory
+        vehicleComponent
+            .tyreComponent(location)
+            .tyreStatViewModelFactory
             .build(createSavedStateHandle())
     }
 ) {
@@ -48,6 +49,7 @@ internal fun TyreStat(
             Pair(state.pressure, state.pressureUnit),
             Pair(state.temperature, state.temperatureUnit)
         )
+
         is State.Alerting -> Pair(
             Pair(state.pressure, state.pressureUnit),
             Pair(state.temperature, state.temperatureUnit)
@@ -69,18 +71,17 @@ internal fun TyreStat(
         }
     } else
         isVisible = true
-    val alignment by remember {
-        derivedStateOf {
-            when (manySensor) {
-                is ManySensor.Axle -> Alignment.Start
-                is ManySensor.Located -> when (manySensor.location.side) {
-                    LEFT -> Alignment.End
-                    RIGHT -> Alignment.Start
-                }
-                is ManySensor.Side -> when (manySensor.side) {
-                    LEFT -> Alignment.End
-                    RIGHT -> Alignment.Start
-                }
+    val alignment = remember {
+        when (location) {
+            is Location.Axle -> Alignment.Start
+            is Location.Wheel -> when (location.location.side) {
+                LEFT -> Alignment.End
+                RIGHT -> Alignment.Start
+            }
+
+            is Location.Side -> when (location.side) {
+                LEFT -> Alignment.End
+                RIGHT -> Alignment.Start
             }
         }
     }

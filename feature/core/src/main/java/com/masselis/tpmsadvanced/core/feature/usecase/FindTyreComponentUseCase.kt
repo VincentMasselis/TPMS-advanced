@@ -5,7 +5,6 @@ import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreLocationQualifier
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreSideQualifier
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
@@ -29,63 +28,33 @@ public class FindTyreComponentUseCase @Inject internal constructor(
     @TyreAxleQualifier(REAR) private val rear: Lazy<TyreComponent>,
     @TyreSideQualifier(LEFT) private val left: Lazy<TyreComponent>,
     @TyreSideQualifier(RIGHT) private val right: Lazy<TyreComponent>,
-) {
+) : (Vehicle.Kind.Location) -> TyreComponent {
+
     @Suppress("MaxLineLength")
-    internal fun find(location: SensorLocation): TyreComponent {
-        when (vehicle.kind) {
-            Vehicle.Kind.CAR -> {}
-            Vehicle.Kind.SINGLE_AXLE_TRAILER -> error("Cannot request for a specific tyre location for a single axle trailer, use SensorLocation.Side instead")
-            Vehicle.Kind.MOTORCYCLE -> error("Cannot request for a specific tyre location for a motorcycle, use SensorLocation.Axle instead")
-            Vehicle.Kind.TADPOLE_THREE_WHEELER -> when (location) {
-                FRONT_LEFT, FRONT_RIGHT -> {}
-                REAR_LEFT, REAR_RIGHT -> error("Cannot request for a specific rear tyre location for a tadpole three wheeler, use SensorLocation.Axle.REAR instead")
-            }
-            Vehicle.Kind.DELTA_THREE_WHEELER -> when (location) {
-                FRONT_LEFT, FRONT_RIGHT -> error("Cannot request for a specific front tyre location for a delta three wheeler, use SensorLocation.Axle.FRONT instead")
-                REAR_LEFT, REAR_RIGHT -> {}
-            }
+    public fun find(location: Vehicle.Kind.Location): TyreComponent {
+        assert(vehicle.kind.locations.contains(location)) {
+            "Cannot get a TyreComponent for the filled location $location according to the vehicle kind ${vehicle.kind}"
         }
         return when (location) {
-            FRONT_LEFT -> frontLeft
-            FRONT_RIGHT -> frontRight
-            REAR_LEFT -> rearLeft
-            REAR_RIGHT -> rearRight
+            is Vehicle.Kind.Location.Wheel -> when (location.location) {
+                FRONT_LEFT -> frontLeft
+                FRONT_RIGHT -> frontRight
+                REAR_LEFT -> rearLeft
+                REAR_RIGHT -> rearRight
+            }
+
+            is Vehicle.Kind.Location.Axle -> when (location.axle) {
+                FRONT -> front
+                REAR -> rear
+            }
+
+            is Vehicle.Kind.Location.Side -> when (location.side) {
+                LEFT -> left
+                RIGHT -> right
+            }
         }.get()
     }
 
-    @Suppress("MaxLineLength")
-    internal fun find(axle: SensorLocation.Axle): TyreComponent {
-        when (vehicle.kind) {
-            Vehicle.Kind.CAR -> error("Cannot request for an axle for a car, use a specific tyre location instead")
-            Vehicle.Kind.SINGLE_AXLE_TRAILER -> error("Cannot request for an axle for a single axle trailer, use SensorLocation.Side instead")
-            Vehicle.Kind.MOTORCYCLE -> {}
-            Vehicle.Kind.TADPOLE_THREE_WHEELER -> when (axle) {
-                FRONT -> error("Cannot request a front axle for a tadpole three wheeler, use a specific tyre location instead")
-                REAR -> {}
-            }
-            Vehicle.Kind.DELTA_THREE_WHEELER -> when (axle) {
-                FRONT -> {}
-                REAR -> error("Cannot request a rear axle for a delta three wheeler, use a specific tyre location instead")
-            }
-        }
-        return when (axle) {
-            FRONT -> front
-            REAR -> rear
-        }.get()
-    }
+    override fun invoke(p1: Vehicle.Kind.Location): TyreComponent = find(p1)
 
-    @Suppress("MaxLineLength")
-    internal fun find(side: SensorLocation.Side): TyreComponent {
-        when (vehicle.kind) {
-            Vehicle.Kind.CAR -> error("Cannot request a side for a car, use a specific tyre location instead")
-            Vehicle.Kind.SINGLE_AXLE_TRAILER -> {}
-            Vehicle.Kind.MOTORCYCLE -> error("Cannot request a side for a motorcycle, use a SensorLocation.Axle instead")
-            Vehicle.Kind.TADPOLE_THREE_WHEELER -> error("Cannot request a side for a tadpole three wheeler, use a SensorLocation.Axle.REAR or TyreLocation.FRONT_* instead")
-            Vehicle.Kind.DELTA_THREE_WHEELER -> error("Cannot request a side for a delta three wheeler, use a SensorLocation.Axle.FRONT or TyreLocation.REAR_* instead")
-        }
-        return when (side) {
-            LEFT -> left
-            RIGHT -> right
-        }.get()
-    }
 }

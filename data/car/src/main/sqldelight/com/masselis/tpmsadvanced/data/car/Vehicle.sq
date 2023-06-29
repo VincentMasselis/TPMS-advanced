@@ -14,7 +14,8 @@ CREATE TABLE Vehicle(
     normalTemp REAL AS Temperature NOT NULL DEFAULT 45,
     highTemp REAL AS Temperature NOT NULL DEFAULT 90,
     kind TEXT AS Kind NOT NULL DEFAULT "CAR",
-    isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0
+    isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0,
+    isBackgroundMonitor INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 -- This succession of triggers ensure there is always exactly 1 car with isFavourite set to 1
@@ -98,6 +99,21 @@ UPDATE Vehicle SET highTemp = ? WHERE uuid = ?;
 updateIsDeleting:
 UPDATE Vehicle SET isDeleting = ? WHERE uuid = ?;
 
+deleteIsDeleting:
+DELETE FROM Vehicle WHERE isDeleting = 1;
+
+selectIsBackgroundMonitor:
+SELECT isBackgroundMonitor FROM Vehicle WHERE uuid = ?;
+
+updateIsBackgroundMonitor:
+UPDATE Vehicle SET isBackgroundMonitor = ? WHERE uuid = ?;
+
+updateIsBackgroundMonitorList:
+UPDATE Vehicle SET isBackgroundMonitor = ? WHERE uuid IN ?;
+
+updateEveryIsBackgroundMonitorToFalse:
+UPDATE Vehicle SET isBackgroundMonitor = 0 WHERE isBackgroundMonitor = 1;
+
 delete:
 DELETE FROM Vehicle WHERE uuid = ?;
 
@@ -106,6 +122,9 @@ UPDATE Vehicle SET isFavourite = ? WHERE uuid = ?;
 
 currentFavourite:
 SELECT * FROM Vehicle WHERE isFavourite = 1;
+
+selectUuidIsDeleting:
+SELECT uuid FROM Vehicle WHERE isDeleting = 1;
 
 selectAll:
 SELECT * FROM Vehicle WHERE isDeleting = 0;

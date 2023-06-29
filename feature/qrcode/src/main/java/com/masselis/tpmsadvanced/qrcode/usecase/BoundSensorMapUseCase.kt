@@ -1,18 +1,22 @@
 package com.masselis.tpmsadvanced.qrcode.usecase
 
+import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.data.car.interfaces.SensorDatabase
-import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 internal class BoundSensorMapUseCase @Inject constructor(
     private val sensorDatabase: SensorDatabase,
-    private val vehicleDatabase: VehicleDatabase,
+    private val currentVehicleUseCase: CurrentVehicleUseCase,
 ) {
-    suspend fun bind(ids: SensorMap) {
-        val currentVehicle = vehicleDatabase.currentVehicle()
-        ids.values.forEach { sensor ->
-            sensorDatabase.upsert(sensor, currentVehicle.uuid)
-        }
+    suspend fun bind(ids: SensorMap) = withContext(IO) {
+        val currentUuid = currentVehicleUseCase.value.vehicle.uuid
+        ids.values
+            .map { sensor -> async { sensorDatabase.upsert(sensor, currentUuid) } }
+            .awaitAll()
     }
 }

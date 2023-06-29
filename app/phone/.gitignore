@@ -1,6 +1,7 @@
 /build
 /release/**
 src/*/play/*
+!src/*/play/PRIVACY.md
 !src/*/play/release-notes
 src/*/play/release-notes/*
 !src/*/play/release-notes/en-US

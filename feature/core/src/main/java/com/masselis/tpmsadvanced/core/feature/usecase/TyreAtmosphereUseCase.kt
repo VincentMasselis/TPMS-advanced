@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-internal class TyreAtmosphereUseCase @Inject constructor(
+public class TyreAtmosphereUseCase @Inject internal constructor(
     private val tyreUseCase: TyreUseCase
 ) {
-    fun listen(): Flow<TyreAtmosphere> = tyreUseCase
+    public fun listen(): Flow<TyreAtmosphere> = tyreUseCase
         .listen()
         .map { record ->
             TyreAtmosphere(

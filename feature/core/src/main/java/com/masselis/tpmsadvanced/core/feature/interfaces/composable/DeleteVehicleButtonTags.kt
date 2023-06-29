@@ -33,13 +33,12 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicle
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
-import kotlinx.coroutines.channels.consumeEach
 
 @Composable
 internal fun DeleteVehicleButton(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.hashCode()}") {
+    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.vehicle.uuid}") {
         vehicleComponent.deleteVehicleViewModel.build(createSavedStateHandle())
     }
 ) {
@@ -65,9 +64,9 @@ internal fun DeleteVehicleButton(
             onDismissRequest = { showDeleteDialog = false },
             onDelete = { viewModel.delete(); showDeleteDialog = false; }
         )
-    LaunchedEffect("EVENTS") {
-        viewModel.eventChannel.consumeEach {
-            when (it) {
+    LaunchedEffect(viewModel) {
+        for (event in viewModel.eventChannel) {
+            when (event) {
                 Event.Leave -> navController.popBackStack()
             }
         }

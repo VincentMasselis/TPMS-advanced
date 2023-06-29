@@ -14,8 +14,8 @@ pluginManagement {
         id("com.android.library") version agpVersion
         id("org.jetbrains.kotlin.android") version kotlinVersion
         id("org.jetbrains.kotlin.kapt") version kotlinVersion
-        id("com.google.gms.google-services") version "4.3.13"
-        id("com.google.firebase.crashlytics") version "2.9.1"
+        id("com.google.gms.google-services") version "4.3.15"
+        id("com.google.firebase.crashlytics") version "2.9.6"
         id("com.github.triplet.play") version "3.8.3"
         id("app.cash.sqldelight") version sqlDelightVersion
         id("io.gitlab.arturbosch.detekt") version "1.23.0-RC3"
@@ -24,7 +24,7 @@ pluginManagement {
 }
 
 plugins {
-    id("com.gradle.enterprise") version "3.11.1"
+    id("com.gradle.enterprise") version "3.13.3"
 }
 
 @Suppress("UnstableApiUsage")
@@ -58,4 +58,6 @@ include(":data:car")
 include(":feature:core")
 include(":feature:unit")
 include(":feature:qrcode")
+include(":feature:background")
+include(":feature:shortcut")
 include(":app:phone")

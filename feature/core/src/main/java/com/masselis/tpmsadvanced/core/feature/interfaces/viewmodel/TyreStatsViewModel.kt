@@ -63,10 +63,10 @@ internal class TyreStatsViewModel @AssistedInject constructor(
         ) : State()
     }
 
-    private val state = savedStateHandle
+    private val mutableStateFlow = savedStateHandle
         .getLiveData<State>("STATE", State.NotDetected)
         .asMutableStateFlow()
-    val stateFlow = state.asStateFlow()
+    val stateFlow = mutableStateFlow.asStateFlow()
 
     init {
         combine(
@@ -117,7 +117,7 @@ internal class TyreStatsViewModel @AssistedInject constructor(
                     }
             }
             .catch { emit(State.NotDetected) }
-            .onEach { state.value = it }
+            .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)
     }
 

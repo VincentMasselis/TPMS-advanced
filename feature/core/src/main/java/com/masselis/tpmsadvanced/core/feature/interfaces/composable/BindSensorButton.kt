@@ -27,24 +27,24 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTa
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location
 
 @Composable
 internal fun BindSensorButton(
-    manySensor: ManySensor,
+    location: Location,
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: BindSensorButtonViewModel = viewModel(
-        key = "BindSensorButtonViewModel_${vehicleComponent.hashCode()}_${manySensor.name}"
+        key = "BindSensorButtonViewModel_${vehicleComponent.vehicle.uuid}_${location}"
     ) {
-        vehicleComponent.tyreComponent(manySensor)
+        vehicleComponent.tyreComponent(location)
             .bindSensorButtonViewModelFactory
             .build(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState(State.Empty)
     var bondRequest by remember { mutableStateOf<State.RequestBond?>(null) }
-    Box(modifier = modifier.testTag(tag(manySensor))) {
+    Box(modifier = modifier.testTag(tag(location))) {
         when (val state = state) {
             State.Empty -> {}
             is State.RequestBond ->
@@ -79,6 +79,7 @@ private fun BindSensorDialog(
                 when (bondRequest) {
                     is State.RequestBond.NewBinding ->
                         "When a sensor is set as favorite, TPMS Advanced will only display this sensor for this tyre"
+
                     is State.RequestBond.AlreadyBound ->
                         @Suppress("MaxLineLength")
                         "This sensor will be removed from the car \"${bondRequest.currentVehicle.name}\"" +
@@ -106,8 +107,8 @@ private fun BindSensorDialog(
 
 public object BindSensorTags {
     public object Button {
-        public fun tag(manySensor: ManySensor): String =
-            "bindSensorButton_${manySensor.name}"
+        public fun tag(location: Location): String =
+            "bindSensorButton_${location}"
     }
 
     public object Dialog {

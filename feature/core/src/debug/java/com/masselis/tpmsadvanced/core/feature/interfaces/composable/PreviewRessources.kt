@@ -5,7 +5,7 @@ import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
-import java.util.*
+import java.util.UUID
 
 internal val previewVehicle = Vehicle(
     UUID.randomUUID(),
@@ -15,7 +15,8 @@ internal val previewVehicle = Vehicle(
     2.5f.bar,
     5f.celsius,
     40f.celsius,
-    90f.celsius
+    90f.celsius,
+    false
 )
 
 internal val previewSensor = Sensor(

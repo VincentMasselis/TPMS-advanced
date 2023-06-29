@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.core.feature.ioc
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
+import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import dagger.BindsInstance
 import dagger.Subcomponent
@@ -20,6 +21,8 @@ public abstract class TyreComponent {
 
     @javax.inject.Scope
     internal annotation class Scope
+
+    public abstract val tyreAtmosphereUseCase: TyreAtmosphereUseCase
 
     internal abstract val tyreViewModelFactory: TyreViewModelImpl.Factory
     internal abstract val tyreStatViewModelFactory: TyreStatsViewModel.Factory

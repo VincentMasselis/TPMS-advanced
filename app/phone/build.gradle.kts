@@ -1,6 +1,6 @@
 @file:Suppress("LocalVariableName")
 
-import com.github.triplet.gradle.androidpublisher.ResolutionStrategy.AUTO
+import com.github.triplet.gradle.androidpublisher.ResolutionStrategy.FAIL
 import com.github.triplet.gradle.play.PlayPublisherExtension
 
 plugins {
@@ -20,8 +20,7 @@ if (isDecrypted) {
         serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
         defaultToAppBundles.set(true)
         track.set("beta")
-        // Keep the strategy AUTO to continue generating "available-version-codes.txt" files
-        resolutionStrategy.set(AUTO)
+        resolutionStrategy.set(FAIL)
         fromTrack.set("beta")
         promoteTrack.set("production")
     }
@@ -34,7 +33,7 @@ android {
         namespace = "com.masselis.tpmsadvanced"
 
         versionCode = tpmsAdvancedVersionCode
-        versionName = "1.1.1"
+        versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
@@ -71,13 +70,9 @@ android {
         }
     }
     buildFeatures {
-        compose = true
         buildConfig = true
     }
-    composeOptions {
-        val composeCompilerVersion: String by project
-        kotlinCompilerExtensionVersion = composeCompilerVersion
-    }
+    enableCompose(this)
 }
 
 dependencies {
@@ -87,7 +82,10 @@ dependencies {
     implementation(project(":core:debug-ui"))
     implementation(project(":data:app"))
     implementation(project(":feature:core"))
+    implementation(project(":feature:unit"))
     implementation(project(":feature:qrcode"))
+    implementation(project(":feature:background"))
+    implementation(project(":feature:shortcut"))
 
     testImplementation(project(":core:test"))
     androidTestUtil("androidx.test:orchestrator:$testServicesVersion")
@@ -98,29 +96,16 @@ dependencies {
 tasks.whenTaskAdded {
     if (name == "connectedDemoDebugAndroidTest") {
         val connectedDemoDebugAndroidTest = this
-        task<Exec>("clearTestOutputFilesFolder") {
+        task<ClearTestOutputFilesFolder>("clearTestOutputFilesFolder") {
             connectedDemoDebugAndroidTest.dependsOn(this)
-            description = "Clears the phone\'s screenshot folder"
-            commandLine(
-                android.adbExecutable,
-                "shell",
-                "rm -rf /sdcard/googletest/test_outputfiles"
-            )
+            adbExecutable.set(android.adbExecutable)
         }
+
         val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
-        val downloadTestOutputFiles = task<Exec>("downloadTestOutputFiles") {
+        val downloadTestOutputFiles = task<DownloadTestOutputFiles>("downloadTestOutputFiles") {
             dependsOn(connectedDemoDebugAndroidTest)
-            description = "Download screenshot folder from the phone"
-            doFirst {
-                delete(outputFilesDir)
-                mkdir(outputFilesDir)
-            }
-            commandLine(
-                android.adbExecutable,
-                "pull",
-                "/sdcard/googletest/test_outputfiles",
-                buildDir
-            )
+            adbExecutable.set(android.adbExecutable)
+            destination.set(outputFilesDir)
         }
         task<Copy>("copyScreenshot") {
             dependsOn(downloadTestOutputFiles)
@@ -174,29 +159,15 @@ if (isDecrypted) afterEvaluate {
         }
 
     // Create the task compareLocalVersionCodeWithPlayStore
-    tasks
-        .single { it.name == "processNormalReleaseVersionCodes" }
-        .let { processNormalReleaseVersionCodes ->
-            task("compareLocalVersionCodeWithPlayStore") {
-                dependsOn(processNormalReleaseVersionCodes)
-                group = "publishing"
-                description =
-                    "Ensure the artifact to be promoted by promoteArtifact will be generated from the current commit"
-                doLast {
-                    val playStoreVc =
-                        file("$buildDir/intermediates/gpp/normalRelease/available-version-codes.txt")
-                            .readText()
-                            .trim()
-                            .toInt() - 1
-                    assert(playStoreVc == tpmsAdvancedVersionCode)
-                }
-            }
-        }
-        .also { compareLocalVersionCodeWithPlayStore ->
-            // When promoting beta to production, I ensure the current commit is the one which was sent to the
-            // play store into by adding a dependency to the task compareLocalVersionCodeWithPlayStore
-            tasks
-                .filter { it.name.startsWith("promote") && it.name.endsWith("Artifact") }
-                .forEach { it.dependsOn(compareLocalVersionCodeWithPlayStore) }
-        }
+    task<CompareLocalVersionCodeWithPlayStore>("compareLocalVersionCodeWithPlayStore") {
+        serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
+        currentVc.set(tpmsAdvancedVersionCode)
+    }.also { compareLocalVersionCodeWithPlayStore ->
+        // When promoting beta to production, I ensure the current commit is the one which was sent
+        // to the play store into by adding a dependency to the task
+        // compareLocalVersionCodeWithPlayStore
+        tasks
+            .filter { it.name.startsWith("promote") && it.name.endsWith("Artifact") }
+            .forEach { it.dependsOn(compareLocalVersionCodeWithPlayStore) }
+    }
 }

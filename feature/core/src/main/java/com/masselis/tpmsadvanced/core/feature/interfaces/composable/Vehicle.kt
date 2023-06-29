@@ -18,9 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -33,14 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleComponentViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
-import com.masselis.tpmsadvanced.core.feature.model.ManySensor
+import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
@@ -51,33 +45,27 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
 
 @Composable
-public fun Vehicle(modifier: Modifier = Modifier) {
+public fun CurrentVehicle(
+    modifier: Modifier = Modifier,
+) {
     Vehicle(
-        modifier,
-        viewModel {
-            FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
-        }
+        component = LocalVehicleComponent.current,
+        modifier = modifier
     )
 }
 
-@Suppress("LongMethod")
 @Composable
-internal fun Vehicle(
+public fun Vehicle(
+    component: VehicleComponent,
     modifier: Modifier = Modifier,
-    viewModel: CurrentVehicleComponentViewModel = viewModel {
-        FeatureCoreComponent.currentVehicleComponentViewModel.build(createSavedStateHandle())
-    }
 ) {
     KeepScreenOn()
-    val component by viewModel.stateFlow.collectAsState()
-    CompositionLocalProvider(LocalVehicleComponent provides component) {
-        when (component.vehicle.kind) {
-            Kind.CAR -> Car(modifier)
-            Kind.SINGLE_AXLE_TRAILER -> SingleAxleTrailer(modifier)
-            Kind.MOTORCYCLE -> Motorcycle(modifier)
-            Kind.TADPOLE_THREE_WHEELER -> TadpoleThreadWheeler(modifier)
-            Kind.DELTA_THREE_WHEELER -> DeltaThreeWheeler(modifier)
-        }
+    when (component.vehicle.kind) {
+        Kind.CAR -> Car(modifier)
+        Kind.SINGLE_AXLE_TRAILER -> SingleAxleTrailer(modifier)
+        Kind.MOTORCYCLE -> Motorcycle(modifier)
+        Kind.TADPOLE_THREE_WHEELER -> TadpoleThreadWheeler(modifier)
+        Kind.DELTA_THREE_WHEELER -> DeltaThreeWheeler(modifier)
     }
 }
 
@@ -120,9 +108,9 @@ private fun Car(
                     height = Dimension.percent(.55f)
                 }
         )
-        with(ManySensor.Located(FRONT_LEFT)) {
+        with(Location.Wheel(FRONT_LEFT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontLeft) {
                     top.linkTo(tyreBox.top)
                     start.linkTo(tyreBox.start)
@@ -131,7 +119,7 @@ private fun Car(
                 }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontLeftStats) {
                     top.linkTo(frontLeft.top)
                     end.linkTo(frontLeft.start, 8.dp)
@@ -140,16 +128,16 @@ private fun Car(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontLeftBinding) {
                     top.linkTo(frontLeft.top)
                     start.linkTo(frontLeft.end)
                 }
             )
         }
-        with(ManySensor.Located(FRONT_RIGHT)) {
+        with(Location.Wheel(FRONT_RIGHT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontRight) {
                     top.linkTo(tyreBox.top)
                     end.linkTo(tyreBox.end)
@@ -158,23 +146,23 @@ private fun Car(
                 }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontRightStats) {
                     top.linkTo(frontRight.top)
                     start.linkTo(frontRight.end, 8.dp)
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontRightBinding) {
                     top.linkTo(frontRight.top)
                     end.linkTo(frontRight.start)
                 }
             )
         }
-        with(ManySensor.Located(REAR_LEFT)) {
+        with(Location.Wheel(REAR_LEFT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearLeft) {
                     bottom.linkTo(tyreBox.bottom)
                     start.linkTo(tyreBox.start)
@@ -183,7 +171,7 @@ private fun Car(
                 }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearLeftStats) {
                     bottom.linkTo(rearLeft.bottom)
                     end.linkTo(rearLeft.start, 8.dp)
@@ -191,16 +179,16 @@ private fun Car(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearLeftBinding) {
                     bottom.linkTo(rearLeft.bottom)
                     start.linkTo(rearLeft.end)
                 }
             )
         }
-        with(ManySensor.Located(REAR_RIGHT)) {
+        with(Location.Wheel(REAR_RIGHT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearRight) {
                     bottom.linkTo(tyreBox.bottom)
                     end.linkTo(tyreBox.end)
@@ -209,14 +197,14 @@ private fun Car(
                 }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearRightStats) {
                     bottom.linkTo(rearRight.bottom)
                     start.linkTo(rearRight.end, 8.dp)
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearRightBinding) {
                     bottom.linkTo(rearRight.bottom)
                     end.linkTo(rearRight.start)
@@ -255,9 +243,9 @@ private fun SingleAxleTrailer(
                     height = Dimension.percent(.55f)
                 }
         )
-        with(ManySensor.Side(LEFT)) {
+        with(Location.Side(LEFT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier
                     .constrainAs(tyreLeft) {
                         start.linkTo(tyreBox.start)
@@ -268,7 +256,7 @@ private fun SingleAxleTrailer(
                     }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(leftStats) {
                     top.linkTo(tyreLeft.top)
                     bottom.linkTo(tyreLeft.bottom)
@@ -277,7 +265,7 @@ private fun SingleAxleTrailer(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(leftBinding) {
                     top.linkTo(tyreLeft.top)
                     bottom.linkTo(tyreLeft.bottom)
@@ -285,9 +273,9 @@ private fun SingleAxleTrailer(
                 }
             )
         }
-        with(ManySensor.Side(RIGHT)) {
+        with(Location.Side(RIGHT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier
                     .constrainAs(tyreRight) {
                         end.linkTo(tyreBox.end)
@@ -298,7 +286,7 @@ private fun SingleAxleTrailer(
                     }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rightStats) {
                     top.linkTo(tyreRight.top)
                     bottom.linkTo(tyreRight.bottom)
@@ -306,7 +294,7 @@ private fun SingleAxleTrailer(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier
                     .constrainAs(rightBinding) {
                         top.linkTo(tyreRight.top)
@@ -347,9 +335,9 @@ private fun Motorcycle(
                     height = Dimension.percent(.55f)
                 }
         )
-        with(ManySensor.Axle(FRONT)) {
+        with(Location.Axle(FRONT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier
                     .constrainAs(tyreFront) {
                         start.linkTo(tyreBox.start)
@@ -360,7 +348,7 @@ private fun Motorcycle(
                     }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontStats) {
                     top.linkTo(tyreFront.top)
                     bottom.linkTo(tyreFront.bottom)
@@ -368,7 +356,7 @@ private fun Motorcycle(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontBinding) {
                     top.linkTo(tyreFront.top)
                     bottom.linkTo(tyreFront.bottom)
@@ -376,9 +364,9 @@ private fun Motorcycle(
                 }
             )
         }
-        with(ManySensor.Axle(REAR)) {
+        with(Location.Axle(REAR)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier
                     .constrainAs(tyreRear) {
                         start.linkTo(tyreBox.start)
@@ -389,7 +377,7 @@ private fun Motorcycle(
                     }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearStats) {
                     top.linkTo(tyreRear.top)
                     bottom.linkTo(tyreRear.bottom)
@@ -397,7 +385,7 @@ private fun Motorcycle(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier
                     .constrainAs(rearBinding) {
                         top.linkTo(tyreRear.top)
@@ -441,9 +429,9 @@ private fun TadpoleThreadWheeler(
                     height = Dimension.percent(.55f)
                 }
         )
-        with(ManySensor.Located(FRONT_LEFT)) {
+        with(Location.Wheel(FRONT_LEFT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontLeft) {
                     top.linkTo(tyreBox.top)
                     start.linkTo(tyreBox.start)
@@ -452,7 +440,7 @@ private fun TadpoleThreadWheeler(
                 }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontLeftStats) {
                     top.linkTo(frontLeft.top)
                     end.linkTo(frontLeft.start, 8.dp)
@@ -461,16 +449,16 @@ private fun TadpoleThreadWheeler(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontLeftBinding) {
                     top.linkTo(frontLeft.top)
                     start.linkTo(frontLeft.end)
                 }
             )
         }
-        with(ManySensor.Located(FRONT_RIGHT)) {
+        with(Location.Wheel(FRONT_RIGHT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontRight) {
                     top.linkTo(tyreBox.top)
                     end.linkTo(tyreBox.end)
@@ -479,23 +467,23 @@ private fun TadpoleThreadWheeler(
                 }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontRightStats) {
                     top.linkTo(frontRight.top)
                     start.linkTo(frontRight.end, 8.dp)
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontRightBinding) {
                     top.linkTo(frontRight.top)
                     end.linkTo(frontRight.start)
                 }
             )
         }
-        with(ManySensor.Axle(REAR)) {
+        with(Location.Axle(REAR)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier
                     .constrainAs(tyreRear) {
                         start.linkTo(tyreBox.start)
@@ -506,7 +494,7 @@ private fun TadpoleThreadWheeler(
                     }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearStats) {
                     top.linkTo(tyreRear.top)
                     bottom.linkTo(tyreRear.bottom)
@@ -514,7 +502,7 @@ private fun TadpoleThreadWheeler(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier
                     .constrainAs(rearBinding) {
                         top.linkTo(tyreRear.top)
@@ -558,9 +546,9 @@ private fun DeltaThreeWheeler(
                     height = Dimension.percent(.55f)
                 }
         )
-        with(ManySensor.Axle(FRONT)) {
+        with(Location.Axle(FRONT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier
                     .constrainAs(tyreFront) {
                         start.linkTo(tyreBox.start)
@@ -571,7 +559,7 @@ private fun DeltaThreeWheeler(
                     }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontStats) {
                     top.linkTo(tyreFront.top)
                     bottom.linkTo(tyreFront.bottom)
@@ -579,7 +567,7 @@ private fun DeltaThreeWheeler(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(frontBinding) {
                     top.linkTo(tyreFront.top)
                     bottom.linkTo(tyreFront.bottom)
@@ -587,9 +575,9 @@ private fun DeltaThreeWheeler(
                 }
             )
         }
-        with(ManySensor.Located(REAR_LEFT)) {
+        with(Location.Wheel(REAR_LEFT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearLeft) {
                     bottom.linkTo(tyreBox.bottom)
                     start.linkTo(tyreBox.start)
@@ -598,7 +586,7 @@ private fun DeltaThreeWheeler(
                 }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearLeftStats) {
                     bottom.linkTo(rearLeft.bottom)
                     end.linkTo(rearLeft.start, 8.dp)
@@ -606,16 +594,16 @@ private fun DeltaThreeWheeler(
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearLeftBinding) {
                     bottom.linkTo(rearLeft.bottom)
                     start.linkTo(rearLeft.end)
                 }
             )
         }
-        with(ManySensor.Located(REAR_RIGHT)) {
+        with(Location.Wheel(REAR_RIGHT)) {
             Tyre(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearRight) {
                     bottom.linkTo(tyreBox.bottom)
                     end.linkTo(tyreBox.end)
@@ -624,14 +612,14 @@ private fun DeltaThreeWheeler(
                 }
             )
             TyreStat(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearRightStats) {
                     bottom.linkTo(rearRight.bottom)
                     start.linkTo(rearRight.end, 8.dp)
                 }
             )
             BindSensorButton(
-                manySensor = this,
+                location = this,
                 modifier = Modifier.constrainAs(rearRightBinding) {
                     bottom.linkTo(rearRight.bottom)
                     end.linkTo(rearRight.start)
