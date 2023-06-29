@@ -1,14 +1,14 @@
 package com.masselis.tpmsadvanced.feature.shortcut.ioc
 
-import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Intent
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
-import androidx.core.content.pm.ShortcutManagerCompat.FLAG_MATCH_PINNED
+import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.*
+import com.masselis.tpmsadvanced.feature.shortcut.R
 import com.masselis.tpmsadvanced.feature.shortcut.usecase.FeatureShortcutComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -23,51 +23,35 @@ internal class ShortcutUseCase @Inject constructor(
 ) {
 
     init {
-        if (ShortcutManagerCompat.isRequestPinShortcutSupported(appContext))
-            vehicleListUseCase
-                .vehicleListFlow
-                .onEach { vehicles ->
-                    val uuids = vehicles.map { it.uuid.toString() }
-                    ShortcutManagerCompat.getShortcuts(appContext, FLAG_MATCH_PINNED)
-                        .filter { uuids.contains(it.id).not() }
-                        .map { it.id }
-                        .also {
-                            ShortcutManagerCompat.disableShortcuts(
-                                appContext,
-                                it,
-                                "This vehicle is not available anymore"
-                            )
-                        }
-                    vehicles
-                        .map { vehicle ->
-                            ShortcutInfoCompat.Builder(appContext, vehicle.uuid.toString())
-                                .setShortLabel(vehicle.name)
-                                .setIntent(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        "tpmsadvanced://vehicle/${vehicle.uuid}".toUri(),
-                                    )
-                                )
-                                .build()
-                        }
-                        .forEach { shortcut ->
-                            ShortcutManagerCompat.requestPinShortcut(
-                                appContext,
-                                shortcut,
-                                ShortcutManagerCompat
-                                    .createShortcutResultIntent(appContext, shortcut)
-                                    .let {
-                                        PendingIntent.getBroadcast(
-                                            appContext,
-                                            shortcut.id.hashCode(),
-                                            it,
-                                            FLAG_IMMUTABLE
-                                        )
+        vehicleListUseCase
+            .vehicleListFlow
+            .onEach { vehicles ->
+                ShortcutManagerCompat.setDynamicShortcuts(
+                    appContext,
+                    vehicles.map { vehicle ->
+                        ShortcutInfoCompat.Builder(appContext, vehicle.uuid.toString())
+                            .setIcon(
+                                IconCompat.createWithResource(
+                                    appContext, when (vehicle.kind) {
+                                        CAR -> R.drawable.car_convertible
+                                        SINGLE_AXLE_TRAILER -> R.drawable.truck_trailer
+                                        MOTORCYCLE -> R.drawable.motorbike
+                                        TADPOLE_THREE_WHEELER -> R.drawable.atv
+                                        DELTA_THREE_WHEELER -> R.drawable.atv
                                     }
-                                    .intentSender
+                                )
                             )
-                        }
-                }
-                .launchIn(GlobalScope)
+                            .setShortLabel(vehicle.name)
+                            .setIntent(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    "tpmsadvanced://vehicle/${vehicle.uuid}".toUri(),
+                                )
+                            )
+                            .build()
+                    }
+                )
+            }
+            .launchIn(GlobalScope)
     }
 }

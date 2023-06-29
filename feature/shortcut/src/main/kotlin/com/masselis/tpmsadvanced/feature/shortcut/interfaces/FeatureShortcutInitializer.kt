@@ -5,8 +5,7 @@ import androidx.startup.Initializer
 import com.masselis.tpmsadvanced.core.common.AppContextInitializer
 import com.masselis.tpmsadvanced.feature.shortcut.usecase.FeatureShortcutComponent
 
-@Suppress("unused")
-internal class FeatureShortcutInitializer : Initializer<Unit> {
+public class FeatureShortcutInitializer : Initializer<Unit> {
     override fun create(context: Context) {
         // Calling FeatureShortcutComponent initializes it
         FeatureShortcutComponent
