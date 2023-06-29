@@ -1,6 +1,6 @@
 @file:Suppress("LocalVariableName")
 
-import com.github.triplet.gradle.androidpublisher.ResolutionStrategy.AUTO
+import com.github.triplet.gradle.androidpublisher.ResolutionStrategy.FAIL
 import com.github.triplet.gradle.play.PlayPublisherExtension
 
 plugins {
@@ -20,8 +20,7 @@ if (isDecrypted) {
         serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
         defaultToAppBundles.set(true)
         track.set("beta")
-        // Keep the strategy AUTO to continue generating "available-version-codes.txt" files
-        resolutionStrategy.set(AUTO)
+        resolutionStrategy.set(FAIL)
         fromTrack.set("beta")
         promoteTrack.set("production")
     }
@@ -160,20 +159,15 @@ if (isDecrypted) afterEvaluate {
         }
 
     // Create the task compareLocalVersionCodeWithPlayStore
-    tasks
-        .single { it.name == "processNormalReleaseVersionCodes" }
-        .let { processNormalReleaseVersionCodes ->
-            task<CompareLocalVersionCodeWithPlayStore>("compareLocalVersionCodeWithPlayStore") {
-                dependsOn(processNormalReleaseVersionCodes)
-                availableVersionCodeFile.set(file("$buildDir/intermediates/gpp/normalRelease/available-version-codes.txt"))
-                currentVc.set(tpmsAdvancedVersionCode)
-            }
-        }
-        .also { compareLocalVersionCodeWithPlayStore ->
-            // When promoting beta to production, I ensure the current commit is the one which was sent to the
-            // play store into by adding a dependency to the task compareLocalVersionCodeWithPlayStore
-            tasks
-                .filter { it.name.startsWith("promote") && it.name.endsWith("Artifact") }
-                .forEach { it.dependsOn(compareLocalVersionCodeWithPlayStore) }
-        }
+    task<CompareLocalVersionCodeWithPlayStore>("compareLocalVersionCodeWithPlayStore") {
+        serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
+        currentVc.set(tpmsAdvancedVersionCode)
+    }.also { compareLocalVersionCodeWithPlayStore ->
+        // When promoting beta to production, I ensure the current commit is the one which was sent
+        // to the play store into by adding a dependency to the task
+        // compareLocalVersionCodeWithPlayStore
+        tasks
+            .filter { it.name.startsWith("promote") && it.name.endsWith("Artifact") }
+            .forEach { it.dependsOn(compareLocalVersionCodeWithPlayStore) }
+    }
 }
