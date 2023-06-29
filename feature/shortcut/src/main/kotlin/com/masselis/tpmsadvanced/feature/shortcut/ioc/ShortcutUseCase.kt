@@ -7,7 +7,11 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.*
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.CAR
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.DELTA_THREE_WHEELER
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.MOTORCYCLE
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
+import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
 import com.masselis.tpmsadvanced.feature.shortcut.R
 import com.masselis.tpmsadvanced.feature.shortcut.usecase.FeatureShortcutComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
