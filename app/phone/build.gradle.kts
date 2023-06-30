@@ -2,6 +2,9 @@
 
 import com.github.triplet.gradle.androidpublisher.ResolutionStrategy.FAIL
 import com.github.triplet.gradle.play.PlayPublisherExtension
+import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
+import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
+import com.masselis.tpmsadvanced.publisher.CompareLocalVersionCodeWithPlayStore
 
 plugins {
     id("android-app")
@@ -25,6 +28,7 @@ if (isDecrypted) {
         promoteTrack.set("production")
     }
 }
+
 val tpmsAdvancedVersionCode: Int by rootProject.extra
 @Suppress("UnstableApiUsage")
 android {
@@ -73,6 +77,14 @@ android {
         buildConfig = true
     }
     enableCompose(this)
+}
+
+if (isDecrypted) {
+    apply<AndroidPublisherPlugin>()
+    configure<AndroidPublisherExtension> {
+        packageName.set(android.defaultConfig.applicationId)
+        serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
+    }
 }
 
 dependencies {
@@ -159,8 +171,7 @@ if (isDecrypted) afterEvaluate {
         }
 
     // Create the task compareLocalVersionCodeWithPlayStore
-    task<CompareLocalVersionCodeWithPlayStore>("compareLocalVersionCodeWithPlayStore") {
-        serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
+    tasks.create<CompareLocalVersionCodeWithPlayStore>("compareLocalVersionCodeWithPlayStore") {
         currentVc.set(tpmsAdvancedVersionCode)
     }.also { compareLocalVersionCodeWithPlayStore ->
         // When promoting beta to production, I ensure the current commit is the one which was sent
