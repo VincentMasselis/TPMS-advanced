@@ -5,5 +5,4 @@ import org.gradle.api.provider.Property
 
 public interface AndroidPublisherExtension {
     public val serviceAccountCredentials: RegularFileProperty
-    public val packageName: Property<String>
 }

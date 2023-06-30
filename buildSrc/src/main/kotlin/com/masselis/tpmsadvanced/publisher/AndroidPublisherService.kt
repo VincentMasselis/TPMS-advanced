@@ -6,15 +6,12 @@ import com.google.api.services.androidpublisher.AndroidPublisher
 import com.google.auth.http.HttpCredentialsAdapter
 import com.google.auth.oauth2.GoogleCredentials
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 
-internal abstract class AndroidPublisherService : BuildService<AndroidPublisherService.Params> {
+public abstract class AndroidPublisherService : BuildService<AndroidPublisherService.Params> {
 
-    val packageName: String = parameters.packageName.get()
-
-    val androidPublisher by lazy {
+    public val androidPublisher: AndroidPublisher by lazy {
         AndroidPublisher
             .Builder(
                 NetHttpTransport(),
@@ -33,8 +30,7 @@ internal abstract class AndroidPublisherService : BuildService<AndroidPublisherS
             .build()
     }
 
-    interface Params : BuildServiceParameters {
+    internal interface Params : BuildServiceParameters {
         val serviceAccountCredentials: RegularFileProperty
-        val packageName: Property<String>
     }
 }

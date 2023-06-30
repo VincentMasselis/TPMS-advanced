@@ -4,7 +4,9 @@ import com.github.triplet.gradle.androidpublisher.ResolutionStrategy.FAIL
 import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
-import com.masselis.tpmsadvanced.publisher.CompareLocalVersionCodeWithPlayStore
+import com.masselis.tpmsadvanced.publisher.AndroidPublisherTask
+import com.masselis.tpmsadvanced.publisher.androidPublisher
+import com.masselis.tpmsadvanced.publisher.withCommit
 
 plugins {
     id("android-app")
@@ -26,6 +28,10 @@ if (isDecrypted) {
         resolutionStrategy.set(FAIL)
         fromTrack.set("beta")
         promoteTrack.set("production")
+    }
+    apply<AndroidPublisherPlugin>()
+    configure<AndroidPublisherExtension> {
+        serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
     }
 }
 
@@ -77,14 +83,6 @@ android {
         buildConfig = true
     }
     enableCompose(this)
-}
-
-if (isDecrypted) {
-    apply<AndroidPublisherPlugin>()
-    configure<AndroidPublisherExtension> {
-        packageName.set(android.defaultConfig.applicationId)
-        serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
-    }
 }
 
 dependencies {
@@ -171,8 +169,21 @@ if (isDecrypted) afterEvaluate {
         }
 
     // Create the task compareLocalVersionCodeWithPlayStore
-    tasks.create<CompareLocalVersionCodeWithPlayStore>("compareLocalVersionCodeWithPlayStore") {
-        currentVc.set(tpmsAdvancedVersionCode)
+    tasks.create<AndroidPublisherTask>("compareLocalVersionCodeWithPlayStore") {
+        val playStoreVc = androidPublisher
+            .edits()
+            .withCommit(android.defaultConfig.applicationId!!) {
+                tracks()
+                    .get(android.defaultConfig.applicationId!!, it.id, "beta")
+                    .execute()
+                    .releases
+                    .first()
+                    .versionCodes
+                    .first()
+                    .toInt()
+            }
+        if (playStoreVc != tpmsAdvancedVersionCode)
+            throw GradleException("Current commit version code ($tpmsAdvancedVersionCode) differs to the current in beta from the play store ($playStoreVc)")
     }.also { compareLocalVersionCodeWithPlayStore ->
         // When promoting beta to production, I ensure the current commit is the one which was sent
         // to the play store into by adding a dependency to the task

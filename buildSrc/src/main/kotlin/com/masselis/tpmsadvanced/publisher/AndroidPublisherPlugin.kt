@@ -11,7 +11,6 @@ public class AndroidPublisherPlugin : Plugin<Project> {
             "android-publisher-service",
             AndroidPublisherService::class.java
         ) {
-            parameters.packageName.set(ext.packageName)
             parameters.serviceAccountCredentials.set(ext.serviceAccountCredentials)
         }
     }
