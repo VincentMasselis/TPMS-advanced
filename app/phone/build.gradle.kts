@@ -1,10 +1,9 @@
 @file:Suppress("LocalVariableName")
 
-import com.github.triplet.gradle.androidpublisher.ResolutionStrategy.FAIL
-import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
 import com.masselis.tpmsadvanced.publisher.CompareLocalVersionCodeWithPlayStore
+import com.masselis.tpmsadvanced.publisher.PromoteArtifact
 import com.masselis.tpmsadvanced.publisher.PushBundleToPlayStore
 import com.masselis.tpmsadvanced.publisher.UploadPlayStoreImages
 
@@ -18,21 +17,6 @@ if (isDecrypted) {
     // Needs the google-services.json file to work
     apply(plugin = "com.google.gms.google-services")
     apply(plugin = "com.google.firebase.crashlytics")
-
-    // Needs the publisher-service-account.json file to work
-    apply(plugin = "com.github.triplet.play")
-    configure<PlayPublisherExtension> {
-        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
-        defaultToAppBundles = true
-        track = "beta"
-        resolutionStrategy = FAIL
-        fromTrack = "beta"
-        promoteTrack = "production"
-    }
-    apply<AndroidPublisherPlugin>()
-    configure<AndroidPublisherExtension> {
-        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
-    }
 }
 
 val tpmsAdvancedVersionCode: Int by rootProject.extra
@@ -112,7 +96,7 @@ tasks.whenTaskAdded {
         }
 
         val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
-        val downloadTestOutputFiles = task<DownloadTestOutputFiles>("downloadTestOutputFiles") {
+        val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
             dependsOn(connectedDemoDebugAndroidTest)
             adbExecutable = android.adbExecutable
             destination = outputFilesDir
@@ -138,32 +122,38 @@ tasks.whenTaskAdded {
     }
 }
 
-if (isDecrypted) afterEvaluate {
-
+if (isDecrypted) {
+    apply<AndroidPublisherPlugin>()
+    configure<AndroidPublisherExtension> {
+        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
+    }
     tasks.create<PushBundleToPlayStore>("pushBundleToPlayStore") {
-        dependsOn("bundleRelease")
-        packageName =android.defaultConfig.applicationId
+        dependsOn("bundle")
+        packageName = android.defaultConfig.applicationId
         track = "beta"
-        releaseDir = layout.buildDirectory.dir("outputs/bundle/normalRelease")
+        releaseBundle =
+            layout.buildDirectory.file("outputs/bundle/normalRelease/phone-normal-release.aab")
+        releaseNotes = layout.projectDirectory.file("src/normal/play/release-notes/en-US/beta.txt")
     }
 
-    tasks.create<UploadPlayStoreImages>("updatePlayStoreImages") {
+    val compareLocalVersionCodeWithPlayStore by tasks.creating(CompareLocalVersionCodeWithPlayStore::class) {
+        currentVc = tpmsAdvancedVersionCode
+        packageName = android.defaultConfig.applicationId
+        track = "beta"
+    }
+
+    val updatePlayStoreImages by tasks.creating(UploadPlayStoreImages::class) {
+        dependsOn(compareLocalVersionCodeWithPlayStore)
         dependsOn("copyScreenshot")
         packageName = android.defaultConfig.applicationId
         screenshotDirectory =
             layout.projectDirectory.dir("src/normal/play/listings/en-US/graphics/phone-screenshots")
     }
 
-    tasks.create<CompareLocalVersionCodeWithPlayStore>("compareLocalVersionCodeWithPlayStore") {
-        currentVc = tpmsAdvancedVersionCode
-        track = "beta"
+    tasks.create<PromoteArtifact>("promoteArtifact") {
+        dependsOn(updatePlayStoreImages)
         packageName = android.defaultConfig.applicationId
-    }.also { compareLocalVersionCodeWithPlayStore ->
-        // When promoting beta to production, I ensure the current commit is the one which was sent
-        // to the play store into by adding a dependency to the task
-        // compareLocalVersionCodeWithPlayStore
-        tasks
-            .filter { it.name.startsWith("promote") && it.name.endsWith("Artifact") }
-            .forEach { it.dependsOn(compareLocalVersionCodeWithPlayStore) }
+        fromTrack = "beta"
+        toTrack = "production"
     }
 }

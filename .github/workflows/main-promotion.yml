@@ -12,27 +12,6 @@ concurrency:
 jobs:
   promotion:
     name: Promote to production
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - uses: ./.github/actions/setup
-
-      - name: Unlock secret
-        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
-        env:
-          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
-
-      - name: Promotion
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: promoteArtifact
-
-  screenshots_update:
-    name: Updates play store screenshots
     runs-on: macos-latest
     steps:
       - name: Checkout project
@@ -46,7 +25,7 @@ jobs:
         with:
           git_crypt_key: ${{ secrets.GIT_CRYPT_KEY }}
 
-      - name: Update screenshots
+      - name: Promotion
         uses: ./.github/actions/run-emulator
         with:
-          script: ./gradlew publishListing
+          script: ./gradlew promoteArtifact

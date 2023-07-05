@@ -27,7 +27,7 @@ public abstract class CompareLocalVersionCodeWithPlayStore : DefaultTask(), Serv
     internal fun process() {
         val playStoreVc = androidPublisher
             .edits()
-            .withEdit(packageName.get()) { edit ->
+            .withEdit(this, packageName.get()) { edit ->
                 tracks()
                     .get(packageName.get(), edit.id, "beta")
                     .execute()

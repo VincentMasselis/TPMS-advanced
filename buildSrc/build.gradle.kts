@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -5,19 +6,14 @@ plugins {
 }
 
 
-tasks.withType(KotlinCompile::class).configureEach {
+tasks.withType<KotlinCompile>().configureEach {
     compilerOptions { // New lazy configuration options
+        jvmTarget = JVM_17
         freeCompilerArgs.addAll(
             "-Xexplicit-api=strict",
             "-opt-in=kotlin.RequiresOptIn",
             "-Xcontext-receivers"
         )
-    }
-}
-
-tasks.withType<KotlinCompile>().all {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 }
 

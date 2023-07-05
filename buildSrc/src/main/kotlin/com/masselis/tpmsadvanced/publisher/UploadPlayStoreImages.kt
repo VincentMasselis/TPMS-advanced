@@ -22,24 +22,25 @@ public abstract class UploadPlayStoreImages : DefaultTask(), ServiceHolder {
     }
 
     @TaskAction
-    internal fun process() {
-        androidPublisher
-            .edits()
-            .withEdit(packageName.get()) { edit ->
-                screenshotDirectory
-                    .asFileTree
-                    .sortedBy { it.name }
-                    .forEach { file ->
-                        images()
-                            .upload(
-                                packageName.get(),
-                                edit.id,
-                                "en-US",
-                                "phoneScreenshots",
-                                FileContent("image/png", file)
-                            )
-                            .execute()
-                    }
-            }
-    }
+    internal fun process() = androidPublisher
+        .edits()
+        .withEdit(this, packageName.get()) { edit ->
+            images()
+                .deleteall(packageName.get(), edit.id, "en-US", "phoneScreenshots")
+                .execute()
+            screenshotDirectory
+                .asFileTree
+                .sortedBy { it.name }
+                .forEach { file ->
+                    images()
+                        .upload(
+                            packageName.get(),
+                            edit.id,
+                            "en-US",
+                            "phoneScreenshots",
+                            FileContent("image/png", file)
+                        )
+                        .execute()
+                }
+        }
 }
