@@ -87,36 +87,36 @@ dependencies {
     androidTestImplementation(project(":core:android-test"))
 }
 
-tasks.whenTaskAdded {
-    if (name == "connectedDemoDebugAndroidTest") {
-        val connectedDemoDebugAndroidTest = this
-        task<ClearTestOutputFilesFolder>("clearTestOutputFilesFolder") {
-            connectedDemoDebugAndroidTest.dependsOn(this)
-            adbExecutable = android.adbExecutable
-        }
+afterEvaluate {
+    val connectedDemoDebugAndroidTest = tasks.getByPath("connectedDemoDebugAndroidTest")
 
-        val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
-        val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
-            dependsOn(connectedDemoDebugAndroidTest)
-            adbExecutable = android.adbExecutable
-            destination = outputFilesDir
-        }
-        task<Copy>("copyScreenshot") {
-            dependsOn(downloadTestOutputFiles)
-            group = "publishing"
-            description =
-                "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
-            val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
-            from(outputFilesDir)
-            into(path)
-            eachFile {
-                when {
-                    name.startsWith("light_main") -> name = "1.png"
-                    name.startsWith("light_settings") -> name = "2.png"
-                    name.startsWith("dark_main") -> name = "3.png"
-                    name.startsWith("dark_settings") -> name = "4.png"
-                    else -> exclude()
-                }
+    tasks.create<ClearTestOutputFilesFolder>("clearTestOutputFilesFolder") {
+        connectedDemoDebugAndroidTest.dependsOn(this)
+        adbExecutable = android.adbExecutable
+    }
+
+    val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
+    val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
+        dependsOn(connectedDemoDebugAndroidTest)
+        adbExecutable = android.adbExecutable
+        destination = outputFilesDir
+    }
+
+    tasks.create<Copy>("copyScreenshot") {
+        dependsOn(downloadTestOutputFiles)
+        group = "publishing"
+        description =
+            "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
+        val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
+        from(outputFilesDir)
+        into(path)
+        eachFile {
+            when {
+                name.startsWith("light_main") -> name = "1.png"
+                name.startsWith("light_settings") -> name = "2.png"
+                name.startsWith("dark_main") -> name = "3.png"
+                name.startsWith("dark_settings") -> name = "4.png"
+                else -> exclude()
             }
         }
     }
