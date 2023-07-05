@@ -10,7 +10,7 @@ pluginManagement {
 
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
-    repositoriesMode.set(FAIL_ON_PROJECT_REPOS)
+    repositoriesMode = FAIL_ON_PROJECT_REPOS
     repositories {
         google()
         mavenCentral()

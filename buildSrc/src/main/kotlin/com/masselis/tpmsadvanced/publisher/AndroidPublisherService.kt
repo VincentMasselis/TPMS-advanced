@@ -1,5 +1,7 @@
 package com.masselis.tpmsadvanced.publisher
 
+import com.google.api.client.http.HttpRequest
+import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.androidpublisher.AndroidPublisher
@@ -8,10 +10,16 @@ import com.google.auth.oauth2.GoogleCredentials
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
-public abstract class AndroidPublisherService : BuildService<AndroidPublisherService.Params> {
+internal abstract class AndroidPublisherService : BuildService<AndroidPublisherService.Params> {
 
-    public val androidPublisher: AndroidPublisher by lazy {
+    val editsLock: Lock = ReentrantLock()
+
+    val androidPublisher: AndroidPublisher by lazy {
         AndroidPublisher
             .Builder(
                 NetHttpTransport(),
@@ -24,11 +32,21 @@ public abstract class AndroidPublisherService : BuildService<AndroidPublisherSer
                             .asFile
                             .inputStream()
                     )
-                )
+                ).withHttpTimeout(2.minutes)
             )
             .setApplicationName("TPMS Advanced")
             .build()
     }
+
+    private fun HttpRequestInitializer.withHttpTimeout(timeout: Duration) =
+        object : HttpRequestInitializer {
+            override fun initialize(request: HttpRequest) {
+                this@withHttpTimeout.initialize(request)
+                request.setConnectTimeout(timeout.inWholeMilliseconds.toInt())
+                request.setReadTimeout(timeout.inWholeMilliseconds.toInt())
+                request.setWriteTimeout(timeout.inWholeMilliseconds.toInt())
+            }
+        }
 
     internal interface Params : BuildServiceParameters {
         val serviceAccountCredentials: RegularFileProperty

@@ -4,17 +4,23 @@ plugins {
     `kotlin-dsl`
 }
 
-tasks.withType<KotlinCompile>().all {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-        options.freeCompilerArgs.addAll(
-            listOf(
-                "-Xexplicit-api=strict",
-                "-opt-in=kotlin.RequiresOptIn",
-            )
+
+tasks.withType(KotlinCompile::class).configureEach {
+    compilerOptions { // New lazy configuration options
+        freeCompilerArgs.addAll(
+            "-Xexplicit-api=strict",
+            "-opt-in=kotlin.RequiresOptIn",
+            "-Xcontext-receivers"
         )
     }
 }
+
+tasks.withType<KotlinCompile>().all {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+}
+
 
 dependencies {
     val agpVersion: String by project

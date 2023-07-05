@@ -4,9 +4,9 @@ import com.github.triplet.gradle.androidpublisher.ResolutionStrategy.FAIL
 import com.github.triplet.gradle.play.PlayPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
-import com.masselis.tpmsadvanced.publisher.AndroidPublisherTask
-import com.masselis.tpmsadvanced.publisher.androidPublisher
-import com.masselis.tpmsadvanced.publisher.withCommit
+import com.masselis.tpmsadvanced.publisher.CompareLocalVersionCodeWithPlayStore
+import com.masselis.tpmsadvanced.publisher.PushBundleToPlayStore
+import com.masselis.tpmsadvanced.publisher.UploadPlayStoreImages
 
 plugins {
     id("android-app")
@@ -22,16 +22,16 @@ if (isDecrypted) {
     // Needs the publisher-service-account.json file to work
     apply(plugin = "com.github.triplet.play")
     configure<PlayPublisherExtension> {
-        serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
-        defaultToAppBundles.set(true)
-        track.set("beta")
-        resolutionStrategy.set(FAIL)
-        fromTrack.set("beta")
-        promoteTrack.set("production")
+        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
+        defaultToAppBundles = true
+        track = "beta"
+        resolutionStrategy = FAIL
+        fromTrack = "beta"
+        promoteTrack = "production"
     }
     apply<AndroidPublisherPlugin>()
     configure<AndroidPublisherExtension> {
-        serviceAccountCredentials.set(file("../../secrets/publisher-service-account.json"))
+        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
     }
 }
 
@@ -108,14 +108,14 @@ tasks.whenTaskAdded {
         val connectedDemoDebugAndroidTest = this
         task<ClearTestOutputFilesFolder>("clearTestOutputFilesFolder") {
             connectedDemoDebugAndroidTest.dependsOn(this)
-            adbExecutable.set(android.adbExecutable)
+            adbExecutable = android.adbExecutable
         }
 
         val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
         val downloadTestOutputFiles = task<DownloadTestOutputFiles>("downloadTestOutputFiles") {
             dependsOn(connectedDemoDebugAndroidTest)
-            adbExecutable.set(android.adbExecutable)
-            destination.set(outputFilesDir)
+            adbExecutable = android.adbExecutable
+            destination = outputFilesDir
         }
         task<Copy>("copyScreenshot") {
             dependsOn(downloadTestOutputFiles)
@@ -139,51 +139,25 @@ tasks.whenTaskAdded {
 }
 
 if (isDecrypted) afterEvaluate {
-    tasks.filter { it.name.startsWith("generate") && it.name.endsWith("PlayResources") }
-        .forEach { generatePlayResources ->
-            // generatePlayResources is a task used by "publishListing" which watch at the
-            // "phone-screenshots" folder in order to check if changes was made. The task
-            // "generatePlayResources" must be launched after "copyScreenshot" otherwise no
-            // screenshot will be uploaded at all.
-            generatePlayResources.mustRunAfter("copyScreenshot")
-        }
 
-    // Play store listing must depends on the task which generates screenshots
-    tasks.filter { it.name.startsWith("publish") && it.name.endsWith("Listing") }
-        .forEach { publishListing ->
-            publishListing.dependsOn("copyScreenshot")
-        }
+    tasks.create<PushBundleToPlayStore>("pushBundleToPlayStore") {
+        dependsOn("bundleRelease")
+        packageName =android.defaultConfig.applicationId
+        track = "beta"
+        releaseDir = layout.buildDirectory.dir("outputs/bundle/normalRelease")
+    }
 
-    // Removes dependency which updates the play store listing when publishing a new app in beta
-    // because the play store listing reflects the app in production, not the beta.
-    tasks.filter { it.name.startsWith("publish") && it.name.endsWith("Apps") }
-        .forEach { publishApps ->
-            publishApps.dependsOn.removeIf {
-                // Unlike Kotlin, Groovy is able to get the task name of the current dependency even
-                // if the dependency is nested into the gradle class "Provider". On its side, with
-                // Kotlin, you have to unwrap the task before asking for its name which is not as
-                // simple as Groovy so I prefer to use "withGroovyBuilder" in this case.
-                val taskName = it.withGroovyBuilder { "getName"() } as String
-                taskName.startsWith("publish") && taskName.endsWith("Listing")
-            }
-        }
+    tasks.create<UploadPlayStoreImages>("updatePlayStoreImages") {
+        dependsOn("copyScreenshot")
+        packageName = android.defaultConfig.applicationId
+        screenshotDirectory =
+            layout.projectDirectory.dir("src/normal/play/listings/en-US/graphics/phone-screenshots")
+    }
 
-    // Create the task compareLocalVersionCodeWithPlayStore
-    tasks.create<AndroidPublisherTask>("compareLocalVersionCodeWithPlayStore") {
-        val playStoreVc = androidPublisher
-            .edits()
-            .withCommit(android.defaultConfig.applicationId!!) {
-                tracks()
-                    .get(android.defaultConfig.applicationId!!, it.id, "beta")
-                    .execute()
-                    .releases
-                    .first()
-                    .versionCodes
-                    .first()
-                    .toInt()
-            }
-        if (playStoreVc != tpmsAdvancedVersionCode)
-            throw GradleException("Current commit version code ($tpmsAdvancedVersionCode) differs to the current in beta from the play store ($playStoreVc)")
+    tasks.create<CompareLocalVersionCodeWithPlayStore>("compareLocalVersionCodeWithPlayStore") {
+        currentVc = tpmsAdvancedVersionCode
+        track = "beta"
+        packageName = android.defaultConfig.applicationId
     }.also { compareLocalVersionCodeWithPlayStore ->
         // When promoting beta to production, I ensure the current commit is the one which was sent
         // to the play store into by adding a dependency to the task

@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.publisher
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
 
 public class AndroidPublisherPlugin : Plugin<Project> {
@@ -11,7 +12,7 @@ public class AndroidPublisherPlugin : Plugin<Project> {
             "android-publisher-service",
             AndroidPublisherService::class.java
         ) {
-            parameters.serviceAccountCredentials.set(ext.serviceAccountCredentials)
+            parameters.serviceAccountCredentials = ext.serviceAccountCredentials
         }
     }
 }
