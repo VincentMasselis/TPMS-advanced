@@ -128,7 +128,7 @@ if (isDecrypted) {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
     }
     tasks.create<PushBundleToPlayStore>("pushBundleToPlayStore") {
-        dependsOn("bundle")
+        dependsOn("bundleNormalRelease")
         packageName = android.defaultConfig.applicationId
         track = "beta"
         releaseBundle =

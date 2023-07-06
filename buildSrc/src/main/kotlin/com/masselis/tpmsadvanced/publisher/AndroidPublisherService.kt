@@ -1,10 +1,13 @@
 package com.masselis.tpmsadvanced.publisher
 
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.HttpRequest
 import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.androidpublisher.AndroidPublisher
+import com.google.api.services.androidpublisher.AndroidPublisherScopes
+import com.google.api.services.androidpublisher.AndroidPublisherScopes.ANDROIDPUBLISHER
 import com.google.auth.http.HttpCredentialsAdapter
 import com.google.auth.oauth2.GoogleCredentials
 import org.gradle.api.file.RegularFileProperty
@@ -20,21 +23,25 @@ internal abstract class AndroidPublisherService : BuildService<AndroidPublisherS
     val editsLock: Lock = ReentrantLock()
 
     val androidPublisher: AndroidPublisher by lazy {
+        val transport = GoogleNetHttpTransport.newTrustedTransport()
         AndroidPublisher
             .Builder(
-                NetHttpTransport(),
+                transport,
                 GsonFactory.getDefaultInstance(),
                 HttpCredentialsAdapter(
-                    GoogleCredentials.fromStream(
-                        parameters
-                            .serviceAccountCredentials
-                            .get()
-                            .asFile
-                            .inputStream()
-                    )
+                    GoogleCredentials
+                        .fromStream(
+                            parameters
+                                .serviceAccountCredentials
+                                .get()
+                                .asFile
+                                .inputStream(),
+                            { transport }
+                        )
+                        .createScoped(listOf(ANDROIDPUBLISHER))
                 ).withHttpTimeout(2.minutes)
             )
-            .setApplicationName("TPMS Advanced")
+            .setApplicationName("TPMS Advanced publisher")
             .build()
     }
 
