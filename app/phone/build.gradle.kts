@@ -2,10 +2,8 @@
 
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
-import com.masselis.tpmsadvanced.publisher.CompareLocalVersionCodeWithPlayStore
-import com.masselis.tpmsadvanced.publisher.PromoteArtifact
-import com.masselis.tpmsadvanced.publisher.PushBundleToPlayStore
-import com.masselis.tpmsadvanced.publisher.UploadPlayStoreImages
+import com.masselis.tpmsadvanced.publisher.PromoteToMain
+import com.masselis.tpmsadvanced.publisher.PublishToBeta
 
 plugins {
     id("android-app")
@@ -20,7 +18,6 @@ if (isDecrypted) {
 }
 
 val tpmsAdvancedVersionCode: Int by rootProject.extra
-@Suppress("UnstableApiUsage")
 android {
     defaultConfig {
         applicationId = "com.masselis.tpmsadvanced"
@@ -41,16 +38,15 @@ android {
     }
     testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
     signingConfigs {
-        if (isDecrypted)
-            create("release") {
-                val APP_KEY_ALIAS: String by rootProject.extra
-                val APP_KEY_STORE_PWD: String by rootProject.extra
-                val APP_KEYSTORE_LOCATION: String by rootProject.extra
-                keyAlias = APP_KEY_ALIAS
-                keyPassword = APP_KEY_STORE_PWD
-                storeFile = file(APP_KEYSTORE_LOCATION)
-                storePassword = APP_KEY_STORE_PWD
-            }
+        if (isDecrypted) create("release") {
+            val APP_KEY_ALIAS: String by rootProject.extra
+            val APP_KEY_STORE_PWD: String by rootProject.extra
+            val APP_KEYSTORE_LOCATION: String by rootProject.extra
+            keyAlias = APP_KEY_ALIAS
+            keyPassword = APP_KEY_STORE_PWD
+            storeFile = file(APP_KEYSTORE_LOCATION)
+            storePassword = APP_KEY_STORE_PWD
+        }
     }
     buildTypes {
         getByName("release") {
@@ -58,8 +54,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -127,33 +122,16 @@ if (isDecrypted) {
     configure<AndroidPublisherExtension> {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
     }
-    tasks.create<PushBundleToPlayStore>("pushBundleToPlayStore") {
+    tasks.create<PublishToBeta>("publishToBeta") {
         dependsOn("bundleNormalRelease")
         packageName = android.defaultConfig.applicationId
-        track = "beta"
-        releaseBundle =
-            layout.buildDirectory.file("outputs/bundle/normalRelease/phone-normal-release.aab")
+        releaseBundle = layout.buildDirectory.file("outputs/bundle/normalRelease/phone-normal-release.aab")
         releaseNotes = layout.projectDirectory.file("src/normal/play/release-notes/en-US/beta.txt")
     }
-
-    val compareLocalVersionCodeWithPlayStore by tasks.creating(CompareLocalVersionCodeWithPlayStore::class) {
-        currentVc = tpmsAdvancedVersionCode
-        packageName = android.defaultConfig.applicationId
-        track = "beta"
-    }
-
-    val updatePlayStoreImages by tasks.creating(UploadPlayStoreImages::class) {
-        dependsOn(compareLocalVersionCodeWithPlayStore)
+    tasks.create<PromoteToMain>("promoteToMain") {
         dependsOn("copyScreenshot")
         packageName = android.defaultConfig.applicationId
-        screenshotDirectory =
-            layout.projectDirectory.dir("src/normal/play/listings/en-US/graphics/phone-screenshots")
-    }
-
-    tasks.create<PromoteArtifact>("promoteArtifact") {
-        dependsOn(updatePlayStoreImages)
-        packageName = android.defaultConfig.applicationId
-        fromTrack = "beta"
-        toTrack = "production"
+        currentVc = tpmsAdvancedVersionCode
+        screenshotDirectory = layout.projectDirectory.dir("src/normal/play/listings/en-US/graphics/phone-screenshots")
     }
 }
