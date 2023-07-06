@@ -12,7 +12,7 @@ tasks.withType<KotlinCompile>().configureEach {
         freeCompilerArgs.addAll(
             "-Xexplicit-api=strict",
             "-opt-in=kotlin.RequiresOptIn",
-            "-Xcontext-receivers"
+            "-Xcontext-receivers" // Builds as expected but the IDE is still showing an error
         )
     }
 }
@@ -20,9 +20,8 @@ tasks.withType<KotlinCompile>().configureEach {
 
 dependencies {
     val agpVersion: String by project
-    val kotlinVersion: String by project
     implementation("com.android.tools.build:gradle:$agpVersion")
-    implementation(kotlin("gradle-plugin", kotlinVersion))
+    implementation(kotlin("gradle-plugin"))
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.0-RC3")
     implementation("com.google.auth:google-auth-library-oauth2-http:1.18.0")
     implementation("com.google.apis:google-api-services-androidpublisher:v3-rev20211125-1.32.1")
