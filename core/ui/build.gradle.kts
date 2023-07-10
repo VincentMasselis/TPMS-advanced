@@ -39,4 +39,6 @@ dependencies {
     api("com.google.accompanist:accompanist-permissions:$accompanist")
 
     implementation(project(":core:debug-ui"))
+
+    testImplementation(project(":core:test"))
 }

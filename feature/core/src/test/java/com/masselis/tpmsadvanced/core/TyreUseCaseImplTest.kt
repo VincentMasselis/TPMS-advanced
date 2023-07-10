@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.core
 
 import app.cash.turbine.test
-import app.cash.turbine.testIn
+import app.cash.turbine.turbineScope
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreUseCaseImpl
 import com.masselis.tpmsadvanced.data.car.interfaces.TyreDatabase
@@ -117,17 +117,18 @@ internal class TyreUseCaseImplTest {
 
     @Test
     fun singleBluetoothScan() = runTest {
-        val uc = test()
-        val first = uc.listen().testIn(this)
-        val second = uc.listen().testIn(this)
-        val third = uc.listen().testIn(this)
-        advanceUntilIdle()
-        @Suppress("IgnoredReturnValue")
-        coVerify(exactly = 1) { scanner.highDutyScan() }
-        first.cancel()
-        second.cancel()
-        third.cancel()
-        coroutineContext.cancelChildren()
+        turbineScope {
+            val uc = test()
+            val first = uc.listen().testIn(backgroundScope)
+            val second = uc.listen().testIn(backgroundScope)
+            val third = uc.listen().testIn(backgroundScope)
+            advanceUntilIdle()
+            @Suppress("IgnoredReturnValue")
+            coVerify(exactly = 1) { scanner.highDutyScan() }
+            first.cancel()
+            second.cancel()
+            third.cancel()
+            coroutineContext.cancelChildren()
+        }
     }
-
 }
