@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 
 import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -22,15 +23,23 @@ internal class DeleteVehicleUseCase @Inject constructor(
 
     @OptIn(DelicateCoroutinesApi::class)
     suspend fun delete() {
-        currentVehicleUseCase.setAsCurrent(
-            database.selectAll().firstOrNull { it.uuid != vehicle.uuid }
-                ?: error("Cannot delete the last vehicle in the database")
-        )
+        val deferred = CompletableDeferred<Unit>()
         GlobalScope.launch(NonCancellable) {
-            scope.cancel()
-            database.setIsDeleting(vehicle.uuid)
+            try {
+                database.selectAll()
+                    .firstOrNull { it.uuid != vehicle.uuid }
+                    ?.also { currentVehicleUseCase.setAsCurrent(it) }
+                    ?: error("Cannot delete the last vehicle in the database")
+                scope.cancel()
+                database.setIsDeleting(vehicle.uuid)
+                deferred.complete(Unit)
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                deferred.completeExceptionally(e)
+                throw e
+            }
             delay(1.seconds)
             database.delete(vehicle.uuid)
         }
+        deferred.await()
     }
 }
