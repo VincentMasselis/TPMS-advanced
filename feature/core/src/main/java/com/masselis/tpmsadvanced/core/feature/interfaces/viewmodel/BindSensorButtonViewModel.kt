@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.SearchSensorUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.SensorBindingUseCase
-import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
+import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.car.model.Sensor
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import dagger.assisted.Assisted
@@ -56,8 +56,7 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
     }
 
     private val mutableStateFlow = savedStateHandle
-        .getLiveData<State>("STATE", State.Empty)
-        .asMutableStateFlow()
+        .getMutableStateFlow<State>("STATE") { State.Empty }
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {

@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel.State.AlreadyCleared
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel.State.ClearingPossible
 import com.masselis.tpmsadvanced.core.feature.usecase.ClearBoundSensorsUseCase
-import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
+import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -37,8 +37,7 @@ internal class ClearBoundSensorsViewModel @AssistedInject constructor(
     }
 
     private val mutableStateFlow = savedStateHandle
-        .getLiveData<State>("STATE", AlreadyCleared)
-        .asMutableStateFlow()
+        .getMutableStateFlow<State>("STATE") { AlreadyCleared }
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {

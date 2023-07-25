@@ -30,10 +30,10 @@ sqldelight {
     databases {
         create("Database") {
             val sqlDelightVersion: String by project
-            packageName.set("com.masselis.tpmsadvanced.data.car")
+            packageName = "com.masselis.tpmsadvanced.data.car"
             dialect("app.cash.sqldelight:sqlite-3-24-dialect:$sqlDelightVersion")
-            verifyMigrations.set(true)
-            schemaOutputDirectory.set(file("src/main/sqldelight"))
+            verifyMigrations = true
+            schemaOutputDirectory = file("src/main/sqldelight")
         }
     }
 }

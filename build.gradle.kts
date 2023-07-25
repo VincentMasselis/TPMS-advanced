@@ -10,7 +10,6 @@ plugins {
     id("org.jetbrains.kotlin.kapt") apply false
     id("com.google.gms.google-services") apply false
     id("com.google.firebase.crashlytics") apply false
-    id("com.github.triplet.play") apply false
     id("app.cash.sqldelight") apply false
     id("io.gitlab.arturbosch.detekt")
     id("dev.shreyaspatil.compose-compiler-report-generator") apply false

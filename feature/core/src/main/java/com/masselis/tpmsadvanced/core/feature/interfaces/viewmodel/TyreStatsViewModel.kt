@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
-import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
+import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
@@ -64,8 +64,7 @@ internal class TyreStatsViewModel @AssistedInject constructor(
     }
 
     private val mutableStateFlow = savedStateHandle
-        .getLiveData<State>("STATE", State.NotDetected)
-        .asMutableStateFlow()
+        .getMutableStateFlow<State>("STATE") { State.NotDetected }
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {

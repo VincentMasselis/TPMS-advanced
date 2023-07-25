@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
-import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
+import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.car.model.Vehicle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -44,8 +44,7 @@ internal class CurrentVehicleDropdownViewModel @AssistedInject constructor(
     }
 
     private val mutableStateFlow = savedStateHandle
-        .getLiveData<State>("STATE", State.Loading)
-        .asMutableStateFlow()
+        .getMutableStateFlow<State>("STATE") { State.Loading }
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {

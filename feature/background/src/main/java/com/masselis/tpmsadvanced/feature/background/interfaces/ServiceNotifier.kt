@@ -100,7 +100,12 @@ internal class ServiceNotifier @Inject constructor(
                             is PressureAlert, is TemperatureAlert -> channelNameForAlerts
                         }
                     )
-                    .setSmallIcon(R.drawable.car_tire_alert)
+                    .setSmallIcon(
+                        when (state) {
+                            NoAlert -> R.drawable.car_tire
+                            is PressureAlert, is TemperatureAlert -> R.drawable.car_tire_alert
+                        }
+                    )
                     .setPriority(
                         when (state) {
                             NoAlert -> PRIORITY_LOW

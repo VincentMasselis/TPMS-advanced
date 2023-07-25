@@ -16,9 +16,8 @@ pluginManagement {
         id("org.jetbrains.kotlin.kapt") version kotlinVersion
         id("com.google.gms.google-services") version "4.3.15"
         id("com.google.firebase.crashlytics") version "2.9.6"
-        id("com.github.triplet.play") version "3.8.3"
         id("app.cash.sqldelight") version sqlDelightVersion
-        id("io.gitlab.arturbosch.detekt") version "1.23.0-RC3"
+        id("io.gitlab.arturbosch.detekt") version "1.23.0"
         id("dev.shreyaspatil.compose-compiler-report-generator") version "1.0.0"
     }
 }
@@ -29,7 +28,7 @@ plugins {
 
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
-    repositoriesMode.set(FAIL_ON_PROJECT_REPOS)
+    repositoriesMode = FAIL_ON_PROJECT_REPOS
     repositories {
         google()
         mavenCentral()
