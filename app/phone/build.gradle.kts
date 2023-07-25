@@ -3,7 +3,7 @@
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
 import com.masselis.tpmsadvanced.publisher.PromoteToMain
-import com.masselis.tpmsadvanced.publisher.PublishToBeta
+import com.masselis.tpmsadvanced.publisher.TagCommitAndPublishToBeta
 
 plugins {
     id("android-app")
@@ -122,9 +122,10 @@ if (isDecrypted) {
     configure<AndroidPublisherExtension> {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
     }
-    tasks.create<PublishToBeta>("publishToBeta") {
+    tasks.create<TagCommitAndPublishToBeta>("tagCommitAndPublishToBeta") {
         dependsOn("bundleNormalRelease")
         packageName = android.defaultConfig.applicationId
+        currentVc = tpmsAdvancedVersionCode
         releaseBundle = layout.buildDirectory.file("outputs/bundle/normalRelease/phone-normal-release.aab")
         releaseNotes = layout.projectDirectory.file("src/normal/play/release-notes/en-US/beta.txt")
     }

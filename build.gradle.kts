@@ -28,5 +28,4 @@ try {
     println("Project secrets encrypted")
 }
 
-apply(plugin = "gittag")
 subprojects { apply(plugin = "detekt") }

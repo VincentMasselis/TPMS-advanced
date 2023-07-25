@@ -29,4 +29,4 @@ jobs:
       - name: Upload release
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: publishToBeta
+          arguments: tagCommitAndPublishToBeta
