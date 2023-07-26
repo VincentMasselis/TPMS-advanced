@@ -14,17 +14,17 @@ import javax.inject.Inject
 
 public abstract class TagCommitAndPublishToBeta : DefaultTask(), ServiceHolder {
 
-    @get:InputFile
-    public abstract val releaseBundle: RegularFileProperty
-
-    @get:InputFile
-    public abstract val releaseNotes: RegularFileProperty
-
     @get:Input
     public abstract val packageName: Property<String>
 
     @get:Input
     public abstract val currentVc: Property<Int>
+
+    @get:InputFile
+    public abstract val releaseBundle: RegularFileProperty
+
+    @get:InputFile
+    public abstract val releaseNotes: RegularFileProperty
 
     @get:Inject
     internal abstract val execOperations: ExecOperations

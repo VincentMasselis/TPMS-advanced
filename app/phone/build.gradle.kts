@@ -1,9 +1,8 @@
-@file:Suppress("LocalVariableName")
+@file:Suppress("LocalVariableName", "UnstableApiUsage")
 
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
 import com.masselis.tpmsadvanced.publisher.PromoteToMain
-import com.masselis.tpmsadvanced.publisher.TagCommitAndPublishToBeta
 
 plugins {
     id("android-app")
@@ -122,17 +121,7 @@ if (isDecrypted) {
     configure<AndroidPublisherExtension> {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
     }
-    tasks.create<TagCommitAndPublishToBeta>("tagCommitAndPublishToBeta") {
-        dependsOn("bundleNormalRelease")
-        packageName = android.defaultConfig.applicationId
-        currentVc = tpmsAdvancedVersionCode
-        releaseBundle = layout.buildDirectory.file("outputs/bundle/normalRelease/phone-normal-release.aab")
-        releaseNotes = layout.projectDirectory.file("src/normal/play/release-notes/en-US/beta.txt")
-    }
-    tasks.create<PromoteToMain>("promoteToMain") {
+    tasks.withType<PromoteToMain> {
         dependsOn("copyScreenshot")
-        packageName = android.defaultConfig.applicationId
-        currentVc = tpmsAdvancedVersionCode
-        screenshotDirectory = layout.projectDirectory.dir("src/normal/play/listings/en-US/graphics/phone-screenshots")
     }
 }
