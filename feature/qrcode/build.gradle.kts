@@ -9,10 +9,15 @@ android {
 }
 
 dependencies {
-    api(project(":feature:core"))
+    implementation(project(":feature:core"))
 
-    api(project(":core:common"))
-    api(project(":core:ui"))
+    implementation(project(":data:vehicle"))
+    implementation(project(":data:record"))
+    implementation(project(":data:unit"))
+    implementation(project(":data:app"))
+
+    implementation(project(":core:common"))
+    implementation(project(":core:ui"))
 
     implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.2.0")
     implementation("androidx.camera:camera-camera2:1.2.3")

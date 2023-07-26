@@ -9,11 +9,15 @@ android {
 }
 
 dependencies {
-    api(project(":core:ui"))
-    api(project(":core:common"))
-    api(project(":data:car"))
-    api(project(":data:unit"))
-    api(project(":feature:core"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:common"))
 
-    api(project(":core:debug-ui"))
+    implementation(project(":data:vehicle"))
+    implementation(project(":data:unit"))
+    implementation(project(":data:record"))
+    implementation(project(":data:app"))
+
+    implementation(project(":feature:core"))
+
+    debugImplementation(project(":core:debug-ui"))
 }

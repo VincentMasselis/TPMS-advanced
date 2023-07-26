@@ -8,6 +8,6 @@ android {
 }
 
 dependencies {
-    api(project(":core:common"))
-    api(project(":data:unit"))
+    implementation(project(":core:common"))
+    implementation(project(":data:unit"))
 }

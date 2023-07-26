@@ -24,7 +24,7 @@ dependencies {
     implementation("com.android.tools.build:gradle:$agpVersion")
     // By forcing the kotlin gradle plugin kotlin version, I can fix this issue: https://youtrack.jetbrains.com/issue/KT-58027/Kotlin-1.8.20-kapt-issue-null-KtCallExpression-build
     implementation(kotlin("gradle-plugin", kotlinVersion))
-    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.0-RC3")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.0")
     implementation("com.google.auth:google-auth-library-oauth2-http:1.18.0")
     implementation("com.google.apis:google-api-services-androidpublisher:v3-rev20211125-1.32.1")
 }

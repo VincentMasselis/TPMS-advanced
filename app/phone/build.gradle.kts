@@ -68,7 +68,12 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:debug-ui"))
+
     implementation(project(":data:app"))
+    implementation(project(":data:record"))
+    implementation(project(":data:unit"))
+    implementation(project(":data:vehicle"))
+
     implementation(project(":feature:core"))
     implementation(project(":feature:unit"))
     implementation(project(":feature:qrcode"))

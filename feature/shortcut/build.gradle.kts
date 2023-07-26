@@ -8,5 +8,12 @@ android {
 }
 
 dependencies {
-    api(project(":feature:core"))
+    implementation(project(":feature:core"))
+
+    implementation(project(":data:vehicle"))
+    implementation(project(":data:record"))
+    implementation(project(":data:unit"))
+    implementation(project(":data:app"))
+
+    implementation(project(":core:common"))
 }
