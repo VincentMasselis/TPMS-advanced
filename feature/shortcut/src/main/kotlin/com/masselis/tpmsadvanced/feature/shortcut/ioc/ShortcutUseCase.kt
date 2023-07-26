@@ -14,11 +14,13 @@ import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
 import com.masselis.tpmsadvanced.feature.shortcut.R
 import com.masselis.tpmsadvanced.feature.shortcut.usecase.FeatureShortcutComponent
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
+@OptIn(DelicateCoroutinesApi::class)
 @FeatureShortcutComponent.Scope
 internal class ShortcutUseCase @Inject constructor(
     vehicleListUseCase: VehicleListUseCase,
