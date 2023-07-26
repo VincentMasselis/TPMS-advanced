@@ -1,4 +1,4 @@
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind;
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind;
 import com.masselis.tpmsadvanced.data.record.model.Pressure;
 import com.masselis.tpmsadvanced.data.record.model.Temperature;
 import java.util.UUID;

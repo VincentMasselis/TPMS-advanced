@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("android-lib")
     id("app.cash.sqldelight")
@@ -5,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.masselis.tpmsadvanced.data.car"
+    namespace = "com.masselis.tpmsadvanced.data.vehicle"
     defaultConfig {
         // The following argument makes the Android Test Orchestrator run its
         // "pm clear" command after each test invocation. This command ensures
@@ -30,8 +32,8 @@ sqldelight {
     databases {
         create("Database") {
             val sqlDelightVersion: String by project
-            packageName = "com.masselis.tpmsadvanced.data.car"
-            dialect("app.cash.sqldelight:sqlite-3-24-dialect:$sqlDelightVersion")
+            packageName = "com.masselis.tpmsadvanced.data.vehicle"
+            dialect("app.cash.sqldelight:sqlite-3-38-dialect:$sqlDelightVersion")
             verifyMigrations = true
             schemaOutputDirectory = file("src/main/sqldelight")
         }

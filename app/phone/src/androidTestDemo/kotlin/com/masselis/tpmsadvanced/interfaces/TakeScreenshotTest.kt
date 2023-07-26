@@ -9,7 +9,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.MOTORCYCLE
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.interfaces.Home.Companion.home
 import org.junit.Rule
 import org.junit.Test

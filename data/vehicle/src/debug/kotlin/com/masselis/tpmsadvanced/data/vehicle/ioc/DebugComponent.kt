@@ -1,7 +1,7 @@
-package com.masselis.tpmsadvanced.data.car.ioc
+package com.masselis.tpmsadvanced.data.vehicle.ioc
 
 import app.cash.sqldelight.db.SqlDriver
-import com.masselis.tpmsadvanced.data.car.Database
+import com.masselis.tpmsadvanced.data.vehicle.Database
 import dagger.Subcomponent
 
 @Subcomponent

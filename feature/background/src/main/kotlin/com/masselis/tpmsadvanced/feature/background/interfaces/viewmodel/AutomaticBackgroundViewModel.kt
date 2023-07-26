@@ -3,8 +3,8 @@ package com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

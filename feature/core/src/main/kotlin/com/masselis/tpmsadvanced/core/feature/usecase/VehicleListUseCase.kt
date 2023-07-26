@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

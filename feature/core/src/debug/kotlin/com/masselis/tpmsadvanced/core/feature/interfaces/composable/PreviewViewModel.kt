@@ -11,8 +11,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsView
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.Temperature

@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.data.car.ioc
+package com.masselis.tpmsadvanced.data.vehicle.ioc
 
 import dagger.Subcomponent
 

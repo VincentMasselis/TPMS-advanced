@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.data.car.interfaces.SensorDatabase
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.util.*

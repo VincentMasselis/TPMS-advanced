@@ -7,7 +7,7 @@ import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
 import com.masselis.tpmsadvanced.data.app.ioc.DataAppComponent
-import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
+import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import dagger.Component

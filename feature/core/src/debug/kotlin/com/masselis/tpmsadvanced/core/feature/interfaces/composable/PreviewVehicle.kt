@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind
 
 @Preview
 @Composable

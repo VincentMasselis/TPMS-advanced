@@ -1,6 +1,6 @@
-package com.masselis.tpmsadvanced.data.car.interfaces
+package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
-import com.masselis.tpmsadvanced.data.car.Database
+import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Tyre
 import kotlinx.coroutines.Dispatchers.IO

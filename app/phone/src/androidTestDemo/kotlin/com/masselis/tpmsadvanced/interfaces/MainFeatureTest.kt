@@ -2,9 +2,9 @@ package com.masselis.tpmsadvanced.interfaces
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.CAR
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.MOTORCYCLE
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.interfaces.Home.Companion.home
 import org.junit.Rule

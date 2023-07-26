@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.SearchSensorUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.SensorBindingUseCase
 import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
-import com.masselis.tpmsadvanced.data.car.model.Sensor
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

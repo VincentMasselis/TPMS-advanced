@@ -2,8 +2,8 @@ package com.masselis.tpmsadvanced.feature.background.usecase
 
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.ui.isAppVisibleFlow
-import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.Default

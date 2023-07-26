@@ -1,11 +1,11 @@
-package com.masselis.tpmsadvanced.data.car.interfaces
+package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.masselis.tpmsadvanced.data.car.Database
-import com.masselis.tpmsadvanced.data.car.model.Sensor
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.Database
+import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT

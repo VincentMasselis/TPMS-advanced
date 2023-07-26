@@ -4,8 +4,8 @@ import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreUseCaseImpl
-import com.masselis.tpmsadvanced.data.car.interfaces.TyreDatabase
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation

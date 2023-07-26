@@ -7,7 +7,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettin
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleComponentCacheUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import dagger.BindsInstance
 import dagger.Lazy
 import dagger.Subcomponent

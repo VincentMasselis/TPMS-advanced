@@ -14,5 +14,5 @@ dependencies {
     // By default, sqldelight uses the sqlite engine bundled into the android framework which could
     // be an old version of the sqlite engine not supported by the app. This dependency include the
     // latest sqlite engine used to replace the old one.
-    api("com.github.requery:sqlite-android:3.39.2")
+    api("com.github.requery:sqlite-android:3.42.0")
 }

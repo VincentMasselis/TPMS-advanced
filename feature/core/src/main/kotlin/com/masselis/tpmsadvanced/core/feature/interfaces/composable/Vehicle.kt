@@ -33,8 +33,8 @@ import androidx.constraintlayout.compose.Dimension
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT

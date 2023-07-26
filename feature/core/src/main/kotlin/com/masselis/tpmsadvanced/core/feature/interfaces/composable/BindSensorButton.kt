@@ -27,7 +27,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTa
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 
 @Composable
 internal fun BindSensorButton(

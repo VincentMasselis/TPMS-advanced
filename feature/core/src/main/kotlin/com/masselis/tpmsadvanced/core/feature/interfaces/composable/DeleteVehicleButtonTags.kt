@@ -32,7 +32,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
 @Composable
 internal fun DeleteVehicleButton(

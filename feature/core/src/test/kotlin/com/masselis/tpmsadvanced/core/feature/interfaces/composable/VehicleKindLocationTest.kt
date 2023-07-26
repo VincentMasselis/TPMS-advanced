@@ -1,8 +1,8 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location.Axle
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location.Side
-import com.masselis.tpmsadvanced.data.car.model.Vehicle.Kind.Location.Wheel
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Axle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Side
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Wheel
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT

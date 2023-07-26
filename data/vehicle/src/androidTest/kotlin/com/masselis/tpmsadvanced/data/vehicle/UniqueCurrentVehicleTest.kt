@@ -1,10 +1,10 @@
-package com.masselis.tpmsadvanced.data.car
+package com.masselis.tpmsadvanced.data.vehicle
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.masselis.tpmsadvanced.data.car.ioc.DataVehicleComponent
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope

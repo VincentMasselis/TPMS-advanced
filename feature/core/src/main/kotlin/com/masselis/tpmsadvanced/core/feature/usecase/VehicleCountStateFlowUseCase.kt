@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
-import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly

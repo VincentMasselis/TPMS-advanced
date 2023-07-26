@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.qrcode.usecase
 
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
-import com.masselis.tpmsadvanced.data.car.interfaces.SensorDatabase
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async

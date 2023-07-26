@@ -7,7 +7,7 @@ import androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.masselis.tpmsadvanced.data.car.model.Sensor
+import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT

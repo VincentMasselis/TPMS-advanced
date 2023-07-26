@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.DeleteVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleCountStateFlowUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleStateFlowUseCase
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

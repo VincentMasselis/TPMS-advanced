@@ -19,7 +19,7 @@ import androidx.core.net.toUri
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.feature.background.R

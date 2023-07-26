@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.data.car.ioc
+package com.masselis.tpmsadvanced.data.vehicle.ioc
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
@@ -8,13 +8,13 @@ import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.data.car.Database
-import com.masselis.tpmsadvanced.data.car.Sensor
-import com.masselis.tpmsadvanced.data.car.Tyre
-import com.masselis.tpmsadvanced.data.car.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.data.record.model.Temperature
+import com.masselis.tpmsadvanced.data.vehicle.Database
+import com.masselis.tpmsadvanced.data.vehicle.Sensor
+import com.masselis.tpmsadvanced.data.vehicle.Tyre
+import com.masselis.tpmsadvanced.data.vehicle.Vehicle
 import dagger.Provides
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import java.util.UUID
@@ -64,7 +64,7 @@ internal object Module {
         context = appContext,
         name = "car.db",
         factory = RequerySQLiteOpenHelperFactory(),
-        callback = object : SupportSQLiteOpenHelper.Callback(Database.Schema.version) {
+        callback = object : SupportSQLiteOpenHelper.Callback(Database.Schema.version.toInt()) {
 
             val delegate = AndroidSqliteDriver.Callback(Database.Schema)
 

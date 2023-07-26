@@ -1,8 +1,8 @@
-package com.masselis.tpmsadvanced.data.car.ioc
+package com.masselis.tpmsadvanced.data.vehicle.ioc
 
-import com.masselis.tpmsadvanced.data.car.interfaces.SensorDatabase
-import com.masselis.tpmsadvanced.data.car.interfaces.TyreDatabase
-import com.masselis.tpmsadvanced.data.car.interfaces.VehicleDatabase
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import dagger.Component
 
 @DataVehicleComponent.Scope

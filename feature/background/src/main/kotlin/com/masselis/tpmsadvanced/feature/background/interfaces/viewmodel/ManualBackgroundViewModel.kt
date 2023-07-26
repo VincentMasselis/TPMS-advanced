@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
 import dagger.assisted.Assisted

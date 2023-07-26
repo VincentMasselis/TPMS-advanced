@@ -4,7 +4,7 @@ import com.masselis.tpmsadvanced.core.feature.ioc.TyreAxleQualifier
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreLocationQualifier
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreSideQualifier
-import com.masselis.tpmsadvanced.data.car.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
