@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,19 +50,27 @@ internal fun InternalPreconditions(
         modifier = modifier,
     ) {
         composable("missing_permission") {
-            @Suppress("MaxLineLength")
-            MissingPermission(
-                text = "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
-                refusedText = "Failed to obtain permission, please update this in the app's system settings",
-                permissionState = permissionState,
-                modifier = Modifier.fillMaxSize(),
-            )
+            Scaffold { paddingValues ->
+                @Suppress("MaxLineLength")
+                MissingPermission(
+                    text = "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
+                    refusedText = "Failed to obtain permission, please update this in the app's system settings",
+                    permissionState = permissionState,
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                )
+            }
         }
         composable("chip_is_off") {
-            ChipIsOff(
-                bluetoothState = bluetoothState,
-                modifier = Modifier.fillMaxSize()
-            )
+            Scaffold { paddingValues ->
+                ChipIsOff(
+                    bluetoothState = bluetoothState,
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                )
+            }
         }
         composable("ready") {
             ready()
