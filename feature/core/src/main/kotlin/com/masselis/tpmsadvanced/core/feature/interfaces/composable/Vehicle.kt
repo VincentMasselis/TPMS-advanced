@@ -33,8 +33,6 @@ import androidx.constraintlayout.compose.Dimension
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
@@ -43,6 +41,8 @@ import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 
 @Composable
 public fun CurrentVehicle(
@@ -92,7 +92,7 @@ private fun Car(
         Image(
             bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-            contentDescription = null,
+            contentDescription = "Image of your car",
             modifier = Modifier
                 .aspectRatio(208f / 462f)
                 .constrainAs(carConst) {

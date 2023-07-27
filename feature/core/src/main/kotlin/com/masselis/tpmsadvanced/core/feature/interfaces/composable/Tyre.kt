@@ -147,7 +147,7 @@ private fun AlertButton(
     ) {
         Icon(
             painter = painterResource(R.drawable.alert_octagon),
-            contentDescription = null,
+            contentDescription = "There is an issue to find the sensor",
             tint = MaterialTheme.colorScheme.error,
         )
     }

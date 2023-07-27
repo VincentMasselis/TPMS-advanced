@@ -22,9 +22,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.core.net.toUri
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.feature.background.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.LocalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.background.R
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel.State
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
@@ -98,7 +98,7 @@ internal fun ManualBackgroundIconButton(
             ) {
                 Icon(
                     ImageVector.vectorResource(R.drawable.format_vertical_align_center),
-                    contentDescription = null,
+                    contentDescription = "Enable background monitoring",
                 )
             }
         }
@@ -109,7 +109,7 @@ internal fun ManualBackgroundIconButton(
             ) {
                 Icon(
                     ImageVector.vectorResource(R.drawable.cancel),
-                    contentDescription = null,
+                    contentDescription = "Cancel background monitoring",
                 )
             }
         }

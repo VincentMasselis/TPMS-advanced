@@ -14,6 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.masselis.tpmsadvanced.data.record.model.Pressure
 import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
@@ -36,20 +38,23 @@ internal fun PressureRangeSlider(
 ) {
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+
             Text(
-                text = "Expected pressure range: ",
-                fontWeight = FontWeight.SemiBold,
-            )
-            Text(
-                text = "${pressures.start.string(unit)} to ${pressures.endInclusive.string(unit)}",
-                fontWeight = FontWeight.Bold,
+                text = AnnotatedString(
+                    "Expected pressure range: ",
+                    SpanStyle(fontWeight = FontWeight.Medium)
+                ) + AnnotatedString(
+                    "${pressures.start.string(unit)} to ${pressures.endInclusive.string(unit)}",
+                    SpanStyle(fontWeight = FontWeight.Bold)
+                ),
+                modifier = Modifier.weight(1f)
             )
             IconButton(
                 onClick = onInfo,
                 content = {
                     Icon(
                         imageVector = Icons.Outlined.Info,
-                        contentDescription = null
+                        contentDescription = "More information about this alert"
                     )
                 }
             )
@@ -92,20 +97,23 @@ internal fun TemperatureSlider(
 ) {
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+
             Text(
-                text = "$title ",
-                fontWeight = FontWeight.SemiBold,
-            )
-            Text(
-                text = temperature.string(unit),
-                fontWeight = FontWeight.Bold,
+                text = AnnotatedString(
+                    "$title ",
+                    SpanStyle(fontWeight = FontWeight.Medium)
+                ) + AnnotatedString(
+                    temperature.string(unit),
+                    SpanStyle(fontWeight = FontWeight.Bold)
+                ),
+                Modifier.weight(1f)
             )
             IconButton(
                 onClick = onInfo,
                 content = {
                     Icon(
                         imageVector = Icons.Outlined.Info,
-                        contentDescription = null
+                        contentDescription = "More information about this alert"
                     )
                 }
             )

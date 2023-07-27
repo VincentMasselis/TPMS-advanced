@@ -128,7 +128,7 @@ private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
         }
         DropdownMenuItem(
             text = { Text(text = "Add a vehicle", Modifier.weight(1f)) },
-            trailingIcon = { Icon(Icons.Filled.AddCircle, contentDescription = null) },
+            trailingIcon = { Icon(Icons.Filled.AddCircle, contentDescription = "") },
             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
             onClick = { onAskNewVehicle(); onDismissRequest() },
             modifier = Modifier.testTag(dropdownEntryAddVehicle)

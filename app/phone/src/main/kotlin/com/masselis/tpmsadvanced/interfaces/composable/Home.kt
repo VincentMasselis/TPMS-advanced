@@ -184,7 +184,7 @@ private fun TopAppBar(
                         content = {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
-                                contentDescription = null
+                                contentDescription = "Go back"
                             )
                         },
                         modifier = Modifier.testTag(backButton)
@@ -208,7 +208,7 @@ private fun TopAppBar(
                     ) {
                         Icon(
                             Icons.Default.MoreVert,
-                            contentDescription = null,
+                            contentDescription = "Show more options",
                         )
                     }
                     DropdownMenu(

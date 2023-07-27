@@ -53,7 +53,7 @@ internal fun BindSensorButton(
                 ) {
                     Icon(
                         ImageVector.vectorResource(R.drawable.link_variant_plus),
-                        contentDescription = null
+                        contentDescription = "Add this sensor to favorites"
                     )
                 }
         }
