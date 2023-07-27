@@ -55,25 +55,27 @@ public abstract class PromoteToMain : DefaultTask(), ServiceHolder {
                             }
                         }
                     }
-                // Deletes listings images
-                images()
-                    .deleteall(packageName, edit.id, "en-US", "phoneScreenshots")
-                    .execute()
-                // Push new listings images
-                screenshotDirectory
-                    .asFileTree
-                    .sortedBy { it.name }
-                    .forEach { file ->
-                        images()
-                            .upload(
-                                packageName,
-                                edit.id,
-                                "en-US",
-                                "phoneScreenshots",
-                                FileContent("image/png", file)
-                            )
-                            .execute()
-                    }
+                if (screenshotDirectory.asFileTree.isEmpty.not()) {
+                    // Deletes listings images
+                    images()
+                        .deleteall(packageName, edit.id, "en-US", "phoneScreenshots")
+                        .execute()
+                    // Push new listings images
+                    screenshotDirectory
+                        .asFileTree
+                        .sortedBy { it.name }
+                        .forEach { file ->
+                            images()
+                                .upload(
+                                    packageName,
+                                    edit.id,
+                                    "en-US",
+                                    "phoneScreenshots",
+                                    FileContent("image/png", file)
+                                )
+                                .execute()
+                        }
+                }
             }
     }
 }
