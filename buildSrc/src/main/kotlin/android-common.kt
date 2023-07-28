@@ -1,7 +1,9 @@
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.internal.tasks.DeviceProviderInstrumentTestTask
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion.VERSION_17
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getValue
@@ -62,10 +64,18 @@ internal fun Project.base(android: BaseExtension) {
             )
         }
     }
+    afterEvaluate {
+        val waitForDevice by tasks.creating(WaitForDeviceToBeReadyOnCiMachine::class) {
+            adbExecutable = android.adbExecutable
+        }
+        tasks.filterIsInstance<DeviceProviderInstrumentTestTask>().forEach {
+            it.dependsOn(waitForDevice)
+        }
+    }
 }
 
 public fun Project.enableCompose(android: BaseExtension) {
-    with(android)   {
+    with(android) {
         buildFeatures.compose = true
         composeOptions {
             val composeCompilerVersion: String by project

@@ -87,13 +87,12 @@ dependencies {
 }
 
 afterEvaluate {
-    val connectedDemoDebugAndroidTest = tasks.getByPath("connectedDemoDebugAndroidTest")
-
-    tasks.create<ClearTestOutputFilesFolder>("clearTestOutputFilesFolder") {
-        connectedDemoDebugAndroidTest.dependsOn(this)
+    val clearTestOutputFilesFolder by tasks.creating(ClearTestOutputFilesFolder::class) {
+        dependsOn("waitForDevice")
         adbExecutable = android.adbExecutable
     }
-
+    val connectedDemoDebugAndroidTest = tasks.getByPath("connectedDemoDebugAndroidTest")
+    connectedDemoDebugAndroidTest.dependsOn(clearTestOutputFilesFolder)
     val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
     val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
         dependsOn(connectedDemoDebugAndroidTest)
