@@ -53,12 +53,8 @@ runs:
 
         # Start emulator in background
         nohup $ANDROID_HOME/emulator/emulator -avd android_emulator -no-snapshot -no-audio -gpu host -no-boot-anim -qemu -m 2048 > /dev/null 2>&1 &
-        adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
 
-        #list online device/emulator
-        adb devices
-
-        echo "Emulator started"
+        echo "Emulator starting"
 
     - name: Run script
       shell: bash

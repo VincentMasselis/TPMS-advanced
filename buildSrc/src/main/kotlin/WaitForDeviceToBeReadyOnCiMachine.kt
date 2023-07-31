@@ -2,10 +2,12 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.assign
 import org.gradle.process.ExecOperations
+import java.time.Duration
 import javax.inject.Inject
 
-public abstract class ClearTestOutputFilesFolder : DefaultTask() {
+public abstract class WaitForDeviceToBeReadyOnCiMachine : DefaultTask() {
 
     @get:Inject
     protected abstract val execOperations: ExecOperations
@@ -15,16 +17,18 @@ public abstract class ClearTestOutputFilesFolder : DefaultTask() {
 
     init {
         group = "verification"
-        description = "Clears the phone\'s test output files folder"
+        description = "Wait for an android device run on a C.I. machine"
+        timeout = Duration.ofMinutes(10)
     }
 
     @TaskAction
     internal fun process() {
-        execOperations.exec {
+        if (System.getenv("CI") == "true") execOperations.exec {
             commandLine(
                 adbExecutable.asFile.get(),
+                "wait-for-device",
                 "shell",
-                "rm -rf /sdcard/googletest/test_outputfiles"
+                "while [[ -z \$(getprop sys.boot_completed | tr -d '\\r') ]]; do sleep 1; done; input keyevent 82"
             )
         }
     }
