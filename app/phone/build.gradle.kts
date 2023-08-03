@@ -86,38 +86,38 @@ dependencies {
     androidTestImplementation(project(":core:android-test"))
 }
 
-afterEvaluate {
-    val clearTestOutputFilesFolder by tasks.creating(ClearTestOutputFilesFolder::class) {
-        dependsOn(":waitForDevice")
-        adbExecutable = android.adbExecutable
-    }
-    val connectedDemoDebugAndroidTest = tasks.getByPath("connectedDemoDebugAndroidTest")
-    connectedDemoDebugAndroidTest.dependsOn(clearTestOutputFilesFolder)
-    val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
-    val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
-        dependsOn(connectedDemoDebugAndroidTest)
-        adbExecutable = android.adbExecutable
-        destination = outputFilesDir
-    }
+val clearTestOutputFilesFolder by tasks.creating(ClearTestOutputFilesFolder::class) {
+    dependsOn(":waitForDevice")
+    adbExecutable = android.adbExecutable
+}
 
-    tasks.create<Copy>("copyScreenshot") {
-        dependsOn(downloadTestOutputFiles)
-        group = "publishing"
-        description =
-            "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
-        val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
-        from(outputFilesDir)
-        into(path)
-        eachFile {
-            when {
-                name.startsWith("light_main") -> name = "1.png"
-                name.startsWith("light_settings") -> name = "2.png"
-                name.startsWith("dark_main") -> name = "3.png"
-                name.startsWith("dark_settings") -> name = "4.png"
-                else -> exclude()
-            }
+val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
+    adbExecutable = android.adbExecutable
+    destination = layout.buildDirectory.dir("test_outputfiles")
+}
+
+val copyScreenshot by tasks.creating(Copy::class) {
+    dependsOn(downloadTestOutputFiles)
+    group = "publishing"
+    description =
+        "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
+    val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
+    from(downloadTestOutputFiles.destination)
+    into(path)
+    eachFile {
+        when {
+            name.startsWith("light_main") -> name = "1.png"
+            name.startsWith("light_settings") -> name = "2.png"
+            name.startsWith("dark_main") -> name = "3.png"
+            name.startsWith("dark_settings") -> name = "4.png"
+            else -> exclude()
         }
     }
+}
+
+tasks.matching { it.name == "connectedDemoDebugAndroidTest" }.configureEach {
+    dependsOn(clearTestOutputFilesFolder)
+    downloadTestOutputFiles.dependsOn(this)
 }
 
 if (isDecrypted) {
@@ -126,6 +126,6 @@ if (isDecrypted) {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
     }
     tasks.withType<PromoteToMain> {
-        dependsOn("copyScreenshot")
+        dependsOn(copyScreenshot)
     }
 }
