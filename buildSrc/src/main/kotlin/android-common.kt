@@ -18,11 +18,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 internal fun Project.base(android: BaseExtension) {
     with(android) {
-        compileSdkVersion(33)
+        compileSdkVersion(34)
         defaultConfig {
             minSdk = 27
-            targetSdk = 33
-            buildToolsVersion("33.0.2")
+            targetSdk = 34
+            buildToolsVersion("34.0.0")
 
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
