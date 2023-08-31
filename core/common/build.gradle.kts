@@ -21,6 +21,6 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutineVersion")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-guava:$coroutineVersion")
     api("com.squareup.okio:okio:3.3.0")
-    api("com.google.firebase:firebase-crashlytics-ktx:18.3.7")
+    api("com.google.firebase:firebase-crashlytics-ktx:18.4.1")
     api(platform("androidx.compose:compose-bom:2023.04.01"))
 }
