@@ -3,9 +3,9 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 import com.masselis.tpmsadvanced.core.common.isRunningInstrumentedTest
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.app.interfaces.AppPreferences
-import okio.withLock
 import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
+import kotlin.concurrent.withLock
 
 @FeatureCoreComponent.Scope
 public class NoveltyUseCase @Inject constructor(

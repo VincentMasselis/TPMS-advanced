@@ -7,11 +7,11 @@ import androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
 import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import okio.ByteString.Companion.decodeHex
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.Executors
@@ -39,7 +38,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
         .let { BarcodeScanning.getClient(it) }
     private val executor = Executors.newCachedThreadPool()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
     @Suppress("MagicNumber", "CyclomaticComplexMethod")
     fun analyse(controller: CameraController): Flow<SensorMap> = callbackFlow<List<Barcode>> {
         controller.setImageAnalysisAnalyzer(
@@ -75,8 +74,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
                         },
                         // Converts the hexadecimal id to an int
                         stringHex
-                            .decodeHex()
-                            .toByteArray()
+                            .hexToByteArray()
                             .let {
                                 ByteBuffer
                                     .wrap(byteArrayOf(0x00) + it)
