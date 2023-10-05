@@ -65,7 +65,9 @@ internal fun Project.base(android: BaseExtension) {
             freeCompilerArgs += listOf(
                 "-Xexplicit-api=strict",
                 "-opt-in=kotlin.RequiresOptIn",
-                "-Xcontext-receivers"
+                "-Xcontext-receivers",
+                "-P", // TODO Remove this line and the one below when K2 while be released
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
             )
         }
     }
