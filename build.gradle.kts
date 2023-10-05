@@ -12,7 +12,6 @@ plugins {
     id("com.google.firebase.crashlytics") apply false
     id("app.cash.sqldelight") apply false
     id("io.gitlab.arturbosch.detekt")
-    id("dev.shreyaspatil.compose-compiler-report-generator") apply false
 }
 
 task<Delete>("clean") {

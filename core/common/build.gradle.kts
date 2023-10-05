@@ -11,7 +11,7 @@ android {
 dependencies {
     val lifecycleVersion: String by project
     val coroutineVersion: String by project
-    api("androidx.core:core-ktx:1.10.1")
+    api("androidx.core:core-ktx:1.12.0")
     // For an unknown reason, startup-runtime tries to load DefaultLifecycleObserver when running an
     // instrumented test. To avoid crashes in this case, I manually add this dependency at the same
     // place than startup-runtime
@@ -20,7 +20,6 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutineVersion")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-guava:$coroutineVersion")
-    api("com.squareup.okio:okio:3.3.0")
     api("com.google.firebase:firebase-crashlytics-ktx:18.4.1")
     api(platform("androidx.compose:compose-bom:2023.04.01"))
 }

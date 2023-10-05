@@ -10,4 +10,6 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":data:unit"))
+
+    testImplementation(project(":core:test"))
 }

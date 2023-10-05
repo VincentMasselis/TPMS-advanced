@@ -17,8 +17,7 @@ pluginManagement {
         id("com.google.gms.google-services") version "4.3.15"
         id("com.google.firebase.crashlytics") version "2.9.6"
         id("app.cash.sqldelight") version sqlDelightVersion
-        id("io.gitlab.arturbosch.detekt") version "1.23.0"
-        id("dev.shreyaspatil.compose-compiler-report-generator") version "1.0.0"
+        id("io.gitlab.arturbosch.detekt") version "1.23.1"
     }
 }
 
