@@ -4,6 +4,7 @@ import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.impl.ApplicationVariantImpl
+import com.android.build.api.variant.impl.VariantOutputImpl
 import com.android.build.api.variant.impl.dirName
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.android.build.gradle.internal.scope.getOutputPath
@@ -13,7 +14,9 @@ import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
+import java.io.File
 
+@Suppress("NAME_SHADOWING")
 public class AndroidPublisherPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val ext = project.extensions.create<AndroidPublisherExtension>("androidPublisher")
@@ -29,13 +32,20 @@ public class AndroidPublisherPlugin : Plugin<Project> {
                         dependsOn("bundle${variant.name.capitalized()}")
                         packageName = variant.applicationId
                         currentVc = variant.outputs.single().versionCode
-                        releaseBundle.set {
-                            SingleArtifact
-                                .BUNDLE
-                                .getOutputPath(project.layout.buildDirectory, variant.name)
-                                .listFiles()
-                                .single { it.extension == "aab" }
-                        }
+                        releaseBundle = variant
+                            .outputs
+                            .single()
+                            .let { it as VariantOutputImpl }
+                            .outputFileName
+                            .map { fileName ->
+                                SingleArtifact
+                                    .BUNDLE
+                                    .getOutputPath(
+                                        project.layout.buildDirectory,
+                                        variant.name,
+                                        forceFilename = fileName.substringBeforeLast(".") + ".aab"
+                                    )
+                            }
                         releaseNotes = project
                             .layout
                             .projectDirectory
