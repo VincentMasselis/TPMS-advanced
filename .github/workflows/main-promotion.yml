@@ -28,4 +28,4 @@ jobs:
       - name: Promotion
         uses: ./.github/actions/run-emulator
         with:
-          script: ./gradlew promoteToMainNormalRelease
+          script: ./gradlew promoteGithubReleaseNormalRelease updatePlayStoreScreenshotsNormalRelease promoteToPlayStoreProductionNormalRelease

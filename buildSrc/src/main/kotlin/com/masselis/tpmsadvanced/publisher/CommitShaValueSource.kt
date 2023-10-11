@@ -7,7 +7,7 @@ import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-public abstract class CommitShaValueSource : ValueSource<String, CommitShaValueSource.Parameters> {
+internal abstract class CommitShaValueSource : ValueSource<String, CommitShaValueSource.Parameters> {
 
     public interface Parameters : ValueSourceParameters {
         public val backwardCount: Property<Int>

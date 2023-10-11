@@ -2,7 +2,7 @@
 
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
 import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
-import com.masselis.tpmsadvanced.publisher.PromoteToMain
+import com.masselis.tpmsadvanced.publisher.UpdatePlayStoreScreenshots
 
 plugins {
     id("android-app")
@@ -124,8 +124,10 @@ if (isDecrypted) {
     apply<AndroidPublisherPlugin>()
     configure<AndroidPublisherExtension> {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
+        val GITHUB_TOKEN: String by rootProject.extra
+        githubToken = GITHUB_TOKEN
     }
-    tasks.withType<PromoteToMain> {
+    tasks.withType<UpdatePlayStoreScreenshots> {
         dependsOn(copyScreenshot)
     }
 }
