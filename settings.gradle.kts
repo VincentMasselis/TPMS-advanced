@@ -10,14 +10,9 @@ pluginManagement {
     val kotlinVersion: String by settings
     val sqlDelightVersion: String by settings
     plugins {
-        id("com.android.application") version agpVersion
-        id("com.android.library") version agpVersion
-        id("org.jetbrains.kotlin.android") version kotlinVersion
-        id("org.jetbrains.kotlin.kapt") version kotlinVersion
         id("com.google.gms.google-services") version "4.3.15"
         id("com.google.firebase.crashlytics") version "2.9.6"
         id("app.cash.sqldelight") version sqlDelightVersion
-        id("io.gitlab.arturbosch.detekt") version "1.23.1"
     }
 }
 

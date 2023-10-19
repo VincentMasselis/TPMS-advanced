@@ -4,14 +4,9 @@ buildscript {
 }
 
 plugins {
-    id("com.android.application") apply false
-    id("com.android.library") apply false
-    id("org.jetbrains.kotlin.android") apply false
-    id("org.jetbrains.kotlin.kapt") apply false
     id("com.google.gms.google-services") apply false
     id("com.google.firebase.crashlytics") apply false
     id("app.cash.sqldelight") apply false
-    id("io.gitlab.arturbosch.detekt")
 }
 
 task<Delete>("clean") {

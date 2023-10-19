@@ -16,6 +16,16 @@ if (isDecrypted) {
     // Needs the google-services.json file to work
     apply(plugin = "com.google.gms.google-services")
     apply(plugin = "com.google.firebase.crashlytics")
+
+    apply<PlayStorePlugin>()
+    configure<PlayStoreExtension> {
+        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
+    }
+    apply<GithubPlugin>()
+    configure<GithubExtension> {
+        val GITHUB_TOKEN: String by rootProject.extra
+        githubToken = GITHUB_TOKEN
+    }
 }
 
 val tpmsAdvancedVersionCode: Int by rootProject.extra
@@ -116,23 +126,11 @@ val copyScreenshot by tasks.creating(Copy::class) {
         }
     }
 }
+tasks.withType<UpdatePlayStoreScreenshots> {
+    dependsOn(copyScreenshot)
+}
 
 tasks.matching { it.name == "connectedDemoDebugAndroidTest" }.configureEach {
     dependsOn(clearTestOutputFilesFolder)
     downloadTestOutputFiles.dependsOn(this)
-}
-
-if (isDecrypted) {
-    apply<PlayStorePlugin>()
-    configure<PlayStoreExtension> {
-        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
-    }
-    tasks.withType<UpdatePlayStoreScreenshots> {
-        dependsOn(copyScreenshot)
-    }
-    apply<GithubPlugin>()
-    configure<GithubExtension> {
-        val GITHUB_TOKEN: String by rootProject.extra
-        githubToken = GITHUB_TOKEN
-    }
 }
