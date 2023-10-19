@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.publisher
+package com.masselis.tpmsadvanced.github
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 internal abstract class PromoteGithubRelease : DefaultTask() {
 
-    private val githubToken = project.extensions.getByType<AndroidPublisherExtension>().githubToken
+    private val githubToken = project.extensions.getByType<GithubExtension>().githubToken
 
     @get:Input
     public abstract val tagName: Property<String>

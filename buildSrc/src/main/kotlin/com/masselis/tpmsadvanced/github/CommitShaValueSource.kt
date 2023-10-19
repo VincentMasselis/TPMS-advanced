@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.publisher
+package com.masselis.tpmsadvanced.github
 
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource

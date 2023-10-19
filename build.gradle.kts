@@ -15,7 +15,7 @@ plugins {
 }
 
 task<Delete>("clean") {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
 
 var isDecrypted by extra(false)

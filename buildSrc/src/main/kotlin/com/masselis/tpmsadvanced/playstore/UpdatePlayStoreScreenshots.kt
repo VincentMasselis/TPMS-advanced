@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.publisher
+package com.masselis.tpmsadvanced.playstore
 
 import com.google.api.client.http.FileContent
 import org.gradle.api.DefaultTask

@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.publisher
+package com.masselis.tpmsadvanced.playstore
 
 import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.dsl.ApplicationExtension
@@ -18,9 +18,9 @@ import org.gradle.kotlin.dsl.registerIfAbsent
 import java.io.File
 
 @Suppress("NAME_SHADOWING")
-public class AndroidPublisherPlugin : Plugin<Project> {
+public class PlayStorePlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val ext = project.extensions.create<AndroidPublisherExtension>("androidPublisher")
+        val ext = project.extensions.create<PlayStoreExtension>("playStore")
         project.gradle.sharedServices.registerIfAbsent(
             "android-publisher-service", AndroidPublisherService::class
         ) {
@@ -32,25 +32,6 @@ public class AndroidPublisherPlugin : Plugin<Project> {
                 if (variant.isMinifyEnabled.not())
                     return@onVariants
 
-                val versionCodeTag = "vc${variant.outputs.single().versionCode.get()}"
-
-                // Github oriented tasks
-                val tagCommit = project
-                    .tasks
-                    .create<TagCommit>("tagCommit${variant.name.capitalized()}") {
-                        tag = versionCodeTag
-                    }
-                project
-                    .tasks
-                    .create<CreateGithubRelease>("createGithubRelease${variant.name.capitalized()}") {
-                        dependsOn(tagCommit)
-                        tagName = versionCodeTag
-                    }
-                project.tasks.create<PromoteGithubRelease>("promoteGithubRelease${variant.name.capitalized()}") {
-                    tagName = versionCodeTag
-                }
-
-                // Play store oriented tasks
                 project.tasks.create<PublishToPlayStoreBeta>("publishToPlayStoreBeta${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")
                     packageName = variant.applicationId

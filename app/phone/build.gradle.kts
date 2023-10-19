@@ -1,8 +1,10 @@
 @file:Suppress("LocalVariableName", "UnstableApiUsage")
 
-import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
-import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
-import com.masselis.tpmsadvanced.publisher.UpdatePlayStoreScreenshots
+import com.masselis.tpmsadvanced.github.GithubExtension
+import com.masselis.tpmsadvanced.github.GithubPlugin
+import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
+import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
+import com.masselis.tpmsadvanced.playstore.UpdatePlayStoreScreenshots
 
 plugins {
     id("android-app")
@@ -121,13 +123,16 @@ tasks.matching { it.name == "connectedDemoDebugAndroidTest" }.configureEach {
 }
 
 if (isDecrypted) {
-    apply<AndroidPublisherPlugin>()
-    configure<AndroidPublisherExtension> {
+    apply<PlayStorePlugin>()
+    configure<PlayStoreExtension> {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
-        val GITHUB_TOKEN: String by rootProject.extra
-        githubToken = GITHUB_TOKEN
     }
     tasks.withType<UpdatePlayStoreScreenshots> {
         dependsOn(copyScreenshot)
+    }
+    apply<GithubPlugin>()
+    configure<GithubExtension> {
+        val GITHUB_TOKEN: String by rootProject.extra
+        githubToken = GITHUB_TOKEN
     }
 }
