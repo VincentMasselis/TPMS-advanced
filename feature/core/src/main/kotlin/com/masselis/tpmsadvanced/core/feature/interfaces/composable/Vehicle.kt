@@ -33,14 +33,14 @@ import androidx.constraintlayout.compose.Dimension
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.FRONT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Axle.REAR
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.LEFT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.Side.RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 

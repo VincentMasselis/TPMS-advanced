@@ -8,19 +8,24 @@ import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.data.record.model.Pressure
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
-import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.BluetoothLeScannerImpl
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import dagger.Provides
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import java.util.UUID
 
 @dagger.Module
 internal object Module {
+
+    @Provides
+    fun scanner(impl: BluetoothLeScannerImpl): BluetoothLeScanner = impl
 
     @Provides
     fun uuidAdapter() = object : ColumnAdapter<UUID, String> {

@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.qrcode.model
 
 import android.os.Parcelable
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import kotlinx.parcelize.Parcelize
 
 @JvmInline

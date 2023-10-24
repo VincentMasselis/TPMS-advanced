@@ -3,10 +3,10 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
 import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
-import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
-import com.masselis.tpmsadvanced.data.record.model.Tyre
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

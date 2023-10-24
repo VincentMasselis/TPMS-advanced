@@ -30,8 +30,15 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import com.masselis.tpmsadvanced.qrcode.R
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.State
@@ -143,10 +150,10 @@ private fun BindingAlert(
                                         is Vehicle.Kind.Location.Wheel -> {
                                             append(
                                                 when (location.location) {
-                                                    SensorLocation.FRONT_LEFT -> "front left"
-                                                    SensorLocation.FRONT_RIGHT -> "front right"
-                                                    SensorLocation.REAR_LEFT -> "rear left"
-                                                    SensorLocation.REAR_RIGHT -> "rear right"
+                                                    FRONT_LEFT -> "front left"
+                                                    FRONT_RIGHT -> "front right"
+                                                    REAR_LEFT -> "rear left"
+                                                    REAR_RIGHT -> "rear right"
                                                 }
                                             )
                                             append(" wheel")
@@ -155,8 +162,8 @@ private fun BindingAlert(
                                         is Vehicle.Kind.Location.Axle -> {
                                             append(
                                                 when (location.axle) {
-                                                    SensorLocation.Axle.FRONT -> "front"
-                                                    SensorLocation.Axle.REAR -> "rear"
+                                                    FRONT -> "front"
+                                                    REAR -> "rear"
                                                 }
                                             )
                                             append(" axle")
@@ -165,8 +172,8 @@ private fun BindingAlert(
                                         is Vehicle.Kind.Location.Side -> {
                                             append(
                                                 when (location.side) {
-                                                    SensorLocation.Side.LEFT -> "left"
-                                                    SensorLocation.Side.RIGHT -> "right"
+                                                    LEFT -> "left"
+                                                    RIGHT -> "right"
                                                 }
                                             )
                                             append(" side")

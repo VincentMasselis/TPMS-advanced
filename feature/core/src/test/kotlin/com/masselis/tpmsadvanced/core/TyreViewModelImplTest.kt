@@ -8,11 +8,11 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.core.test.MainDispatcherRule
-import com.masselis.tpmsadvanced.data.record.model.Pressure
-import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
-import com.masselis.tpmsadvanced.data.record.model.Temperature
-import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
-import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
+import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.delay

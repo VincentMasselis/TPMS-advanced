@@ -3,8 +3,8 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 
 @Preview
 @Composable

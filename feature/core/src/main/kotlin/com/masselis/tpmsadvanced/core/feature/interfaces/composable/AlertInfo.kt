@@ -18,13 +18,13 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettin
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
-import com.masselis.tpmsadvanced.data.record.model.Pressure
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
-import com.masselis.tpmsadvanced.data.record.model.Temperature
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable

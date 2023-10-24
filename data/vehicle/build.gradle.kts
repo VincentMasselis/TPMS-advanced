@@ -22,7 +22,7 @@ dependencies {
     val testServicesVersion: String by project
     implementation(project(":core:common"))
     implementation(project(":core:database"))
-    implementation(project(":data:record"))
+    implementation(project(":data:unit"))
 
     androidTestImplementation(project(":core:android-test"))
     androidTestUtil("androidx.test:orchestrator:$testServicesVersion")

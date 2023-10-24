@@ -82,7 +82,6 @@ dependencies {
     implementation(project(":core:debug-ui"))
 
     implementation(project(":data:app"))
-    implementation(project(":data:record"))
     implementation(project(":data:unit"))
     implementation(project(":data:vehicle"))
 

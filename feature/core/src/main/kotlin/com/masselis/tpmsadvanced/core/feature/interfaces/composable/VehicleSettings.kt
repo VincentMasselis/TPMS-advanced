@@ -15,8 +15,8 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.Separator
-import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
-import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 
 @Composable
 public fun VehicleSettings(

@@ -1,6 +1,6 @@
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind;
-import com.masselis.tpmsadvanced.data.record.model.Pressure;
-import com.masselis.tpmsadvanced.data.record.model.Temperature;
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure;
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature;
 import java.util.UUID;
 import kotlin.Boolean;
 

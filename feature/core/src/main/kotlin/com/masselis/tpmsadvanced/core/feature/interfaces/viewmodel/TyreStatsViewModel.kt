@@ -7,12 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
-import com.masselis.tpmsadvanced.data.record.model.Pressure
-import com.masselis.tpmsadvanced.data.record.model.Temperature
-import com.masselis.tpmsadvanced.data.record.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
+import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

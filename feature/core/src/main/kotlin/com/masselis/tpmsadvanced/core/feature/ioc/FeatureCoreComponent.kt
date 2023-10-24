@@ -7,9 +7,8 @@ import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
 import com.masselis.tpmsadvanced.data.app.ioc.DataAppComponent
-import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
-import com.masselis.tpmsadvanced.data.record.ioc.DataRecordComponent
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
+import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import dagger.Component
 import javax.inject.Inject
 
@@ -20,7 +19,6 @@ import javax.inject.Inject
     ],
     dependencies = [
         CoreCommonComponent::class,
-        DataRecordComponent::class,
         DataUnitComponent::class,
         DataVehicleComponent::class,
         DataAppComponent::class,
@@ -32,7 +30,6 @@ public interface FeatureCoreComponent {
     public interface Factory {
         public fun build(
             coreCommonComponent: CoreCommonComponent = CoreCommonComponent,
-            dataRecordComponent: DataRecordComponent = DataRecordComponent,
             dataUnitComponent: DataUnitComponent = DataUnitComponent,
             dataVehicleComponent: DataVehicleComponent = DataVehicleComponent,
             dataAppComponent: DataAppComponent = DataAppComponent,

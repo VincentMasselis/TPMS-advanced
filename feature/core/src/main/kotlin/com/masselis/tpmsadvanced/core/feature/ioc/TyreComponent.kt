@@ -4,7 +4,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorBut
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import dagger.BindsInstance
 import dagger.Subcomponent
 

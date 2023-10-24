@@ -1,11 +1,11 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
 import com.masselis.tpmsadvanced.data.vehicle.Database
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
-import com.masselis.tpmsadvanced.data.record.model.Tyre
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 public class TyreDatabase @Inject internal constructor(

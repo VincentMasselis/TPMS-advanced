@@ -17,15 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
-import com.masselis.tpmsadvanced.data.record.model.Pressure
-import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.bar
-import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.kpa
-import com.masselis.tpmsadvanced.data.record.model.Pressure.CREATOR.psi
-import com.masselis.tpmsadvanced.data.record.model.Temperature
-import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.celsius
-import com.masselis.tpmsadvanced.data.record.model.Temperature.CREATOR.fahrenheit
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.psi
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.fahrenheit
 
 @Composable
 internal fun PressureRangeSlider(

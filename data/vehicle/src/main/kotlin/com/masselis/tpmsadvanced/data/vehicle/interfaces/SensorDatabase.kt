@@ -5,12 +5,12 @@ import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation.REAR_RIGHT
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -47,14 +47,17 @@ public class SensorDatabase @Inject internal constructor(
                     FRONT_LEFT, REAR_LEFT -> locationToClear(REAR_LEFT, FRONT_LEFT)
                     FRONT_RIGHT, REAR_RIGHT -> locationToClear(FRONT_RIGHT, REAR_RIGHT)
                 }
+
                 Vehicle.Kind.MOTORCYCLE -> when (sensor.location) {
                     FRONT_LEFT, FRONT_RIGHT -> locationToClear(FRONT_LEFT, FRONT_RIGHT)
                     REAR_LEFT, REAR_RIGHT -> locationToClear(REAR_LEFT, REAR_RIGHT)
                 }
+
                 Vehicle.Kind.TADPOLE_THREE_WHEELER -> when (sensor.location) {
                     FRONT_LEFT, FRONT_RIGHT -> locationToClear(sensor.location)
                     REAR_LEFT, REAR_RIGHT -> locationToClear(REAR_LEFT, REAR_RIGHT)
                 }
+
                 Vehicle.Kind.DELTA_THREE_WHEELER -> when (sensor.location) {
                     FRONT_LEFT, FRONT_RIGHT -> locationToClear(FRONT_LEFT, FRONT_RIGHT)
                     REAR_LEFT, REAR_RIGHT -> locationToClear(sensor.location)

@@ -14,7 +14,6 @@ dependencies {
 
     implementation(project(":data:vehicle"))
     implementation(project(":data:unit"))
-    implementation(project(":data:record"))
     implementation(project(":data:app"))
 
     implementation(project(":feature:core"))

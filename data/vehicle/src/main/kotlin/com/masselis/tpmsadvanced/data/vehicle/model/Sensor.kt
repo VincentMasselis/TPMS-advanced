@@ -1,7 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.model
 
 import android.os.Parcelable
-import com.masselis.tpmsadvanced.data.record.model.SensorLocation
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

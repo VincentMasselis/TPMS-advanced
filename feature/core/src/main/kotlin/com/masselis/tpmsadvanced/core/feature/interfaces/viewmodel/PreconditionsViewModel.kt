@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.masselis.tpmsadvanced.data.record.interfaces.BluetoothLeScanner
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import javax.inject.Inject
 
 
