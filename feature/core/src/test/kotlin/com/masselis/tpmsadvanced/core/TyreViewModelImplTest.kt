@@ -15,19 +15,20 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertIs
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
+import kotlin.time.Duration.Companion.hours
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class TyreViewModelImplTest {
 
     @get:Rule
@@ -58,7 +59,6 @@ internal class TyreViewModelImplTest {
     private fun test() = TyreViewModelImpl(
         tyreAtmosphereUseCase,
         vehicleRangesUseCase,
-        3.seconds.toJavaDuration(),
         savedStateHandle
     )
 
@@ -125,7 +125,7 @@ internal class TyreViewModelImplTest {
         setAtmosphere(2f.bar, 35f.celsius)
         val vm = test()
         assertIs<State.Normal.BlueToGreen>(vm.stateFlow.value)
-        delay(10.seconds)
+        advanceTimeBy(1.hours)
         assertIs<State.NotDetected>(vm.stateFlow.value)
     }
 }

@@ -37,7 +37,7 @@ internal fun BindSensorButton(
     viewModel: BindSensorButtonViewModel = viewModel(
         key = "BindSensorButtonViewModel_${vehicleComponent.vehicle.uuid}_${location}"
     ) {
-        vehicleComponent.tyreComponent(location)
+        vehicleComponent.TyreComponent(location)
             .BindSensorButtonViewModel(createSavedStateHandle())
     }
 ) {

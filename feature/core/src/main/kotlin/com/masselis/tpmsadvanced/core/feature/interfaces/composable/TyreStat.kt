@@ -37,7 +37,7 @@ internal fun TyreStat(
         key = "TyreStatsViewModel_${vehicleComponent.vehicle.uuid}_${location}"
     ) {
         vehicleComponent
-            .tyreComponent(location)
+            .TyreComponent(location)
             .TyreStatViewModel(createSavedStateHandle())
     }
 ) {

@@ -88,7 +88,7 @@ internal fun TemperatureInfo(
 }
 
 private class DemoVehicleComponent : VehicleComponent() {
-    override val tyreComponent: FindTyreComponentUseCase
+    override val TyreComponent: FindTyreComponentUseCase
         get() = error("Not implemented")
     override val vehicle: Vehicle
         get() = error("Not implemented")

@@ -5,7 +5,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
-import com.masselis.tpmsadvanced.feature.background.ioc.DaggerBackgroundVehicleComponent
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -55,11 +54,9 @@ public class MonitorService : Service() {
                         }
                         .mapIndexed { index, vehicle ->
                             if (index == 0 && hasForegroundService.not())
-                                DaggerBackgroundVehicleComponent.factory()
-                                    .build(this, vehicle)
+                                BackgroundVehicleComponent(this, vehicle)
                             else
-                                DaggerBackgroundVehicleComponent.factory()
-                                    .build(null, vehicle)
+                                BackgroundVehicleComponent(null, vehicle)
                         }
                         .forEach { monitoring.add(it) }
                 }

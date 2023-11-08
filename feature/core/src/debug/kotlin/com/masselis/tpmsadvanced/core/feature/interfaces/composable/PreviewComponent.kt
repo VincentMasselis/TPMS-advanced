@@ -43,7 +43,7 @@ internal class PreviewTyreComponent(
 
 @Suppress("LongParameterList")
 internal class PreviewVehicleComponent(
-    override val tyreComponent: FindTyreComponentUseCase =
+    override val TyreComponent: FindTyreComponentUseCase =
         mockk<FindTyreComponentUseCase>().also {
             every { it.find(any()) } returns PreviewTyreComponent()
         },

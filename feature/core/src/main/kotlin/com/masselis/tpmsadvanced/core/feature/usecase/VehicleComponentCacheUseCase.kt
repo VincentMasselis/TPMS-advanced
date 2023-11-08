@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.core.common.InternalDaggerImplementation
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -17,14 +16,10 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
-/**
- * Should be used only by the class [VehicleComponent] and [VehicleComponent.Factory].
- */
-@OptIn(InternalDaggerImplementation::class, DelicateCoroutinesApi::class)
+@OptIn(DelicateCoroutinesApi::class)
 @FeatureCoreComponent.Scope
 internal class VehicleComponentCacheUseCase @Inject internal constructor(
-    private val vehicleFactory: VehicleComponent.Factory,
-    vehicleDatabase: VehicleDatabase,
+    vehicleDatabase: VehicleDatabase
 ) {
     private val cache = ConcurrentHashMap<UUID, VehicleComponent>()
 
@@ -42,7 +37,6 @@ internal class VehicleComponentCacheUseCase @Inject internal constructor(
             .launchIn(GlobalScope)
     }
 
-    fun find(vehicle: Vehicle): VehicleComponent = cache.computeIfAbsent(vehicle.uuid) {
-        vehicleFactory.daggerOnlyBuild(vehicle)
-    }
+    fun find(vehicle: Vehicle, factory: (Any) -> VehicleComponent): VehicleComponent =
+        cache.computeIfAbsent(vehicle.uuid, factory)
 }

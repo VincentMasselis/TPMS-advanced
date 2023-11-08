@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.ui.asMutableStateFlow
+import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
@@ -39,9 +39,9 @@ internal class ManualBackgroundViewModel @AssistedInject constructor(
         data object Monitoring : State()
     }
 
-    private val mutableStateFlow = savedStateHandle
-        .getLiveData<State>("STATE", State.Loading)
-        .asMutableStateFlow()
+    private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>("STATE") {
+        State.Loading
+    }
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {

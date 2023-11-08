@@ -21,24 +21,21 @@ import javax.inject.Inject
 @FeatureCoreComponent.Scope
 public class CurrentVehicleUseCase private constructor(
     private val database: VehicleDatabase,
-    vehicleComponentFactory: VehicleComponent.Factory,
     private val mutableStateFlow: MutableStateFlow<VehicleComponent>
 ) : StateFlow<VehicleComponent> by mutableStateFlow.asStateFlow() {
 
     @Inject
     internal constructor(
         database: VehicleDatabase,
-        vehicleComponentFactory: VehicleComponent.Factory,
     ) : this(
         database,
-        vehicleComponentFactory,
-        MutableStateFlow(vehicleComponentFactory.build(database.currentVehicle())),
+        MutableStateFlow(VehicleComponent(database.currentVehicle())),
     )
 
     init {
         database.currentVehicleFlow()
             .filter { it.uuid != mutableStateFlow.value.vehicle.uuid }
-            .map(vehicleComponentFactory::build)
+            .map(VehicleComponent)
             .onEach { mutableStateFlow.value = it }
             .launchIn(GlobalScope)
     }

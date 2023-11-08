@@ -5,7 +5,6 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicl
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
-import com.masselis.tpmsadvanced.core.feature.usecase.VehicleComponentCacheUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
 import com.masselis.tpmsadvanced.data.app.ioc.DataAppComponent
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
@@ -14,6 +13,7 @@ import dagger.Component
 import javax.inject.Inject
 import javax.inject.Provider
 
+@Suppress("PropertyName")
 @FeatureCoreComponent.Scope
 @Component(
     modules = [
@@ -41,12 +41,12 @@ public interface FeatureCoreComponent {
     @javax.inject.Scope
     public annotation class Scope
 
-    public val vehicleComponentFactory: VehicleComponent.Factory
     public val currentVehicleUseCase: CurrentVehicleUseCase
     public val noveltyUseCase: NoveltyUseCase
     public val vehicleListUseCase: VehicleListUseCase
 
     public fun inject(injectable: Injectable)
+    public fun inject(injectable: VehicleComponent.Injectable)
 
     public companion object : Injectable()
 
@@ -55,9 +55,6 @@ public interface FeatureCoreComponent {
         FeatureCoreComponent by DaggerFeatureCoreComponent
             .factory()
             .build() {
-
-        @Inject
-        internal lateinit var vehicleComponentCacheUseCase: VehicleComponentCacheUseCase
 
         @Inject
         internal lateinit var PreconditionsViewModel: Provider<PreconditionsViewModel>
