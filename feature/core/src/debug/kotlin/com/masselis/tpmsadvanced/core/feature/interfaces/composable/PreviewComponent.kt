@@ -17,25 +17,23 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.time.Duration
 
 
 internal class PreviewTyreComponent(
-    override val tyreViewModelFactory: TyreViewModelImpl.Factory =
+    override val TyreViewModel: TyreViewModelImpl.Factory =
         object : TyreViewModelImpl.Factory {
-            override fun build(
+            override fun invoke(
                 savedStateHandle: SavedStateHandle,
-                obsoleteTimeout: Duration
             ): TyreViewModelImpl = previewTyreViewModelImpl()
         },
-    override val tyreStatViewModelFactory: TyreStatsViewModel.Factory =
+    override val TyreStatViewModel: TyreStatsViewModel.Factory =
         object : TyreStatsViewModel.Factory {
-            override fun build(savedStateHandle: SavedStateHandle): TyreStatsViewModel =
+            override fun invoke(savedStateHandle: SavedStateHandle): TyreStatsViewModel =
                 previewTyreStatViewModel()
         },
-    override val bindSensorButtonViewModelFactory: BindSensorButtonViewModel.Factory =
+    override val BindSensorButtonViewModel: BindSensorButtonViewModel.Factory =
         object : BindSensorButtonViewModel.Factory {
-            override fun build(savedStateHandle: SavedStateHandle): BindSensorButtonViewModel =
+            override fun invoke(savedStateHandle: SavedStateHandle): BindSensorButtonViewModel =
                 previewBindSensorViewModel()
         }
 ) : TyreComponent() {
@@ -51,21 +49,18 @@ internal class PreviewVehicleComponent(
         },
     override val vehicle: Vehicle = previewVehicle,
     override val carFlow: StateFlow<Vehicle> = MutableStateFlow(previewVehicle),
-    override val clearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory =
+    override val ClearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory =
         object : ClearBoundSensorsViewModel.Factory {
-            override fun build(savedStateHandle: SavedStateHandle): ClearBoundSensorsViewModel =
+            override fun invoke(savedStateHandle: SavedStateHandle): ClearBoundSensorsViewModel =
                 previewClearBoundSensorsViewModel()
         },
-    override val vehicleSettingsViewModel: VehicleSettingsViewModel.Factory =
-        object : VehicleSettingsViewModel.Factory {
-            override fun build(): VehicleSettingsViewModel = previewVehicleSettingsViewModel()
-        },
-    override val deleteVehicleViewModel: DeleteVehicleViewModel.Factory =
-        object : DeleteVehicleViewModel.Factory {
-            override fun build(savedStateHandle: SavedStateHandle): DeleteVehicleViewModel =
-                previewDeleteVehicleViewModel()
-        }
 ) : VehicleComponent() {
+    override fun VehicleSettingsViewModel(): VehicleSettingsViewModel =
+        previewVehicleSettingsViewModel()
+
+    override fun DeleteVehicleViewModel(): DeleteVehicleViewModel =
+        previewDeleteVehicleViewModel()
+
     override val vehicleRangesUseCase: VehicleRangesUseCase
         get() = error("Not implemented")
 }

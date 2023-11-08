@@ -1,15 +1,11 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.DeleteVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleCountStateFlowUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleStateFlowUseCase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -19,18 +15,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-internal class DeleteVehicleViewModel @AssistedInject constructor(
+internal class DeleteVehicleViewModel @Inject constructor(
     private val deleteVehicleUseCase: DeleteVehicleUseCase,
     vehicleStateFlowUseCase: VehicleStateFlowUseCase,
     vehicleCountStateFlowUseCase: VehicleCountStateFlowUseCase,
-    @Suppress("UNUSED_PARAMETER") @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
-    @AssistedFactory
-    interface Factory {
-        fun build(savedStateHandle: SavedStateHandle): DeleteVehicleViewModel
-    }
 
     sealed class State {
         abstract val vehicle: Vehicle
@@ -40,7 +31,7 @@ internal class DeleteVehicleViewModel @AssistedInject constructor(
     }
 
     sealed class Event {
-        object Leave : Event()
+        data object Leave : Event()
     }
 
     private val mutableStateFlow = MutableStateFlow(

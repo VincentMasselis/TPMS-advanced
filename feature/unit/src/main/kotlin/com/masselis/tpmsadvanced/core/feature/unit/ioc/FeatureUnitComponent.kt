@@ -4,6 +4,7 @@ import com.masselis.tpmsadvanced.core.feature.unit.interfaces.UnitsViewModel
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import dagger.Component
 import javax.inject.Inject
+import javax.inject.Provider
 
 @FeatureUnitComponent.Scope
 @Component(
@@ -24,13 +25,14 @@ public interface FeatureUnitComponent {
 
     public companion object : Injectable()
 
+    @Suppress("PropertyName", "VariableNaming")
     public abstract class Injectable protected constructor() :
         FeatureUnitComponent by DaggerFeatureUnitComponent
             .factory()
             .build() {
 
         @Inject
-        internal lateinit var unitsViewModel: UnitsViewModel
+        internal lateinit var UnitsViewModel: Provider<UnitsViewModel>
 
         init {
             @Suppress("LeakingThis")

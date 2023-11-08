@@ -25,7 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel.State
-import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
+import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent.Companion.AutomaticBackgroundViewModel
 
 @Composable
 public fun AutomaticBackgroundSettings(
@@ -36,7 +36,7 @@ public fun AutomaticBackgroundSettings(
         component,
         modifier,
         viewModel(key = "BackgroundViewModel_${component.vehicle.uuid}") {
-            FeatureBackgroundComponent.automaticBackgroundViewModel.build(component.vehicle)
+            AutomaticBackgroundViewModel(component.vehicle)
         }
     )
 }
@@ -47,7 +47,7 @@ internal fun AutomaticBackgroundSettings(
     component: VehicleComponent,
     modifier: Modifier = Modifier,
     viewModel: AutomaticBackgroundViewModel = viewModel(key = "BackgroundViewModel_${component.vehicle.uuid}") {
-        FeatureBackgroundComponent.automaticBackgroundViewModel.build(component.vehicle)
+        AutomaticBackgroundViewModel(component.vehicle)
     }
 ) {
     val activity = LocalContext.current as Activity

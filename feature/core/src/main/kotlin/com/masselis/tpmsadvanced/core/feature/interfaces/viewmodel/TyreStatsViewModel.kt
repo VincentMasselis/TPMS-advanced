@@ -35,14 +35,12 @@ internal class TyreStatsViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface Factory {
-        fun build(savedStateHandle: SavedStateHandle): TyreStatsViewModel
-    }
+    interface Factory : (SavedStateHandle) -> TyreStatsViewModel
 
     sealed class State : Parcelable {
         // Shows "-:-" texts
         @Parcelize
-        object NotDetected : State()
+        data object NotDetected : State()
 
         // Shows the read values from the tyre
         @Parcelize

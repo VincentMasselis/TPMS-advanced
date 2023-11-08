@@ -32,13 +32,11 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     @AssistedFactory
-    interface Factory {
-        fun build(savedStateHandle: SavedStateHandle): BindSensorButtonViewModel
-    }
+    interface Factory : (SavedStateHandle) -> BindSensorButtonViewModel
 
     sealed class State : Parcelable {
         @Parcelize
-        object Empty : State()
+        data object Empty : State()
 
         sealed class RequestBond : State() {
             abstract val sensor: Sensor

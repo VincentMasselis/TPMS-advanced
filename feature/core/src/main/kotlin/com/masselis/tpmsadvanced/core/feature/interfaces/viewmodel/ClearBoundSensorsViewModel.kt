@@ -24,16 +24,14 @@ internal class ClearBoundSensorsViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface Factory {
-        fun build(savedStateHandle: SavedStateHandle): ClearBoundSensorsViewModel
-    }
+    interface Factory : (SavedStateHandle) -> ClearBoundSensorsViewModel
 
     sealed class State : Parcelable {
         @Parcelize
-        object ClearingPossible : State()
+        data object ClearingPossible : State()
 
         @Parcelize
-        object AlreadyCleared : State()
+        data object AlreadyCleared : State()
     }
 
     private val mutableStateFlow = savedStateHandle

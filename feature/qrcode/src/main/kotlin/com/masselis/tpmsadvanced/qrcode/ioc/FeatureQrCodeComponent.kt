@@ -7,6 +7,7 @@ import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel
 import dagger.Component
 import javax.inject.Inject
+import javax.inject.Provider
 
 @FeatureQrCodeComponent.Scope
 @Component(
@@ -33,21 +34,21 @@ public interface FeatureQrCodeComponent {
 
     public companion object : Injectable()
 
+    @Suppress("PropertyName", "VariableNaming")
     public abstract class Injectable protected constructor() :
         FeatureQrCodeComponent by DaggerFeatureQrCodeComponent
             .factory()
             .build() {
 
         @Inject
-        internal lateinit var qrCodeViewModel: QRCodeViewModel.Factory
+        internal lateinit var QrCodeViewModel: QRCodeViewModel.Factory
 
         @Inject
-        internal lateinit var cameraPreconditionsViewModel: CameraPreconditionsViewModel.Factory
+        internal lateinit var CameraPreconditionsViewModel: Provider<CameraPreconditionsViewModel>
 
         init {
             @Suppress("LeakingThis")
             inject(this)
         }
-
     }
 }

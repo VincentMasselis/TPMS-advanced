@@ -41,6 +41,7 @@ public interface FeatureBackgroundComponent {
 
     public companion object : Injectable()
 
+    @Suppress("PropertyName", "VariableNaming")
     public abstract class Injectable protected constructor() :
         FeatureBackgroundComponent by DaggerFeatureBackgroundComponent.factory()
             .build() {
@@ -54,10 +55,10 @@ public interface FeatureBackgroundComponent {
 
         // View models
         @Inject
-        internal lateinit var automaticBackgroundViewModel: AutomaticBackgroundViewModel.Factory
+        internal lateinit var AutomaticBackgroundViewModel: AutomaticBackgroundViewModel.Factory
 
         @Inject
-        internal lateinit var manualBackgroundViewModel: ManualBackgroundViewModel.Factory
+        internal lateinit var ManualBackgroundViewModel: ManualBackgroundViewModel.Factory
 
         init {
             @Suppress("LeakingThis")

@@ -29,7 +29,7 @@ public fun VehicleSettings(
         backgroundSettings,
         vehicleComponent,
         viewModel(key = "VehicleSettingsViewModel_${vehicleComponent.vehicle.uuid}") {
-            vehicleComponent.vehicleSettingsViewModel.build()
+            vehicleComponent.VehicleSettingsViewModel()
         }
     )
 }
@@ -41,9 +41,7 @@ internal fun VehicleSettings(
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     vehicleSettingsViewModel: VehicleSettingsViewModel = viewModel(
         key = "VehicleSettingsViewModel_${vehicleComponent.vehicle.uuid}"
-    ) {
-        vehicleComponent.vehicleSettingsViewModel.build()
-    }
+    ) { vehicleComponent.VehicleSettingsViewModel() }
 ) {
     val component = LocalVehicleComponent.current
     Column(modifier) {

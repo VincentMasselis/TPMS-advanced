@@ -14,7 +14,7 @@ internal class VehicleHomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     sealed class SpotlightEvent {
-        object ManualMonitorDropdown : SpotlightEvent()
+        data object ManualMonitorDropdown : SpotlightEvent()
     }
 
     private val channel = Channel<SpotlightEvent>(BUFFERED)

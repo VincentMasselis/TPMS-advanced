@@ -24,16 +24,14 @@ internal class AutomaticBackgroundViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     @AssistedFactory
-    internal interface Factory {
-        fun build(vehicle: Vehicle): AutomaticBackgroundViewModel
-    }
+    internal interface Factory : (Vehicle) -> AutomaticBackgroundViewModel
 
     sealed class State : Parcelable {
         @Parcelize
-        object MonitorDisabled : State()
+        data object MonitorDisabled : State()
 
         @Parcelize
-        object MonitorEnabled : State()
+        data object MonitorEnabled : State()
     }
 
     private val mutableStateFlow =

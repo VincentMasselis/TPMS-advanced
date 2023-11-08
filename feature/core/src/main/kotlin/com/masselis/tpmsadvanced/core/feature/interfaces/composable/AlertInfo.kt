@@ -96,10 +96,12 @@ private class DemoVehicleComponent : VehicleComponent() {
         get() = error("Not implemented")
     override val vehicleRangesUseCase: VehicleRangesUseCase
         get() = error("Not implemented")
-    override val clearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory
+    override val ClearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory
         get() = error("Not implemented")
-    override val vehicleSettingsViewModel: VehicleSettingsViewModel.Factory
-        get() = error("Not implemented")
-    override val deleteVehicleViewModel: DeleteVehicleViewModel.Factory
-        get() = error("Not implemented")
+
+    override fun VehicleSettingsViewModel(): VehicleSettingsViewModel =
+        error("Not implemented")
+
+    override fun DeleteVehicleViewModel(): DeleteVehicleViewModel =
+        error("Not implemented")
 }

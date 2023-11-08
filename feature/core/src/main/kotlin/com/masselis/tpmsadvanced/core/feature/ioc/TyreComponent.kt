@@ -8,6 +8,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import dagger.BindsInstance
 import dagger.Subcomponent
 
+@Suppress("PropertyName", "VariableNaming")
 @TyreComponent.Scope
 @Subcomponent(
     modules = [TyreModule::class]
@@ -24,7 +25,7 @@ public abstract class TyreComponent {
 
     public abstract val tyreAtmosphereUseCase: TyreAtmosphereUseCase
 
-    internal abstract val tyreViewModelFactory: TyreViewModelImpl.Factory
-    internal abstract val tyreStatViewModelFactory: TyreStatsViewModel.Factory
-    internal abstract val bindSensorButtonViewModelFactory: BindSensorButtonViewModel.Factory
+    internal abstract val TyreViewModel: TyreViewModelImpl.Factory
+    internal abstract val TyreStatViewModel: TyreStatsViewModel.Factory
+    internal abstract val BindSensorButtonViewModel: BindSensorButtonViewModel.Factory
 }

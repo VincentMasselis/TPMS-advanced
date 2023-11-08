@@ -162,7 +162,7 @@ internal class ServiceNotifier @Inject constructor(
     }
 
     sealed interface State {
-        object NoAlert : State
+        data object NoAlert : State
 
         @JvmInline
         value class PressureAlert(val atmosphere: TyreAtmosphere) : State

@@ -38,8 +38,7 @@ internal fun BindSensorButton(
         key = "BindSensorButtonViewModel_${vehicleComponent.vehicle.uuid}_${location}"
     ) {
         vehicleComponent.tyreComponent(location)
-            .bindSensorButtonViewModelFactory
-            .build(createSavedStateHandle())
+            .BindSensorButtonViewModel(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState(State.Empty)

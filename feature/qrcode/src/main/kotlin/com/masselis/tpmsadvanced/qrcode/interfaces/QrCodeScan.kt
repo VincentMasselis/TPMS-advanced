@@ -24,10 +24,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.masselis.tpmsadvanced.core.common.invoke
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
@@ -42,23 +42,22 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.qrcode.R
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.State
-import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent
+import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent.Companion.CameraPreconditionsViewModel
+import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent.Companion.QrCodeViewModel
 
 @Composable
 public fun QrCodeScan(
     modifier: Modifier = Modifier,
 ): Unit = QrCodeScan(
     modifier,
-    viewModel { FeatureQrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle()) },
+    viewModel { CameraPreconditionsViewModel() },
 )
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun QrCodeScan(
     modifier: Modifier = Modifier,
-    viewModel: CameraPreconditionsViewModel = viewModel {
-        FeatureQrCodeComponent.cameraPreconditionsViewModel.build(createSavedStateHandle())
-    },
+    viewModel: CameraPreconditionsViewModel = viewModel { CameraPreconditionsViewModel() },
 ) {
     val permissionState = rememberMultiplePermissionsState(listOf(viewModel.requiredPermissions()))
     when {
@@ -104,7 +103,7 @@ private fun Preview(
         QrCodeOverlay(Modifier.fillMaxSize())
     }
 
-    val viewModel = remember { FeatureQrCodeComponent.qrCodeViewModel.build(controller) }
+    val viewModel = remember { QrCodeViewModel(controller) }
     val state by viewModel.stateFlow.collectAsState()
     when (val state = state) {
         State.Scanning -> {}

@@ -10,7 +10,7 @@ internal interface TyreViewModel {
     sealed class State : Parcelable {
         // Shows an outlined tyre icon
         @Parcelize
-        object NotDetected : State()
+        data object NotDetected : State()
 
         // Shows a blue/green/red tyre
         sealed class Normal : State() {
@@ -25,10 +25,10 @@ internal interface TyreViewModel {
 
         // Shows a blinking red tyre, could be an alert for the temperature or the pressure
         @Parcelize
-        object Alerting : State()
+        data object Alerting : State()
 
         @Parcelize
-        object DetectionIssue : State()
+        data object DetectionIssue : State()
     }
 
     val stateFlow: StateFlow<State>

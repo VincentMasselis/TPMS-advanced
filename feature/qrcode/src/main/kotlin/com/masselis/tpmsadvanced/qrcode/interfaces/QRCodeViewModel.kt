@@ -34,12 +34,10 @@ internal class QRCodeViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface Factory {
-        fun build(controller: CameraController): QRCodeViewModel
-    }
+    interface Factory : (CameraController) -> QRCodeViewModel
 
     sealed class State {
-        object Scanning : State()
+        data object Scanning : State()
 
         sealed class AskForBinding : State() {
             abstract val sensorMap: SensorMap
@@ -54,7 +52,7 @@ internal class QRCodeViewModel @AssistedInject constructor(
     }
 
     sealed class Event {
-        object Leave : Event()
+        data object Leave : Event()
     }
 
     private val mutableStateFlow = MutableStateFlow<State>(State.Scanning)

@@ -29,7 +29,7 @@ internal fun ClearBoundSensorsButton(
     viewModel: ClearBoundSensorsViewModel = viewModel(
         key = "ClearBoundSensorsButton_${vehicleComponent.vehicle.uuid}"
     ) {
-        vehicleComponent.clearBoundSensorsViewModel.build(createSavedStateHandle())
+        vehicleComponent.ClearBoundSensorsViewModel(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()

@@ -17,9 +17,7 @@ internal class HomeViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface Factory {
-        fun build(expectedVehicle: UUID?): HomeViewModel
-    }
+    interface Factory : (UUID?) -> HomeViewModel
 
     init {
         expectedVehicle?.also {

@@ -5,12 +5,14 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicl
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleComponentCacheUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
 import com.masselis.tpmsadvanced.data.app.ioc.DataAppComponent
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import dagger.Component
 import javax.inject.Inject
+import javax.inject.Provider
 
 @FeatureCoreComponent.Scope
 @Component(
@@ -45,25 +47,27 @@ public interface FeatureCoreComponent {
     public val vehicleListUseCase: VehicleListUseCase
 
     public fun inject(injectable: Injectable)
-    public fun inject(injectable: VehicleComponent.Factory)
 
     public companion object : Injectable()
 
+    @Suppress("PropertyName", "VariableNaming")
     public abstract class Injectable protected constructor() :
         FeatureCoreComponent by DaggerFeatureCoreComponent
             .factory()
             .build() {
 
         @Inject
-        internal lateinit var preconditionsViewModel: PreconditionsViewModel
+        internal lateinit var vehicleComponentCacheUseCase: VehicleComponentCacheUseCase
 
         @Inject
-        internal lateinit var currentVehicleDropdownViewModel: CurrentVehicleDropdownViewModel.Factory
+        internal lateinit var PreconditionsViewModel: Provider<PreconditionsViewModel>
+
+        @Inject
+        internal lateinit var CurrentVehicleDropdownViewModel: CurrentVehicleDropdownViewModel.Factory
 
         init {
             @Suppress("LeakingThis")
             inject(this)
         }
     }
-
 }

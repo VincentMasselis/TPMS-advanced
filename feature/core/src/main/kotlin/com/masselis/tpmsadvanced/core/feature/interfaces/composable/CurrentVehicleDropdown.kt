@@ -46,7 +46,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel.State
-import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent.Companion.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -56,9 +56,10 @@ import kotlinx.coroutines.delay
 public fun CurrentVehicleDropdown(
     modifier: Modifier = Modifier,
 ) {
-    CurrentVehicleDropdown(modifier, viewModel {
-        FeatureCoreComponent.currentVehicleDropdownViewModel.build(createSavedStateHandle())
-    })
+    CurrentVehicleDropdown(
+        modifier,
+        viewModel { CurrentVehicleDropdownViewModel(createSavedStateHandle()) }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +67,7 @@ public fun CurrentVehicleDropdown(
 internal fun CurrentVehicleDropdown(
     modifier: Modifier = Modifier,
     viewModel: CurrentVehicleDropdownViewModel = viewModel {
-        FeatureCoreComponent.currentVehicleDropdownViewModel.build(createSavedStateHandle())
+        CurrentVehicleDropdownViewModel(createSavedStateHandle())
     }
 ) {
     val vehicles = viewModel.stateFlow.collectAsState().value as? State.Vehicles ?: return

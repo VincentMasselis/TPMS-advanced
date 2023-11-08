@@ -5,6 +5,7 @@ import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import dagger.Component
 
+@Suppress("PropertyName", "VariableNaming")
 @AppPhoneComponent.Scope
 @Component(
     dependencies = [
@@ -20,8 +21,8 @@ internal interface AppPhoneComponent {
     @javax.inject.Scope
     annotation class Scope
 
-    val homeViewModel: HomeViewModel.Factory
-    val vehicleHomeViewModel: VehicleHomeViewModel
+    val HomeViewModel: HomeViewModel.Factory
+    fun VehicleHomeViewModel(): VehicleHomeViewModel
 
     companion object : AppPhoneComponent by DaggerAppPhoneComponent
         .factory()

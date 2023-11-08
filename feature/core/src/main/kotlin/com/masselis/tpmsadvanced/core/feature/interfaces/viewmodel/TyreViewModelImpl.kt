@@ -25,36 +25,25 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import java.time.Duration
 import kotlin.Float.Companion.NEGATIVE_INFINITY
 import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
-import kotlin.time.toJavaDuration
-import kotlin.time.toKotlinDuration
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TyreViewModelImpl @AssistedInject constructor(
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: VehicleRangesUseCase,
-    @Assisted obsoleteTimeoutJava: Duration,
     @Assisted savedStateHandle: SavedStateHandle,
 ) : ViewModel(), TyreViewModel {
 
     @AssistedFactory
-    interface Factory {
-        fun build(
-            savedStateHandle: SavedStateHandle,
-            obsoleteTimeout: Duration = 5.minutes.toJavaDuration()
-        ): TyreViewModelImpl
-    }
+    interface Factory : (SavedStateHandle) -> TyreViewModelImpl
 
     private val mutableStateFlow = savedStateHandle
         .getMutableStateFlow<State>("STATE") { State.NotDetected }
     override val stateFlow = mutableStateFlow.asStateFlow()
-
-    private val obsoleteTimeout = obsoleteTimeoutJava.toKotlinDuration()
 
     init {
         combine(
@@ -136,6 +125,7 @@ internal class TyreViewModelImpl @AssistedInject constructor(
     )
 
     companion object {
+        private val obsoleteTimeout = 5.minutes
         private const val LAST_KNOWN = "LAST_KNOWN"
     }
 }

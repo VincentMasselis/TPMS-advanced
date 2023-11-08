@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.DeleteVehicleButtonTags.Button.tag
@@ -39,7 +38,7 @@ internal fun DeleteVehicleButton(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.vehicle.uuid}") {
-        vehicleComponent.deleteVehicleViewModel.build(createSavedStateHandle())
+        vehicleComponent.DeleteVehicleViewModel()
     }
 ) {
     val navController = LocalHomeNavController.current

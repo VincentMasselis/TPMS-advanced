@@ -51,7 +51,8 @@ import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
-import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent
+import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent.Companion.HomeViewModel
+import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent.Companion.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.SpotlightEvent
@@ -62,7 +63,7 @@ import java.util.UUID
 internal fun Home(
     expectedVehicle: UUID?,
     viewModel: HomeViewModel = viewModel(key = "HomeViewModel_$expectedVehicle") {
-        AppPhoneComponent.homeViewModel.build(expectedVehicle)
+        HomeViewModel(expectedVehicle)
     }
 ) {
     val vehicleComponent by viewModel.vehicleComponentStateFlow.collectAsState()
@@ -75,7 +76,7 @@ internal fun Home(
 @Composable
 internal fun VehicleHome(
     vehicleComponent: VehicleComponent,
-    viewModel: VehicleHomeViewModel = viewModel { AppPhoneComponent.vehicleHomeViewModel }
+    viewModel: VehicleHomeViewModel = viewModel { VehicleHomeViewModel() }
 ) {
     val navController = rememberNavController()
     CompositionLocalProvider(

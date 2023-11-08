@@ -26,22 +26,17 @@ internal class ManualBackgroundViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     @AssistedFactory
-    internal interface Factory {
-        fun build(
-            vehicle: Vehicle,
-            savedStateHandle: SavedStateHandle,
-        ): ManualBackgroundViewModel
-    }
+    internal interface Factory : (Vehicle, SavedStateHandle) -> ManualBackgroundViewModel
 
     sealed class State : Parcelable {
         @Parcelize
-        object Loading : State()
+        data object Loading : State()
 
         @Parcelize
-        object Idle : State()
+        data object Idle : State()
 
         @Parcelize
-        object Monitoring : State()
+        data object Monitoring : State()
     }
 
     private val mutableStateFlow = savedStateHandle

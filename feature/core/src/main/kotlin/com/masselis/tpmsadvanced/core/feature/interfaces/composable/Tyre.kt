@@ -57,8 +57,7 @@ internal fun Tyre(
     viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${vehicleComponent.vehicle.uuid}_${location}") {
         vehicleComponent
             .tyreComponent(location)
-            .tyreViewModelFactory
-            .build(createSavedStateHandle())
+            .TyreViewModel(createSavedStateHandle())
     },
 ) {
     val state by viewModel.stateFlow.collectAsState()

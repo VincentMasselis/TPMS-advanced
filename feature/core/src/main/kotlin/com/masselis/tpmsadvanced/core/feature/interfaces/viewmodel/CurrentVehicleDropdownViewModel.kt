@@ -28,13 +28,11 @@ internal class CurrentVehicleDropdownViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface Factory {
-        fun build(savedStateHandle: SavedStateHandle): CurrentVehicleDropdownViewModel
-    }
+    interface Factory : (SavedStateHandle) -> CurrentVehicleDropdownViewModel
 
     sealed class State : Parcelable {
         @Parcelize
-        object Loading : State()
+        data object Loading : State()
 
         @Parcelize
         data class Vehicles(

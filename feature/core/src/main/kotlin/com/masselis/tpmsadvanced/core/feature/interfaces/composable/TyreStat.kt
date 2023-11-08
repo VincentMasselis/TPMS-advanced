@@ -38,8 +38,7 @@ internal fun TyreStat(
     ) {
         vehicleComponent
             .tyreComponent(location)
-            .tyreStatViewModelFactory
-            .build(createSavedStateHandle())
+            .TyreStatViewModel(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()
