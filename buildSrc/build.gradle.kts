@@ -25,7 +25,11 @@ repositories {
 dependencies {
     val agpVersion: String by project
     implementation("com.android.tools.build:gradle:$agpVersion")
-    implementation(embeddedKotlin("gradle-plugin")) // Contains the plugin "org.jetbrains.kotlin.android"
+    // Contains the plugin "org.jetbrains.kotlin.android"
+    implementation(embeddedKotlin("gradle-plugin"))
+    // Uncomment the code below to uses a different version of kotlin between "buildSrc" and the main project, /!\ Don't forget to uncomment "kotlinVersion" in "gradle.properties"
+    //val kotlinVersion: String by project
+    //implementation(kotlin("gradle-plugin", kotlinVersion))
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.1")
     implementation("com.google.auth:google-auth-library-oauth2-http:1.18.0")
     implementation("com.google.apis:google-api-services-androidpublisher:v3-rev20211125-1.32.1")

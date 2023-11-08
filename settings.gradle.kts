@@ -6,8 +6,6 @@ pluginManagement {
         google()
         mavenCentral()
     }
-    val agpVersion: String by settings
-    val kotlinVersion: String by settings
     val sqlDelightVersion: String by settings
     plugins {
         id("com.google.gms.google-services") version "4.3.15"

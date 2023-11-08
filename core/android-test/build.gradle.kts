@@ -8,7 +8,6 @@ android {
 
 dependencies {
     val coroutineVersion: String by project
-    val kotlinVersion: String by project
     api(project(":core:common"))
     api("androidx.test.ext:junit:1.1.5")
     api("androidx.test:core-ktx:1.5.0")
@@ -18,7 +17,7 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineVersion")
     api("io.mockk:mockk-android:1.13.4")
     api("androidx.compose.ui:ui-test-junit4")
-    api("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    api("org.jetbrains.kotlin:kotlin-reflect")
     api("org.jetbrains.kotlin:kotlin-test")
 
 }
