@@ -42,6 +42,7 @@ public abstract class VehicleComponent {
 
     public companion object : Injectable()
 
+    @Suppress("UnnecessaryAbstractClass")
     public abstract class Injectable protected constructor() : (Vehicle) -> VehicleComponent {
 
         @Inject

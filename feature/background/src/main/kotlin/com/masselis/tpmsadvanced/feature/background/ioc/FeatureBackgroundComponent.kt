@@ -21,10 +21,10 @@ import javax.inject.Inject
 )
 public interface FeatureBackgroundComponent {
     @Component.Factory
-    public interface Factory {
-        public fun build(
-            dataVehicleComponent: DataVehicleComponent = DataVehicleComponent,
-            featureCoreComponent: FeatureCoreComponent = FeatureCoreComponent
+    public abstract class Factory {
+        internal abstract fun build(
+            dataVehicleComponent: DataVehicleComponent,
+            featureCoreComponent: FeatureCoreComponent
         ): FeatureBackgroundComponent
     }
 
@@ -43,8 +43,9 @@ public interface FeatureBackgroundComponent {
 
     @Suppress("PropertyName", "VariableNaming")
     public abstract class Injectable protected constructor() :
-        FeatureBackgroundComponent by DaggerFeatureBackgroundComponent.factory()
-            .build() {
+        FeatureBackgroundComponent by DaggerFeatureBackgroundComponent
+            .factory()
+            .build(DataVehicleComponent, FeatureCoreComponent) {
 
         // Theses use cases do stuff in background when initialized
         @Inject

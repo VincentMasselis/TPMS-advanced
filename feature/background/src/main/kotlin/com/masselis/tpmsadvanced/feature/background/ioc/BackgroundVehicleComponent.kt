@@ -25,9 +25,9 @@ internal abstract class BackgroundVehicleComponent {
         abstract fun build(
             @BindsInstance foregroundService: Service?,
             vehicleComponent: VehicleComponent,
-            @BindsInstance scope: CoroutineScope = CoroutineScope(SupervisorJob()),
-            dataUnitComponent: DataUnitComponent = DataUnitComponent,
-            featureBackgroundComponent: FeatureBackgroundComponent = FeatureBackgroundComponent,
+            @BindsInstance scope: CoroutineScope,
+            dataUnitComponent: DataUnitComponent,
+            featureBackgroundComponent: FeatureBackgroundComponent,
         ): BackgroundVehicleComponent
     }
 
@@ -50,7 +50,10 @@ internal abstract class BackgroundVehicleComponent {
             .factory()
             .build(
                 foregroundService,
-                VehicleComponent(vehicle)
+                VehicleComponent(vehicle),
+                CoroutineScope(SupervisorJob()),
+                DataUnitComponent,
+                FeatureBackgroundComponent
             )
             .apply { serviceNotifier } // Creates an instance of `ServiceNotifier` after build.
     }

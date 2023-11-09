@@ -14,8 +14,8 @@ import dagger.Component
 )
 public interface DataVehicleComponent {
     @Component.Factory
-    public interface Factory {
-        public fun build(coreCommonComponent: CoreCommonComponent = CoreCommonComponent): DataVehicleComponent
+    public abstract class Factory {
+        internal abstract fun build(coreCommonComponent: CoreCommonComponent): DataVehicleComponent
     }
 
     public val debugComponentFactory: DebugComponent.Factory
@@ -30,5 +30,5 @@ public interface DataVehicleComponent {
 
     public companion object : DataVehicleComponent by DaggerDataVehicleComponent
         .factory()
-        .build()
+        .build(CoreCommonComponent)
 }

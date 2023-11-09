@@ -29,12 +29,12 @@ import javax.inject.Provider
 public interface FeatureCoreComponent {
 
     @Component.Factory
-    public interface Factory {
-        public fun build(
-            coreCommonComponent: CoreCommonComponent = CoreCommonComponent,
-            dataUnitComponent: DataUnitComponent = DataUnitComponent,
-            dataVehicleComponent: DataVehicleComponent = DataVehicleComponent,
-            dataAppComponent: DataAppComponent = DataAppComponent,
+    public abstract class Factory {
+        internal abstract fun build(
+            coreCommonComponent: CoreCommonComponent,
+            dataUnitComponent: DataUnitComponent,
+            dataVehicleComponent: DataVehicleComponent,
+            dataAppComponent: DataAppComponent,
         ): FeatureCoreComponent
     }
 
@@ -54,7 +54,7 @@ public interface FeatureCoreComponent {
     public abstract class Injectable protected constructor() :
         FeatureCoreComponent by DaggerFeatureCoreComponent
             .factory()
-            .build() {
+            .build(CoreCommonComponent, DataUnitComponent, DataVehicleComponent, DataAppComponent) {
 
         @Inject
         internal lateinit var PreconditionsViewModel: Provider<PreconditionsViewModel>

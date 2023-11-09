@@ -15,8 +15,8 @@ import javax.inject.Inject
 public interface CoreCommonComponent {
 
     @Component.Factory
-    public interface Factory {
-        public fun build(@BindsInstance context: Context = appContext): CoreCommonComponent
+    public abstract class Factory {
+        internal abstract fun build(@BindsInstance context: Context): CoreCommonComponent
     }
 
     public val context: Context
@@ -29,7 +29,7 @@ public interface CoreCommonComponent {
     public abstract class Injectable protected constructor() :
         CoreCommonComponent by DaggerCoreCommonComponent
             .factory()
-            .build() {
+            .build(appContext) {
 
         // Forces FirebaseApp to be initialized
         @set:Inject

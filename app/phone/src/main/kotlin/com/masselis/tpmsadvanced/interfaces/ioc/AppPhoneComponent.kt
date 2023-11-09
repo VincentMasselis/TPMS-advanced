@@ -14,8 +14,8 @@ import dagger.Component
 )
 internal interface AppPhoneComponent {
     @Component.Factory
-    interface Factory {
-        fun build(featureCoreComponent: FeatureCoreComponent = FeatureCoreComponent): AppPhoneComponent
+    abstract class Factory {
+        abstract fun build(featureCoreComponent: FeatureCoreComponent): AppPhoneComponent
     }
 
     @javax.inject.Scope
@@ -26,5 +26,5 @@ internal interface AppPhoneComponent {
 
     companion object : AppPhoneComponent by DaggerAppPhoneComponent
         .factory()
-        .build()
+        .build(FeatureCoreComponent)
 }

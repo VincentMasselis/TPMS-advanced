@@ -14,8 +14,8 @@ import javax.inject.Inject
 internal interface FeatureShortcutComponent {
 
     @Component.Factory
-    interface Factory {
-        fun build(featureCoreComponent: FeatureCoreComponent = FeatureCoreComponent): FeatureShortcutComponent
+    abstract class Factory {
+        abstract fun build(featureCoreComponent: FeatureCoreComponent): FeatureShortcutComponent
     }
 
     @javax.inject.Scope
@@ -27,7 +27,7 @@ internal interface FeatureShortcutComponent {
 
     abstract class Injectable : FeatureShortcutComponent by DaggerFeatureShortcutComponent
         .factory()
-        .build() {
+        .build(FeatureCoreComponent) {
 
         @Inject
         lateinit var shortcutUseCase: ShortcutUseCase
