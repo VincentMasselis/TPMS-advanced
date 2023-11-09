@@ -42,7 +42,7 @@ public abstract class VehicleComponent {
 
     public companion object : Injectable()
 
-    public open class Injectable protected constructor() : (Vehicle) -> VehicleComponent {
+    public abstract class Injectable protected constructor() : (Vehicle) -> VehicleComponent {
 
         @Inject
         internal lateinit var factory: Factory

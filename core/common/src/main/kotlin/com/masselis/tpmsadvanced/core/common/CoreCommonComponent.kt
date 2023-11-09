@@ -31,9 +31,11 @@ public interface CoreCommonComponent {
             .factory()
             .build() {
 
+        // Forces FirebaseApp to be initialized
         @set:Inject
         internal var firebaseApp: FirebaseApp? = null
 
+        // Forces FirebaseCrashlytics to be initialized
         @set:Inject
         internal var crashlytics: FirebaseCrashlytics? = null
 
