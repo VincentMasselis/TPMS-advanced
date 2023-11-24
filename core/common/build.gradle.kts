@@ -18,6 +18,7 @@ dependencies {
     api(libs.kotlinx.coroutines.android)
     api(libs.kotlinx.coroutines.playservices)
     api(libs.kotlinx.coroutines.guava)
-    api(libs.google.firebase)
+    api(platform(libs.google.firebase.bom))
+    api(libs.google.firebase.crashlytics)
     api(platform(libs.androidx.compose.bom))
 }
