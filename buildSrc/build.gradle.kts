@@ -6,12 +6,12 @@ plugins {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions { // New lazy configuration options
+    compilerOptions {
         jvmTarget = JVM_17
         freeCompilerArgs.addAll(
             "-Xexplicit-api=strict",
             "-opt-in=kotlin.RequiresOptIn",
-            "-Xcontext-receivers" // Builds as expected but the IDE is still showing an error
+            "-Xcontext-receivers", // Builds as expected but the IDE is still showing an error,
         )
     }
 }
@@ -23,15 +23,14 @@ repositories {
 }
 
 dependencies {
-    val agpVersion: String by project
-    implementation("com.android.tools.build:gradle:$agpVersion")
+    implementation(libs.android.gradle.plugin)
     // Contains the plugin "org.jetbrains.kotlin.android"
     implementation(embeddedKotlin("gradle-plugin"))
-    // Uncomment the code below to uses a different version of kotlin between "buildSrc" and the main project, /!\ Don't forget to uncomment "kotlinVersion" in "gradle.properties"
-    //val kotlinVersion: String by project
-    //implementation(kotlin("gradle-plugin", kotlinVersion))
-    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.1")
-    implementation("com.google.auth:google-auth-library-oauth2-http:1.18.0")
-    implementation("com.google.apis:google-api-services-androidpublisher:v3-rev20211125-1.32.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    // Uncomment the code below to uses a different version of kotlin between "buildSrc" and the main project
+    //implementation(kotlin("gradle-plugin", "2.0.0"))
+    implementation(libs.detekt.gradle.plugin)
+    implementation(libs.google.oauth2.http)
+    implementation(libs.google.android.publisher)
+    implementation(libs.kotlinx.serialization)
+    implementation(libs.toml)
 }

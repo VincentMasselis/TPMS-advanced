@@ -14,8 +14,8 @@ plugins {
 val isDecrypted: Boolean by rootProject.extra
 if (isDecrypted) {
     // Needs the google-services.json file to work
-    apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
+    apply(plugin = libs.plugins.google.services.get().pluginId)
+    apply(plugin = libs.plugins.crashlytics.get().pluginId)
 
     apply<PlayStorePlugin>()
     configure<PlayStoreExtension> {
@@ -76,7 +76,6 @@ android {
 }
 
 dependencies {
-    val testServicesVersion: String by project
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:debug-ui"))
@@ -92,8 +91,8 @@ dependencies {
     implementation(project(":feature:shortcut"))
 
     testImplementation(project(":core:test"))
-    androidTestUtil("androidx.test:orchestrator:$testServicesVersion")
-    androidTestUtil("androidx.test.services:test-services:$testServicesVersion")
+    androidTestUtil(libs.test.orchestrator)
+    androidTestUtil(libs.test.services)
     androidTestImplementation(project(":core:android-test"))
 }
 

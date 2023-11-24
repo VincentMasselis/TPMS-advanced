@@ -1,12 +1,11 @@
 import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.provideDelegate
 
 plugins {
     kotlin("kapt")
 }
 
 dependencies {
-    val daggerVersion: String by project
+    val daggerVersion = versionsToml().getString("versions.dagger")
     "implementation"("com.google.dagger:dagger:$daggerVersion")
     "kapt"("com.google.dagger:dagger-compiler:$daggerVersion")
 }

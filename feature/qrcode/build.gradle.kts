@@ -18,8 +18,8 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
 
-    implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.2.0")
-    implementation("androidx.camera:camera-camera2:1.2.3")
-    implementation("androidx.camera:camera-lifecycle:1.2.3")
-    implementation("androidx.camera:camera-mlkit-vision:1.3.0-beta01")
+    implementation(libs.google.mlkit.barecode)
+    implementation(libs.androidx.camera2.core)
+    implementation(libs.androidx.camera2.lifecycle)
+    implementation(libs.androidx.camera2.mlkitvision)
 }

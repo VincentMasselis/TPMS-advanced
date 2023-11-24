@@ -4,9 +4,9 @@ buildscript {
 }
 
 plugins {
-    id("com.google.gms.google-services") apply false
-    id("com.google.firebase.crashlytics") apply false
-    id("app.cash.sqldelight") apply false
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.crashlytics) apply false
+    alias(libs.plugins.sqldelight) apply false
 }
 
 task<Delete>("clean") {

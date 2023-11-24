@@ -2,7 +2,7 @@
 
 plugins {
     id("android-lib")
-    id("app.cash.sqldelight")
+    alias(libs.plugins.sqldelight)
     id("dagger")
 }
 
@@ -19,21 +19,19 @@ android {
 
 
 dependencies {
-    val testServicesVersion: String by project
     implementation(project(":core:common"))
     implementation(project(":core:database"))
     implementation(project(":data:unit"))
 
     androidTestImplementation(project(":core:android-test"))
-    androidTestUtil("androidx.test:orchestrator:$testServicesVersion")
+    androidTestUtil(libs.test.orchestrator)
 }
 
 sqldelight {
     databases {
         create("Database") {
-            val sqlDelightVersion: String by project
             packageName = "com.masselis.tpmsadvanced.data.vehicle"
-            dialect("app.cash.sqldelight:sqlite-3-38-dialect:$sqlDelightVersion")
+            dialect(libs.sqldelight.dialect338)
             verifyMigrations = true
             schemaOutputDirectory = file("src/main/sqldelight")
         }

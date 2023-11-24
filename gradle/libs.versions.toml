@@ -1,0 +1,76 @@
+[versions]
+accompanist = "0.32.0"
+coroutine = "1.7.3"
+lifecycle = "2.6.2"
+testServices = "1.4.2"
+sqlDelight = "2.0.0"
+# Check the compatiblity of the compose compiler with the latest kotlin version here https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
+composeCompiler = "1.5.4"
+dagger = "2.47"
+mockk = "1.13.8"
+
+[libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+android-gradle-plugin = "com.android.tools.build:gradle:8.1.4"
+androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
+androidx-camera2-core = "androidx.camera:camera-camera2:1.2.3"
+androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.2.3"
+androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.3.0-beta01"
+androidx-compose-bom = "androidx.compose:compose-bom:2023.04.01"
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+androidx-compose-junit = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-core = "androidx.core:core-ktx:1.12.0"
+androidx-savedstate = "androidx.savedstate:savedstate-ktx:1.2.1"
+androidx-startup = "androidx.startup:startup-runtime:1.1.1"
+androidx-test-junit = "androidx.test.ext:junit:1.1.5"
+androidx-test-core = "androidx.test:core-ktx:1.5.0"
+androidx-test-expresso = "androidx.test.espresso:espresso-core:3.5.1"
+androidx-test-runner = "androidx.test:runner:1.5.2"
+androidx-test-rules = "androidx.test:rules:1.5.0"
+androidx-activity = "androidx.activity:activity-ktx:1.7.2"
+androidx-fragment = "androidx.fragment:fragment-ktx:1.6.0"
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-activity = "androidx.activity:activity-compose:1.7.2"
+compose-constraintlayout = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+compose-navigation = "androidx.navigation:navigation-compose:2.5.3"
+detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.1"
+google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20211125-1.32.1"
+google-firebase = "com.google.firebase:firebase-crashlytics-ktx:18.4.1"
+google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.2.0"
+google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.18.0"
+junit = "junit:junit:4.13.2"
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
+kotlinx-collection = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutine" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutine" }
+kotlinx-coroutines-playservices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutine" }
+kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "coroutine" }
+kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0"
+lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "lifecycle" }
+lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
+material3 = "androidx.compose.material3:material3:1.1.0-rc01"
+material = "com.google.android.material:material:1.9.0"
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
+sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
+sqldelight-coroutines-jvm = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqlDelight" }
+sqldelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqlDelight" }
+sqldelight-dialect338 = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqlDelight" }
+sqldelight-requery = "com.github.requery:sqlite-android:3.42.0"
+test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "testServices" }
+test-services = { module = "androidx.test.services:test-services", version.ref = "testServices" }
+toml = "org.tomlj:tomlj:1.0.0"
+turbine = "app.cash.turbine:turbine:1.0.0"
+
+[plugins]
+crashlytics = "com.google.firebase.crashlytics:2.9.6"
+google-services = "com.google.gms.google-services:4.3.15"
+sqldelight = "app.cash.sqldelight:2.0.0"
