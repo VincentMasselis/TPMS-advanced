@@ -5,8 +5,9 @@ testServices = "1.4.2"
 sqlDelight = "2.0.1"
 # Check the compatiblity of the compose compiler with the latest kotlin version here https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
 composeCompiler = "1.5.4"
-dagger = "2.48.1"
+dagger = "2.49"
 mockk = "1.13.8"
+ksp = "1.0.14"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.32.0"
@@ -45,6 +46,7 @@ google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlyti
 google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0"
 google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.18.0"
 junit = "junit:junit:4.13.2"
+ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlinx-collection = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"

@@ -17,7 +17,6 @@ android {
     testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
 }
 
-
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:database"))
