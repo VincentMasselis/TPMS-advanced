@@ -34,5 +34,4 @@ dependencies {
     implementation(libs.google.oauth2.http)
     implementation(libs.google.android.publisher)
     implementation(libs.kotlinx.serialization)
-    implementation(libs.toml)
 }

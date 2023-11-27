@@ -69,7 +69,6 @@ sqldelight-dialect338 = { module = "app.cash.sqldelight:sqlite-3-38-dialect", ve
 sqldelight-requery = "com.github.requery:sqlite-android:3.42.0"
 test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "testServices" }
 test-services = { module = "androidx.test.services:test-services", version.ref = "testServices" }
-toml = "org.tomlj:tomlj:1.0.0"
 turbine = "app.cash.turbine:turbine:1.0.0"
 
 [plugins]
