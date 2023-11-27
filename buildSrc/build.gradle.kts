@@ -5,6 +5,8 @@ plugins {
     `kotlin-dsl`
 }
 
+println("Embedded Kotlin version: $embeddedKotlinVersion")
+
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
         jvmTarget = JVM_17

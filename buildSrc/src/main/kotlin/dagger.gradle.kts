@@ -5,7 +5,6 @@ plugins {
 }
 
 dependencies {
-    val daggerVersion = versionsToml().getString("versions.dagger")
-    "implementation"("com.google.dagger:dagger:$daggerVersion")
-    "kapt"("com.google.dagger:dagger-compiler:$daggerVersion")
+    "implementation"(versionCatalog.findLibrary("dagger-lib").get())
+    "kapt"(versionCatalog.findLibrary("dagger-compiler").get())
 }

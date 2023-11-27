@@ -83,7 +83,7 @@ public fun Project.enableCompose(android: BaseExtension) {
     with(android) {
         buildFeatures.compose = true
         composeOptions {
-            kotlinCompilerExtensionVersion = versionsToml().getString("versions.composeCompiler")
+            kotlinCompilerExtensionVersion = versionCatalog.findVersion("composeCompiler").get().toString()
         }
     }
     dependencies {
