@@ -1,10 +1,10 @@
 plugins {
     id("android-lib")
+    id("compose")
 }
 
 android {
     namespace = "com.masselis.tpmsadvanced.core.ui"
-    enableCompose(this)
 }
 
 dependencies {

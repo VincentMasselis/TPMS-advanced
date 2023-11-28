@@ -1,4 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+@file:Suppress("UnstableApiUsage")
+
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.Companion.DEFAULT
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -7,14 +9,20 @@ plugins {
 
 println("Embedded Kotlin version: $embeddedKotlinVersion")
 
-tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget = JVM_17
-        freeCompilerArgs.addAll(
-            "-Xexplicit-api=strict",
-            "-opt-in=kotlin.RequiresOptIn",
-            "-Xcontext-receivers", // Builds as expected but the IDE is still showing an error,
-        )
+// Replaces the default configuration applied by KotlinDslCompilerPlugins.kt
+kotlinDslPluginOptions {
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            // Uses the embedded kotlin api and language version instead of the default language
+            // version from the KotlinDSL plugin
+            apiVersion = DEFAULT
+            languageVersion = DEFAULT
+            freeCompilerArgs.addAll(
+                "-Xexplicit-api=strict",
+                "-opt-in=kotlin.RequiresOptIn",
+                "-Xcontext-receivers", // Builds as expected but the IDE is still showing an error,
+            )
+        }
     }
 }
 

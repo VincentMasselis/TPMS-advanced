@@ -8,6 +8,7 @@ import com.masselis.tpmsadvanced.playstore.UpdatePlayStoreScreenshots
 
 plugins {
     id("android-app")
+    id("compose")
     id("dagger")
 }
 
@@ -72,7 +73,6 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    enableCompose(this)
 }
 
 dependencies {

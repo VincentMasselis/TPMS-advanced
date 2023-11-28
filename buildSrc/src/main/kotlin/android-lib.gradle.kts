@@ -1,11 +1,10 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
-    id("kotlin-parcelize")
+    com.android.library
+    `kotlin-parcelize`
+    id("android-common")
 }
 
 android {
-    base(this)
     defaultConfig {
         consumerProguardFile("consumer-rules.pro")
     }

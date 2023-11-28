@@ -1,11 +1,11 @@
 plugins {
     id("android-lib")
+    id("compose")
     id("dagger")
 }
 
 android {
     namespace = "com.masselis.tpmsadvanced.feature.background"
-    enableCompose(this)
 }
 
 dependencies {
