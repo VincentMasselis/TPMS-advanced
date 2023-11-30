@@ -20,9 +20,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.masselis.tpmsadvanced.core.common.invoke
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent.Companion.PreconditionsViewModel
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalComponent.Companion.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.ui.BluetoothState
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.rememberBluetoothState

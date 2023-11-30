@@ -17,7 +17,7 @@ import androidx.core.app.ServiceCompat.stopForeground
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
+import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
@@ -47,7 +47,7 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class ServiceNotifier @Inject constructor(
     @Named("base") vehicle: Vehicle,
     scope: CoroutineScope,
-    findTyreComponentUseCase: FindTyreComponentUseCase,
+    tyreComponent: (@JvmSuppressWildcards Vehicle.Kind.Location) -> @JvmSuppressWildcards TyreComponent,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
     foregroundService: Service?,
@@ -71,7 +71,7 @@ internal class ServiceNotifier @Inject constructor(
         vehicle
             .kind
             .locations
-            .map { findTyreComponentUseCase(it) }
+            .map { tyreComponent(it) }
             .let { comps ->
                 combine(
                     combine(comps.map { it.tyreAtmosphereUseCase.listen() }) { it }

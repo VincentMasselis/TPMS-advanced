@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
-import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -19,9 +19,10 @@ import javax.inject.Inject
 @OptIn(DelicateCoroutinesApi::class)
 @FeatureCoreComponent.Scope
 internal class VehicleComponentCacheUseCase @Inject internal constructor(
-    vehicleDatabase: VehicleDatabase
-) {
-    private val cache = ConcurrentHashMap<UUID, VehicleComponent>()
+    vehicleDatabase: VehicleDatabase,
+    @Suppress("MaxLineLength") private val vehicleComponentFactory: (@JvmSuppressWildcards Vehicle) -> @JvmSuppressWildcards InternalVehicleComponent,
+) : (Vehicle) -> InternalVehicleComponent {
+    private val cache = ConcurrentHashMap<UUID, InternalVehicleComponent>()
 
     init {
         vehicleDatabase
@@ -37,6 +38,8 @@ internal class VehicleComponentCacheUseCase @Inject internal constructor(
             .launchIn(GlobalScope)
     }
 
-    fun find(vehicle: Vehicle, factory: (Any) -> VehicleComponent): VehicleComponent =
-        cache.computeIfAbsent(vehicle.uuid, factory)
+    override fun invoke(vehicle: Vehicle): InternalVehicleComponent =
+        cache.computeIfAbsent(vehicle.uuid) {
+            vehicleComponentFactory(vehicle)
+        }
 }

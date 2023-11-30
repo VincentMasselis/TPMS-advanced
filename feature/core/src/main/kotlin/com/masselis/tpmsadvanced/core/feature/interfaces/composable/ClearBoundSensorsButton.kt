@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.ClearBoundSensorsButtonTags.tag
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 
 @Composable
@@ -29,7 +30,8 @@ internal fun ClearBoundSensorsButton(
     viewModel: ClearBoundSensorsViewModel = viewModel(
         key = "ClearBoundSensorsButton_${vehicleComponent.vehicle.uuid}"
     ) {
-        vehicleComponent.ClearBoundSensorsViewModel(createSavedStateHandle())
+        (vehicleComponent as InternalVehicleComponent)
+            .ClearBoundSensorsViewModel(createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()

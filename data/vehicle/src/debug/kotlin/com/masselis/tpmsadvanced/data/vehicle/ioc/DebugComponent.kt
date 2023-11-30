@@ -5,12 +5,12 @@ import com.masselis.tpmsadvanced.data.vehicle.Database
 import dagger.Subcomponent
 
 @Subcomponent
-public abstract class DebugComponent {
+internal interface DebugComponent {
     @Subcomponent.Factory
-    public interface Factory {
-        public fun build(): DebugComponent
+    interface Factory {
+        fun build(): DebugComponent
     }
 
-    internal abstract val driver: SqlDriver
-    internal abstract val database: Database
+    val driver: SqlDriver
+    val database: Database
 }

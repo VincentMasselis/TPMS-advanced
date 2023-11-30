@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.core.common.invoke
 import com.masselis.tpmsadvanced.core.feature.unit.ioc.FeatureUnitComponent.Companion.UnitsViewModel
 import com.masselis.tpmsadvanced.core.ui.EnumDropdown
 import java.util.*

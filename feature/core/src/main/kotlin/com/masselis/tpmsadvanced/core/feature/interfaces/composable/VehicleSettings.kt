@@ -13,6 +13,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.Separator
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
@@ -29,7 +30,7 @@ public fun VehicleSettings(
         backgroundSettings,
         vehicleComponent,
         viewModel(key = "VehicleSettingsViewModel_${vehicleComponent.vehicle.uuid}") {
-            vehicleComponent.VehicleSettingsViewModel()
+            (vehicleComponent as InternalVehicleComponent).VehicleSettingsViewModel()
         }
     )
 }
@@ -41,7 +42,7 @@ internal fun VehicleSettings(
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     vehicleSettingsViewModel: VehicleSettingsViewModel = viewModel(
         key = "VehicleSettingsViewModel_${vehicleComponent.vehicle.uuid}"
-    ) { vehicleComponent.VehicleSettingsViewModel() }
+    ) { (vehicleComponent as InternalVehicleComponent).VehicleSettingsViewModel() }
 ) {
     val component = LocalVehicleComponent.current
     Column(modifier) {

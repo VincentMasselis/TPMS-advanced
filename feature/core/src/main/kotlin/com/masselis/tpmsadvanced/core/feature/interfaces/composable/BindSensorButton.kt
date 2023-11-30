@@ -26,6 +26,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTa
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags.Dialog.cancelTag
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 
@@ -37,7 +38,8 @@ internal fun BindSensorButton(
     viewModel: BindSensorButtonViewModel = viewModel(
         key = "BindSensorButtonViewModel_${vehicleComponent.vehicle.uuid}_${location}"
     ) {
-        vehicleComponent.TyreComponent(location)
+        (vehicleComponent as InternalVehicleComponent)
+            .InternalTyreComponent(location)
             .BindSensorButtonViewModel(createSavedStateHandle())
     }
 ) {

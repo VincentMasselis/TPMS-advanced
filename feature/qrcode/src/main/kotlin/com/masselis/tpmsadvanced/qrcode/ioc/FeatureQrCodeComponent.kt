@@ -6,9 +6,8 @@ import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel
 import dagger.Component
-import javax.inject.Inject
-import javax.inject.Provider
 
+@Suppress("PropertyName")
 @FeatureQrCodeComponent.Scope
 @Component(
     dependencies = [
@@ -17,38 +16,18 @@ import javax.inject.Provider
         FeatureCoreComponent::class
     ]
 )
-public interface FeatureQrCodeComponent {
-    @Component.Factory
-    public abstract class Factory {
-        internal abstract fun build(
-            coreCommonComponent: CoreCommonComponent,
-            dataVehicleComponent: DataVehicleComponent,
-            featureCoreComponent: FeatureCoreComponent
-        ): FeatureQrCodeComponent
-    }
-
+internal interface FeatureQrCodeComponent {
     @javax.inject.Scope
-    public annotation class Scope
+    annotation class Scope
 
-    public fun inject(companion: Injectable)
+    @Suppress("VariableNaming")
+    val QrCodeViewModel: QRCodeViewModel.Factory
+    fun CameraPreconditionsViewModel(): CameraPreconditionsViewModel
 
-    public companion object : Injectable()
-
-    @Suppress("PropertyName", "VariableNaming")
-    public abstract class Injectable protected constructor() :
-        FeatureQrCodeComponent by DaggerFeatureQrCodeComponent
-            .factory()
-            .build(CoreCommonComponent, DataVehicleComponent, FeatureCoreComponent) {
-
-        @Inject
-        internal lateinit var QrCodeViewModel: QRCodeViewModel.Factory
-
-        @Inject
-        internal lateinit var CameraPreconditionsViewModel: Provider<CameraPreconditionsViewModel>
-
-        init {
-            @Suppress("LeakingThis")
-            inject(this)
-        }
-    }
+    companion object : FeatureQrCodeComponent by DaggerFeatureQrCodeComponent
+        .builder()
+        .coreCommonComponent(CoreCommonComponent)
+        .dataVehicleComponent(DataVehicleComponent)
+        .featureCoreComponent(FeatureCoreComponent)
+        .build()
 }

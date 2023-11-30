@@ -19,6 +19,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel.State
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
@@ -36,8 +37,8 @@ internal fun TyreStat(
     viewModel: TyreStatsViewModel = viewModel(
         key = "TyreStatsViewModel_${vehicleComponent.vehicle.uuid}_${location}"
     ) {
-        vehicleComponent
-            .TyreComponent(location)
+        (vehicleComponent as InternalVehicleComponent)
+            .InternalTyreComponent(location)
             .TyreStatViewModel(createSavedStateHandle())
     }
 ) {

@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.restartApp
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
@@ -55,8 +56,8 @@ internal fun Tyre(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${vehicleComponent.vehicle.uuid}_${location}") {
-        vehicleComponent
-            .TyreComponent(location)
+        (vehicleComponent as InternalVehicleComponent)
+            .InternalTyreComponent(location)
             .TyreViewModel(createSavedStateHandle())
     },
 ) {

@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.data.vehicle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
-import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
+import com.masselis.tpmsadvanced.data.vehicle.ioc.InternalComponent
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
@@ -30,7 +30,7 @@ internal class SensorDatabaseTest {
     @Before
     fun setup() {
         appContext.getDatabasePath("car.db").delete()
-        val debugComponent = DataVehicleComponent.debugComponentFactory.build()
+        val debugComponent = InternalComponent.debugComponentFactory.build()
         database = debugComponent.database
         vehicleQueries = database.vehicleQueries
         sensorQueries = database.sensorQueries

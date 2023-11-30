@@ -5,43 +5,35 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.BindsInstance
 import dagger.Component
-import javax.inject.Inject
+
+public interface CoreCommonComponent {
+
+    public val context: Context
+
+    public companion object : CoreCommonComponent by InternalComponent
+}
 
 @Component(
     modules = [
         FirebaseModule::class
     ]
 )
-public interface CoreCommonComponent {
+internal interface InternalComponent : CoreCommonComponent {
 
     @Component.Factory
-    public abstract class Factory {
-        internal abstract fun build(@BindsInstance context: Context): CoreCommonComponent
+    interface Factory {
+        fun build(@BindsInstance context: Context = appContext): InternalComponent
     }
 
-    public val context: Context
+    val firebaseApp: FirebaseApp?
+    val crashlytics: FirebaseCrashlytics?
 
-    public fun inject(injectable: Injectable)
-
-    public companion object : Injectable()
-
-    @Suppress("unused")
-    public abstract class Injectable protected constructor() :
-        CoreCommonComponent by DaggerCoreCommonComponent
-            .factory()
-            .build(appContext) {
-
-        // Forces FirebaseApp to be initialized
-        @set:Inject
-        internal var firebaseApp: FirebaseApp? = null
-
-        // Forces FirebaseCrashlytics to be initialized
-        @set:Inject
-        internal var crashlytics: FirebaseCrashlytics? = null
-
+    companion object : InternalComponent by DaggerInternalComponent.factory().build() {
         init {
-            @Suppress("LeakingThis")
-            inject(this)
+            // Forces FirebaseApp to be initialized
+            firebaseApp
+            // Forces FirebaseCrashlytics to be initialized
+            crashlytics
         }
     }
 }

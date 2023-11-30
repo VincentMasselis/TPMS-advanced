@@ -19,10 +19,10 @@ import javax.inject.Named
         FeatureBackgroundComponent::class,
     ],
 )
-internal abstract class BackgroundVehicleComponent {
+internal interface BackgroundVehicleComponent {
     @Component.Factory
-    protected abstract class Factory {
-        abstract fun build(
+    interface Factory {
+        fun build(
             @BindsInstance foregroundService: Service?,
             vehicleComponent: VehicleComponent,
             @BindsInstance scope: CoroutineScope,
@@ -32,15 +32,15 @@ internal abstract class BackgroundVehicleComponent {
     }
 
     @javax.inject.Scope
-    internal annotation class Scope
+    annotation class Scope
 
     @get:Named("base")
-    abstract val vehicle: Vehicle
+    val vehicle: Vehicle
 
-    abstract val scope: CoroutineScope
-    abstract val foregroundService: Service?
+    val scope: CoroutineScope
+    val foregroundService: Service?
 
-    abstract val serviceNotifier: ServiceNotifier
+    val serviceNotifier: ServiceNotifier
 
     companion object : (Service?, Vehicle) -> BackgroundVehicleComponent {
         override fun invoke(

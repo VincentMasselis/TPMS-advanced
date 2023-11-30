@@ -7,18 +7,8 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import dagger.Component
 
-@DataVehicleComponent.Scope
-@Component(
-    dependencies = [CoreCommonComponent::class],
-    modules = [Module::class]
-)
-public interface DataVehicleComponent {
-    @Component.Factory
-    public abstract class Factory {
-        internal abstract fun build(coreCommonComponent: CoreCommonComponent): DataVehicleComponent
-    }
 
-    public val debugComponentFactory: DebugComponent.Factory
+public interface DataVehicleComponent {
 
     public val vehicleDatabase: VehicleDatabase
     public val sensorDatabase: SensorDatabase
@@ -28,7 +18,20 @@ public interface DataVehicleComponent {
     @javax.inject.Scope
     public annotation class Scope
 
-    public companion object : DataVehicleComponent by DaggerDataVehicleComponent
-        .factory()
-        .build(CoreCommonComponent)
+    public companion object : DataVehicleComponent by InternalComponent
+}
+
+@DataVehicleComponent.Scope
+@Component(
+    dependencies = [CoreCommonComponent::class],
+    modules = [Module::class]
+)
+internal interface InternalComponent : DataVehicleComponent {
+
+    val debugComponentFactory: DebugComponent.Factory
+
+    companion object : InternalComponent by DaggerInternalComponent
+        .builder()
+        .coreCommonComponent(CoreCommonComponent)
+        .build()
 }

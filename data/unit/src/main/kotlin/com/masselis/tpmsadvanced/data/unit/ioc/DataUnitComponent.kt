@@ -9,10 +9,6 @@ import dagger.Component
     dependencies = [CoreCommonComponent::class]
 )
 public interface DataUnitComponent {
-    @Component.Factory
-    public abstract class Factory {
-        internal abstract fun build(coreCommonComponent: CoreCommonComponent): DataUnitComponent
-    }
 
     public val unitPreferences: UnitPreferences
 
@@ -20,6 +16,7 @@ public interface DataUnitComponent {
     public annotation class Scope
 
     public companion object : DataUnitComponent by DaggerDataUnitComponent
-        .factory()
-        .build(CoreCommonComponent)
+        .builder()
+        .coreCommonComponent(CoreCommonComponent)
+        .build()
 }

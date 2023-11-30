@@ -5,7 +5,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
-import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
+import com.masselis.tpmsadvanced.feature.background.ioc.InternalComponent
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
-public class MonitorService : Service() {
+internal class MonitorService : Service() {
 
     @Inject
     internal lateinit var vehiclesToMonitorUseCase: VehiclesToMonitorUseCase
@@ -27,7 +27,7 @@ public class MonitorService : Service() {
     private lateinit var scope: CoroutineScope
 
     init {
-        FeatureBackgroundComponent.inject(this)
+        InternalComponent.inject(this)
     }
 
     @SuppressLint("MissingPermission")

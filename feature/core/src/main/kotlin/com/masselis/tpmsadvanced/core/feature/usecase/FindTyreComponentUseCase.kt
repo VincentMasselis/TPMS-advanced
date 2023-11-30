@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalTyreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreAxleQualifier
-import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreLocationQualifier
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreSideQualifier
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
@@ -18,20 +18,20 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @Suppress("LongParameterList")
-public class FindTyreComponentUseCase @Inject internal constructor(
+internal class FindTyreComponentUseCase @Inject internal constructor(
     @Named("base") private val vehicle: Vehicle,
-    @TyreLocationQualifier(FRONT_LEFT) private val frontLeft: Lazy<TyreComponent>,
-    @TyreLocationQualifier(FRONT_RIGHT) private val frontRight: Lazy<TyreComponent>,
-    @TyreLocationQualifier(REAR_LEFT) private val rearLeft: Lazy<TyreComponent>,
-    @TyreLocationQualifier(REAR_RIGHT) private val rearRight: Lazy<TyreComponent>,
-    @TyreAxleQualifier(FRONT) private val front: Lazy<TyreComponent>,
-    @TyreAxleQualifier(REAR) private val rear: Lazy<TyreComponent>,
-    @TyreSideQualifier(LEFT) private val left: Lazy<TyreComponent>,
-    @TyreSideQualifier(RIGHT) private val right: Lazy<TyreComponent>,
-) : (Vehicle.Kind.Location) -> TyreComponent {
+    @TyreLocationQualifier(FRONT_LEFT) private val frontLeft: Lazy<InternalTyreComponent>,
+    @TyreLocationQualifier(FRONT_RIGHT) private val frontRight: Lazy<InternalTyreComponent>,
+    @TyreLocationQualifier(REAR_LEFT) private val rearLeft: Lazy<InternalTyreComponent>,
+    @TyreLocationQualifier(REAR_RIGHT) private val rearRight: Lazy<InternalTyreComponent>,
+    @TyreAxleQualifier(FRONT) private val front: Lazy<InternalTyreComponent>,
+    @TyreAxleQualifier(REAR) private val rear: Lazy<InternalTyreComponent>,
+    @TyreSideQualifier(LEFT) private val left: Lazy<InternalTyreComponent>,
+    @TyreSideQualifier(RIGHT) private val right: Lazy<InternalTyreComponent>,
+) : (Vehicle.Kind.Location) -> InternalTyreComponent {
 
     @Suppress("MaxLineLength")
-    public fun find(location: Vehicle.Kind.Location): TyreComponent {
+    fun find(location: Vehicle.Kind.Location): InternalTyreComponent {
         assert(vehicle.kind.locations.contains(location)) {
             "Cannot get a TyreComponent for the filled location $location according to the vehicle kind ${vehicle.kind}"
         }
@@ -55,6 +55,6 @@ public class FindTyreComponentUseCase @Inject internal constructor(
         }.get()
     }
 
-    override fun invoke(p1: Vehicle.Kind.Location): TyreComponent = find(p1)
+    override fun invoke(p1: Vehicle.Kind.Location): InternalTyreComponent = find(p1)
 
 }

@@ -15,7 +15,8 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
-import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
@@ -87,8 +88,10 @@ internal fun TemperatureInfo(
     )
 }
 
-private class DemoVehicleComponent : VehicleComponent() {
-    override val TyreComponent: FindTyreComponentUseCase
+private class DemoVehicleComponent : InternalVehicleComponent {
+    override val TyreComponent: (Location) -> TyreComponent
+        get() = error("Not implemented")
+    override val InternalTyreComponent: FindTyreComponentUseCase
         get() = error("Not implemented")
     override val vehicle: Vehicle
         get() = error("Not implemented")

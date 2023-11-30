@@ -5,13 +5,24 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicl
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.VehicleComponentCacheUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
 import com.masselis.tpmsadvanced.data.app.ioc.DataAppComponent
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import dagger.Component
-import javax.inject.Inject
-import javax.inject.Provider
+
+public interface FeatureCoreComponent {
+
+    @javax.inject.Scope
+    public annotation class Scope
+
+    public val currentVehicleUseCase: CurrentVehicleUseCase
+    public val noveltyUseCase: NoveltyUseCase
+    public val vehicleListUseCase: VehicleListUseCase
+
+    public companion object : FeatureCoreComponent by InternalComponent
+}
 
 @Suppress("PropertyName")
 @FeatureCoreComponent.Scope
@@ -26,45 +37,20 @@ import javax.inject.Provider
         DataAppComponent::class,
     ]
 )
-public interface FeatureCoreComponent {
+internal interface InternalComponent : FeatureCoreComponent {
 
-    @Component.Factory
-    public abstract class Factory {
-        internal abstract fun build(
-            coreCommonComponent: CoreCommonComponent,
-            dataUnitComponent: DataUnitComponent,
-            dataVehicleComponent: DataVehicleComponent,
-            dataAppComponent: DataAppComponent,
-        ): FeatureCoreComponent
-    }
+    fun PreconditionsViewModel(): PreconditionsViewModel
 
-    @javax.inject.Scope
-    public annotation class Scope
+    @Suppress("VariableNaming")
+    val CurrentVehicleDropdownViewModel: CurrentVehicleDropdownViewModel.Factory
 
-    public val currentVehicleUseCase: CurrentVehicleUseCase
-    public val noveltyUseCase: NoveltyUseCase
-    public val vehicleListUseCase: VehicleListUseCase
+    val vehicleComponentCacheUseCase: VehicleComponentCacheUseCase
 
-    public fun inject(injectable: Injectable)
-    public fun inject(injectable: VehicleComponent.Injectable)
-
-    public companion object : Injectable()
-
-    @Suppress("PropertyName", "VariableNaming")
-    public abstract class Injectable protected constructor() :
-        FeatureCoreComponent by DaggerFeatureCoreComponent
-            .factory()
-            .build(CoreCommonComponent, DataUnitComponent, DataVehicleComponent, DataAppComponent) {
-
-        @Inject
-        internal lateinit var PreconditionsViewModel: Provider<PreconditionsViewModel>
-
-        @Inject
-        internal lateinit var CurrentVehicleDropdownViewModel: CurrentVehicleDropdownViewModel.Factory
-
-        init {
-            @Suppress("LeakingThis")
-            inject(this)
-        }
-    }
+    companion object : InternalComponent by DaggerInternalComponent
+        .builder()
+        .coreCommonComponent(CoreCommonComponent)
+        .dataUnitComponent(DataUnitComponent)
+        .dataVehicleComponent(DataVehicleComponent)
+        .dataAppComponent(DataAppComponent)
+        .build()
 }

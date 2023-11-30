@@ -7,8 +7,9 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalTyreComponent
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
-import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
@@ -36,14 +37,14 @@ internal class PreviewTyreComponent(
             override fun invoke(savedStateHandle: SavedStateHandle): BindSensorButtonViewModel =
                 previewBindSensorViewModel()
         }
-) : TyreComponent() {
+) : InternalTyreComponent {
     override val tyreAtmosphereUseCase: TyreAtmosphereUseCase
         get() = error("Not implemented")
 }
 
 @Suppress("LongParameterList")
 internal class PreviewVehicleComponent(
-    override val TyreComponent: FindTyreComponentUseCase =
+    override val InternalTyreComponent: FindTyreComponentUseCase =
         mockk<FindTyreComponentUseCase>().also {
             every { it.find(any()) } returns PreviewTyreComponent()
         },
@@ -54,7 +55,10 @@ internal class PreviewVehicleComponent(
             override fun invoke(savedStateHandle: SavedStateHandle): ClearBoundSensorsViewModel =
                 previewClearBoundSensorsViewModel()
         },
-) : VehicleComponent() {
+) : InternalVehicleComponent {
+    override val TyreComponent: (Vehicle.Kind.Location) -> TyreComponent
+        get() = InternalTyreComponent
+
     override fun VehicleSettingsViewModel(): VehicleSettingsViewModel =
         previewVehicleSettingsViewModel()
 
