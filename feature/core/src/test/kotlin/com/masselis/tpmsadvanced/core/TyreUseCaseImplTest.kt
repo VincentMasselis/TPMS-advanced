@@ -54,7 +54,7 @@ internal class TyreUseCaseImplTest {
             val uuid = UUID.randomUUID()
             every { this@mockk.uuid } returns uuid
         }
-        locations = SensorLocation.values().toSet()
+        locations = SensorLocation.entries.toSet()
         tyreDatabase = mockk {
             coEvery { insert(any(), any()) } returns Unit
             every { latestByTyreLocationByVehicle(any(), any()) } returns null

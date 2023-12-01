@@ -5,6 +5,10 @@ import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.getBroadcast
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.Q
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_LOW
@@ -12,6 +16,7 @@ import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_MAX
+import androidx.core.app.ServiceCompat
 import androidx.core.app.ServiceCompat.STOP_FOREGROUND_REMOVE
 import androidx.core.app.ServiceCompat.stopForeground
 import androidx.core.app.TaskStackBuilder
@@ -151,7 +156,17 @@ internal class ServiceNotifier @Inject constructor(
                     .build()
             }
             .onEach {
-                foregroundService?.startForeground(vehicle.uuid.hashCode(), it)
+                foregroundService
+                    ?.apply {
+                        if (SDK_INT >= Q)
+                            startForeground(
+                                vehicle.uuid.hashCode(),
+                                it,
+                                FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+                            )
+                        else
+                            startForeground(vehicle.uuid.hashCode(), it)
+                    }
                     ?: notificationManager.notify(vehicle.uuid.hashCode(), it)
             }
             .onCompletion { _ ->

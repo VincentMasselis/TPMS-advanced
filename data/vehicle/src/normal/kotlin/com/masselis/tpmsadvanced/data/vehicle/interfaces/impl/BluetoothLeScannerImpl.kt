@@ -126,7 +126,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             @Suppress("MagicNumber")
             Tyre(
                 now(),
-                SensorLocation.values().first { it.byte == raw.location() },
+                SensorLocation.entries.first { it.byte == raw.location() },
                 ByteBuffer
                     .wrap(byteArrayOf(0x00) + raw.id())
                     .order(ByteOrder.LITTLE_ENDIAN)

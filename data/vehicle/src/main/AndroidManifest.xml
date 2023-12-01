@@ -26,5 +26,6 @@
         android:usesPermissionFlags="neverForLocation"
         tools:ignore="UnusedAttribute" />
 
+    <!-- Required to enable the bluetooth chip -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 </manifest>

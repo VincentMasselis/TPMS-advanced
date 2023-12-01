@@ -23,7 +23,7 @@ public class UnitPreferences @Inject internal constructor(
     public val pressure: MutableStateFlow<PressureUnit> = observableStateFlow(
         sharedPreferences
             .getString("PRESSURE", null)
-            ?.let { name -> PressureUnit.values().first { it.name == name } }
+            ?.let { name -> PressureUnit.entries.first { it.name == name } }
             ?: when (Locale.getDefault().isO3Country) {
                 @Suppress("MaxLineLength")
                 "ARG", "BRA", "USA", "CHL", "MEX", "GBR", "IND", "HKG", "CAN", "AUS", "NZL", "IRL", "BHS", "PER" -> PressureUnit.PSI
@@ -37,7 +37,7 @@ public class UnitPreferences @Inject internal constructor(
     public val temperature: MutableStateFlow<TemperatureUnit> = observableStateFlow(
         sharedPreferences
             .getString("TEMPERATURE", null)
-            ?.let { name -> TemperatureUnit.values().first { it.name == name } }
+            ?.let { name -> TemperatureUnit.entries.first { it.name == name } }
             ?: when (Locale.getDefault().isO3Country) {
                 "USA" -> TemperatureUnit.FAHRENHEIT
                 else -> TemperatureUnit.CELSIUS

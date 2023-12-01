@@ -163,7 +163,7 @@ private fun AddVehicle(
                         .focusRequester(focusRequester)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Vehicle.Kind.values().forEach { kind ->
+                Vehicle.Kind.entries.forEach { kind ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier

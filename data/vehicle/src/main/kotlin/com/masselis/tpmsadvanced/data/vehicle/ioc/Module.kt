@@ -35,8 +35,7 @@ internal object Module {
 
     @Provides
     fun tyreLocationAdapter() = object : ColumnAdapter<SensorLocation, Long> {
-        override fun decode(databaseValue: Long): SensorLocation = SensorLocation
-            .values()
+        override fun decode(databaseValue: Long): SensorLocation = SensorLocation.entries
             .first { it.ordinal.toLong() == databaseValue }
 
         override fun encode(value: SensorLocation): Long = value.ordinal.toLong()
