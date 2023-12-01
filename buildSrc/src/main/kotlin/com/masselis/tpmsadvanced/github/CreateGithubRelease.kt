@@ -7,7 +7,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.of
 import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
@@ -15,16 +14,17 @@ import javax.inject.Inject
 
 internal abstract class CreateGithubRelease : DefaultTask() {
 
-    private val githubToken = project.extensions.getByType<GithubExtension>().githubToken
+    @get:Input
+    abstract val githubToken: Property<String>
 
     @get:Input
-    public abstract val tagName: Property<String>
+    abstract val tagName: Property<String>
 
     @get:Inject
-    internal abstract val providerFactory: ProviderFactory
+    abstract val providerFactory: ProviderFactory
 
     @get:Inject
-    internal abstract val execOperations: ExecOperations
+    abstract val execOperations: ExecOperations
 
     init {
         group = "publishing"

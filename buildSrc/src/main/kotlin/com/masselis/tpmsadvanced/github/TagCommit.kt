@@ -10,10 +10,10 @@ import javax.inject.Inject
 internal abstract class TagCommit : DefaultTask() {
 
     @get:Input
-    public abstract val tag: Property<String>
+    abstract val tag: Property<String>
 
     @get:Inject
-    internal abstract val execOperations: ExecOperations
+    abstract val execOperations: ExecOperations
 
     init {
         group = "publishing"

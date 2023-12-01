@@ -12,13 +12,14 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.registerIfAbsent
 import java.io.File
+import org.gradle.kotlin.dsl.the
 
-@Suppress("NAME_SHADOWING")
+@Suppress("UnstableApiUsage")
 public class GithubPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        project.extensions.create<GithubExtension>("github")
+        val ext = project.extensions.create<GithubExtension>("github")
 
-        with(project.extensions.getByType(ApplicationAndroidComponentsExtension::class)) {
+        project.the<ApplicationAndroidComponentsExtension>().apply {
             onVariants { variant ->
                 if (variant.isMinifyEnabled.not())
                     return@onVariants
@@ -30,10 +31,12 @@ public class GithubPlugin : Plugin<Project> {
                     tag = versionCodeTag
                 }
                 project.tasks.create<CreateGithubRelease>("createGithubRelease$variantName") {
-                        dependsOn(tagCommit)
-                        tagName = versionCodeTag
-                    }
+                    dependsOn(tagCommit)
+                    githubToken = ext.githubToken
+                    tagName = versionCodeTag
+                }
                 project.tasks.create<PromoteGithubRelease>("promoteGithubRelease$variantName") {
+                    githubToken = ext.githubToken
                     tagName = versionCodeTag
                 }
             }
