@@ -42,4 +42,9 @@ dependencies {
     implementation(libs.google.oauth2.http)
     implementation(libs.google.android.publisher)
     implementation(libs.kotlinx.serialization)
+    implementation(
+        libs.ksp.gradle.plugin.get()
+            .copy()
+            .apply { version { prefer("$embeddedKotlinVersion-${libs.versions.ksp.get()}") } }
+    )
 }
