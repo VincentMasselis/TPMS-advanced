@@ -13,11 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.BuildConfig
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.VehicleSettings
 import com.masselis.tpmsadvanced.core.feature.unit.interfaces.UnitsSettings
 import com.masselis.tpmsadvanced.core.ui.Separator
+import com.masselis.tpmsadvanced.interfaces.composable.SettingsTag.vehicle
 
 @Composable
 internal fun Settings(
@@ -31,6 +33,7 @@ internal fun Settings(
     Separator()
     VehicleSettings(
         // backgroundSettings = { AutomaticBackgroundSettings(it) }
+        Modifier.testTag(vehicle)
     )
     Separator()
     Box(Modifier.fillMaxWidth()) {
@@ -42,4 +45,8 @@ internal fun Settings(
     }
 
     Spacer(modifier = Modifier.height(56.dp))
+}
+
+public object SettingsTag {
+    public const val vehicle: String = "vehicle_settings"
 }

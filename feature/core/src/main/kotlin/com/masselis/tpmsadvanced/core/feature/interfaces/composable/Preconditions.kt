@@ -10,8 +10,10 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.UiComposable
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,48 +43,29 @@ internal fun InternalPreconditions(
 ) {
     val permissionState = rememberMultiplePermissionsState(viewModel.requiredPermission())
     val bluetoothState = rememberBluetoothState()
-    val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = "ready",
-        modifier = modifier,
-    ) {
-        composable("missing_permission") {
-            Scaffold { paddingValues ->
-                @Suppress("MaxLineLength")
-                MissingPermission(
-                    text = "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
-                    refusedText = "Failed to obtain permission, please update this in the app's system settings",
-                    permissionState = permissionState,
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                )
-            }
-        }
-        composable("chip_is_off") {
-            Scaffold { paddingValues ->
-                ChipIsOff(
-                    bluetoothState = bluetoothState,
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                )
-            }
-        }
-        composable("ready") {
-            ready()
-        }
-    }
     when {
-        permissionState.allPermissionsGranted.not() ->
-            navController.navigate("missing_permission") { popUpTo(0) }
+        permissionState.allPermissionsGranted.not() -> Scaffold { padding ->
+            @Suppress("MaxLineLength")
+            MissingPermission(
+                text = "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
+                refusedText = "Failed to obtain permission, please update this in the app's system settings",
+                permissionState = permissionState,
+                modifier = modifier
+                    .padding(padding)
+                    .fillMaxSize()
+            )
+        }
 
-        viewModel.isBluetoothRequired() && bluetoothState.isEnabled.not() ->
-            navController.navigate("chip_is_off") { popUpTo(0) }
+        viewModel.isBluetoothRequired() && bluetoothState.isEnabled.not() -> Scaffold { padding ->
+            ChipIsOff(
+                bluetoothState = bluetoothState,
+                modifier = modifier
+                    .padding(padding)
+                    .fillMaxSize()
+            )
+        }
 
-        else ->
-            navController.navigate("ready") { popUpTo(0) }
+        else -> ready()
     }
 }
 

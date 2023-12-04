@@ -22,6 +22,7 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.DeleteVehicleButtonTags
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
+import com.masselis.tpmsadvanced.interfaces.composable.SettingsTag
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle as VehicleModel
 
 
@@ -149,6 +150,9 @@ internal class Home private constructor(
 
         private val clearFavouritesButton
             get() = composeTestRule.onNodeWithTag(ClearBoundSensorsButtonTags.tag)
+
+        fun assertVehicleSettingsDisplayed() =
+            composeTestRule.onNodeWithTag(SettingsTag.vehicle).assertIsDisplayed()
 
         fun deleteVehicle(block: DeleteVehicleDialog.() -> Unit) {
             deleteVehicleButton.performScrollTo()
