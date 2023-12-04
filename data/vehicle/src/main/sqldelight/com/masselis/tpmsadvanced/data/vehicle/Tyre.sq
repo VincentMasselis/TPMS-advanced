@@ -9,7 +9,7 @@ import kotlin.UShort;
 CREATE TABLE Tyre(
     id INTEGER AS Int NOT NULL,
     timestamp REAL NOT NULL,
-    location INTEGER AS SensorLocation NOT NULL,
+    location INTEGER AS SensorLocation,
     pressure REAL AS Pressure NOT NULL,
     temperature REAL AS Temperature NOT NULL,
     battery INTEGER AS UShort NOT NULL,

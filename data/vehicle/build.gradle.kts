@@ -22,6 +22,8 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":data:unit"))
 
+    testImplementation(project(":core:test"))
+
     androidTestImplementation(project(":core:android-test"))
     androidTestUtil(libs.test.orchestrator)
 }

@@ -25,9 +25,6 @@ import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
-import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
-import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -37,15 +34,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.util.UUID.fromString
 import javax.inject.Inject
 import kotlin.time.Duration
@@ -90,6 +83,10 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 ScanFilter
                     .Builder()
                     .setServiceUuid(SYSGRATION_SERVICE_UUID)
+                    .build(),
+                ScanFilter
+                    .Builder()
+                    .setServiceUuid(PECHAM_SERVICE_UUID)
                     .build()
             ),
             ScanSettings
@@ -107,9 +104,15 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             }
         }
     }.flowOn(Dispatchers.Main) // System's BluetoothLeScanner class as issues if called on a background thread
-        .mapNotNull { result -> result.scanRecord?.manufacturerSpecificData?.takeIf { it.size > 0 } }
-        .map { Raw(it.valueAt(0)) }
-        .filter { it.address().contentEquals(expectedAddress) }
+        .mapNotNull { result ->
+            result
+                .scanRecord
+                ?.manufacturerSpecificData
+                ?.takeIf { it.size > 0 }
+                ?.valueAt(0)
+                ?.let { RawPecham(result, it) ?: RawSysgration(it) }
+        }
+        .mapNotNull { it.asTyre() }
 
     private val lowLatencyScanFlow = scan(ScanSettings.SCAN_MODE_LOW_LATENCY).shared()
 
@@ -121,47 +124,10 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
     override fun normalScan(): Flow<Tyre> = balancedScanFlow
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun Flow<Raw>.shared() = this
-        .map { raw ->
-            @Suppress("MagicNumber")
-            Tyre(
-                now(),
-                SensorLocation.entries.first { it.byte == raw.location() },
-                ByteBuffer
-                    .wrap(byteArrayOf(0x00) + raw.id())
-                    .order(ByteOrder.LITTLE_ENDIAN)
-                    .int,
-                ByteBuffer
-                    .wrap(raw.pressure())
-                    .order(ByteOrder.LITTLE_ENDIAN)
-                    .int
-                    .div(1000f)
-                    .kpa,
-                ByteBuffer
-                    .wrap(raw.temperature())
-                    .order(ByteOrder.LITTLE_ENDIAN)
-                    .int
-                    .div(100f)
-                    .celsius,
-                raw.battery().toInt().toUShort(),
-                raw.alarm() == PRESSURE_ALARM_BYTE
-            )
-        }
+    private fun Flow<Tyre>.shared() = this
         .materializeCompletion()
         .shareIn(GlobalScope + Dispatchers.Default, WhileSubscribed())
         .dematerializeCompletion()
-
-    @JvmInline
-    @Suppress("MagicNumber")
-    internal value class Raw(private val bytes: ByteArray) {
-        fun location(): UByte = bytes[0].toUByte()
-        fun address(): ByteArray = bytes.copyOfRange(1, 3)
-        fun id(): ByteArray = bytes.copyOfRange(3, 6)
-        fun pressure(): ByteArray = bytes.copyOfRange(6, 10)
-        fun temperature(): ByteArray = bytes.copyOfRange(10, 14)
-        fun battery(): Byte = bytes[14]
-        fun alarm(): Byte = bytes[15]
-    }
 
     @SuppressLint("InlinedApi")
     @Suppress("MagicNumber")
@@ -181,7 +147,8 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
         private val SYSGRATION_SERVICE_UUID = ParcelUuid(
             fromString("0000fbb0-0000-1000-8000-00805f9b34fb")
         )
-        private val expectedAddress = ubyteArrayOf(0xEAu, 0xCAu).toByteArray()
-        private const val PRESSURE_ALARM_BYTE = 0x01.toByte()
+        private val PECHAM_SERVICE_UUID = ParcelUuid(
+            fromString("000027a5-0000-1000-8000-00805f9b34fb")
+        )
     }
 }
