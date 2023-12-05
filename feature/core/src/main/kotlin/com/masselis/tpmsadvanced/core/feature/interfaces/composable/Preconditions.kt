@@ -34,6 +34,7 @@ public fun Preconditions(
     ready: @Composable () -> Unit,
 ): Unit = InternalPreconditions(ready, modifier)
 
+@Suppress("ModifierNotUsedAtRoot")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun InternalPreconditions(

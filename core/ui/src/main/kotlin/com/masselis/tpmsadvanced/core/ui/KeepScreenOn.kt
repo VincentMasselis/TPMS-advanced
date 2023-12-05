@@ -7,7 +7,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 
-@SuppressLint("ComposeCompositionLocalUsage")
+@Suppress("CompositionLocalAllowlist")
 public val LocalKeepScreenOnCounter: ProvidableCompositionLocal<ScreenOnCounter> =
     staticCompositionLocalOf { error("Not available") }
 

@@ -5,6 +5,6 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 
-@SuppressLint("ComposeCompositionLocalUsage")
+@Suppress("CompositionLocalAllowlist")
 public val LocalVehicleComponent: ProvidableCompositionLocal<VehicleComponent> =
     compositionLocalOf { error("Not available") }

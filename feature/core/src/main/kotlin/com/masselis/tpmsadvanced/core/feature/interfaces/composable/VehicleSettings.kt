@@ -16,7 +16,11 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettin
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.Separator
+import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 
 @Composable
@@ -25,14 +29,12 @@ public fun VehicleSettings(
     backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
 ) {
-    VehicleSettings(
-        modifier,
+    VehicleSettings(modifier,
         backgroundSettings,
         vehicleComponent,
         viewModel(key = "VehicleSettingsViewModel_${vehicleComponent.vehicle.uuid}") {
             (vehicleComponent as InternalVehicleComponent).VehicleSettingsViewModel()
-        }
-    )
+        })
 }
 
 @Composable
@@ -40,17 +42,29 @@ internal fun VehicleSettings(
     modifier: Modifier = Modifier,
     backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    vehicleSettingsViewModel: VehicleSettingsViewModel = viewModel(
+    viewModel: VehicleSettingsViewModel = viewModel(
         key = "VehicleSettingsViewModel_${vehicleComponent.vehicle.uuid}"
     ) { (vehicleComponent as InternalVehicleComponent).VehicleSettingsViewModel() }
 ) {
     val component = LocalVehicleComponent.current
+    val highTemp by viewModel.highTemp.collectAsState()
+    val normalTemp by viewModel.normalTemp.collectAsState()
+    val lowTemp by viewModel.lowTemp.collectAsState()
+    val tempUnit by viewModel.temperatureUnit.collectAsState()
     Column(modifier) {
-        PressureRange(vehicleSettingsViewModel)
+        with(viewModel) {
+            PressureRange(
+                lowPressure.collectAsState().value,
+                highPressure.collectAsState().value,
+                pressureUnit.collectAsState().value,
+                { lowPressure.value = it },
+                { highPressure.value = it },
+            )
+        }
         Separator()
-        HighTemp(vehicleSettingsViewModel)
-        NormalTemp(vehicleSettingsViewModel)
-        LowTemp(vehicleSettingsViewModel)
+        HighTemp(highTemp, normalTemp, tempUnit, { viewModel.highTemp.value = it })
+        NormalTemp(lowTemp, normalTemp, highTemp, tempUnit, { viewModel.normalTemp.value = it })
+        LowTemp(lowTemp, normalTemp, tempUnit, { viewModel.lowTemp.value = it })
         if (backgroundSettings !== backgroundSettingsPlaceholder) {
             Separator()
             backgroundSettings(component)
@@ -63,86 +77,100 @@ internal fun VehicleSettings(
 }
 
 @Composable
-private fun PressureRange(viewModel: VehicleSettingsViewModel) {
+private fun PressureRange(
+    lowPressure: Pressure,
+    highPressure: Pressure,
+    unit: PressureUnit,
+    onLowPressure: (Pressure) -> Unit,
+    onHighPressure: (Pressure) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
-    val lowPressure by viewModel.lowPressure.collectAsState()
-    val highPressure by viewModel.highPressure.collectAsState()
-    val unit by viewModel.pressureUnit.collectAsState()
     PressureRangeSlider(
         { showLowPressureDialog = true },
         lowPressure..highPressure,
         unit,
         0.5f.bar..5f.bar,
+        modifier
     ) { range ->
-        viewModel.lowPressure.value = range.start
-        viewModel.highPressure.value = range.endInclusive
+        onLowPressure(range.start)
+        onHighPressure(range.endInclusive)
     }
-    if (showLowPressureDialog)
-        PressureInfo(lowPressure..highPressure, unit) {
-            showLowPressureDialog = false
-        }
+    if (showLowPressureDialog) PressureInfo(lowPressure..highPressure, unit) {
+        showLowPressureDialog = false
+    }
 }
 
 @Composable
-private fun HighTemp(viewModel: VehicleSettingsViewModel) {
+private fun HighTemp(
+    highTemp: Temperature,
+    normalTemp: Temperature,
+    unit: TemperatureUnit,
+    onHighTemp: (Temperature) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var showHighTempDialog by remember { mutableStateOf(false) }
-    val highTemp by viewModel.highTemp.collectAsState()
-    val normalTemp by viewModel.normalTemp.collectAsState()
-    val unit by viewModel.temperatureUnit.collectAsState()
     TemperatureSlider(
         { showHighTempDialog = true },
         "Max temperature:",
         highTemp,
         unit,
-        { viewModel.highTemp.value = it },
+        onHighTemp,
         normalTemp..(150f.celsius),
+        modifier
     )
-    if (showHighTempDialog)
-        TemperatureInfo(
-            text = "When the temperature is equals or superior to %s, the tyre starts to blink in red to alert you",
-            state = State.Alerting,
-            temperature = highTemp,
-            unit = unit,
-        ) { showHighTempDialog = false }
+    if (showHighTempDialog) TemperatureInfo(
+        text = "When the temperature is equals or superior to %s, the tyre starts to blink in red to alert you",
+        state = State.Alerting,
+        temperature = highTemp,
+        unit = unit,
+    ) { showHighTempDialog = false }
 }
 
 @Composable
-private fun NormalTemp(viewModel: VehicleSettingsViewModel) {
+private fun NormalTemp(
+    lowTemp: Temperature,
+    normalTemp: Temperature,
+    highTemp: Temperature,
+    unit: TemperatureUnit,
+    onNormalTemp: (Temperature) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var showNormalTempDialog by remember { mutableStateOf(false) }
-    val lowTemp by viewModel.lowTemp.collectAsState()
-    val normalTemp by viewModel.normalTemp.collectAsState()
-    val highTemp by viewModel.highTemp.collectAsState()
-    val unit by viewModel.temperatureUnit.collectAsState()
     TemperatureSlider(
         { showNormalTempDialog = true },
         "Normal temperature:",
         normalTemp,
         unit,
-        { viewModel.normalTemp.value = it },
-        lowTemp..highTemp
+        onNormalTemp,
+        lowTemp..highTemp,
+        modifier
     )
-    if (showNormalTempDialog)
-        TemperatureInfo(
-            text = "When the temperature is close to %s, the tyre is colored in green",
-            state = State.Normal.BlueToGreen(Fraction(1f)),
-            temperature = normalTemp,
-            unit = unit,
-        ) { showNormalTempDialog = false }
+    if (showNormalTempDialog) TemperatureInfo(
+        text = "When the temperature is close to %s, the tyre is colored in green",
+        state = State.Normal.BlueToGreen(Fraction(1f)),
+        temperature = normalTemp,
+        unit = unit,
+    ) { showNormalTempDialog = false }
 }
 
 @Composable
-private fun LowTemp(viewModel: VehicleSettingsViewModel) {
+private fun LowTemp(
+    lowTemp: Temperature,
+    normalTemp: Temperature,
+    unit: TemperatureUnit,
+    onLowTemp: (Temperature) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var showLowTempDialog by remember { mutableStateOf(false) }
-    val lowTemp by viewModel.lowTemp.collectAsState()
-    val normalTemp by viewModel.normalTemp.collectAsState()
-    val unit by viewModel.temperatureUnit.collectAsState()
     TemperatureSlider(
         { showLowTempDialog = true },
         "Low temperature:",
         lowTemp,
         unit,
-        { viewModel.lowTemp.value = it },
-        5f.celsius..normalTemp
+        onLowTemp,
+        5f.celsius..normalTemp,
+        modifier
     )
     if (showLowTempDialog) TemperatureInfo(
         text = "When the temperature is close to %s, the tyre is colored in blue",

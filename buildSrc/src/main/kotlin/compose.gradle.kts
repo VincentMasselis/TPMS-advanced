@@ -1,8 +1,8 @@
-
 import com.android.build.gradle.BaseExtension
 
 plugins {
     com.android.base
+    id("detekt")
 }
 
 the<BaseExtension>().apply android@{
@@ -12,6 +12,6 @@ the<BaseExtension>().apply android@{
             versionCatalog.findVersion("composeCompiler").get().toString()
     }
     dependencies {
-        "lintChecks"(versionCatalog.findLibrary("compose-lint").get())
+        "detektPlugins"(versionCatalog.findLibrary("compose-detekt").get())
     }
 }
