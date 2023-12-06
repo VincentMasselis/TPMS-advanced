@@ -19,7 +19,7 @@ internal val previewVehicle = Vehicle(
     false
 )
 
-internal val previewSensor = Sensor(
+internal val previewSensor = Sensor.Located(
     1,
     SensorLocation.REAR_LEFT
 )

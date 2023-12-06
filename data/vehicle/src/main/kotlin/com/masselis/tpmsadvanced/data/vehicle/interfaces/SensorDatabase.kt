@@ -33,7 +33,7 @@ public class SensorDatabase @Inject internal constructor(
      */
     @Suppress("CyclomaticComplexMethod")
     public suspend fun upsert(
-        sensor: Sensor,
+        sensor: Sensor.Located,
         vehicleId: UUID,
     ): Unit = withContext(IO) {
         database.transaction {
@@ -75,9 +75,9 @@ public class SensorDatabase @Inject internal constructor(
     public fun selectByVehicleAndLocationFlow(
         vehicleId: UUID,
         vararg location: SensorLocation
-    ): Flow<Sensor?> = queries
+    ): Flow<Sensor.Located?> = queries
         .selectByVehicleAndLocation(vehicleId, location.toList()) { id, location, _ ->
-            Sensor(
+            Sensor.Located(
                 id,
                 location
             )

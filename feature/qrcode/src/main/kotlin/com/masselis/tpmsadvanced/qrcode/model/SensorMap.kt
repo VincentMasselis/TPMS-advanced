@@ -8,9 +8,9 @@ import kotlinx.parcelize.Parcelize
 @JvmInline
 @Parcelize
 internal value class SensorMap private constructor(
-    private val content: Map<SensorLocation, Sensor>
-) : Parcelable, Map<SensorLocation, Sensor> by content {
-    constructor(sensors: Collection<Sensor>) : this(sensors
+    private val content: Map<SensorLocation, Sensor.Located>
+) : Parcelable, Map<SensorLocation, Sensor.Located> by content {
+    constructor(sensors: Collection<Sensor.Located>) : this(sensors
         .associateBy { it.location }
         .also { check(sensors.size == it.size) { "Filled argument \"sensors\" contains location duplicates" } }
     )

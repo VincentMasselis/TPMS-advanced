@@ -84,7 +84,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
                     )
                 }
                 .mapIndexed { index, (location, id) ->
-                    Sensor(
+                    Sensor.Located(
                         id,
                         // The sensor id didn't provided the location, let's determine it with the
                         // list index
