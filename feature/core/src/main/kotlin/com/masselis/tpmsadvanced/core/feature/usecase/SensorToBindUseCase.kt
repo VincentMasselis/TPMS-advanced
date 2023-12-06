@@ -11,15 +11,15 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class SensorToBindUseCase @Inject constructor(
-    private val tyreUseCaseImpl: TyreUseCaseImpl,
+    private val listenTyreUseCase: ListenTyreUseCase,
     private val sensorBindingUseCase: SensorBindingUseCase,
 ) {
     fun search() = sensorBindingUseCase
-        .boundSensor()
+        .boundSensorFlow()
         .flatMapLatest { boundSensor ->
             if (boundSensor != null) flowOf(Result.AlreadyBound(boundSensor))
 
-            tyreUseCaseImpl
+            listenTyreUseCase
                 .listen()
                 .map {
                     if (it.location != null) Sensor.Located(it.id, it.location!!)

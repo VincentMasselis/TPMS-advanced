@@ -21,17 +21,20 @@ internal value class RawSysgration private constructor(
 
     fun address() = manufacturerData.copyOfRange(1, 3)
 
-    fun id() = ByteBuffer.wrap(byteArrayOf(0x00) + manufacturerData.copyOfRange(3, 6))
+    fun id() = ByteBuffer
+        .wrap(byteArrayOf(0x00) + manufacturerData.copyOfRange(3, 6))
         .order(ByteOrder.LITTLE_ENDIAN)
         .int
 
-    fun pressure() = ByteBuffer.wrap(manufacturerData.copyOfRange(6, 10))
+    fun pressure() = ByteBuffer
+        .wrap(manufacturerData.copyOfRange(6, 10))
         .order(ByteOrder.LITTLE_ENDIAN)
         .int
         .div(1000f)
         .kpa
 
-    fun temperature() = ByteBuffer.wrap(manufacturerData.copyOfRange(10, 14))
+    fun temperature() = ByteBuffer
+        .wrap(manufacturerData.copyOfRange(10, 14))
         .order(ByteOrder.LITTLE_ENDIAN)
         .int
         .div(100f)

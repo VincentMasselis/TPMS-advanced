@@ -5,7 +5,10 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -16,10 +19,13 @@ internal class SensorBindingUseCase @Inject constructor(
     private val sensorDatabase: SensorDatabase,
     private val locations: Set<SensorLocation>,
 ) {
-    @Suppress("SpreadOperator")
-    fun boundSensor() = sensorDatabase
-        .selectByVehicleAndLocationFlow(vehicle.uuid, *locations.toTypedArray())
+    fun boundSensorFlow() = sensorDatabase
+        .selectByVehicleAndLocationFlow(vehicle.uuid, locations)
         .distinctUntilChanged()
+
+    suspend fun boundSensor() = withContext(IO) {
+        sensorDatabase.selectByVehicleAndLocation(vehicle.uuid, locations)
+    }
 
     fun boundVehicle(sensor: Sensor) = vehicleDatabase.selectBySensorId(sensor.id)
 

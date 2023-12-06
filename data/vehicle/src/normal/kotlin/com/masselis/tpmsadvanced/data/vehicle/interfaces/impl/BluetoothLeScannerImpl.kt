@@ -34,6 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.shareIn
@@ -112,6 +113,9 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 ?.valueAt(0)
                 ?.let { RawPecham(result, it) ?: RawSysgration(it) }
         }
+        // A real sysgration sensor emits the same value up to 10 times in a short time, to avoid to
+        // emit the same value 10 times, I use `distinctUntilChanged()`.
+        .distinctUntilChanged()
         .mapNotNull { it.asTyre() }
 
     private val lowLatencyScanFlow = scan(ScanSettings.SCAN_MODE_LOW_LATENCY).shared()

@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.core
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.core.feature.usecase.TyreUseCaseImpl
+import com.masselis.tpmsadvanced.core.feature.usecase.ListenTyreWithDatabaseUseCase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
@@ -32,7 +32,7 @@ import java.util.UUID
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class TyreUseCaseImplTest {
+internal class ListenTyreWithDatabaseUseCaseTest {
 
     private lateinit var vehicle: Vehicle
     private lateinit var locations: Set<SensorLocation>
@@ -40,7 +40,7 @@ internal class TyreUseCaseImplTest {
     private lateinit var scanner: BluetoothLeScanner
     private var tyresToEmit: List<Tyre> = emptyList()
 
-    private fun CoroutineScope.test() = TyreUseCaseImpl(
+    private fun CoroutineScope.test() = ListenTyreWithDatabaseUseCase(
         vehicle,
         locations,
         tyreDatabase,

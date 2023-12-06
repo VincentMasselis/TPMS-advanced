@@ -71,16 +71,21 @@ public class SensorDatabase @Inject internal constructor(
         queries.deleteByVehicle(vehicleId)
     }
 
-    @Suppress("NAME_SHADOWING")
+    public fun selectByVehicleAndLocation(
+        vehicleId: UUID,
+        locations: Set<SensorLocation>,
+    ): Sensor.Located? = queries
+        .selectByVehicleAndLocation(vehicleId, locations) { id, location, _ ->
+            Sensor.Located(id, location)
+        }
+        .executeAsOneOrNull()
+
     public fun selectByVehicleAndLocationFlow(
         vehicleId: UUID,
-        vararg location: SensorLocation
+        locations: Set<SensorLocation>,
     ): Flow<Sensor.Located?> = queries
-        .selectByVehicleAndLocation(vehicleId, location.toList()) { id, location, _ ->
-            Sensor.Located(
-                id,
-                location
-            )
+        .selectByVehicleAndLocation(vehicleId, locations) { id, location, _ ->
+            Sensor.Located(id, location)
         }
         .asFlow()
         .mapToOneOrNull(IO)

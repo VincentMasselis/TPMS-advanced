@@ -9,7 +9,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-internal class RawPecham private constructor(
+@Suppress("DataClassPrivateConstructor")
+internal data class RawPecham private constructor(
     private val macAddress: String,
     private val manufacturerData: ByteArray
 ) : Raw {
