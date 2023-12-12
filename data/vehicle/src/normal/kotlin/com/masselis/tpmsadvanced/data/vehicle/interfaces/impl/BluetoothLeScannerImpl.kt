@@ -111,7 +111,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
                 ?.manufacturerSpecificData
                 ?.takeIf { it.size > 0 }
                 ?.valueAt(0)
-                ?.let { RawPecham(result, it) ?: RawSysgration(it) }
+                ?.let { RawPecham(result, it) ?: RawSysgration(result, it) }
         }
         // A real sysgration sensor emits the same value up to 10 times in a short time, to avoid to
         // emit the same value 10 times, I use `distinctUntilChanged()`.

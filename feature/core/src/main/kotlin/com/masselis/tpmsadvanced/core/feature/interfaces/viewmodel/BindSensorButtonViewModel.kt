@@ -4,9 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.feature.usecase.SensorToBindUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.SearchSensorToBindUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.SensorBindingUseCase
-import com.masselis.tpmsadvanced.core.feature.usecase.SensorToBindUseCase.Result
+import com.masselis.tpmsadvanced.core.feature.usecase.SearchSensorToBindUseCase.Result
 import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -30,7 +29,7 @@ import kotlinx.parcelize.Parcelize
 internal class BindSensorButtonViewModel @AssistedInject constructor(
     private val sensorBindingUseCase: SensorBindingUseCase,
     vehicleFlow: StateFlow<Vehicle>,
-    sensorToBindUseCase: SensorToBindUseCase,
+    searchSensorToBindUseCase: SearchSensorToBindUseCase,
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     @AssistedFactory
@@ -60,7 +59,7 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {
-        sensorToBindUseCase.search()
+        searchSensorToBindUseCase()
             .flatMapLatest { result ->
                 when (result) {
                     is Result.AlreadyBound -> flowOf(State.Empty)

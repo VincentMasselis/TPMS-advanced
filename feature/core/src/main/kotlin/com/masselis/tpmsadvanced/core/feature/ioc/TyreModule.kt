@@ -4,7 +4,7 @@ import com.masselis.tpmsadvanced.core.feature.usecase.ListenBoundTyreUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.ListenTyreUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.ListenTyreSmartDutyUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.ListenTyreWithDatabaseUseCase
-import com.masselis.tpmsadvanced.core.feature.usecase.LocationFilteredScannerUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.LocatedTyreScannerUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.SensorBindingUseCase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
@@ -18,14 +18,14 @@ import javax.inject.Named
 @Module
 internal object TyreModule {
     @Provides
-    fun locationFilteredScannerUseCase(
+    fun locatedTyreScannerUseCase(
         source: BluetoothLeScanner,
         locations: Set<SensorLocation>,
         sensorBindingUseCase: SensorBindingUseCase,
-    ) = LocationFilteredScannerUseCase(source, locations, sensorBindingUseCase)
+    ) = LocatedTyreScannerUseCase(source, locations, sensorBindingUseCase)
 
     @Provides
-    fun listenTyreSmartDutyUseCase(scanner: LocationFilteredScannerUseCase) =
+    fun listenTyreSmartDutyUseCase(scanner: LocatedTyreScannerUseCase) =
         ListenTyreSmartDutyUseCase(scanner)
 
     @Provides

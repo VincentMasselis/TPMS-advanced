@@ -65,6 +65,7 @@ material3 = "androidx.compose.material3:material3:1.1.2"
 material = "com.google.android.material:material:1.11.0"
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
+placeholder = "io.github.fornewid:placeholder-material3:1.0.1"
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 sqldelight-coroutines-jvm = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqlDelight" }
 sqldelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqlDelight" }

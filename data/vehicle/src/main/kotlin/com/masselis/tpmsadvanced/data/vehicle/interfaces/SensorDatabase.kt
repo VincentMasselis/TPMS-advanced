@@ -93,4 +93,12 @@ public class SensorDatabase @Inject internal constructor(
     public fun countByVehicle(vehicleId: UUID): Flow<Long> = queries.countByVehicle(vehicleId)
         .asFlow()
         .mapToOne(IO)
+
+    @Suppress("NAME_SHADOWING")
+    public fun selectByIdFlow(id: Int): Flow<Sensor.Located?> = queries
+        .selectById(id) { id, location, _ ->
+            Sensor.Located(id, location)
+        }
+        .asFlow()
+        .mapToOneOrNull(IO)
 }

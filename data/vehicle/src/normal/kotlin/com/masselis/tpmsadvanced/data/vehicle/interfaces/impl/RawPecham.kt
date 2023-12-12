@@ -12,6 +12,7 @@ import java.nio.ByteOrder
 @Suppress("DataClassPrivateConstructor")
 internal data class RawPecham private constructor(
     private val macAddress: String,
+    private val rssi: Int,
     private val manufacturerData: ByteArray
 ) : Raw {
     fun id() = macAddress.hashCode()
@@ -31,6 +32,7 @@ internal data class RawPecham private constructor(
 
     override fun asTyre() = Tyre(
         now(),
+        rssi,
         null,
         id(),
         pressure(),
@@ -59,7 +61,7 @@ internal data class RawPecham private constructor(
         operator fun invoke(result: ScanResult, manufacturerData: ByteArray): RawPecham? {
             if (result.scanRecord!!.deviceName != "BR")
                 return null
-            return RawPecham(result.device.address, manufacturerData)
+            return RawPecham(result.device.address, result.rssi, manufacturerData)
         }
     }
 }

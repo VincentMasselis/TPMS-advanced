@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
+import android.bluetooth.le.ScanResult
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
@@ -9,9 +10,9 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 @OptIn(ExperimentalUnsignedTypes::class)
-@JvmInline
-@Suppress("MagicNumber")
-internal value class RawSysgration private constructor(
+@Suppress("MagicNumber", "DataClassPrivateConstructor")
+internal data class RawSysgration private constructor(
+    private val rssi: Int,
     private val manufacturerData: ByteArray
 ) : Raw {
 
@@ -45,14 +46,30 @@ internal value class RawSysgration private constructor(
     fun isAlarm() = manufacturerData[15] == PRESSURE_ALARM_BYTE
 
     override fun asTyre() =
-        Tyre(now(), location(), id(), pressure(), temperature(), battery(), isAlarm())
+        Tyre(now(), rssi, location(), id(), pressure(), temperature(), battery(), isAlarm())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as RawSysgration
+
+        if (rssi != other.rssi) return false
+        return manufacturerData.contentEquals(other.manufacturerData)
+    }
+
+    override fun hashCode(): Int {
+        var result = rssi
+        result = 31 * result + manufacturerData.contentHashCode()
+        return result
+    }
 
     companion object {
         private const val PRESSURE_ALARM_BYTE = 0x01.toByte()
         private val expectedAddress = ubyteArrayOf(0xEAu, 0xCAu).toByteArray()
 
-        operator fun invoke(manufacturerData: ByteArray): RawSysgration? =
-            RawSysgration(manufacturerData)
+        operator fun invoke(scanResult: ScanResult, manufacturerData: ByteArray): RawSysgration? =
+            RawSysgration(scanResult.rssi, manufacturerData)
                 .takeIf { it.address().contentEquals(expectedAddress) }
     }
 }

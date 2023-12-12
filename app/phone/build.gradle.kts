@@ -84,11 +84,12 @@ dependencies {
     implementation(project(":data:unit"))
     implementation(project(":data:vehicle"))
 
-    implementation(project(":feature:core"))
-    implementation(project(":feature:unit"))
-    implementation(project(":feature:qrcode"))
     implementation(project(":feature:background"))
+    implementation(project(":feature:core"))
+    implementation(project(":feature:unlocated-binding"))
+    implementation(project(":feature:qrcode"))
     implementation(project(":feature:shortcut"))
+    implementation(project(":feature:unit"))
 
     testImplementation(project(":core:test"))
     androidTestUtil(libs.test.orchestrator)

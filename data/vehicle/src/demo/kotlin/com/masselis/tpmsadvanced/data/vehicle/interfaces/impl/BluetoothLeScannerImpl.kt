@@ -17,6 +17,7 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
 
     private val frontLeft = Tyre(
         now(),
+        -20,
         SensorLocation.FRONT_LEFT,
         SensorLocation.FRONT_LEFT.ordinal,
         0.4f.bar,
@@ -27,6 +28,7 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
 
     private val frontRight = Tyre(
         now(),
+        -20,
         SensorLocation.FRONT_RIGHT,
         SensorLocation.FRONT_RIGHT.ordinal,
         1.6f.bar,
@@ -37,6 +39,7 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
 
     private val rearLeft = Tyre(
         now(),
+        -20,
         SensorLocation.REAR_LEFT,
         SensorLocation.REAR_LEFT.ordinal,
         2.0f.bar,
@@ -47,6 +50,7 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
 
     private val rearRight = Tyre(
         now(),
+        -20,
         SensorLocation.REAR_RIGHT,
         SensorLocation.REAR_RIGHT.ordinal,
         2.8f.bar,

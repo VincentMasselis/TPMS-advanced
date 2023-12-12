@@ -3,15 +3,11 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-internal class LocationFilteredScannerUseCase(
+internal class LocatedTyreScannerUseCase(
     private val source: BluetoothLeScanner,
     private val locations: Set<SensorLocation>,
     private val sensorBindingUseCase: SensorBindingUseCase,

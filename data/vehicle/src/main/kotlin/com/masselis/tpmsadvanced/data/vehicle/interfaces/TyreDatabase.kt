@@ -17,6 +17,7 @@ public class TyreDatabase @Inject internal constructor(
         queries.insert(
             tyre.id,
             tyre.timestamp,
+            tyre.rssi,
             tyre.location,
             tyre.pressure,
             tyre.temperature,
@@ -33,8 +34,8 @@ public class TyreDatabase @Inject internal constructor(
         .latestByTyreLocationByVehicle(
             locations,
             vehicleId
-        ) { id, timestamp, location, pressure, temperature, battery, isAlarm ->
-            Tyre(timestamp, location, id, pressure, temperature, battery, isAlarm)
+        ) { id, timestamp, rssi, location, pressure, temperature, battery, isAlarm ->
+            Tyre(timestamp, rssi, location, id, pressure, temperature, battery, isAlarm)
         }
         .executeAsOneOrNull()
 }

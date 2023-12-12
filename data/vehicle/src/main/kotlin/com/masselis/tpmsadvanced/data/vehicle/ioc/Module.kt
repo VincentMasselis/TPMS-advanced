@@ -113,6 +113,7 @@ internal object Module {
         SensorAdapter = Sensor.Adapter(IntColumnAdapter, sensorLocationAdapter, uuidAdapter),
         TyreAdapter = Tyre.Adapter(
             IntColumnAdapter,
+            IntColumnAdapter,
             sensorLocationAdapter,
             pressureAdapter,
             temperatureAdapter,

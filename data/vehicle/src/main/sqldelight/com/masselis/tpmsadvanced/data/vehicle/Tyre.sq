@@ -9,6 +9,7 @@ import kotlin.UShort;
 CREATE TABLE Tyre(
     id INTEGER AS Int NOT NULL,
     timestamp REAL NOT NULL,
+    rssi INTEGER AS Int NOT NULL,
     location INTEGER AS SensorLocation,
     pressure REAL AS Pressure NOT NULL,
     temperature REAL AS Temperature NOT NULL,
@@ -19,10 +20,10 @@ CREATE TABLE Tyre(
 );
 
 insert:
-INSERT INTO Tyre (id, timestamp, location, pressure, temperature, battery, isAlarm, vehicleId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO Tyre (id, timestamp, rssi, location, pressure, temperature, battery, isAlarm, vehicleId) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?);
 
 latestByTyreLocationByVehicle:
-SELECT Tyre.id, Tyre.timestamp, Tyre.location, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm FROM Tyre
+SELECT Tyre.id, Tyre.timestamp, Tyre.rssi, Tyre.location, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm FROM Tyre
 INNER JOIN Vehicle ON Tyre.vehicleId = Vehicle.uuid
 WHERE location IN ? AND Vehicle.uuid = ?
 ORDER BY timestamp DESC

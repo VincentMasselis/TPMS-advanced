@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -10,11 +11,12 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class SensorToBindUseCase @Inject constructor(
+internal class SearchSensorToBindUseCase @Inject constructor(
     private val listenTyreUseCase: ListenTyreUseCase,
     private val sensorBindingUseCase: SensorBindingUseCase,
-) {
-    fun search() = sensorBindingUseCase
+) : () -> Flow<SearchSensorToBindUseCase.Result> {
+
+    override fun invoke(): Flow<Result> = sensorBindingUseCase
         .boundSensorFlow()
         .flatMapLatest { boundSensor ->
             if (boundSensor != null) flowOf(Result.AlreadyBound(boundSensor))

@@ -39,3 +39,6 @@ countByVehicle:
 SELECT COUNT(Sensor.rowid) FROM Sensor
 INNER JOIN Vehicle ON Sensor.vehicleId = Vehicle.uuid
 WHERE Vehicle.uuid = ?;
+
+selectById:
+SELECT * FROM Sensor WHERE Sensor.id = ?;
