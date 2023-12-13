@@ -6,6 +6,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -45,8 +47,16 @@ internal data class RawSysgration private constructor(
 
     fun isAlarm() = manufacturerData[15] == PRESSURE_ALARM_BYTE
 
-    override fun asTyre() =
-        Tyre(now(), rssi, location(), id(), pressure(), temperature(), battery(), isAlarm())
+    override fun asTyre() = Tyre.SensorLocated(
+        now(),
+        rssi,
+        id(),
+        pressure(),
+        temperature(),
+        battery(),
+        isAlarm(),
+        location()
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

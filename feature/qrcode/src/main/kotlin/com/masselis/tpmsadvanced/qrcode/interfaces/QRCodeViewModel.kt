@@ -73,8 +73,7 @@ internal class QRCodeViewModel @AssistedInject constructor(
                                 .map { it.vehicle.kind }
                                 .distinctUntilChanged()
                                 .map { vehicleKind ->
-                                    val missing = vehicleKind.locations
-                                        .subtract(vehicleKind.computeLocations(sensorMap.keys))
+                                    val missing = vehicleKind.locations.subtract(sensorMap.keys)
                                     if (missing.isEmpty())
                                         State.AskForBinding.Compatible(sensorMap)
                                     else

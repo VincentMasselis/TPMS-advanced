@@ -6,12 +6,12 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
 
 @Qualifier
 @Retention(RUNTIME)
-internal annotation class TyreLocationQualifier(val location: SensorLocation)
+internal annotation class WheelLocationQualifier(val location: SensorLocation)
 
 @Qualifier
 @Retention(RUNTIME)
-internal annotation class TyreAxleQualifier(val axle: SensorLocation.Axle)
+internal annotation class AxleQualifier(val axle: SensorLocation.Axle)
 
 @Qualifier
 @Retention(RUNTIME)
-internal annotation class TyreSideQualifier(val side: SensorLocation.Side)
+internal annotation class SideQualifier(val side: SensorLocation.Side)

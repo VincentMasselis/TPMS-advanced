@@ -1,9 +1,8 @@
-package com.masselis.tpmsadvanced.pecham_binding.interfaces
+package com.masselis.tpmsadvanced.pecham_binding.interfaces.viewmodel
 
 import android.os.Parcelable
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
-import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.pecham_binding.usecase.ListTyreUseCase
@@ -30,6 +29,4 @@ internal interface ListSensorViewModel {
     }
 
     val stateFlow: StateFlow<State>
-
-    fun bind(location: Vehicle.Kind.Location, tyre: Tyre)
 }

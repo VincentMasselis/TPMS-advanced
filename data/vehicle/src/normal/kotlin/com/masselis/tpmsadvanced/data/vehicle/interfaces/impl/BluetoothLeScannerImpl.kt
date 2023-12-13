@@ -120,15 +120,15 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
 
     private val lowLatencyScanFlow = scan(ScanSettings.SCAN_MODE_LOW_LATENCY).shared()
 
-    override fun highDutyScan(): Flow<Tyre> = lowLatencyScanFlow
+    override fun highDutyScan(): Flow<Tyre.SensorInput> = lowLatencyScanFlow
 
     @SuppressLint("MissingPermission")
     private val balancedScanFlow = scan(ScanSettings.SCAN_MODE_BALANCED).shared()
 
-    override fun normalScan(): Flow<Tyre> = balancedScanFlow
+    override fun normalScan(): Flow<Tyre.SensorInput> = balancedScanFlow
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun Flow<Tyre>.shared() = this
+    private fun Flow<Tyre.SensorInput>.shared() = this
         .materializeCompletion()
         .shareIn(GlobalScope + Dispatchers.Default, WhileSubscribed())
         .dematerializeCompletion()

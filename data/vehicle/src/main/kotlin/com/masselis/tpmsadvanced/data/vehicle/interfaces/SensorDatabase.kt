@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
 import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
@@ -26,43 +27,20 @@ public class SensorDatabase @Inject internal constructor(
     /**
      * This method insert a sensor for a vehicle. If the sensor is already saved for an other
      * vehicle, this method moves the sensor to the new vehicle. If a sensor already exists at the
-     * same location, it replaces it. This method also check the vehicle kind when replacing the
-     * sensor. For instance, if [vehicleId] is a motorcycle with [FRONT_LEFT] sensor, putting a new
-     * [FRONT_RIGHT] sensor will automatically remove the [FRONT_LEFT] sensor because a motorcycle
-     * cannot have 2 front wheels.
+     * same location, it replaces it. This method also check the vehicle kind when before inserting
+     * the sensor.
      */
     @Suppress("CyclomaticComplexMethod")
     public suspend fun upsert(
-        sensor: Sensor.Located,
+        sensor: Sensor,
         vehicleId: UUID,
     ): Unit = withContext(IO) {
         database.transaction {
             val kind = vehicleQueries.selectByUuid(vehicleId).executeAsOne().kind
-            fun locationToClear(vararg location: SensorLocation) {
-                queries.deleteByVehicleAndLocation(vehicleId, location.toList())
+            require(kind.locations.any { it == sensor.location }) {
+                "Filled sensor points to a location which is not handled by the vehicle kind. Kind: $kind, sensor: $sensor"
             }
-            when (kind) {
-                Vehicle.Kind.CAR -> locationToClear(sensor.location)
-                Vehicle.Kind.SINGLE_AXLE_TRAILER -> when (sensor.location) {
-                    FRONT_LEFT, REAR_LEFT -> locationToClear(REAR_LEFT, FRONT_LEFT)
-                    FRONT_RIGHT, REAR_RIGHT -> locationToClear(FRONT_RIGHT, REAR_RIGHT)
-                }
-
-                Vehicle.Kind.MOTORCYCLE -> when (sensor.location) {
-                    FRONT_LEFT, FRONT_RIGHT -> locationToClear(FRONT_LEFT, FRONT_RIGHT)
-                    REAR_LEFT, REAR_RIGHT -> locationToClear(REAR_LEFT, REAR_RIGHT)
-                }
-
-                Vehicle.Kind.TADPOLE_THREE_WHEELER -> when (sensor.location) {
-                    FRONT_LEFT, FRONT_RIGHT -> locationToClear(sensor.location)
-                    REAR_LEFT, REAR_RIGHT -> locationToClear(REAR_LEFT, REAR_RIGHT)
-                }
-
-                Vehicle.Kind.DELTA_THREE_WHEELER -> when (sensor.location) {
-                    FRONT_LEFT, FRONT_RIGHT -> locationToClear(FRONT_LEFT, FRONT_RIGHT)
-                    REAR_LEFT, REAR_RIGHT -> locationToClear(sensor.location)
-                }
-            }
+            queries.deleteByVehicleAndLocation(vehicleId, sensor.location)
             queries.upsert(sensor.id, sensor.location, vehicleId)
         }
     }
@@ -73,19 +51,19 @@ public class SensorDatabase @Inject internal constructor(
 
     public fun selectByVehicleAndLocation(
         vehicleId: UUID,
-        locations: Set<SensorLocation>,
-    ): Sensor.Located? = queries
-        .selectByVehicleAndLocation(vehicleId, locations) { id, location, _ ->
-            Sensor.Located(id, location)
+        location: Vehicle.Kind.Location,
+    ): Sensor? = queries
+        .selectByVehicleAndLocation(vehicleId, location) { id, _, _ ->
+            Sensor(id, location)
         }
         .executeAsOneOrNull()
 
     public fun selectByVehicleAndLocationFlow(
         vehicleId: UUID,
-        locations: Set<SensorLocation>,
-    ): Flow<Sensor.Located?> = queries
-        .selectByVehicleAndLocation(vehicleId, locations) { id, location, _ ->
-            Sensor.Located(id, location)
+        location: Vehicle.Kind.Location,
+    ): Flow<Sensor?> = queries
+        .selectByVehicleAndLocation(vehicleId, location) { id, _, _ ->
+            Sensor(id, location)
         }
         .asFlow()
         .mapToOneOrNull(IO)
@@ -95,10 +73,17 @@ public class SensorDatabase @Inject internal constructor(
         .mapToOne(IO)
 
     @Suppress("NAME_SHADOWING")
-    public fun selectByIdFlow(id: Int): Flow<Sensor.Located?> = queries
+    public fun selectByIdFlow(id: Int): Flow<Sensor?> = queries
         .selectById(id) { id, location, _ ->
-            Sensor.Located(id, location)
+            Sensor(id, location)
         }
         .asFlow()
         .mapToOneOrNull(IO)
+
+    public fun selectListByVehicleId(uuid: UUID): Flow<List<Sensor>> = queries
+        .selectListByVehicleId(uuid) { id, location, _ ->
+            Sensor(id, location)
+        }
+        .asFlow()
+        .mapToList(IO)
 }

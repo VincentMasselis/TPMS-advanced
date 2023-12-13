@@ -10,6 +10,7 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
@@ -18,25 +19,14 @@ import javax.inject.Named
 @Module
 internal object TyreModule {
     @Provides
-    fun locatedTyreScannerUseCase(
-        source: BluetoothLeScanner,
-        locations: Set<SensorLocation>,
-        sensorBindingUseCase: SensorBindingUseCase,
-    ) = LocatedTyreScannerUseCase(source, locations, sensorBindingUseCase)
-
-    @Provides
-    fun listenTyreSmartDutyUseCase(scanner: LocatedTyreScannerUseCase) =
-        ListenTyreSmartDutyUseCase(scanner)
-
-    @Provides
     @TyreComponent.Scope
     fun listenTyreWithDatabaseUseCase(
         @Named("base") vehicle: Vehicle,
-        locations: Set<SensorLocation>,
+        location: Location,
         tyreDatabase: TyreDatabase,
         listenTyreUseCase: ListenTyreSmartDutyUseCase,
         scope: CoroutineScope,
-    ) = ListenTyreWithDatabaseUseCase(vehicle, locations, tyreDatabase, listenTyreUseCase, scope)
+    ) = ListenTyreWithDatabaseUseCase(vehicle, location, tyreDatabase, listenTyreUseCase, scope)
 
     @Provides
     fun listenBoundTyreUseCase(

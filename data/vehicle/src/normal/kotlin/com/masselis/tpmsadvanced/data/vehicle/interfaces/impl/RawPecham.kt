@@ -30,10 +30,9 @@ internal data class RawPecham private constructor(
 
     fun temperature() = manufacturerData[2].toFloat().celsius
 
-    override fun asTyre() = Tyre(
+    override fun asTyre() = Tyre.Unlocated(
         now(),
         rssi,
-        null,
         id(),
         pressure(),
         temperature(),

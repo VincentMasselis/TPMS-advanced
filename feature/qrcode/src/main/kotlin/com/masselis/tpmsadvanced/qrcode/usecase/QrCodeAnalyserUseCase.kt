@@ -12,6 +12,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.qrcode.model.SensorMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -66,10 +68,10 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
                     Pair(
                         // Trying to recognize the location with the id of the sensor
                         when (stringHex.first()) {
-                            '1' -> FRONT_LEFT
-                            '2' -> FRONT_RIGHT
-                            '3' -> REAR_LEFT
-                            '4' -> REAR_RIGHT
+                            '1' -> Location.Wheel(FRONT_LEFT)
+                            '2' -> Location.Wheel(FRONT_RIGHT)
+                            '3' -> Location.Wheel(REAR_LEFT)
+                            '4' -> Location.Wheel(REAR_RIGHT)
                             else -> null
                         },
                         // Converts the hexadecimal id to an int
@@ -84,15 +86,15 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
                     )
                 }
                 .mapIndexed { index, (location, id) ->
-                    Sensor.Located(
+                    Sensor(
                         id,
                         // The sensor id didn't provided the location, let's determine it with the
                         // list index
                         location ?: when (index) {
-                            0 -> FRONT_LEFT
-                            1 -> FRONT_RIGHT
-                            2 -> REAR_LEFT
-                            3 -> REAR_RIGHT
+                            0 -> Location.Wheel(FRONT_LEFT)
+                            1 -> Location.Wheel(FRONT_RIGHT)
+                            2 -> Location.Wheel(REAR_LEFT)
+                            3 -> Location.Wheel(REAR_RIGHT)
                             else -> error("Filled list cannot have more than 4 entries")
                         }
                     )

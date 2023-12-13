@@ -23,10 +23,7 @@ internal class SearchSensorToBindUseCase @Inject constructor(
 
             listenTyreUseCase
                 .listen()
-                .map {
-                    if (it.location != null) Sensor.Located(it.id, it.location!!)
-                    else Sensor.Impl(it.id)
-                }
+                .map { Sensor(it.id, it.location) }
                 .flatMapLatest { sensor ->
                     sensorBindingUseCase.boundVehicle(sensor)
                         .map { boundVehicle ->
@@ -39,7 +36,7 @@ internal class SearchSensorToBindUseCase @Inject constructor(
 
     sealed interface Result {
         @JvmInline
-        value class AlreadyBound(val boundSensor: Sensor.Located) : Result
+        value class AlreadyBound(val boundSensor: Sensor) : Result
 
         @JvmInline
         value class NewBinding(val foundSensor: Sensor) : Result

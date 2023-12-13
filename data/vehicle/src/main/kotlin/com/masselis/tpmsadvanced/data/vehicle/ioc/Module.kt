@@ -20,6 +20,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import dagger.Provides
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import java.util.UUID
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle as VehicleModel
 
 @dagger.Module
 internal object Module {
@@ -61,6 +62,35 @@ internal object Module {
         override fun encode(value: UShort): Long = value.toLong()
     }
 
+    @Provides
+    fun locationAdapter() = object : ColumnAdapter<VehicleModel.Kind.Location, Long> {
+
+        override fun encode(value: VehicleModel.Kind.Location): Long = when (value) {
+            is VehicleModel.Kind.Location.Axle -> 0L + value.axle.ordinal.toLong()
+            is VehicleModel.Kind.Location.Side -> 10L + value.side.ordinal
+            is VehicleModel.Kind.Location.Wheel -> 20L + value.location.ordinal
+        }
+
+        override fun decode(databaseValue: Long): VehicleModel.Kind.Location {
+            val ordinal = databaseValue.toInt() % 10
+            return when (databaseValue) {
+                in 0..9 -> VehicleModel.Kind.Location.Axle(
+                    SensorLocation.Axle.entries.first { it.ordinal == ordinal }
+                )
+
+                in 10..19 -> VehicleModel.Kind.Location.Side(
+                    SensorLocation.Side.entries.first { it.ordinal == ordinal }
+                )
+
+                in 20..29 -> VehicleModel.Kind.Location.Wheel(
+                    SensorLocation.entries.first { it.ordinal == ordinal }
+                )
+
+                else -> error("Unable to parse this input $databaseValue")
+            }
+        }
+    }
+
     @DataVehicleComponent.Scope
     @Provides
     fun driver(): SqlDriver = AndroidSqliteDriver(
@@ -95,7 +125,7 @@ internal object Module {
     fun database(
         driver: SqlDriver,
         uuidAdapter: ColumnAdapter<UUID, String>,
-        sensorLocationAdapter: ColumnAdapter<SensorLocation, Long>,
+        sensorLocationAdapter: ColumnAdapter<VehicleModel.Kind.Location, Long>,
         pressureAdapter: ColumnAdapter<Pressure, Double>,
         temperatureAdapter: ColumnAdapter<Temperature, Double>,
         uShortAdapter: ColumnAdapter<UShort, Long>,

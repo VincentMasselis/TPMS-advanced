@@ -1,9 +1,9 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalTyreComponent
-import com.masselis.tpmsadvanced.core.feature.ioc.TyreAxleQualifier
-import com.masselis.tpmsadvanced.core.feature.ioc.TyreLocationQualifier
-import com.masselis.tpmsadvanced.core.feature.ioc.TyreSideQualifier
+import com.masselis.tpmsadvanced.core.feature.ioc.AxleQualifier
+import com.masselis.tpmsadvanced.core.feature.ioc.WheelLocationQualifier
+import com.masselis.tpmsadvanced.core.feature.ioc.SideQualifier
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
@@ -20,14 +20,14 @@ import javax.inject.Named
 @Suppress("LongParameterList")
 internal class FindTyreComponentUseCase @Inject internal constructor(
     @Named("base") private val vehicle: Vehicle,
-    @TyreLocationQualifier(FRONT_LEFT) private val frontLeft: Lazy<InternalTyreComponent>,
-    @TyreLocationQualifier(FRONT_RIGHT) private val frontRight: Lazy<InternalTyreComponent>,
-    @TyreLocationQualifier(REAR_LEFT) private val rearLeft: Lazy<InternalTyreComponent>,
-    @TyreLocationQualifier(REAR_RIGHT) private val rearRight: Lazy<InternalTyreComponent>,
-    @TyreAxleQualifier(FRONT) private val front: Lazy<InternalTyreComponent>,
-    @TyreAxleQualifier(REAR) private val rear: Lazy<InternalTyreComponent>,
-    @TyreSideQualifier(LEFT) private val left: Lazy<InternalTyreComponent>,
-    @TyreSideQualifier(RIGHT) private val right: Lazy<InternalTyreComponent>,
+    @WheelLocationQualifier(FRONT_LEFT) private val frontLeft: Lazy<InternalTyreComponent>,
+    @WheelLocationQualifier(FRONT_RIGHT) private val frontRight: Lazy<InternalTyreComponent>,
+    @WheelLocationQualifier(REAR_LEFT) private val rearLeft: Lazy<InternalTyreComponent>,
+    @WheelLocationQualifier(REAR_RIGHT) private val rearRight: Lazy<InternalTyreComponent>,
+    @AxleQualifier(FRONT) private val front: Lazy<InternalTyreComponent>,
+    @AxleQualifier(REAR) private val rear: Lazy<InternalTyreComponent>,
+    @SideQualifier(LEFT) private val left: Lazy<InternalTyreComponent>,
+    @SideQualifier(RIGHT) private val right: Lazy<InternalTyreComponent>,
 ) : (Vehicle.Kind.Location) -> InternalTyreComponent {
 
     @Suppress("MaxLineLength")

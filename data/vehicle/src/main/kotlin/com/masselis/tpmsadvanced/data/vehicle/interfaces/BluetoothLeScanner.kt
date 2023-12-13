@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 public interface BluetoothLeScanner {
     public class ScanFailed(reason: Int) : Exception("ScanFailed(reason=$reason)")
 
-    public fun highDutyScan(): Flow<Tyre>
-    public fun normalScan(): Flow<Tyre>
+    public fun highDutyScan(): Flow<Tyre.SensorInput>
+    public fun normalScan(): Flow<Tyre.SensorInput>
 
     public fun missingPermission(): List<String>
 

@@ -1,5 +1,5 @@
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure;
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation;
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle;
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature;
 import java.util.UUID;
 import kotlin.Boolean;
@@ -10,7 +10,7 @@ CREATE TABLE Tyre(
     id INTEGER AS Int NOT NULL,
     timestamp REAL NOT NULL,
     rssi INTEGER AS Int NOT NULL,
-    location INTEGER AS SensorLocation,
+    location INTEGER AS Vehicle.Kind.Location NOT NULL,
     pressure REAL AS Pressure NOT NULL,
     temperature REAL AS Temperature NOT NULL,
     battery INTEGER AS UShort NOT NULL,
@@ -25,6 +25,6 @@ INSERT INTO Tyre (id, timestamp, rssi, location, pressure, temperature, battery,
 latestByTyreLocationByVehicle:
 SELECT Tyre.id, Tyre.timestamp, Tyre.rssi, Tyre.location, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm FROM Tyre
 INNER JOIN Vehicle ON Tyre.vehicleId = Vehicle.uuid
-WHERE location IN ? AND Vehicle.uuid = ?
+WHERE location = ? AND Vehicle.uuid = ?
 ORDER BY timestamp DESC
 LIMIT 1;

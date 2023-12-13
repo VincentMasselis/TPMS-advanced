@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.core
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.masselis.tpmsadvanced.core.common.now
+import com.masselis.tpmsadvanced.core.feature.usecase.ListenTyreUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.ListenTyreWithDatabaseUseCase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
@@ -15,6 +16,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -35,16 +37,16 @@ import kotlin.test.assertEquals
 internal class ListenTyreWithDatabaseUseCaseTest {
 
     private lateinit var vehicle: Vehicle
-    private lateinit var locations: Set<SensorLocation>
+    private lateinit var location: Location
     private lateinit var tyreDatabase: TyreDatabase
-    private lateinit var scanner: BluetoothLeScanner
+    private lateinit var listenTyreUseCase: ListenTyreUseCase
     private var tyresToEmit: List<Tyre> = emptyList()
 
     private fun CoroutineScope.test() = ListenTyreWithDatabaseUseCase(
         vehicle,
-        locations,
+        location,
         tyreDatabase,
-        scanner,
+        listenTyreUseCase,
         this
     )
 

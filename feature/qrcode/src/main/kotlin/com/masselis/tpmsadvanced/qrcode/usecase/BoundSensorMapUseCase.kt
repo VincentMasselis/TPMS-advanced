@@ -13,9 +13,9 @@ internal class BoundSensorMapUseCase @Inject constructor(
     private val sensorDatabase: SensorDatabase,
     private val currentVehicleUseCase: CurrentVehicleUseCase,
 ) {
-    suspend fun bind(ids: SensorMap) = withContext(IO) {
+    suspend fun bind(sensorMap: SensorMap) = withContext(IO) {
         val currentUuid = currentVehicleUseCase.value.vehicle.uuid
-        ids.values
+        sensorMap.values
             .map { sensor -> async { sensorDatabase.upsert(sensor, currentUuid) } }
             .awaitAll()
     }

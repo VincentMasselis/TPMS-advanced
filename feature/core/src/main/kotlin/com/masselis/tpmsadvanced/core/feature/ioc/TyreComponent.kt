@@ -5,6 +5,8 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsView
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import dagger.BindsInstance
 import dagger.Subcomponent
 
@@ -24,7 +26,7 @@ public interface TyreComponent {
 internal interface InternalTyreComponent : TyreComponent {
     @Subcomponent.Factory
     interface Factory {
-        fun build(@BindsInstance locations: Set<SensorLocation>): InternalTyreComponent
+        fun build(@BindsInstance location: Location): InternalTyreComponent
     }
 
     val TyreViewModel: TyreViewModelImpl.Factory

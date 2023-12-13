@@ -40,14 +40,14 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
         data object Empty : State()
 
         sealed class RequestBond : State() {
-            abstract val foundSensor: Sensor.Located
+            abstract val foundSensor: Sensor
 
             @Parcelize
-            data class NewBinding(override val foundSensor: Sensor.Located) : RequestBond()
+            data class NewBinding(override val foundSensor: Sensor) : RequestBond()
 
             @Parcelize
             data class AlreadyBound(
-                override val foundSensor: Sensor.Located,
+                override val foundSensor: Sensor,
                 val currentVehicle: Vehicle,
                 val targetVehicle: Vehicle
             ) : RequestBond()
@@ -64,20 +64,14 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
                 when (result) {
                     is Result.AlreadyBound -> flowOf(State.Empty)
 
-                    is Result.NewBinding -> when (result.foundSensor) {
-                        is Sensor.Impl -> flowOf(State.Empty)
-                        is Sensor.Located -> flowOf(State.RequestBond.NewBinding(result.foundSensor))
-                    }
+                    is Result.NewBinding -> flowOf(State.RequestBond.NewBinding(result.foundSensor))
 
-                    is Result.DuplicateBinding -> when (result.foundSensor) {
-                        is Sensor.Impl -> flowOf(State.Empty)
-                        is Sensor.Located -> vehicleFlow.map { targetVehicle ->
-                            State.RequestBond.AlreadyBound(
-                                result.foundSensor,
-                                result.boundVehicle,
-                                targetVehicle
-                            )
-                        }
+                    is Result.DuplicateBinding -> vehicleFlow.map { targetVehicle ->
+                        State.RequestBond.AlreadyBound(
+                            result.foundSensor,
+                            result.boundVehicle,
+                            targetVehicle
+                        )
                     }
                 }
             }
@@ -88,10 +82,10 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
 
     fun bind() {
         viewModelScope.launch {
-            when (val state = stateFlow.value) {
-                State.Empty -> return@launch
-                is State.RequestBond -> sensorBindingUseCase.bind(state.foundSensor)
-            }
+            val state = stateFlow.value
+            if (state !is State.RequestBond)
+                return@launch
+            sensorBindingUseCase.bind(state.foundSensor)
         }
     }
 }

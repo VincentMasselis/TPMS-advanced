@@ -124,16 +124,18 @@ public data class Vehicle(
          * Unlike [SensorLocation] which represents a location from the sensor standpoint, a
          * [Location] represents a location from a [Vehicle] standpoint.
          */
-        public sealed interface Location {
+        public sealed interface Location : Parcelable {
             @JvmInline
+            @Parcelize
             public value class Wheel(public val location: SensorLocation) : Location
 
             @JvmInline
+            @Parcelize
             public value class Axle(public val axle: SensorLocation.Axle) : Location
 
             @JvmInline
+            @Parcelize
             public value class Side(public val side: SensorLocation.Side) : Location
         }
     }
-
 }

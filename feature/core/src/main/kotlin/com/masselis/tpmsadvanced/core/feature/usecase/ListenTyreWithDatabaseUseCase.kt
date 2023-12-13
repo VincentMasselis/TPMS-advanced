@@ -6,6 +6,7 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.shareIn
 
 internal class ListenTyreWithDatabaseUseCase(
     private val vehicle: Vehicle,
-    private val locations: Set<SensorLocation>,
+    private val location: Location,
     private val tyreDatabase: TyreDatabase,
     listenTyreUseCase: ListenTyreUseCase,
     scope: CoroutineScope,
@@ -30,10 +31,10 @@ internal class ListenTyreWithDatabaseUseCase(
         .shareIn(scope, WhileSubscribed())
         .dematerializeCompletion()
         .onStart {
-            tyreDatabase.latestByTyreLocationByVehicle(locations, vehicle.uuid)
+            tyreDatabase.latestByTyreLocationByVehicle(location, vehicle.uuid)
                 ?.also { emit(it) }
         }
         .flowOn(Dispatchers.IO)
 
-    override fun listen(): Flow<Tyre> = flow
+    override fun listen(): Flow<Tyre.Located> = flow
 }

@@ -1,10 +1,10 @@
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation;
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle;
 import java.util.UUID;
 import kotlin.Int;
 
 CREATE TABLE Sensor(
     id INTEGER AS Int NOT NULL PRIMARY KEY,
-    location INTEGER AS SensorLocation NOT NULL,
+    location INTEGER AS Vehicle.Kind.Location NOT NULL,
     vehicleId TEXT AS UUID NOT NULL,
     FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE,
     UNIQUE(location, vehicleId)
@@ -28,12 +28,12 @@ DELETE FROM Sensor WHERE rowid IN (
 );
 
 deleteByVehicleAndLocation:
-DELETE FROM Sensor WHERE vehicleId = ? AND location IN ?;
+DELETE FROM Sensor WHERE vehicleId = ? AND location = ?;
 
 selectByVehicleAndLocation:
 SELECT Sensor.* FROM Sensor
 INNER JOIN Vehicle ON Sensor.vehicleId = Vehicle.uuid
-WHERE Vehicle.uuid = ? AND location IN ?;
+WHERE Vehicle.uuid = ? AND location = ?;
 
 countByVehicle:
 SELECT COUNT(Sensor.rowid) FROM Sensor
@@ -42,3 +42,6 @@ WHERE Vehicle.uuid = ?;
 
 selectById:
 SELECT * FROM Sensor WHERE Sensor.id = ?;
+
+selectListByVehicleId:
+SELECT * FROM Sensor WHERE Sensor.vehicleId = ?;

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.scan
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -29,6 +30,12 @@ internal class ListTyreUseCase @Inject constructor(
 ) : () -> Flow<Pair<List<ListTyreUseCase.Available.ReadyToBind>, List<ListTyreUseCase.Available.Bound>>> {
     override fun invoke(): Flow<Pair<List<Available.ReadyToBind>, List<Available.Bound>>> = scanner
         .highDutyScan()
+        .mapNotNull {
+            when (it) {
+                is Tyre.SensorLocated -> null // Only interested by unlocated sensors
+                is Tyre.Unlocated -> it
+            }
+        }
         .flatMapLatest { foundTyre ->
             sensorDatabase
                 .selectByIdFlow(foundTyre.id)
@@ -38,12 +45,12 @@ internal class ListTyreUseCase @Inject constructor(
                         .map { Available.Bound(foundTyre, foundSensor, it!!) }
                 }
         }
-        .scan(mutableMapOf<Int, Available>()) { acc, available ->
-            if (available.tyre.location == null)
-                acc[available.tyre.id] = available
+        .scan(mutableListOf<Available>()) { acc, available ->
+            if (acc.none { it.tyre.id == available.tyre.id })
+                acc += available
+            acc.sortByDescending { it.tyre.rssi }
             acc
         }
-        .map { map -> map.values.sortedBy { it.tyre.rssi } }
         .map { availables ->
             availables
                 .partition {
@@ -69,12 +76,12 @@ internal class ListTyreUseCase @Inject constructor(
 
         @Parcelize
         @JvmInline
-        value class ReadyToBind(override val tyre: Tyre) : Available
+        value class ReadyToBind(override val tyre: Tyre.Unlocated) : Available
 
         @Parcelize
         data class Bound(
-            override val tyre: Tyre,
-            val sensor: Sensor.Located,
+            override val tyre: Tyre.Unlocated,
+            val sensor: Sensor,
             val vehicle: Vehicle
         ) : Available
     }
