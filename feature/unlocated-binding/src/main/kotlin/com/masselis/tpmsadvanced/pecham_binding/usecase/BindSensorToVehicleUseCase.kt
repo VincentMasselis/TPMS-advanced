@@ -19,20 +19,6 @@ internal class BindSensorToVehicleUseCase @Inject constructor(
         tyre: Tyre
     ) {
         sensorDatabase.upsert(sensor, vehicleUuid)
-        tyreDatabase.insert(
-            tyre.run {
-                Tyre.Located(
-                    timestamp,
-                    rssi,
-                    id,
-                    pressure,
-                    temperature,
-                    battery,
-                    isAlarm,
-                    sensor.location
-                )
-            },
-            vehicleUuid
-        )
+        tyreDatabase.insert(Tyre.Located(tyre, sensor.location), vehicleUuid)
     }
 }

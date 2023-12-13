@@ -72,15 +72,26 @@ public class SensorDatabase @Inject internal constructor(
         .asFlow()
         .mapToOne(IO)
 
-    @Suppress("NAME_SHADOWING")
+    public fun selectById(id: Int): Sensor? = queries
+        .selectById(id) { _, location, _ ->
+            Sensor(id, location)
+        }
+        .executeAsOneOrNull()
+
     public fun selectByIdFlow(id: Int): Flow<Sensor?> = queries
-        .selectById(id) { id, location, _ ->
+        .selectById(id) { _, location, _ ->
             Sensor(id, location)
         }
         .asFlow()
         .mapToOneOrNull(IO)
 
-    public fun selectListByVehicleId(uuid: UUID): Flow<List<Sensor>> = queries
+    public fun selectListByVehicleId(uuid: UUID): List<Sensor> = queries
+        .selectListByVehicleId(uuid) { id, location, _ ->
+            Sensor(id, location)
+        }
+        .executeAsList()
+
+    public fun selectListByVehicleIdFlow(uuid: UUID): Flow<List<Sensor>> = queries
         .selectListByVehicleId(uuid) { id, location, _ ->
             Sensor(id, location)
         }

@@ -26,7 +26,7 @@ internal class SensorBindingUseCase @Inject constructor(
         sensorDatabase.selectByVehicleAndLocation(currentVehicle.uuid, currentLocation)
     }
 
-    fun boundVehicle(sensor: Sensor) = vehicleDatabase.selectBySensorId(sensor.id)
+    fun boundVehicle(sensor: Sensor) = vehicleDatabase.selectBySensorIdFlow(sensor.id)
 
     suspend fun bind(sensor: Sensor) = sensorDatabase.upsert(sensor, currentVehicle.uuid)
 }

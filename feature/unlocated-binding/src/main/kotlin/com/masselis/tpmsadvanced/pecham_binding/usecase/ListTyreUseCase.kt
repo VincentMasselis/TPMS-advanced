@@ -10,9 +10,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -41,7 +39,7 @@ internal class ListTyreUseCase @Inject constructor(
                 .selectByIdFlow(foundTyre.id)
                 .flatMapLatest { foundSensor ->
                     if (foundSensor == null) flowOf(Available.ReadyToBind(foundTyre))
-                    else vehicleDatabase.selectBySensorId(foundSensor.id)
+                    else vehicleDatabase.selectBySensorIdFlow(foundSensor.id)
                         .map { Available.Bound(foundTyre, foundSensor, it!!) }
                 }
         }

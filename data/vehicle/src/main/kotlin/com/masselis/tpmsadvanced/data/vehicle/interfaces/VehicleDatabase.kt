@@ -136,7 +136,11 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
             .asFlow()
             .mapToOne(IO)
 
-    public fun selectBySensorId(sensorId: Int): Flow<Vehicle?> = queries
+    public fun selectBySensorId(sensorId: Int): Vehicle? = queries
+        .selectBySensorId(sensorId, mapper)
+        .executeAsOneOrNull()
+
+    public fun selectBySensorIdFlow(sensorId: Int): Flow<Vehicle?> = queries
         .selectBySensorId(sensorId, mapper)
         .asFlow()
         .mapToOneOrNull(IO)

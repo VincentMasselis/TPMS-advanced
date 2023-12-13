@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,7 +79,7 @@ private fun Content(
     }
 ) {
     val state = viewModel.stateFlow.collectAsState().value
-    val (tyreToBind, setTyreToBind) = remember { mutableStateOf<Available?>(null) }
+    val (tyreToBind, setTyreToBind) = rememberSaveable { mutableStateOf<Available?>(null) }
     LazyColumn(modifier) {
         stickyHeader {
             Text(
@@ -154,6 +155,7 @@ private fun Content(
         BindDialog(
             vehicle = vehicle,
             tyre = tyreToBind.tyre,
+            onBound = { setTyreToBind(null) },
             onDismissRequest = { setTyreToBind(null) },
         )
 }

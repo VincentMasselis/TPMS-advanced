@@ -41,6 +41,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
@@ -49,19 +50,19 @@ import com.masselis.tpmsadvanced.pecham_binding.interfaces.viewmodel.BindSensorV
 import com.masselis.tpmsadvanced.pecham_binding.ioc.FeatureUnlocatedBinding.Companion.BindSensorViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.util.UUID
 
 @Composable
 internal fun BindDialog(
     vehicle: Vehicle,
     tyre: Tyre,
+    onBound: () -> Unit,
     onDismissRequest: () -> Unit,
     viewModel: BindSensorViewModel = viewModel(key = "BindSensorViewModel_${vehicle.uuid}_${tyre}") {
         BindSensorViewModel(vehicle, tyre, createSavedStateHandle())
     }
 ) {
     val state = viewModel.stateFlow.collectAsState().value
-    var selectedLocation by remember { mutableStateOf<Vehicle.Kind.Location?>(null) }
+    var selectedLocation by remember { mutableStateOf<Location?>(null) }
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text("Ready to bind") },
@@ -76,17 +77,17 @@ internal fun BindDialog(
                                 "\"${state.boundVehicle.name}\" and attached to the " +
                                 state.boundVehicleLocation.let {
                                     when (it) {
-                                        is Vehicle.Kind.Location.Axle -> when (it.axle) {
+                                        is Location.Axle -> when (it.axle) {
                                             FRONT -> "front"
                                             REAR -> "rear"
                                         }
 
-                                        is Vehicle.Kind.Location.Side -> when (it.side) {
+                                        is Location.Side -> when (it.side) {
                                             LEFT -> "left"
                                             RIGHT -> "right"
                                         }
 
-                                        is Vehicle.Kind.Location.Wheel -> when (it.location) {
+                                        is Location.Wheel -> when (it.location) {
                                             FRONT_LEFT -> "front left"
                                             FRONT_RIGHT -> "front right"
                                             REAR_LEFT -> "rear left"
@@ -148,7 +149,7 @@ internal fun BindDialog(
                 enabled = selectedLocation != null,
                 onClick = {
                     viewModel.bind(selectedLocation!!)
-                    onDismissRequest()
+                    onBound()
                 }
             ) {
                 Text(text = "Bind")
@@ -159,15 +160,15 @@ internal fun BindDialog(
 
 @Composable
 private fun Car(
-    boundLocations: Set<Vehicle.Kind.Location>,
-    selectedLocation: Vehicle.Kind.Location?,
-    onSelectedLocation: (Vehicle.Kind.Location?) -> Unit,
+    boundLocations: Set<Location>,
+    selectedLocation: Location?,
+    onSelectedLocation: (Location?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier.size(50.dp, 100.dp)
     ) {
-        with(Vehicle.Kind.Location.Wheel(FRONT_LEFT)) {
+        with(Location.Wheel(FRONT_LEFT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -175,7 +176,7 @@ private fun Car(
                 modifier = Modifier.align(Alignment.TopStart)
             )
         }
-        with(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)) {
+        with(Location.Wheel(FRONT_RIGHT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -183,7 +184,7 @@ private fun Car(
                 modifier = Modifier.align(Alignment.TopEnd)
             )
         }
-        with(Vehicle.Kind.Location.Wheel(REAR_LEFT)) {
+        with(Location.Wheel(REAR_LEFT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -191,7 +192,7 @@ private fun Car(
                 modifier = Modifier.align(Alignment.BottomStart)
             )
         }
-        with(Vehicle.Kind.Location.Wheel(REAR_RIGHT)) {
+        with(Location.Wheel(REAR_RIGHT)) {
             Tyre(
                 isEnabled = boundLocations.contains(this).not(),
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -204,15 +205,15 @@ private fun Car(
 
 @Composable
 private fun SingleAxleTrailer(
-    boundLocations: Set<Vehicle.Kind.Location>,
-    selectedLocation: Vehicle.Kind.Location?,
-    onSelectedLocation: (Vehicle.Kind.Location?) -> Unit,
+    boundLocations: Set<Location>,
+    selectedLocation: Location?,
+    onSelectedLocation: (Location?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier.size(50.dp, 100.dp)
     ) {
-        with(Vehicle.Kind.Location.Side(LEFT)) {
+        with(Location.Side(LEFT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -220,7 +221,7 @@ private fun SingleAxleTrailer(
                 modifier = Modifier.align(Alignment.CenterStart)
             )
         }
-        with(Vehicle.Kind.Location.Side(RIGHT)) {
+        with(Location.Side(RIGHT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -233,15 +234,15 @@ private fun SingleAxleTrailer(
 
 @Composable
 private fun Motorcycle(
-    boundLocations: Set<Vehicle.Kind.Location>,
-    selectedLocation: Vehicle.Kind.Location?,
-    onSelectedLocation: (Vehicle.Kind.Location?) -> Unit,
+    boundLocations: Set<Location>,
+    selectedLocation: Location?,
+    onSelectedLocation: (Location?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier.size(50.dp, 100.dp)
     ) {
-        with(Vehicle.Kind.Location.Axle(FRONT)) {
+        with(Location.Axle(FRONT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -249,7 +250,7 @@ private fun Motorcycle(
                 modifier = Modifier.align(Alignment.TopCenter)
             )
         }
-        with(Vehicle.Kind.Location.Axle(REAR)) {
+        with(Location.Axle(REAR)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -262,15 +263,15 @@ private fun Motorcycle(
 
 @Composable
 private fun TadpoleThreeWheeler(
-    boundLocations: Set<Vehicle.Kind.Location>,
-    selectedLocation: Vehicle.Kind.Location?,
-    onSelectedLocation: (Vehicle.Kind.Location?) -> Unit,
+    boundLocations: Set<Location>,
+    selectedLocation: Location?,
+    onSelectedLocation: (Location?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier.size(50.dp, 100.dp)
     ) {
-        with(Vehicle.Kind.Location.Wheel(FRONT_LEFT)) {
+        with(Location.Wheel(FRONT_LEFT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -278,7 +279,7 @@ private fun TadpoleThreeWheeler(
                 modifier = Modifier.align(Alignment.TopStart)
             )
         }
-        with(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)) {
+        with(Location.Wheel(FRONT_RIGHT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -286,7 +287,7 @@ private fun TadpoleThreeWheeler(
                 modifier = Modifier.align(Alignment.TopEnd)
             )
         }
-        with(Vehicle.Kind.Location.Axle(REAR)) {
+        with(Location.Axle(REAR)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -299,15 +300,15 @@ private fun TadpoleThreeWheeler(
 
 @Composable
 private fun DeltaThreeWheeler(
-    boundLocations: Set<Vehicle.Kind.Location>,
-    selectedLocation: Vehicle.Kind.Location?,
-    onSelectedLocation: (Vehicle.Kind.Location?) -> Unit,
+    boundLocations: Set<Location>,
+    selectedLocation: Location?,
+    onSelectedLocation: (Location?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier.size(50.dp, 100.dp)
     ) {
-        with(Vehicle.Kind.Location.Axle(FRONT)) {
+        with(Location.Axle(FRONT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -315,7 +316,7 @@ private fun DeltaThreeWheeler(
                 modifier = Modifier.align(Alignment.TopCenter)
             )
         }
-        with(Vehicle.Kind.Location.Wheel(REAR_LEFT)) {
+        with(Location.Wheel(REAR_LEFT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -323,7 +324,7 @@ private fun DeltaThreeWheeler(
                 modifier = Modifier.align(Alignment.BottomStart)
             )
         }
-        with(Vehicle.Kind.Location.Wheel(REAR_RIGHT)) {
+        with(Location.Wheel(REAR_RIGHT)) {
             Tyre(
                 isEnabled = boundLocations.none { it == this },
                 isSelected = selectedLocation == this || boundLocations.any { it == this },
@@ -378,10 +379,11 @@ private fun BindDialogCarPreview() {
         viewModel = MockViewModel(
             State.ReadyToBind(
                 setOf(
-                    Vehicle.Kind.Location.Wheel(FRONT_LEFT)
+                    Location.Wheel(FRONT_LEFT)
                 )
             )
         ),
+        onBound = {},
         onDismissRequest = {},
     )
 }
@@ -395,10 +397,11 @@ private fun BindDialogTrailerPreview() {
         viewModel = MockViewModel(
             State.ReadyToBind(
                 setOf(
-                    Vehicle.Kind.Location.Side(LEFT)
+                    Location.Side(LEFT)
                 )
             )
         ),
+        onBound = {},
         onDismissRequest = {},
     )
 }
@@ -412,10 +415,11 @@ private fun BindDialogMotorcyclePreview() {
         viewModel = MockViewModel(
             State.ReadyToBind(
                 setOf(
-                    Vehicle.Kind.Location.Axle(FRONT)
+                    Location.Axle(FRONT)
                 )
             )
         ),
+        onBound = {},
         onDismissRequest = {},
     )
 }
@@ -429,10 +433,11 @@ private fun BindDialogTadpolePreview() {
         viewModel = MockViewModel(
             State.ReadyToBind(
                 setOf(
-                    Vehicle.Kind.Location.Wheel(FRONT_LEFT)
+                    Location.Wheel(FRONT_LEFT)
                 )
             )
         ),
+        onBound = {},
         onDismissRequest = {},
     )
 }
@@ -446,10 +451,11 @@ private fun BindDialogDeltaPreview() {
         viewModel = MockViewModel(
             State.ReadyToBind(
                 setOf(
-                    Vehicle.Kind.Location.Axle(FRONT)
+                    Location.Axle(FRONT)
                 )
             )
         ),
+        onBound = {},
         onDismissRequest = {},
     )
 }
@@ -464,9 +470,10 @@ private fun BindDialogAlreadyBoundPreview() {
             State.BoundToAnOtherVehicle(
                 emptySet(),
                 mockVehicle(),
-                Vehicle.Kind.Location.Wheel(FRONT_LEFT)
+                Location.Wheel(FRONT_LEFT)
             )
         ),
+        onBound = {},
         onDismissRequest = {},
     )
 }
@@ -474,6 +481,6 @@ private fun BindDialogAlreadyBoundPreview() {
 private class MockViewModel(state: State) : BindSensorViewModel {
     override val stateFlow: StateFlow<State> = MutableStateFlow(state)
 
-    override fun bind(location: Vehicle.Kind.Location) = error("")
+    override fun bind(location: Location) = error("")
 
 }
