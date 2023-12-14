@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.pecham_binding.usecase
+package com.masselis.tpmsadvanced.unlocated.usecase
 
 import android.os.Parcelable
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
@@ -25,8 +25,8 @@ internal class ListTyreUseCase @Inject constructor(
     private val scanner: BluetoothLeScanner,
     private val sensorDatabase: SensorDatabase,
     private val vehicleDatabase: VehicleDatabase,
-) : () -> Flow<Pair<List<ListTyreUseCase.Available.ReadyToBind>, List<ListTyreUseCase.Available.Bound>>> {
-    override fun invoke(): Flow<Pair<List<Available.ReadyToBind>, List<Available.Bound>>> = scanner
+) : () -> Flow<Pair<List<ListTyreUseCase.Available.ReadyToBind>, List<ListTyreUseCase.Available.AlreadyBound>>> {
+    override fun invoke(): Flow<Pair<List<Available.ReadyToBind>, List<Available.AlreadyBound>>> = scanner
         .highDutyScan()
         .mapNotNull {
             when (it) {
@@ -40,7 +40,7 @@ internal class ListTyreUseCase @Inject constructor(
                 .flatMapLatest { foundSensor ->
                     if (foundSensor == null) flowOf(Available.ReadyToBind(foundTyre))
                     else vehicleDatabase.selectBySensorIdFlow(foundSensor.id)
-                        .map { Available.Bound(foundTyre, foundSensor, it!!) }
+                        .map { Available.AlreadyBound(foundTyre, foundSensor, it!!) }
                 }
         }
         .scan(mutableListOf<Available>()) { acc, available ->
@@ -54,13 +54,13 @@ internal class ListTyreUseCase @Inject constructor(
                 .partition {
                     when (it) {
                         is Available.ReadyToBind -> true
-                        is Available.Bound -> false
+                        is Available.AlreadyBound -> false
                     }
                 }
                 .let { (unbound, bound) ->
                     Pair(
                         unbound.map { it as Available.ReadyToBind },
-                        bound.map { it as Available.Bound }
+                        bound.map { it as Available.AlreadyBound }
                     )
                 }
         }
@@ -77,7 +77,7 @@ internal class ListTyreUseCase @Inject constructor(
         value class ReadyToBind(override val tyre: Tyre.Unlocated) : Available
 
         @Parcelize
-        data class Bound(
+        data class AlreadyBound(
             override val tyre: Tyre.Unlocated,
             val sensor: Sensor,
             val vehicle: Vehicle

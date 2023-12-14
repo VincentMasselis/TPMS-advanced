@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.pecham_binding.interfaces.viewmodel
+package com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel
 
 import android.os.Parcelable
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle

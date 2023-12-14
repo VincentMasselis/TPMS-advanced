@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.masselis.tpmsadvanced.pecham_binding"
+    namespace = "com.masselis.tpmsadvanced.unlocated"
 }
 
 dependencies {

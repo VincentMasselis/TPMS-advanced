@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.pecham_binding.interfaces.viewmodel
+package com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,8 +10,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
-import com.masselis.tpmsadvanced.pecham_binding.interfaces.viewmodel.BindSensorViewModel.State
-import com.masselis.tpmsadvanced.pecham_binding.usecase.BindSensorToVehicleUseCase
+import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel.State
+import com.masselis.tpmsadvanced.unlocated.usecase.BindSensorToVehicleUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -42,12 +42,11 @@ internal class BindSensorViewModelImpl @AssistedInject constructor(
     }
 
     init {
-        // TODO Put this into a use case
         combine(
             sensorDatabase.selectListByVehicleIdFlow(vehicle.uuid),
             vehicleDatabase.selectBySensorIdFlow(tyre.id),
             sensorDatabase.selectByIdFlow(tyre.id)
-        )   { knownSensors, alreadyBoundVehicle, alreadyBoundSensor ->
+        ) { knownSensors, alreadyBoundVehicle, alreadyBoundSensor ->
             computeState(knownSensors, alreadyBoundVehicle, alreadyBoundSensor?.location)
         }.onEach { stateFlow.value = it }
             .launchIn(viewModelScope)
@@ -63,8 +62,8 @@ internal class BindSensorViewModelImpl @AssistedInject constructor(
         alreadyBoundToVehicleList: List<Sensor>,
         currentVehicle: Vehicle?,
         currentLocation: Location?,
-    ): State {
-        return if (currentVehicle != null && currentLocation != null)
+    ): State =
+        if (currentVehicle != null && currentLocation != null)
             State.BoundToAnOtherVehicle(
                 alreadyBoundToVehicleList.map { it.location }.toSet(),
                 currentVehicle,
@@ -74,5 +73,4 @@ internal class BindSensorViewModelImpl @AssistedInject constructor(
             State.ReadyToBind(
                 alreadyBoundToVehicleList.map { it.location }.toSet()
             )
-    }
 }

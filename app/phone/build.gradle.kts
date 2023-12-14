@@ -86,7 +86,7 @@ dependencies {
 
     implementation(project(":feature:background"))
     implementation(project(":feature:core"))
-    implementation(project(":feature:unlocated-binding"))
+    implementation(project(":feature:unlocated"))
     implementation(project(":feature:qrcode"))
     implementation(project(":feature:shortcut"))
     implementation(project(":feature:unit"))

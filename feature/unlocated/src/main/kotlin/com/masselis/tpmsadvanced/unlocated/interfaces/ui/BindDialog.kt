@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.pecham_binding.interfaces.ui
+package com.masselis.tpmsadvanced.unlocated.interfaces.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,9 +45,9 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
-import com.masselis.tpmsadvanced.pecham_binding.interfaces.viewmodel.BindSensorViewModel
-import com.masselis.tpmsadvanced.pecham_binding.interfaces.viewmodel.BindSensorViewModel.State
-import com.masselis.tpmsadvanced.pecham_binding.ioc.FeatureUnlocatedBinding.Companion.BindSensorViewModel
+import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel
+import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel.State
+import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion.BindSensorViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

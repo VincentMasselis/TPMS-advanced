@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.pecham_binding.interfaces.ui
+package com.masselis.tpmsadvanced.unlocated.interfaces.ui
 
 import android.icu.text.DateFormat.SHORT
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,17 +44,16 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.pecham_binding.interfaces.viewmodel.ListSensorViewModel
-import com.masselis.tpmsadvanced.pecham_binding.interfaces.viewmodel.ListSensorViewModel.State
-import com.masselis.tpmsadvanced.pecham_binding.ioc.FeatureUnlocatedBinding.Companion.ListSensorViewModel
-import com.masselis.tpmsadvanced.pecham_binding.usecase.ListTyreUseCase.Available
+import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel
+import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel.State
+import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion.ListSensorViewModel
+import com.masselis.tpmsadvanced.unlocated.usecase.ListTyreUseCase.Available
 import io.github.fornewid.placeholder.foundation.PlaceholderHighlight
 import io.github.fornewid.placeholder.material3.placeholder
 import io.github.fornewid.placeholder.material3.shimmer
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.DateFormat
 import java.util.Date
-import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -69,16 +67,34 @@ public fun UnlocatedSensorList(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Content(
     vehicle: Vehicle,
     modifier: Modifier = Modifier,
-    viewModel: ListSensorViewModel = viewModel(key = "ListSensorViewModel_${vehicle.kind}") {
-        ListSensorViewModel(vehicle.kind)
-    }
+    viewModel: ListSensorViewModel = viewModel { ListSensorViewModel() }
 ) {
-    val state = viewModel.stateFlow.collectAsState().value
+    when (val state = viewModel.stateFlow.collectAsState().value) {
+        State.PlugSensor -> TODO()
+
+        is State.Searching -> Searching(
+            state = state,
+            vehicle = vehicle,
+            onSensorBound = viewModel::onSensorBound,
+            modifier = modifier
+        )
+
+        State.Issue -> TODO()
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun Searching(
+    state: State.Searching,
+    vehicle: Vehicle,
+    onSensorBound: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val (tyreToBind, setTyreToBind) = rememberSaveable { mutableStateOf<Available?>(null) }
     LazyColumn(modifier) {
         stickyHeader {
@@ -88,14 +104,15 @@ private fun Content(
             )
         }
         item { Spacer(Modifier.height(8.dp)) }
-        if (state is State.Empty) item {
+        if (state is State.SearchingNoResult) item {
             PlaceholderTyreCell(
                 Modifier
                     .fillMaxWidth()
                     .tyre(0, 1)
             )
         }
-        if (state is State.Tyres && state.listReadyToBind.isNotEmpty()) itemsIndexed(items = state.listReadyToBind,
+        if (state is State.SearchingFoundTyre && state.listReadyToBind.isNotEmpty()) itemsIndexed(
+            items = state.listReadyToBind,
             key = { _, it -> it.tyre.id }) { index, it ->
             TyreCell(
                 tyre = it.tyre,
@@ -103,7 +120,7 @@ private fun Content(
                 state.pressureUnit,
                 showClosest = index == 0 && state.listReadyToBind.size >= 2,
                 showFarthest = index.plus(1) == state.listReadyToBind.size && state.listReadyToBind.size >= 2,
-                bound = null,
+                alreadyBound = null,
                 onBind = {},
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,19 +128,17 @@ private fun Content(
             )
             if (index.plus(1) < state.listReadyToBind.size) Divider(thickness = Hairline)
         }
-        if (state is State.Issue) item {
-            TODO()
-        } else item {
+        item {
             Box(
                 Modifier.fillParentMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(Modifier.padding(top = 8.dp))
             }
         }
-        if (state is State.Tyres && state.listReadyToBind.isNotEmpty() && state.listBoundTyre.isNotEmpty()) item {
+        if (state is State.SearchingFoundTyre && state.listReadyToBind.isNotEmpty() && state.listAlreadyBoundTyre.isNotEmpty()) item {
             Spacer(modifier = Modifier.height(25.dp))
         }
-        if (state is State.Tyres && state.listBoundTyre.isNotEmpty()) {
+        if (state is State.SearchingFoundTyre && state.listAlreadyBoundTyre.isNotEmpty()) {
             stickyHeader {
                 Text(
                     text = "Sensors already bound:",
@@ -132,22 +147,22 @@ private fun Content(
             }
             item { Spacer(Modifier.height(8.dp)) }
             itemsIndexed(
-                items = state.listBoundTyre,
+                items = state.listAlreadyBoundTyre,
                 key = { _, it -> it.tyre.id }
             ) { index, it ->
                 TyreCell(
                     tyre = it.tyre,
                     state.temperatureUnit,
                     state.pressureUnit,
-                    showClosest = index == 0 && state.listBoundTyre.size >= 2,
-                    showFarthest = index.plus(1) == state.listBoundTyre.size && state.listBoundTyre.size >= 2,
-                    bound = it,
+                    showClosest = index == 0 && state.listAlreadyBoundTyre.size >= 2,
+                    showFarthest = index.plus(1) == state.listAlreadyBoundTyre.size && state.listAlreadyBoundTyre.size >= 2,
+                    alreadyBound = it,
                     onBind = { setTyreToBind(it) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .tyre(index, state.listBoundTyre.size)
+                        .tyre(index, state.listAlreadyBoundTyre.size)
                 )
-                if (index.plus(1) < state.listBoundTyre.size) Divider(thickness = Hairline)
+                if (index.plus(1) < state.listAlreadyBoundTyre.size) Divider(thickness = Hairline)
             }
         }
     }
@@ -155,7 +170,10 @@ private fun Content(
         BindDialog(
             vehicle = vehicle,
             tyre = tyreToBind.tyre,
-            onBound = { setTyreToBind(null) },
+            onBound = {
+                onSensorBound()
+                setTyreToBind(null)
+            },
             onDismissRequest = { setTyreToBind(null) },
         )
 }
@@ -188,7 +206,7 @@ private fun TyreCell(
     pressureUnit: PressureUnit,
     showClosest: Boolean,
     showFarthest: Boolean,
-    bound: Available.Bound?,
+    alreadyBound: Available.AlreadyBound?,
     onBind: () -> Unit,
     modifier: Modifier = Modifier,
     isPlaceholder: Boolean = false,
@@ -202,7 +220,7 @@ private fun TyreCell(
                 text = StringBuilder()
                     .run {
                         append(
-                            if (bound != null) "Sensor bounded to \"${bound.vehicle.name}\" found at "
+                            if (alreadyBound != null) "Sensor bounded to \"${alreadyBound.vehicle.name}\" found at "
                             else "Found tyre at "
                         )
                     }
@@ -255,7 +273,7 @@ private fun PlaceholderTyreCell(
         pressureUnit = BAR,
         showClosest = false,
         showFarthest = false,
-        bound = null,
+        alreadyBound = null,
         onBind = { },
         isPlaceholder = true,
         modifier = modifier
@@ -265,7 +283,7 @@ private fun PlaceholderTyreCell(
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
 private fun ContentEmpty() {
-    Content(mockVehicle(), viewModel = MockListSensorViewModel(State.Empty))
+    Content(mockVehicle(), viewModel = MockListSensorViewModel(State.SearchingNoResult))
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
@@ -274,8 +292,8 @@ private fun ContentSensors() {
     Content(
         vehicle = mockVehicle(),
         viewModel = MockListSensorViewModel(
-            State.Tyres(
-                Vehicle.Kind.CAR, listOf(
+            State.SearchingFoundTyre(
+                listOf(
                     Available.ReadyToBind(
                         Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false)
                     ),
@@ -286,17 +304,17 @@ private fun ContentSensors() {
                         Tyre.Unlocated(now(), -20, 3, 2f.bar, 18f.celsius, 20u, false)
                     ),
                 ), listOf(
-                    Available.Bound(
+                    Available.AlreadyBound(
                         Tyre.Unlocated(now(), -20, 4, 1.5f.bar, 20f.celsius, 20u, false),
                         mockSensor(4),
                         mockVehicle()
                     ),
-                    Available.Bound(
+                    Available.AlreadyBound(
                         Tyre.Unlocated(now(), -20, 5, 1.75f.bar, 17f.celsius, 20u, false),
                         mockSensor(5),
                         mockVehicle()
                     ),
-                    Available.Bound(
+                    Available.AlreadyBound(
                         Tyre.Unlocated(now(), -20, 6, 2f.bar, 18f.celsius, 20u, false),
                         mockSensor(6),
                         mockVehicle()
@@ -309,4 +327,6 @@ private fun ContentSensors() {
 
 private class MockListSensorViewModel(state: State) : ListSensorViewModel {
     override val stateFlow = MutableStateFlow(state)
+    override fun acknowledgePlugSensor() = error("")
+    override fun onSensorBound() = error("")
 }
