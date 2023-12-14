@@ -2,7 +2,6 @@ package com.masselis.tpmsadvanced.unlocated.interfaces.ui
 
 import android.icu.text.DateFormat.SHORT
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,15 +16,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -131,10 +131,7 @@ private fun Searching(
     val (tyreToBind, setTyreToBind) = rememberSaveable { mutableStateOf<Available?>(null) }
     LazyColumn(modifier.fillMaxWidth()) {
         stickyHeader {
-            Text(
-                text = "Sensors ready to bind:",
-                fontSize = 12.sp,
-            )
+            Text(text = "Sensors ready to bind:", fontSize = 12.sp)
         }
         item { Spacer(Modifier.height(8.dp)) }
         when (val readyToBind = state.bindListState) {
@@ -150,7 +147,7 @@ private fun Searching(
                                     SpanStyle(textDecoration = TextDecoration.Underline)
                                 )
                             )
-                            .plus(AnnotatedString(" at time to your wheel")),
+                            .plus(AnnotatedString(" at time")),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillParentMaxWidth()
                     )
@@ -257,67 +254,71 @@ private fun TyreCell(
     modifier: Modifier = Modifier,
     isPlaceholder: Boolean = false,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Surface(
+        shape = when {
+            roundedTop && roundedBottom -> RoundedCornerShape(12.dp)
+            roundedTop -> RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+            roundedBottom -> RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+            else -> RectangleShape
+        },
+        shadowElevation = 2.dp,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceVariant),
         modifier = modifier
-            .shadow(
-                2.dp,
-                when {
-                    roundedTop && roundedBottom -> RoundedCornerShape(10.dp)
-                    roundedTop -> RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-                    roundedBottom -> RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp)
-                    else -> RectangleShape
-                }
-            )
-            .background(Color.White)
-            .height(56.dp)
-            .padding(start = 8.dp),
     ) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = StringBuilder()
-                    .run {
-                        append(
-                            if (alreadyBound != null) "Sensor bounded to \"${alreadyBound.vehicle.name}\" found at "
-                            else "Found tyre at "
-                        )
-                    }
-                    .append(df.format(Date(tyre.timestamp.seconds.inWholeMilliseconds))).toString(),
-                fontSize = 14.sp,
-                modifier = Modifier.placeholder(
-                    visible = isPlaceholder,
-                    highlight = PlaceholderHighlight.shimmer(),
-                )
-            )
-            Text(
-                text = "${tyre.pressure.string(pressureUnit)} / ${
-                    tyre.temperature.string(
-                        temperatureUnit
-                    )
-                }", fontSize = 11.sp, modifier = Modifier.placeholder(
-                    visible = isPlaceholder,
-                    highlight = PlaceholderHighlight.shimmer(),
-                )
-            )
-        }
-        when {
-            showClosest -> Text("Closest", fontSize = 12.sp, fontStyle = FontStyle.Italic)
-            showFarthest -> Text("Farthest", fontSize = 12.sp, fontStyle = FontStyle.Italic)
-        }
-
-        IconButton(
-            enabled = isPlaceholder.not(),
-            onClick = onBind,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .height(56.dp)
+                .padding(start = 8.dp),
         ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.link_variant_plus),
-                contentDescription = null,
-                modifier = Modifier
-                    .placeholder(
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = StringBuilder()
+                        .run {
+                            append(
+                                if (alreadyBound != null) "Sensor bounded to \"${alreadyBound.vehicle.name}\" found at "
+                                else "Found tyre at "
+                            )
+                        }
+                        .append(df.format(Date(tyre.timestamp.seconds.inWholeMilliseconds)))
+                        .toString(),
+                    fontSize = 14.sp,
+                    modifier = Modifier.placeholder(
                         visible = isPlaceholder,
                         highlight = PlaceholderHighlight.shimmer(),
                     )
-            )
+                )
+                Text(
+                    text = "${tyre.pressure.string(pressureUnit)} / ${
+                        tyre.temperature.string(
+                            temperatureUnit
+                        )
+                    }", fontSize = 11.sp, modifier = Modifier.placeholder(
+                        visible = isPlaceholder,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    )
+                )
+            }
+            when {
+                showClosest -> Text("Closest", fontSize = 12.sp, fontStyle = FontStyle.Italic)
+                showFarthest -> Text("Farthest", fontSize = 12.sp, fontStyle = FontStyle.Italic)
+            }
+
+            IconButton(
+                enabled = isPlaceholder.not(),
+                onClick = onBind,
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.link_variant_plus),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .placeholder(
+                            visible = isPlaceholder,
+                            highlight = PlaceholderHighlight.shimmer(),
+                        )
+                )
+            }
         }
     }
 }
