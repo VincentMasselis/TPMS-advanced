@@ -20,6 +20,11 @@ internal sealed interface Path {
         override fun toString(): String = "vehicle/$vehicleUUID/settings"
     }
 
+    @JvmInline
+    value class Unlocated(val vehicleUUID: UUID) : Path {
+        override fun toString(): String = "vehicle/$vehicleUUID/unlocated"
+    }
+
     companion object {
         @Suppress("NAME_SHADOWING")
         fun from(route: String): Path = route
@@ -31,6 +36,7 @@ internal sealed interface Path {
                     "home" -> Home(uuid)
                     "qrcode" -> QrCode(uuid)
                     "settings" -> Settings(uuid)
+                    "unlocated" -> Unlocated(uuid)
                     else -> error("Unrecognized route: \"$route\"")
                 }
             }

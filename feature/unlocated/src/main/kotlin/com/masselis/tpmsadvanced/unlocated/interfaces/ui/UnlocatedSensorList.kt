@@ -24,8 +24,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
@@ -80,20 +81,24 @@ private fun Content(
     modifier: Modifier = Modifier,
     viewModel: ListSensorViewModel = viewModel { ListSensorViewModel(vehicle) }
 ) {
-    when (val state = viewModel.stateFlow.collectAsState().value) {
-        State.UnplugEverySensor -> UnplugEverySensor(
-            onAcknowledge = viewModel::acknowledgeSensorUnplugged
-        )
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier.padding(end = 16.dp, start = 16.dp)
+    ) {
+        when (val state = viewModel.stateFlow.collectAsState().value) {
+            State.UnplugEverySensor -> UnplugEverySensor(
+                onAcknowledge = viewModel::acknowledgeSensorUnplugged,
+            )
 
-        is State.Searching -> Searching(
-            state = state,
-            vehicle = vehicle,
-            onSensorBound = viewModel::onSensorBound,
-            bindingFinished = bindingFinished,
-            modifier = modifier
-        )
+            is State.Searching -> Searching(
+                state = state,
+                vehicle = vehicle,
+                onSensorBound = viewModel::onSensorBound,
+                bindingFinished = bindingFinished,
+            )
 
-        State.Issue -> TODO()
+            State.Issue -> TODO()
+        }
     }
 }
 
@@ -103,13 +108,13 @@ private fun UnplugEverySensor(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        Text("Before we start, ensure you have unplugged every sensor from your tyres")
+        Text("Before we start, ensure to unplug every sensor to bind from your tyres")
         Spacer(modifier = Modifier.height(4.dp))
         Button(
             onClick = onAcknowledge,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text("All sensors unplugged")
+            Text("Sensors unplugged")
         }
     }
 }
@@ -124,7 +129,7 @@ private fun Searching(
     modifier: Modifier = Modifier,
 ) {
     val (tyreToBind, setTyreToBind) = rememberSaveable { mutableStateOf<Available?>(null) }
-    LazyColumn(modifier) {
+    LazyColumn(modifier.fillMaxWidth()) {
         stickyHeader {
             Text(
                 text = "Sensors ready to bind:",
@@ -132,49 +137,56 @@ private fun Searching(
             )
         }
         item { Spacer(Modifier.height(8.dp)) }
-        if (state is State.SearchingNoResult) item {
-            PlaceholderTyreCell(
-                Modifier
-                    .fillMaxWidth()
-                    .tyre(0, 1)
-            )
-        }
-        if (state is State.SearchingFoundTyre && state.listReadyToBind.isNotEmpty()) itemsIndexed(
-            items = state.listReadyToBind,
-            key = { _, it -> it.tyre.id }) { index, it ->
-            TyreCell(
-                tyre = it.tyre,
-                state.temperatureUnit,
-                state.pressureUnit,
-                showClosest = index == 0 && state.listReadyToBind.size >= 2,
-                showFarthest = index.plus(1) == state.listReadyToBind.size && state.listReadyToBind.size >= 2,
-                alreadyBound = null,
-                onBind = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .tyre(index, state.listReadyToBind.size)
-            )
-            if (index.plus(1) < state.listReadyToBind.size) Divider(thickness = Hairline)
-        }
-        if (state is State.SearchingNoResult) item {
-            Text(
-                text = AnnotatedString("Plug a ")
-                    .plus(
-                        AnnotatedString(
-                            "single sensor",
-                            SpanStyle(textDecoration = TextDecoration.Underline)
-                        )
+        when (val readyToBind = state.bindListState) {
+            State.Searching.ShowPlaceholder ->
+                item {
+                    PlaceholderTyreCell(modifier = Modifier.fillParentMaxWidth())
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = AnnotatedString("Plug a ")
+                            .plus(
+                                AnnotatedString(
+                                    "single sensor",
+                                    SpanStyle(textDecoration = TextDecoration.Underline)
+                                )
+                            )
+                            .plus(AnnotatedString(" at time to your wheel")),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillParentMaxWidth()
                     )
-                    .plus(AnnotatedString(" at time your wheel")),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillParentMaxWidth()
-                    .padding(top = 8.dp)
-            )
+                }
+
+            is State.Searching.ShowList -> {
+                itemsIndexed(
+                    items = readyToBind.listReadyToBind,
+                    key = { _, it -> it.tyre.id }) { index, it ->
+                    TyreCell(
+                        tyre = it.tyre,
+                        state.temperatureUnit,
+                        state.pressureUnit,
+                        showClosest = index == 0 && readyToBind.listReadyToBind.size >= 2,
+                        showFarthest = index.plus(1) == readyToBind.listReadyToBind.size && readyToBind.listReadyToBind.size >= 2,
+                        alreadyBound = null,
+                        roundedTop = index == 0,
+                        roundedBottom = index == readyToBind.listReadyToBind.size.minus(1),
+                        onBind = { setTyreToBind(it) },
+                        modifier = Modifier.fillParentMaxWidth()
+                    )
+                    if (index.plus(1) < readyToBind.listReadyToBind.size) Divider(thickness = Hairline)
+                }
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = if (readyToBind.listReadyToBind.size == 1) "Bind the sensor above ☝️"
+                        else "Bind one of the sensors above ☝️",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillParentMaxWidth()
+                    )
+                }
+            }
         }
-        if (state is State.SearchingFoundTyre && state.listReadyToBind.isNotEmpty() && state.listAlreadyBoundTyre.isNotEmpty()) item {
-            Spacer(modifier = Modifier.height(25.dp))
-        }
-        if (state is State.SearchingFoundTyre && state.listAlreadyBoundTyre.isNotEmpty()) {
+        if (state.listAlreadyBoundTyre.isNotEmpty()) {
+            item { Spacer(modifier = Modifier.height(25.dp)) }
             stickyHeader {
                 Text(
                     text = "Sensors already bound:",
@@ -193,16 +205,17 @@ private fun Searching(
                     showClosest = index == 0 && state.listAlreadyBoundTyre.size >= 2,
                     showFarthest = index.plus(1) == state.listAlreadyBoundTyre.size && state.listAlreadyBoundTyre.size >= 2,
                     alreadyBound = it,
+                    roundedTop = index == 0,
+                    roundedBottom = index == state.listAlreadyBoundTyre.size.minus(1),
                     onBind = { setTyreToBind(it) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .tyre(index, state.listAlreadyBoundTyre.size)
+                    modifier = Modifier.fillParentMaxWidth()
                 )
                 if (index.plus(1) < state.listAlreadyBoundTyre.size) Divider(thickness = Hairline)
             }
+            item { Spacer(Modifier.height(4.dp)) }
         }
         if (state.allWheelsBound) item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Every tyre of your vehicle \"${vehicle.name}\" is bound to a sensor",
                 textAlign = TextAlign.Center,
@@ -230,27 +243,6 @@ private fun Searching(
         )
 }
 
-private fun Modifier.tyre(index: Int, listSize: Int) = this
-    .run {
-        when {
-            index == 0 && listSize == 1 -> clip(
-                RoundedCornerShape(10.dp)
-            )
-
-            index == 0 -> clip(
-                RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-            )
-
-            index.plus(1) == listSize -> clip(
-                RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp)
-            )
-
-            else -> this
-        }
-    }
-    .background(Color.White)
-    .padding(start = 8.dp)
-
 @Composable
 private fun TyreCell(
     tyre: Tyre,
@@ -258,6 +250,8 @@ private fun TyreCell(
     pressureUnit: PressureUnit,
     showClosest: Boolean,
     showFarthest: Boolean,
+    roundedTop: Boolean,
+    roundedBottom: Boolean,
     alreadyBound: Available.AlreadyBound?,
     onBind: () -> Unit,
     modifier: Modifier = Modifier,
@@ -265,7 +259,19 @@ private fun TyreCell(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier,
+        modifier = modifier
+            .shadow(
+                2.dp,
+                when {
+                    roundedTop && roundedBottom -> RoundedCornerShape(10.dp)
+                    roundedTop -> RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+                    roundedBottom -> RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp)
+                    else -> RectangleShape
+                }
+            )
+            .background(Color.White)
+            .height(56.dp)
+            .padding(start = 8.dp),
     ) {
         Column(Modifier.weight(1f)) {
             Text(
@@ -299,7 +305,10 @@ private fun TyreCell(
             showFarthest -> Text("Farthest", fontSize = 12.sp, fontStyle = FontStyle.Italic)
         }
 
-        IconButton(onClick = onBind) {
+        IconButton(
+            enabled = isPlaceholder.not(),
+            onClick = onBind,
+        ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.link_variant_plus),
                 contentDescription = null,
@@ -317,16 +326,27 @@ private val df = DateFormat.getTimeInstance(SHORT)
 
 @Composable
 private fun PlaceholderTyreCell(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tyre: Tyre = Tyre.Unlocated(now(), 0, Int.MAX_VALUE, 2f.bar, 20f.celsius, 50u, false),
+    temperatureUnit: TemperatureUnit = CELSIUS,
+    pressureUnit: PressureUnit = BAR,
+    showClosest: Boolean = false,
+    showFarthest: Boolean = false,
+    roundedTop: Boolean = true,
+    roundedBottom: Boolean = true,
+    alreadyBound: Available.AlreadyBound? = null,
+    onBind: () -> Unit = { },
 ) {
     TyreCell(
-        tyre = Tyre.Unlocated(now(), 0, Int.MAX_VALUE, 2f.bar, 20f.celsius, 50u, false),
-        temperatureUnit = CELSIUS,
-        pressureUnit = BAR,
-        showClosest = false,
-        showFarthest = false,
-        alreadyBound = null,
-        onBind = { },
+        tyre = tyre,
+        temperatureUnit = temperatureUnit,
+        pressureUnit = pressureUnit,
+        showClosest = showClosest,
+        showFarthest = showFarthest,
+        roundedTop = roundedTop,
+        roundedBottom = roundedBottom,
+        alreadyBound = alreadyBound,
+        onBind = onBind,
         isPlaceholder = true,
         modifier = modifier
     )
@@ -348,7 +368,15 @@ private fun SearchingNoResultPreview() {
     Content(
         mockVehicle(),
         bindingFinished = {},
-        viewModel = MockListSensorViewModel(State.SearchingNoResult(false))
+        viewModel = MockListSensorViewModel(
+            State.Searching(
+                State.Searching.ShowPlaceholder,
+                emptyList(),
+                BAR,
+                CELSIUS,
+                false
+            )
+        )
     )
 }
 
@@ -359,11 +387,13 @@ private fun SearchingFoundSingleTyrePreview() {
         vehicle = mockVehicle(),
         bindingFinished = {},
         viewModel = MockListSensorViewModel(
-            State.SearchingFoundTyre(
-                listOf(
-                    Available.ReadyToBind(
-                        Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false)
-                    ),
+            State.Searching(
+                State.Searching.ShowList(
+                    listOf(
+                        Available.ReadyToBind(
+                            Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false)
+                        ),
+                    )
                 ),
                 emptyList(),
                 BAR,
@@ -381,17 +411,19 @@ private fun SearchingFoundMultipleTyrePreview() {
         vehicle = mockVehicle(),
         bindingFinished = {},
         viewModel = MockListSensorViewModel(
-            State.SearchingFoundTyre(
-                listOf(
-                    Available.ReadyToBind(
-                        Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false)
-                    ),
-                    Available.ReadyToBind(
-                        Tyre.Unlocated(now(), -20, 2, 1.75f.bar, 17f.celsius, 20u, false)
-                    ),
-                    Available.ReadyToBind(
-                        Tyre.Unlocated(now(), -20, 3, 2f.bar, 18f.celsius, 20u, false)
-                    ),
+            State.Searching(
+                State.Searching.ShowList(
+                    listOf(
+                        Available.ReadyToBind(
+                            Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false)
+                        ),
+                        Available.ReadyToBind(
+                            Tyre.Unlocated(now(), -20, 2, 1.75f.bar, 17f.celsius, 20u, false)
+                        ),
+                        Available.ReadyToBind(
+                            Tyre.Unlocated(now(), -20, 3, 2f.bar, 18f.celsius, 20u, false)
+                        ),
+                    )
                 ),
                 listOf(
                     Available.AlreadyBound(
@@ -413,6 +445,40 @@ private fun SearchingFoundMultipleTyrePreview() {
                 BAR,
                 CELSIUS,
                 true,
+            )
+        )
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
+@Composable
+private fun SearchingFoundOnlyBoundTyrePreview() {
+    Content(
+        vehicle = mockVehicle(),
+        bindingFinished = {},
+        viewModel = MockListSensorViewModel(
+            State.Searching(
+                State.Searching.ShowPlaceholder,
+                listOf(
+                    Available.AlreadyBound(
+                        Tyre.Unlocated(now(), -20, 4, 1.5f.bar, 20f.celsius, 20u, false),
+                        mockSensor(4),
+                        mockVehicle()
+                    ),
+                    Available.AlreadyBound(
+                        Tyre.Unlocated(now(), -20, 5, 1.75f.bar, 17f.celsius, 20u, false),
+                        mockSensor(5),
+                        mockVehicle()
+                    ),
+                    Available.AlreadyBound(
+                        Tyre.Unlocated(now(), -20, 6, 2f.bar, 18f.celsius, 20u, false),
+                        mockSensor(6),
+                        mockVehicle()
+                    ),
+                ),
+                BAR,
+                CELSIUS,
+                false,
             )
         )
     )

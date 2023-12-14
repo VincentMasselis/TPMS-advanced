@@ -57,6 +57,7 @@ import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.SpotlightEvent
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorList
 import java.util.UUID
 
 @Composable
@@ -116,6 +117,18 @@ internal fun VehicleHome(
                     composable("${Path.QrCode(vehicleComponent.vehicle.uuid)}") {
                         QrCodeScan(modifier = modifier)
                     }
+                    composable("${Path.Unlocated(vehicleComponent.vehicle.uuid)}") {
+                        UnlocatedSensorList(
+                            vehicle = vehicleComponent.vehicle,
+                            bindingFinished = {
+                                navController.popBackStack(
+                                    "${Path.Home(vehicleComponent.vehicle.uuid)}",
+                                    false
+                                )
+                            },
+                            modifier = modifier
+                        )
+                    }
                     composable("${Path.Settings(vehicleComponent.vehicle.uuid)}") {
                         Settings(modifier = modifier)
                     }
@@ -174,12 +187,13 @@ private fun TopAppBar(
             when (currentPath) {
                 is Path.Home -> CurrentVehicleDropdown()
                 is Path.Settings -> Text(text = "Settings")
+                is Path.Unlocated -> Text(text = "Binding")
                 is Path.QrCode, null -> {}
             }
         },
         navigationIcon = {
             when (currentPath) {
-                is Path.Settings, is Path.QrCode -> {
+                is Path.Settings, is Path.QrCode, is Path.Unlocated -> {
                     IconButton(
                         onClick = { navController.popBackStack() },
                         content = {
@@ -226,6 +240,14 @@ private fun TopAppBar(
                             modifier = Modifier.testTag(HomeTags.Actions.Overflow.qrCode)
                         )
                         DropdownMenuItem(
+                            text = { Text("Manual binding") },
+                            onClick = {
+                                showMenu = false
+                                navController.navigate("${Path.Unlocated(currentPath.vehicleUUID)}")
+                            },
+                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.unlocated)
+                        )
+                        DropdownMenuItem(
                             text = { Text("Settings") },
                             onClick = {
                                 showMenu = false
@@ -236,7 +258,7 @@ private fun TopAppBar(
                     }
                 }
 
-                is Path.Settings, is Path.QrCode, null -> {}
+                is Path.Settings, is Path.QrCode, is Path.Unlocated, null -> {}
             }
         },
         modifier = modifier
@@ -251,6 +273,7 @@ public object HomeTags {
         public object Overflow {
             public const val name: String = "overflow_menu"
             public const val qrCode: String = "action_qr_code"
+            public const val unlocated: String = "action_unlocated"
             public const val settings: String = "action_settings"
         }
     }

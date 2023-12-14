@@ -51,18 +51,14 @@ internal class ListSensorViewModelImpl @AssistedInject constructor(
         unitPreferences.temperature,
         vehicleBindingStatusUseCase.areAllWheelBound(vehicle),
     ) { (readyToBinds, bounds), pressureUnit, temperatureUnit, allWheelsBound ->
-        if (readyToBinds.isEmpty() && bounds.isEmpty())
-            State.SearchingNoResult(
-                allWheelsBound
-            )
-        else
-            State.SearchingFoundTyre(
-                readyToBinds,
-                bounds,
-                pressureUnit,
-                temperatureUnit,
-                allWheelsBound
-            )
+        State.Searching(
+            if (readyToBinds.isEmpty()) State.Searching.ShowPlaceholder
+            else State.Searching.ShowList(readyToBinds),
+            bounds,
+            pressureUnit,
+            temperatureUnit,
+            allWheelsBound
+        )
     }.catch { State.Issue }
         .onEach { stateFlow.value = it }
         .launchIn(viewModelScope)

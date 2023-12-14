@@ -25,6 +25,7 @@ internal interface FeatureUnlocatedBinding {
 
     companion object : FeatureUnlocatedBinding by DaggerFeatureUnlocatedBinding
         .builder()
+        .dataUnitComponent(DataUnitComponent)
         .dataVehicleComponent(DataVehicleComponent)
         .build()
 }
