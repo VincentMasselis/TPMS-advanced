@@ -140,7 +140,7 @@ private fun Searching(
                     PlaceholderTyreCell(modifier = Modifier.fillParentMaxWidth())
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = AnnotatedString("Plug a ")
+                        text = AnnotatedString("Plug and bind a ")
                             .plus(
                                 AnnotatedString(
                                     "single sensor",

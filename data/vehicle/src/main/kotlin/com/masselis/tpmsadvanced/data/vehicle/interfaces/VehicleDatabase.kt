@@ -1,9 +1,5 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
-import app.cash.sqldelight.coroutines.mapToOne
-import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.masselis.tpmsadvanced.core.database.asStateFlowList
 import com.masselis.tpmsadvanced.core.database.asStateFlowOne
 import com.masselis.tpmsadvanced.core.database.asStateFlowOneOrNull
@@ -13,10 +9,9 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import dagger.Reusable
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -116,9 +111,9 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
 
     public fun count(): StateFlow<Long> = queries.count().asStateFlowOne()
 
-    public fun selectUuidIsDeleting(): Flow<List<UUID>> = queries.selectUuidIsDeleting()
-        .asFlow()
-        .mapToList(IO)
+    public fun selectUuidIsDeleting(): StateFlow<List<UUID>> = queries
+        .selectUuidIsDeleting()
+        .asStateFlowList()
 
     public fun selectAll(): StateFlow<List<Vehicle>> = queries.selectAll(mapper).asStateFlowList()
 

@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.masselis.tpmsadvanced.core.database.asStateFlowList
+import com.masselis.tpmsadvanced.core.database.asStateFlowOne
 import com.masselis.tpmsadvanced.core.database.asStateFlowOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
@@ -60,9 +61,9 @@ public class SensorDatabase @Inject internal constructor(
         .selectByVehicleAndLocation(vehicleId, location, mapper)
         .asStateFlowOneOrNull()
 
-    public fun countByVehicle(vehicleId: UUID): Flow<Long> = queries.countByVehicle(vehicleId)
-        .asFlow()
-        .mapToOne(IO)
+    public fun countByVehicle(vehicleId: UUID): StateFlow<Long> = queries
+        .countByVehicle(vehicleId)
+        .asStateFlowOne()
 
     public fun selectById(id: Int): StateFlow<Sensor?> = queries
         .selectById(id, mapper)
