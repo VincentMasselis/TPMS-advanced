@@ -50,15 +50,16 @@ import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewMo
 import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion.BindSensorViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.util.UUID
 
 @Composable
 internal fun BindDialog(
-    vehicle: Vehicle,
+    vehicleUuid: UUID,
     tyre: Tyre,
     onBound: () -> Unit,
     onDismissRequest: () -> Unit,
-    viewModel: BindSensorViewModel = viewModel(key = "BindSensorViewModel_${vehicle.uuid}_${tyre}") {
-        BindSensorViewModel(vehicle, tyre, createSavedStateHandle())
+    viewModel: BindSensorViewModel = viewModel(key = "BindSensorViewModel_${vehicleUuid}_${tyre}") {
+        BindSensorViewModel(vehicleUuid, tyre, createSavedStateHandle())
     }
 ) {
     val state = viewModel.stateFlow.collectAsState().value
@@ -100,13 +101,11 @@ internal fun BindDialog(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 Text(
-                    text =
-                    if (state is State.BoundToAnOtherVehicle) "Tap a wheel to replace the binding:"
-                    else "Tap the wheel to bind:",
+                    text = "Tap the wheel:",
                     modifier = Modifier.align(Alignment.Start)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                when (vehicle.kind) {
+                when (state.currentVehicle.kind) {
                     Vehicle.Kind.CAR -> Car(
                         boundLocations = state.alreadyBoundLocations,
                         selectedLocation = selectedLocation,
@@ -374,13 +373,12 @@ private fun Tyre(
 @Composable
 private fun BindDialogCarPreview() {
     BindDialog(
-        mockVehicle(),
+        UUID.randomUUID(),
         tyre = mockTyre(1),
         viewModel = MockViewModel(
             State.ReadyToBind(
-                setOf(
-                    Location.Wheel(FRONT_LEFT)
-                )
+                mockVehicle(),
+                setOf(Location.Wheel(FRONT_LEFT))
             )
         ),
         onBound = {},
@@ -392,13 +390,12 @@ private fun BindDialogCarPreview() {
 @Composable
 private fun BindDialogTrailerPreview() {
     BindDialog(
-        mockVehicle(kind = SINGLE_AXLE_TRAILER),
+        UUID.randomUUID(),
         tyre = mockTyre(1),
         viewModel = MockViewModel(
             State.ReadyToBind(
-                setOf(
-                    Location.Side(LEFT)
-                )
+                mockVehicle(kind = SINGLE_AXLE_TRAILER),
+                setOf(Location.Side(LEFT))
             )
         ),
         onBound = {},
@@ -410,13 +407,12 @@ private fun BindDialogTrailerPreview() {
 @Composable
 private fun BindDialogMotorcyclePreview() {
     BindDialog(
-        mockVehicle(kind = MOTORCYCLE),
+        UUID.randomUUID(),
         tyre = mockTyre(1),
         viewModel = MockViewModel(
             State.ReadyToBind(
-                setOf(
-                    Location.Axle(FRONT)
-                )
+                mockVehicle(kind = MOTORCYCLE),
+                setOf(Location.Axle(FRONT))
             )
         ),
         onBound = {},
@@ -428,13 +424,12 @@ private fun BindDialogMotorcyclePreview() {
 @Composable
 private fun BindDialogTadpolePreview() {
     BindDialog(
-        mockVehicle(kind = TADPOLE_THREE_WHEELER),
+        UUID.randomUUID(),
         tyre = mockTyre(1),
         viewModel = MockViewModel(
             State.ReadyToBind(
-                setOf(
-                    Location.Wheel(FRONT_LEFT)
-                )
+                mockVehicle(kind = TADPOLE_THREE_WHEELER),
+                setOf(Location.Wheel(FRONT_LEFT))
             )
         ),
         onBound = {},
@@ -446,13 +441,12 @@ private fun BindDialogTadpolePreview() {
 @Composable
 private fun BindDialogDeltaPreview() {
     BindDialog(
-        mockVehicle(kind = DELTA_THREE_WHEELER),
+        UUID.randomUUID(),
         tyre = mockTyre(1),
         viewModel = MockViewModel(
             State.ReadyToBind(
-                setOf(
-                    Location.Axle(FRONT)
-                )
+                mockVehicle(kind = DELTA_THREE_WHEELER),
+                setOf(Location.Axle(FRONT))
             )
         ),
         onBound = {},
@@ -464,10 +458,11 @@ private fun BindDialogDeltaPreview() {
 @Composable
 private fun BindDialogAlreadyBoundPreview() {
     BindDialog(
-        mockVehicle(),
+        UUID.randomUUID(),
         tyre = mockTyre(1),
         viewModel = MockViewModel(
             State.BoundToAnOtherVehicle(
+                mockVehicle(),
                 emptySet(),
                 mockVehicle(),
                 Location.Wheel(FRONT_LEFT)

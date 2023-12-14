@@ -36,10 +36,10 @@ internal class ListTyreUseCase @Inject constructor(
         }
         .flatMapLatest { foundTyre ->
             sensorDatabase
-                .selectByIdFlow(foundTyre.id)
+                .selectById(foundTyre.id)
                 .flatMapLatest { foundSensor ->
                     if (foundSensor == null) flowOf(Available.ReadyToBind(foundTyre))
-                    else vehicleDatabase.selectBySensorIdFlow(foundSensor.id)
+                    else vehicleDatabase.selectBySensorId(foundSensor.id)
                         .map { Available.AlreadyBound(foundTyre, foundSensor, it!!) }
                 }
         }

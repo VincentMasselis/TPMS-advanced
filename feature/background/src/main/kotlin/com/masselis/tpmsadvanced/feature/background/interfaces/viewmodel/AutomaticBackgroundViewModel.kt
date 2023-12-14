@@ -10,10 +10,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.skip
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
@@ -34,20 +37,19 @@ internal class AutomaticBackgroundViewModel @AssistedInject constructor(
         data object MonitorEnabled : State()
     }
 
-    private val mutableStateFlow =
-        MutableStateFlow(computeState(database.selectIsBackgroundMonitor(vehicle.uuid)))
-    val stateFlow = mutableStateFlow.asStateFlow()
+    private val mutableStateFlow: MutableStateFlow<State>
+    val stateFlow: StateFlow<State>
 
     init {
-        database.selectIsBackgroundMonitorFlow(vehicle.uuid)
+        database.selectIsBackgroundMonitor(vehicle.uuid)
+            .apply {
+                mutableStateFlow = MutableStateFlow(computeState(value))
+                stateFlow = mutableStateFlow.asStateFlow()
+            }
             .map { computeState(it) }
             .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)
     }
-
-    private fun computeState(isMonitoring: Boolean) =
-        if (isMonitoring) State.MonitorEnabled
-        else State.MonitorDisabled
 
     fun requiredPermission() = checkForPermissionUseCase.requiredPermission
 
@@ -63,4 +65,8 @@ internal class AutomaticBackgroundViewModel @AssistedInject constructor(
     fun disable() = viewModelScope.launch {
         database.updateIsBackgroundMonitor(false, vehicle.uuid)
     }
+
+    private fun computeState(isMonitoring: Boolean) =
+        if (isMonitoring) State.MonitorEnabled
+        else State.MonitorDisabled
 }

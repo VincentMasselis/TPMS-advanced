@@ -16,61 +16,74 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.UUID
 
+@Suppress("NAME_SHADOWING")
 internal class BindSensorViewModelImpl @AssistedInject constructor(
     private val bindSensorToVehicleUseCase: BindSensorToVehicleUseCase,
     private val sensorDatabase: SensorDatabase,
     private val vehicleDatabase: VehicleDatabase,
-    @Assisted private val vehicle: Vehicle,
+    @Assisted private val vehicleUuid: UUID,
     @Assisted private val tyre: Tyre,
     @Assisted savedStateHandle: SavedStateHandle,
 ) : ViewModel(), BindSensorViewModel {
 
     @AssistedFactory
-    interface Factory : (Vehicle, Tyre, SavedStateHandle) -> BindSensorViewModelImpl
+    interface Factory : (UUID, Tyre, SavedStateHandle) -> BindSensorViewModelImpl
 
-    override val stateFlow = savedStateHandle.getMutableStateFlow("STATE") {
-        computeState(
-            sensorDatabase.selectListByVehicleId(vehicle.uuid),
-            vehicleDatabase.selectBySensorId(tyre.id),
-            sensorDatabase.selectById(tyre.id)?.location
-        )
-    }
+    override val stateFlow: StateFlow<State>
 
     init {
+        val currentVehicle = vehicleDatabase.selectByUuid(vehicleUuid)
+        val knownSensors = sensorDatabase.selectListByVehicleId(vehicleUuid)
+        val boundVehicle = vehicleDatabase.selectBySensorId(tyre.id)
+        val boundVehicleLocation = sensorDatabase.selectById(tyre.id)
+        stateFlow = savedStateHandle.getMutableStateFlow("STATE") {
+            computeState(
+                currentVehicle.value,
+                knownSensors.value,
+                boundVehicle.value,
+                boundVehicleLocation.value?.location
+            )
+        }
         combine(
-            sensorDatabase.selectListByVehicleIdFlow(vehicle.uuid),
-            vehicleDatabase.selectBySensorIdFlow(tyre.id),
-            sensorDatabase.selectByIdFlow(tyre.id)
-        ) { knownSensors, alreadyBoundVehicle, alreadyBoundSensor ->
-            computeState(knownSensors, alreadyBoundVehicle, alreadyBoundSensor?.location)
+            currentVehicle,
+            knownSensors,
+            boundVehicle,
+            boundVehicleLocation
+        ) { currentVehicle, knownSensors, boundVehicle, boundVehicleLocation ->
+            computeState(currentVehicle, knownSensors, boundVehicle, boundVehicleLocation?.location)
         }.onEach { stateFlow.value = it }
             .launchIn(viewModelScope)
     }
 
     override fun bind(location: Location) {
         viewModelScope.launch(NonCancellable) {
-            bindSensorToVehicleUseCase.bind(vehicle.uuid, Sensor(tyre.id, location), tyre)
+            bindSensorToVehicleUseCase.bind(vehicleUuid, Sensor(tyre.id, location), tyre)
         }
     }
 
     private fun computeState(
+        currentVehicle: Vehicle,
         alreadyBoundToVehicleList: List<Sensor>,
-        currentVehicle: Vehicle?,
-        currentLocation: Location?,
+        boundVehicle: Vehicle?,
+        boundVehicleLocation: Location?,
     ): State =
-        if (currentVehicle != null && currentLocation != null)
+        if (boundVehicle != null && boundVehicleLocation != null)
             State.BoundToAnOtherVehicle(
-                alreadyBoundToVehicleList.map { it.location }.toSet(),
                 currentVehicle,
-                currentLocation
+                alreadyBoundToVehicleList.map { it.location }.toSet(),
+                boundVehicle,
+                boundVehicleLocation
             )
         else
             State.ReadyToBind(
+                currentVehicle,
                 alreadyBoundToVehicleList.map { it.location }.toSet()
             )
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
@@ -27,6 +28,7 @@ internal class DeleteVehicleUseCase @Inject constructor(
         GlobalScope.launch(NonCancellable) {
             try {
                 database.selectAll()
+                    .value
                     .firstOrNull { it.uuid != vehicle.uuid }
                     ?.also { currentVehicleUseCase.setAsCurrent(it) }
                     ?: error("Cannot delete the last vehicle in the database")

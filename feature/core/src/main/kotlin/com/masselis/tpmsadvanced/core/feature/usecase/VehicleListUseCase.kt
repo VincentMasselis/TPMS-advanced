@@ -12,7 +12,7 @@ import javax.inject.Inject
 public class VehicleListUseCase @Inject internal constructor(
     database: VehicleDatabase
 ) {
-    public val vehicleListFlow: Flow<List<Vehicle>> = database.selectAllFlow()
+    public val vehicleListFlow: Flow<List<Vehicle>> = database.selectAll()
         .map { list -> list.sortedBy { it.uuid } }
         .distinctUntilChanged()
 }

@@ -6,6 +6,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -18,15 +19,12 @@ internal class SensorBindingUseCase @Inject constructor(
     private val vehicleDatabase: VehicleDatabase,
     private val sensorDatabase: SensorDatabase,
 ) {
-    fun boundSensorFlow() = sensorDatabase
-        .selectByVehicleAndLocationFlow(currentVehicle.uuid, currentLocation)
-        .distinctUntilChanged()
+    fun boundSensor(): StateFlow<Sensor?> = sensorDatabase.selectByVehicleAndLocation(
+        currentVehicle.uuid,
+        currentLocation
+    )
 
-    suspend fun boundSensor() = withContext(IO) {
-        sensorDatabase.selectByVehicleAndLocation(currentVehicle.uuid, currentLocation)
-    }
-
-    fun boundVehicle(sensor: Sensor) = vehicleDatabase.selectBySensorIdFlow(sensor.id)
+    fun boundVehicle(sensor: Sensor) = vehicleDatabase.selectBySensorId(sensor.id)
 
     suspend fun bind(sensor: Sensor) = sensorDatabase.upsert(sensor, currentVehicle.uuid)
 }

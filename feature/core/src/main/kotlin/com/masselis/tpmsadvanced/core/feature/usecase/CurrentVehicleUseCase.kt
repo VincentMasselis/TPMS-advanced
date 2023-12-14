@@ -29,16 +29,17 @@ public class CurrentVehicleUseCase private constructor(
         database: VehicleDatabase,
     ) : this(
         database,
-        MutableStateFlow(VehicleComponent(database.currentVehicle())),
+        database.currentVehicle()
+            .let { it to MutableStateFlow(VehicleComponent(it.value)) }
+            .also { (source, mutableStateFlow) ->
+                source
+                    .filter { it.uuid != mutableStateFlow.value.vehicle.uuid }
+                    .map(VehicleComponent)
+                    .onEach { mutableStateFlow.value = it }
+                    .launchIn(GlobalScope)
+            }
+            .second
     )
-
-    init {
-        database.currentVehicleFlow()
-            .filter { it.uuid != mutableStateFlow.value.vehicle.uuid }
-            .map(VehicleComponent)
-            .onEach { mutableStateFlow.value = it }
-            .launchIn(GlobalScope)
-    }
 
     public suspend fun setAsCurrent(uuid: UUID): Unit =
         database.setIsCurrent(uuid, true)

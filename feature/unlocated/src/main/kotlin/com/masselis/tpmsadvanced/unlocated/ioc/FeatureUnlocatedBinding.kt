@@ -20,7 +20,7 @@ internal interface FeatureUnlocatedBinding {
     annotation class Scope
 
 
-    fun ListSensorViewModel(): ListSensorViewModelImpl
+    val ListSensorViewModel: ListSensorViewModelImpl.Factory
     val BindSensorViewModel: BindSensorViewModelImpl.Factory
 
     companion object : FeatureUnlocatedBinding by DaggerFeatureUnlocatedBinding

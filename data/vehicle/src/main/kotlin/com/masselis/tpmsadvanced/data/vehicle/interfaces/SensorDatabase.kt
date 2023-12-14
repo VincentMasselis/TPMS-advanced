@@ -4,6 +4,8 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.masselis.tpmsadvanced.core.database.asStateFlowList
+import com.masselis.tpmsadvanced.core.database.asStateFlowOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
@@ -12,8 +14,10 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
@@ -51,50 +55,30 @@ public class SensorDatabase @Inject internal constructor(
 
     public fun selectByVehicleAndLocation(
         vehicleId: UUID,
-        location: Vehicle.Kind.Location,
-    ): Sensor? = queries
-        .selectByVehicleAndLocation(vehicleId, location) { id, _, _ ->
-            Sensor(id, location)
-        }
-        .executeAsOneOrNull()
-
-    public fun selectByVehicleAndLocationFlow(
-        vehicleId: UUID,
-        location: Vehicle.Kind.Location,
-    ): Flow<Sensor?> = queries
-        .selectByVehicleAndLocation(vehicleId, location) { id, _, _ ->
-            Sensor(id, location)
-        }
-        .asFlow()
-        .mapToOneOrNull(IO)
+        location: Location,
+    ): StateFlow<Sensor?> = queries
+        .selectByVehicleAndLocation(vehicleId, location, mapper)
+        .asStateFlowOneOrNull()
 
     public fun countByVehicle(vehicleId: UUID): Flow<Long> = queries.countByVehicle(vehicleId)
         .asFlow()
         .mapToOne(IO)
 
-    public fun selectById(id: Int): Sensor? = queries
-        .selectById(id) { _, location, _ ->
-            Sensor(id, location)
-        }
-        .executeAsOneOrNull()
+    public fun selectById(id: Int): StateFlow<Sensor?> = queries
+        .selectById(id, mapper)
+        .asStateFlowOneOrNull()
 
-    public fun selectByIdFlow(id: Int): Flow<Sensor?> = queries
-        .selectById(id) { _, location, _ ->
-            Sensor(id, location)
-        }
-        .asFlow()
-        .mapToOneOrNull(IO)
+    public fun selectListByVehicleId(uuid: UUID): StateFlow<List<Sensor>> = queries
+        .selectListByVehicleId(uuid, mapper)
+        .asStateFlowList()
 
-    public fun selectListByVehicleId(uuid: UUID): List<Sensor> = queries
-        .selectListByVehicleId(uuid) { id, location, _ ->
+    private companion object {
+        private val mapper: (
+            id: Int,
+            location: Location,
+            vehicleId: UUID,
+        ) -> Sensor = { id, location, _ ->
             Sensor(id, location)
         }
-        .executeAsList()
-
-    public fun selectListByVehicleIdFlow(uuid: UUID): Flow<List<Sensor>> = queries
-        .selectListByVehicleId(uuid) { id, location, _ ->
-            Sensor(id, location)
-        }
-        .asFlow()
-        .mapToList(IO)
+    }
 }

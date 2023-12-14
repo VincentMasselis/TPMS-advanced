@@ -17,7 +17,7 @@ internal class SearchSensorToBindUseCase @Inject constructor(
 ) : () -> Flow<SearchSensorToBindUseCase.Result> {
 
     override fun invoke(): Flow<Result> = sensorBindingUseCase
-        .boundSensorFlow()
+        .boundSensor()
         .flatMapLatest { boundSensor ->
             if (boundSensor != null) flowOf(Result.AlreadyBound(boundSensor))
 

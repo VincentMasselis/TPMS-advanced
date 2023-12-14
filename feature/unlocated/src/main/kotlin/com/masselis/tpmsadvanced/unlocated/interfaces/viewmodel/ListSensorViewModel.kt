@@ -11,12 +11,14 @@ internal interface ListSensorViewModel {
     sealed interface State : Parcelable {
 
         @Parcelize
-        data object PlugSensor : State
+        data object UnplugEverySensor : State
 
-        sealed interface Searching : State
+        sealed interface Searching : State {
+            val allWheelsBound: Boolean
+        }
 
         @Parcelize
-        data object SearchingNoResult : Searching
+        data class SearchingNoResult(override val allWheelsBound: Boolean) : Searching
 
         @Parcelize
         data class SearchingFoundTyre(
@@ -24,6 +26,7 @@ internal interface ListSensorViewModel {
             val listAlreadyBoundTyre: List<ListTyreUseCase.Available.AlreadyBound>,
             val pressureUnit: PressureUnit,
             val temperatureUnit: TemperatureUnit,
+            override val allWheelsBound: Boolean,
         ) : Searching
 
         @Parcelize
@@ -32,7 +35,7 @@ internal interface ListSensorViewModel {
 
     val stateFlow: StateFlow<State>
 
-    fun acknowledgePlugSensor()
+    fun acknowledgeSensorUnplugged()
 
     fun onSensorBound()
 }

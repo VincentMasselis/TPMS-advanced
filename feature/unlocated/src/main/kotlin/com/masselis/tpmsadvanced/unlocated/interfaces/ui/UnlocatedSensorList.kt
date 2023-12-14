@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +28,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp.Companion.Hairline
 import androidx.compose.ui.unit.dp
@@ -59,10 +63,12 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 public fun UnlocatedSensorList(
     vehicle: Vehicle,
+    bindingFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Content(
         vehicle = vehicle,
+        bindingFinished = bindingFinished,
         modifier = modifier,
     )
 }
@@ -70,20 +76,41 @@ public fun UnlocatedSensorList(
 @Composable
 private fun Content(
     vehicle: Vehicle,
+    bindingFinished: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ListSensorViewModel = viewModel { ListSensorViewModel() }
+    viewModel: ListSensorViewModel = viewModel { ListSensorViewModel(vehicle) }
 ) {
     when (val state = viewModel.stateFlow.collectAsState().value) {
-        State.PlugSensor -> TODO()
+        State.UnplugEverySensor -> UnplugEverySensor(
+            onAcknowledge = viewModel::acknowledgeSensorUnplugged
+        )
 
         is State.Searching -> Searching(
             state = state,
             vehicle = vehicle,
             onSensorBound = viewModel::onSensorBound,
+            bindingFinished = bindingFinished,
             modifier = modifier
         )
 
         State.Issue -> TODO()
+    }
+}
+
+@Composable
+private fun UnplugEverySensor(
+    onAcknowledge: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
+        Text("Before we start, ensure you have unplugged every sensor from your tyres")
+        Spacer(modifier = Modifier.height(4.dp))
+        Button(
+            onClick = onAcknowledge,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("All sensors unplugged")
+        }
     }
 }
 
@@ -93,6 +120,7 @@ private fun Searching(
     state: State.Searching,
     vehicle: Vehicle,
     onSensorBound: () -> Unit,
+    bindingFinished: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val (tyreToBind, setTyreToBind) = rememberSaveable { mutableStateOf<Available?>(null) }
@@ -128,12 +156,20 @@ private fun Searching(
             )
             if (index.plus(1) < state.listReadyToBind.size) Divider(thickness = Hairline)
         }
-        item {
-            Box(
-                Modifier.fillParentMaxWidth(), contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(Modifier.padding(top = 8.dp))
-            }
+        if (state is State.SearchingNoResult) item {
+            Text(
+                text = AnnotatedString("Plug a ")
+                    .plus(
+                        AnnotatedString(
+                            "single sensor",
+                            SpanStyle(textDecoration = TextDecoration.Underline)
+                        )
+                    )
+                    .plus(AnnotatedString(" at time your wheel")),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillParentMaxWidth()
+                    .padding(top = 8.dp)
+            )
         }
         if (state is State.SearchingFoundTyre && state.listReadyToBind.isNotEmpty() && state.listAlreadyBoundTyre.isNotEmpty()) item {
             Spacer(modifier = Modifier.height(25.dp))
@@ -165,10 +201,26 @@ private fun Searching(
                 if (index.plus(1) < state.listAlreadyBoundTyre.size) Divider(thickness = Hairline)
             }
         }
+        if (state.allWheelsBound) item {
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Every tyre of your vehicle \"${vehicle.name}\" is bound to a sensor",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillParentMaxWidth()
+            )
+            Box(Modifier.fillParentMaxWidth()) {
+                Button(
+                    onClick = bindingFinished,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Text("Go back")
+                }
+            }
+        }
     }
     if (tyreToBind != null)
         BindDialog(
-            vehicle = vehicle,
+            vehicleUuid = vehicle.uuid,
             tyre = tyreToBind.tyre,
             onBound = {
                 onSensorBound()
@@ -282,15 +334,52 @@ private fun PlaceholderTyreCell(
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun ContentEmpty() {
-    Content(mockVehicle(), viewModel = MockListSensorViewModel(State.SearchingNoResult))
+private fun PlugSensorFirstTry() {
+    Content(
+        mockVehicle(),
+        bindingFinished = {},
+        viewModel = MockListSensorViewModel(State.UnplugEverySensor)
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun ContentSensors() {
+private fun SearchingNoResultPreview() {
+    Content(
+        mockVehicle(),
+        bindingFinished = {},
+        viewModel = MockListSensorViewModel(State.SearchingNoResult(false))
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
+@Composable
+private fun SearchingFoundSingleTyrePreview() {
     Content(
         vehicle = mockVehicle(),
+        bindingFinished = {},
+        viewModel = MockListSensorViewModel(
+            State.SearchingFoundTyre(
+                listOf(
+                    Available.ReadyToBind(
+                        Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false)
+                    ),
+                ),
+                emptyList(),
+                BAR,
+                CELSIUS,
+                false,
+            )
+        )
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
+@Composable
+private fun SearchingFoundMultipleTyrePreview() {
+    Content(
+        vehicle = mockVehicle(),
+        bindingFinished = {},
         viewModel = MockListSensorViewModel(
             State.SearchingFoundTyre(
                 listOf(
@@ -303,7 +392,8 @@ private fun ContentSensors() {
                     Available.ReadyToBind(
                         Tyre.Unlocated(now(), -20, 3, 2f.bar, 18f.celsius, 20u, false)
                     ),
-                ), listOf(
+                ),
+                listOf(
                     Available.AlreadyBound(
                         Tyre.Unlocated(now(), -20, 4, 1.5f.bar, 20f.celsius, 20u, false),
                         mockSensor(4),
@@ -319,7 +409,10 @@ private fun ContentSensors() {
                         mockSensor(6),
                         mockVehicle()
                     ),
-                ), BAR, CELSIUS
+                ),
+                BAR,
+                CELSIUS,
+                true,
             )
         )
     )
@@ -327,6 +420,6 @@ private fun ContentSensors() {
 
 private class MockListSensorViewModel(state: State) : ListSensorViewModel {
     override val stateFlow = MutableStateFlow(state)
-    override fun acknowledgePlugSensor() = error("")
+    override fun acknowledgeSensorUnplugged() = error("")
     override fun onSensorBound() = error("")
 }

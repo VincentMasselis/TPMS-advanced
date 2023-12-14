@@ -51,7 +51,7 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
     }
 
     public fun expectedIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
-        vehicleDatabase.selectAllFlow().map { vehicles ->
+        vehicleDatabase.selectAll().map { vehicles ->
             vehicles
                 .groupBy { it.isBackgroundMonitor }
                 .let {
@@ -62,7 +62,7 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
                 }
         },
         manuals
-            .map { it.map { uuid -> vehicleDatabase.selectByUuidFlow(uuid).first() } },
+            .map { it.map { uuid -> vehicleDatabase.selectByUuid(uuid).first() } },
     ) { (automaticIgnored, automaticMonitored), manuals ->
         Pair(
             // Removes from automaticIgnored the devices with were added to manuals
