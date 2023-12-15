@@ -56,6 +56,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
 
     private val bluetoothAdapter get() = context.getSystemService<BluetoothManager>()?.adapter
 
+    @OptIn(ExperimentalStdlibApi::class)
     @SuppressLint("InlinedApi")
     @RequiresPermission("android.permission.BLUETOOTH_SCAN")
     private fun scan(mode: Int) = callbackFlow {
@@ -106,15 +107,16 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
         }
     }.flowOn(Dispatchers.Main) // System's BluetoothLeScanner class as issues if called on a background thread
         .mapNotNull { result ->
-            result
-                .scanRecord
-                ?.manufacturerSpecificData
-                ?.takeIf { it.size > 0 }
-                ?.valueAt(0)
-                ?.let { RawPecham(result, it) ?: RawSysgration(result, it) }
+            RawPecham(result)
+                ?: result
+                    .scanRecord
+                    ?.manufacturerSpecificData
+                    ?.takeIf { it.size > 0 }
+                    ?.valueAt(0)
+                    ?.let { RawSysgration(result, it) }
         }
-        // A real sysgration sensor emits the same value up to 10 times in a short time, to avoid to
-        // emit the same value 10 times, I use `distinctUntilChanged()`.
+        // A real sensor emits the same value up to 10 times in a short time, to avoid to emit the
+        // same value 10 times, I use `distinctUntilChanged()`.
         .distinctUntilChanged()
         .mapNotNull { it.asTyre() }
 

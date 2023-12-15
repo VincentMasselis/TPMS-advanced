@@ -47,12 +47,13 @@ internal class PechamTest {
                     mockk {
                         every { scanRecord } returns mockk {
                             every { deviceName } returns "BR"
-                        }
-                        every { device } returns mockk {
-                            every { address } returns "MOCK"
+                            every { rssi } returns -60
+                            every { bytes } returns completeData
+                            every { device } returns mockk  {
+                                every { address } returns "00:00:00:00:00"
+                            }
                         }
                     },
-                    completeData.copyOfRange(10, 17)
                 )
             }
             .map { it.asTyre() }

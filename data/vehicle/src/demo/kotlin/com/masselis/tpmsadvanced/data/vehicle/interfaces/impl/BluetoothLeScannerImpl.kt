@@ -15,60 +15,104 @@ import javax.inject.Inject
 @DataVehicleComponent.Scope
 internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner {
 
-    private val frontLeft = Tyre(
-        now(),
-        -20,
-        SensorLocation.FRONT_LEFT,
-        SensorLocation.FRONT_LEFT.ordinal,
-        0.4f.bar,
-        15f.celsius,
-        100u,
-        false
+    private val frontLeft = listOf(
+        Tyre.SensorLocated(
+            now(),
+            -20,
+            1,
+            0.4f.bar,
+            15f.celsius,
+            100u,
+            false,
+            SensorLocation.FRONT_LEFT,
+        ),
+        Tyre.Unlocated(
+            now(),
+            -20,
+            2,
+            0.4f.bar,
+            15f.celsius,
+            100u,
+            false,
+        )
     )
 
-    private val frontRight = Tyre(
-        now(),
-        -20,
-        SensorLocation.FRONT_RIGHT,
-        SensorLocation.FRONT_RIGHT.ordinal,
-        1.6f.bar,
-        20f.celsius,
-        75u,
-        false
+    private val frontRight = listOf(
+        Tyre.SensorLocated(
+            now(),
+            -20,
+            3,
+            1.6f.bar,
+            20f.celsius,
+            75u,
+            false,
+            SensorLocation.FRONT_RIGHT,
+        ),
+        Tyre.Unlocated(
+            now(),
+            -20,
+            4,
+            1.6f.bar,
+            20f.celsius,
+            75u,
+            false,
+        )
     )
 
-    private val rearLeft = Tyre(
-        now(),
-        -20,
-        SensorLocation.REAR_LEFT,
-        SensorLocation.REAR_LEFT.ordinal,
-        2.0f.bar,
-        35f.celsius,
-        50u,
-        false
+    private val rearLeft = listOf(
+        Tyre.SensorLocated(
+            now(),
+            -20,
+            5,
+            2.0f.bar,
+            35f.celsius,
+            50u,
+            false,
+            SensorLocation.REAR_LEFT,
+        ),
+        Tyre.Unlocated(
+            now(),
+            -20,
+            6,
+            2.0f.bar,
+            35f.celsius,
+            50u,
+            false,
+        ),
     )
 
-    private val rearRight = Tyre(
-        now(),
-        -20,
-        SensorLocation.REAR_RIGHT,
-        SensorLocation.REAR_RIGHT.ordinal,
-        2.8f.bar,
-        95f.celsius,
-        25u,
-        false
+    private val rearRight = listOf(
+        Tyre.SensorLocated(
+            now(),
+            -20,
+            7,
+            2.8f.bar,
+            95f.celsius,
+            25u,
+            false,
+            SensorLocation.REAR_RIGHT,
+        ),
+        Tyre.Unlocated(
+            now(),
+            -20,
+            8,
+            2.8f.bar,
+            95f.celsius,
+            25u,
+            false,
+        )
     )
 
     private val source = channelFlow {
-        listOf(frontLeft, frontRight, rearLeft, rearRight).forEach {
+        (frontLeft + frontRight + rearLeft + rearRight).forEach {
             send(it)
         }
         awaitClose { }
     }
 
-    override fun highDutyScan(): Flow<Tyre> = source
+    override fun highDutyScan(): Flow<Tyre.SensorInput> = source
 
-    override fun normalScan(): Flow<Tyre> = source
+    override fun normalScan(): Flow<Tyre.SensorInput> = source
 
     override fun missingPermission(): List<String> = emptyList()
 

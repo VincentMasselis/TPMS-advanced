@@ -19,19 +19,19 @@ internal class SearchSensorToBindUseCase @Inject constructor(
     override fun invoke(): Flow<Result> = sensorBindingUseCase
         .boundSensor()
         .flatMapLatest { boundSensor ->
-            if (boundSensor != null) flowOf(Result.AlreadyBound(boundSensor))
-
-            listenTyreUseCase
-                .listen()
-                .map { Sensor(it.id, it.location) }
-                .flatMapLatest { sensor ->
-                    sensorBindingUseCase.boundVehicle(sensor)
-                        .map { boundVehicle ->
-                            if (boundVehicle == null) Result.NewBinding(sensor)
-                            else Result.DuplicateBinding(sensor, boundVehicle)
-                        }
-                }
-                .distinctUntilChanged()
+            if (boundSensor != null)
+                flowOf(Result.AlreadyBound(boundSensor))
+            else
+                listenTyreUseCase.listen()
+                    .map { Sensor(it.id, it.location) }
+                    .flatMapLatest { sensor ->
+                        sensorBindingUseCase.boundVehicle(sensor)
+                            .map { boundVehicle ->
+                                if (boundVehicle == null) Result.NewBinding(sensor)
+                                else Result.DuplicateBinding(sensor, boundVehicle)
+                            }
+                    }
+                    .distinctUntilChanged()
         }
 
     sealed interface Result {

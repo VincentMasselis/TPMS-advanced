@@ -108,7 +108,11 @@ private fun UnplugEverySensor(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        Text("Before we start, ensure to unplug every sensor to bind from your tyres")
+        Text(
+            text = "Before we start, ensure to unplug every sensor to bind from your tyres",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(4.dp))
         Button(
             onClick = onAcknowledge,
@@ -151,6 +155,12 @@ private fun Searching(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillParentMaxWidth()
                     )
+                    Text(
+                        text = "If the sensor stays invisible, try to spin the wheel to wake up",
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillParentMaxWidth()
+                    )
                 }
 
             is State.Searching.ShowList -> {
@@ -183,10 +193,10 @@ private fun Searching(
             }
         }
         if (state.listAlreadyBoundTyre.isNotEmpty()) {
-            item { Spacer(modifier = Modifier.height(25.dp)) }
+            item { Spacer(modifier = Modifier.height(56.dp)) }
             stickyHeader {
                 Text(
-                    text = "Sensors already bound:",
+                    text = "Already bound sensors found:",
                     fontSize = 12.sp,
                 )
             }
@@ -212,12 +222,13 @@ private fun Searching(
             item { Spacer(Modifier.height(4.dp)) }
         }
         if (state.allWheelsBound) item {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(56.dp))
             Text(
                 text = "Every tyre of your vehicle \"${vehicle.name}\" is bound to a sensor",
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillParentMaxWidth()
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Box(Modifier.fillParentMaxWidth()) {
                 Button(
                     onClick = bindingFinished,
@@ -277,7 +288,7 @@ private fun TyreCell(
                     text = StringBuilder()
                         .run {
                             append(
-                                if (alreadyBound != null) "Sensor bounded to \"${alreadyBound.vehicle.name}\" found at "
+                                if (alreadyBound != null) "Bounded to \"${alreadyBound.vehicle.name}\" found at "
                                 else "Found tyre at "
                             )
                         }

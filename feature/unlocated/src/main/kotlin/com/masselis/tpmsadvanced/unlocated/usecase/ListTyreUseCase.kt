@@ -44,8 +44,9 @@ internal class ListTyreUseCase @Inject constructor(
                 }
         }
         .scan(mutableListOf<Available>()) { acc, available ->
-            if (acc.none { it.tyre.id == available.tyre.id })
-                acc += available
+            val index = acc.indexOfFirst  { it.tyre.id == available.tyre.id }
+            if(index == -1) acc += available
+            else acc[index] = available
             acc.sortByDescending { it.tyre.rssi }
             acc
         }
