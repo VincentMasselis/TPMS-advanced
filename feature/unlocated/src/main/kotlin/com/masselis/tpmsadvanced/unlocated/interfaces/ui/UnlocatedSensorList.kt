@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.unlocated.interfaces.ui
 
 import android.icu.text.DateFormat.SHORT
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,17 +10,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -251,6 +259,7 @@ private fun Searching(
         )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TyreCell(
     tyre: Tyre,
@@ -265,17 +274,25 @@ private fun TyreCell(
     modifier: Modifier = Modifier,
     isPlaceholder: Boolean = false,
 ) {
-    Surface(
+    ElevatedCard(
         shape = when {
-            roundedTop && roundedBottom -> RoundedCornerShape(12.dp)
-            roundedTop -> RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-            roundedBottom -> RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+            roundedTop && roundedBottom -> ShapeDefaults.Medium
+
+            roundedTop -> ShapeDefaults.Medium.copy(
+                bottomStart = ZeroCornerSize,
+                bottomEnd = ZeroCornerSize
+            )
+
+            roundedBottom -> ShapeDefaults.Medium.copy(
+                topStart = ZeroCornerSize,
+                topEnd = ZeroCornerSize
+            )
+
             else -> RectangleShape
         },
-        shadowElevation = 2.dp,
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceVariant),
-        modifier = modifier
+        enabled = isPlaceholder.not(),
+        onClick = onBind,
+        modifier = modifier,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -316,20 +333,16 @@ private fun TyreCell(
                 showFarthest -> Text("Farthest", fontSize = 12.sp, fontStyle = FontStyle.Italic)
             }
 
-            IconButton(
-                enabled = isPlaceholder.not(),
-                onClick = onBind,
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.link_variant_plus),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .placeholder(
-                            visible = isPlaceholder,
-                            highlight = PlaceholderHighlight.shimmer(),
-                        )
-                )
-            }
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.link_variant_plus),
+                contentDescription = null,
+                modifier = Modifier
+                    .minimumInteractiveComponentSize() // To make this icon look like an IconButton
+                    .placeholder(
+                        visible = isPlaceholder,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    )
+            )
         }
     }
 }
