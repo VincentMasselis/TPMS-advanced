@@ -119,7 +119,7 @@ internal fun VehicleHome(
                     }
                     composable("${Path.Unlocated(vehicleComponent.vehicle.uuid)}") {
                         UnlocatedSensorList(
-                            vehicle = vehicleComponent.vehicle,
+                            vehicleUuid = vehicleComponent.vehicle.uuid,
                             bindingFinished = {
                                 navController.popBackStack(
                                     "${Path.Home(vehicleComponent.vehicle.uuid)}",

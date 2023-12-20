@@ -27,6 +27,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
@@ -144,39 +145,7 @@ private fun BindingAlert(
                                 append("\n\n⚠️ Filled QR Code doesn't contains sensors dedicated to ")
                                 state.localisations.forEachIndexed { index, location ->
                                     append("the ")
-                                    when (location) {
-                                        is Vehicle.Kind.Location.Wheel -> {
-                                            append(
-                                                when (location.location) {
-                                                    FRONT_LEFT -> "front left"
-                                                    FRONT_RIGHT -> "front right"
-                                                    REAR_LEFT -> "rear left"
-                                                    REAR_RIGHT -> "rear right"
-                                                }
-                                            )
-                                            append(" wheel")
-                                        }
-
-                                        is Vehicle.Kind.Location.Axle -> {
-                                            append(
-                                                when (location.axle) {
-                                                    FRONT -> "front"
-                                                    REAR -> "rear"
-                                                }
-                                            )
-                                            append(" axle")
-                                        }
-
-                                        is Vehicle.Kind.Location.Side -> {
-                                            append(
-                                                when (location.side) {
-                                                    LEFT -> "left"
-                                                    RIGHT -> "right"
-                                                }
-                                            )
-                                            append(" side")
-                                        }
-                                    }
+                                    appendLoc(location)
                                     append(
                                         when (index) {
                                             state.localisations.size - 1 -> "."

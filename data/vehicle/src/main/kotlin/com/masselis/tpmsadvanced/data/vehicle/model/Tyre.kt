@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 public sealed interface Tyre : Parcelable {
     public val timestamp: Double
     public val rssi: Int
-    public val id: Int
+    public val sensorId: Int
     public val pressure: Pressure
     public val temperature: Temperature
     public val battery: UShort
@@ -19,7 +19,7 @@ public sealed interface Tyre : Parcelable {
     public data class Unlocated(
         override val timestamp: Double,
         override val rssi: Int,
-        override val id: Int,
+        override val sensorId: Int,
         override val pressure: Pressure,
         override val temperature: Temperature,
         override val battery: UShort,
@@ -30,7 +30,7 @@ public sealed interface Tyre : Parcelable {
     public data class Located(
         override val timestamp: Double,
         override val rssi: Int,
-        override val id: Int,
+        override val sensorId: Int,
         override val pressure: Pressure,
         override val temperature: Temperature,
         override val battery: UShort,
@@ -40,7 +40,7 @@ public sealed interface Tyre : Parcelable {
         public constructor(tyre: Tyre, location: Location) : this(
             tyre.timestamp,
             tyre.rssi,
-            tyre.id,
+            tyre.sensorId,
             tyre.pressure,
             tyre.temperature,
             tyre.battery,
@@ -53,7 +53,7 @@ public sealed interface Tyre : Parcelable {
     public data class SensorLocated(
         override val timestamp: Double,
         override val rssi: Int,
-        override val id: Int,
+        override val sensorId: Int,
         override val pressure: Pressure,
         override val temperature: Temperature,
         override val battery: UShort,

@@ -12,7 +12,7 @@ internal class ListenBoundTyreUseCase(
     override fun listen(): Flow<Tyre.Located> = listenTyreUseCase
         .listen()
         .filter {
-            val favId = sensorBindingUseCase.boundSensor().value?.id ?: return@filter true
-            favId == it.id
+            val boundSensorId = sensorBindingUseCase.boundSensor().value?.id ?: return@filter true
+            boundSensorId == it.sensorId
         }
 }

@@ -45,3 +45,6 @@ SELECT * FROM Sensor WHERE Sensor.id = ?;
 
 selectListByVehicleId:
 SELECT * FROM Sensor WHERE Sensor.vehicleId = ?;
+
+selectListExcludingVehicleId:
+SELECT * FROM Sensor WHERE Sensor.vehicleId != ?;

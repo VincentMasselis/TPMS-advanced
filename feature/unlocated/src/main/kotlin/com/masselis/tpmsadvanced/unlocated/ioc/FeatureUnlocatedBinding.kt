@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.unlocated.ioc
 
+import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModelImpl
@@ -12,6 +13,7 @@ import dagger.Component
     dependencies = [
         DataUnitComponent::class,
         DataVehicleComponent::class,
+        FeatureCoreComponent::class,
     ]
 )
 internal interface FeatureUnlocatedBinding {

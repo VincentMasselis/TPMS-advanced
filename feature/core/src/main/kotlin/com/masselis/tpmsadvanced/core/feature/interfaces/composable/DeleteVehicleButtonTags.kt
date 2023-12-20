@@ -43,7 +43,7 @@ internal fun DeleteVehicleButton(
     }
 ) {
     val navController = LocalHomeNavController.current
-    val state = viewModel.stateFlow.collectAsState().value
+    val state by viewModel.stateFlow.collectAsState()
     var showDeleteDialog by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
         OutlinedButton(

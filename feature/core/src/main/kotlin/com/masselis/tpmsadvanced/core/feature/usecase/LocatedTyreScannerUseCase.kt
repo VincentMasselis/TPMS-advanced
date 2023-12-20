@@ -21,7 +21,7 @@ internal class LocatedTyreScannerUseCase @Inject constructor(
             // Takes the location from the bound sensor if any exists
             sensorBindingUseCase.boundSensor()
                 .value
-                .takeIf { tyre.id == it?.id }
+                .takeIf { tyre.sensorId == it?.id }
                 ?.let { sensor -> Tyre.Located(tyre, sensor.location) }
             // Cannot compute location from a bound sensor, let's take a look at the tyre itself
                 ?: when (tyre) {

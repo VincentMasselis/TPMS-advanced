@@ -26,8 +26,8 @@ import java.util.UUID
 @Suppress("NAME_SHADOWING")
 internal class BindSensorViewModelImpl @AssistedInject constructor(
     private val bindSensorToVehicleUseCase: BindSensorToVehicleUseCase,
-    private val sensorDatabase: SensorDatabase,
-    private val vehicleDatabase: VehicleDatabase,
+    sensorDatabase: SensorDatabase,
+    vehicleDatabase: VehicleDatabase,
     @Assisted private val vehicleUuid: UUID,
     @Assisted private val tyre: Tyre,
     @Assisted savedStateHandle: SavedStateHandle,
@@ -41,8 +41,8 @@ internal class BindSensorViewModelImpl @AssistedInject constructor(
     init {
         val currentVehicle = vehicleDatabase.selectByUuid(vehicleUuid)
         val knownSensors = sensorDatabase.selectListByVehicleId(vehicleUuid)
-        val boundVehicle = vehicleDatabase.selectBySensorId(tyre.id)
-        val boundVehicleLocation = sensorDatabase.selectById(tyre.id)
+        val boundVehicle = vehicleDatabase.selectBySensorId(tyre.sensorId)
+        val boundVehicleLocation = sensorDatabase.selectById(tyre.sensorId)
         stateFlow = savedStateHandle.getMutableStateFlow("STATE") {
             computeState(
                 currentVehicle.value,
@@ -64,7 +64,7 @@ internal class BindSensorViewModelImpl @AssistedInject constructor(
 
     override fun bind(location: Location) {
         viewModelScope.launch(NonCancellable) {
-            bindSensorToVehicleUseCase.bind(vehicleUuid, Sensor(tyre.id, location), tyre)
+            bindSensorToVehicleUseCase.bind(vehicleUuid, Sensor(tyre.sensorId, location), tyre)
         }
     }
 

@@ -17,7 +17,7 @@ public class TyreDatabase @Inject internal constructor(
 
     public suspend fun insert(tyre: Tyre.Located, vehicleId: UUID): Unit = withContext(IO) {
         queries.insert(
-            tyre.id,
+            tyre.sensorId,
             tyre.timestamp,
             tyre.rssi,
             tyre.location,

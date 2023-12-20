@@ -73,6 +73,10 @@ public class SensorDatabase @Inject internal constructor(
         .selectListByVehicleId(uuid, mapper)
         .asStateFlowList()
 
+    public fun selectListExcludingVehicleId(uuid: UUID): StateFlow<List<Sensor>> = queries
+        .selectListExcludingVehicleId(uuid, mapper)
+        .asStateFlowList()
+
     private companion object {
         private val mapper: (
             id: Int,
