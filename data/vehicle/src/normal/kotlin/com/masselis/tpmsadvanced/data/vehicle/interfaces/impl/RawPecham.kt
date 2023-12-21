@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
+import android.bluetooth.le.ScanRecord
 import android.bluetooth.le.ScanResult
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
@@ -61,29 +62,32 @@ internal data class RawPecham private constructor(
 
     companion object {
         operator fun invoke(result: ScanResult): RawPecham? {
-            if (result.scanRecord?.deviceName != "BR")
+            val scanRecord = result.scanRecord
+                ?: return null
+            if (scanRecord.deviceName != "BR")
+                return null
+            if (CRC.isValid(scanRecord).not())
                 return null
             // Calling result.scanRecord?.manufacturerSpecificData?.valueAt(0) will not work because
             // the returned array is 5 bytes only instead of 7 bytes. It doesn't contain the first 2
             // bytes
-            val data = runCatching { result.scanRecord?.bytes?.copyOfRange(10, 17) }
+            val data = runCatching { scanRecord.bytes.copyOfRange(10, 17) }
                 .onFailure {
                     Firebase.crashlytics.recordException(
                         IllegalArgumentException(
-                            "Even if the device is named \"BR\" filled bytes are incorrect: $${result.scanRecord?.bytes?.toHexString()}",
+                            "Filled bytes are incorrect: $${scanRecord.bytes.toHexString()}",
                             it
                         )
                     )
                 }
                 .getOrNull()
                 ?: return null
-            if (CRC.isValid(result.scanRecord?.bytes!!).not())
-                return null
             return RawPecham(result.device.address, result.rssi, data)
         }
 
         private object CRC {
-            fun isValid(dataWithCRC: ByteArray): Boolean {
+            fun isValid(scanRecord: ScanRecord): Boolean {
+                val dataWithCRC = scanRecord.bytes
                 val (highByteIndex, lowByteIndex) = bytes(
                     dataWithCRC.take(dataWithCRC.size - 2).toByteArray()
                 )

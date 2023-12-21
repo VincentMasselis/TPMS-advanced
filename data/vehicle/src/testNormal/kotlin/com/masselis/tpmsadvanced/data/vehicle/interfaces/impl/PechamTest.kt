@@ -49,7 +49,7 @@ internal class PechamTest {
                             every { deviceName } returns "BR"
                             every { rssi } returns -60
                             every { bytes } returns completeData
-                            every { device } returns mockk  {
+                            every { device } returns mockk {
                                 every { address } returns "00:00:00:00:00"
                             }
                         }
@@ -57,6 +57,7 @@ internal class PechamTest {
                 )
             }
             .map { it.asTyre() }
-            .forEach(::println)
+            .onEach(::println)
+            .also { assert(it.size == samples.size) }
     }
 }
