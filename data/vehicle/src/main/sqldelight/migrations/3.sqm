@@ -1,0 +1,17 @@
+ALTER TABLE Tyre RENAME TO Tyre_old;
+CREATE TABLE Tyre(
+    id INTEGER NOT NULL,
+    timestamp REAL NOT NULL,
+    rssi INTEGER NOT NULL,
+    location INTEGER NOT NULL,
+    pressure REAL NOT NULL,
+    temperature REAL NOT NULL,
+    battery INTEGER NOT NULL,
+    isAlarm INTEGER NOT NULL,
+    vehicleId TEXT NOT NULL,
+    FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE
+);
+INSERT INTO Tyre(id, timestamp, rssi, location, pressure, temperature, battery, isAlarm, vehicleId)
+    SELECT id, timestamp, -99, location, pressure, temperature, battery, isAlarm, vehicleId
+    FROM Tyre_old;
+DROP TABLE Tyre_old;
