@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.ZeroCornerSize
@@ -63,6 +64,7 @@ import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion
 import io.github.fornewid.placeholder.foundation.PlaceholderHighlight
 import io.github.fornewid.placeholder.material3.placeholder
 import io.github.fornewid.placeholder.material3.shimmer
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.DateFormat
 import java.util.Date
@@ -143,147 +145,49 @@ private fun Searching(
     modifier: Modifier = Modifier,
 ) {
     val (tyreToBind, setTyreToBind) = rememberSaveable { mutableStateOf<Tyre?>(null) }
-    val roundedTopId = remember {
-        state.boundSensorToCurrentVehicle.firstOrNull()?.first?.id
-            ?: state.unboundTyres.firstOrNull()?.sensorId
-            ?: if (state.showPlaceholder) -1 else null
-    }
-    val roundedBottomId = remember {
-        (if (state.showPlaceholder) -1 else null)
-            ?: state.unboundTyres.lastOrNull()?.sensorId
-            ?: state.boundSensorToCurrentVehicle.lastOrNull()?.first?.id
-    }
+    val roundedTopId = remember { state.computeRoundedTopId() }
+    val roundedBottomId = remember { state.computeRoundedBottomId() }
     LazyColumn(modifier.fillMaxWidth()) {
-        stickyHeader {
-            Text(text = "Sensors for ${state.currentVehicleName}:", fontSize = 12.sp)
-        }
-        item { Spacer(Modifier.height(8.dp)) }
 
-        // Bound sensors
-        items(
-            items = state.boundSensorToCurrentVehicle,
-            key = { (sensor) -> sensor.id }
-        ) { (sensor, tyre) ->
-            BoundSensorCell(
-                kind = state.currentVehicleKind,
-                sensor = sensor,
-                tyre = tyre,
-                roundedTop = sensor.id == roundedTopId,
-                roundedBottom = sensor.id == roundedBottomId
+        currentVehicleItems(
+            currentVehicleName = state.currentVehicleName,
+            currentVehicleKind = state.currentVehicleKind,
+            boundSensorToCurrentVehicle = state.boundSensorToCurrentVehicle,
+            unboundTyres = state.unboundTyres,
+            pressureUnit = state.pressureUnit,
+            temperatureUnit = state.temperatureUnit,
+            roundedTopId = roundedTopId,
+            roundedBottomId = roundedBottomId,
+            setTyreToBind = setTyreToBind
+        )
+
+        if (state.showPlaceholder)
+            placeholder(
+                roundedBottomId = roundedBottomId,
+                roundedTopId = roundedTopId
             )
-            if (sensor.id != roundedBottomId) Divider(thickness = Hairline)
-        }
 
-        // Unbound tyres
-        itemsIndexed(
-            items = state.unboundTyres,
-            key = { _, it -> it.sensorId }
-        ) { index, tyre ->
-            TyreCell(
-                tyre = tyre,
-                sensorToVehicle = null,
-                state.temperatureUnit,
-                state.pressureUnit,
-                showClosest = index == 0 && state.unboundTyres.size >= 2,
-                showFarthest = index.plus(1) == state.unboundTyres.size && state.unboundTyres.size >= 2,
-                roundedTop = tyre.sensorId == roundedTopId,
-                roundedBottom = tyre.sensorId == roundedBottomId,
-                onBind = { setTyreToBind(tyre) },
-                modifier = Modifier.fillParentMaxWidth()
+        if (state.unboundTyres.isNotEmpty())
+            currentVehicleTyreFoundMessage(
+                unboundTyres = state.unboundTyres
             )
-            if (tyre.sensorId != roundedBottomId) Divider(thickness = Hairline)
-        }
 
-        // Show placeholder
-        if (state.showPlaceholder) item {
-            PlaceholderTyreCell(
-                roundedTop = -1 == roundedTopId,
-                roundedBottom = -1 == roundedBottomId,
-                modifier = Modifier.fillParentMaxWidth()
+        if (state.showPlaceholder)
+            currentVehiclePlaceholderMessage()
+
+        if (state.boundTyresToOtherVehicle.isNotEmpty())
+            otherVehicleItems(
+                boundTyresToOtherVehicle = state.boundTyresToOtherVehicle,
+                temperatureUnit = state.temperatureUnit,
+                pressureUnit = state.pressureUnit,
+                setTyreToBind = setTyreToBind
             )
-            if (-1 != roundedBottomId) Divider(thickness = Hairline)
 
-        }
-
-        if (state.unboundTyres.isNotEmpty()) item {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = if (state.unboundTyres.size == 1) "Bind the sensor above ☝️"
-                else "Bind one of the sensors above ☝️",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillParentMaxWidth()
+        if (state.allWheelsBound)
+            allWheelsBoundMessage(
+                currentVehicleName = state.currentVehicleName,
+                bindingFinished = bindingFinished
             )
-        }
-
-        if (state.showPlaceholder) item {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = AnnotatedString("Plug and bind a ")
-                    .plus(
-                        AnnotatedString(
-                            "single sensor",
-                            SpanStyle(textDecoration = TextDecoration.Underline)
-                        )
-                    )
-                    .plus(AnnotatedString(" at time")),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillParentMaxWidth()
-            )
-            Text(
-                text = "If the sensor stays invisible, remove it from the wheel and plug in again",
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillParentMaxWidth()
-            )
-        }
-
-
-        if (state.boundTyresToOtherVehicle.isNotEmpty()) {
-            item { Spacer(modifier = Modifier.height(56.dp)) }
-            stickyHeader {
-                Text(
-                    text = "Already bound sensors found:",
-                    fontSize = 12.sp,
-                )
-            }
-            item { Spacer(Modifier.height(8.dp)) }
-            itemsIndexed(
-                items = state.boundTyresToOtherVehicle,
-                key = { _, (_, _, tyre) -> tyre.sensorId }
-            ) { index, (vehicle, sensor, tyre) ->
-                TyreCell(
-                    tyre = tyre,
-                    sensorToVehicle = sensor to vehicle,
-                    temperatureUnit = state.temperatureUnit,
-                    pressureUnit = state.pressureUnit,
-                    showClosest = index == 0 && state.boundTyresToOtherVehicle.size >= 2,
-                    showFarthest = index.plus(1) == state.boundTyresToOtherVehicle.size && state.boundTyresToOtherVehicle.size >= 2,
-                    roundedTop = index == 0,
-                    roundedBottom = index == state.boundTyresToOtherVehicle.size.minus(1),
-                    onBind = { setTyreToBind(tyre) },
-                    modifier = Modifier.fillParentMaxWidth()
-                )
-                if (index.plus(1) < state.boundTyresToOtherVehicle.size) Divider(thickness = Hairline)
-            }
-            item { Spacer(Modifier.height(4.dp)) }
-        }
-        if (state.allWheelsBound) item {
-            Spacer(modifier = Modifier.height(56.dp))
-            Text(
-                text = "Every tyre of your vehicle \"${state.currentVehicleName}\" is bound to a sensor",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillParentMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Box(Modifier.fillParentMaxWidth()) {
-                Button(
-                    onClick = bindingFinished,
-                    modifier = Modifier.align(Alignment.Center)
-                ) {
-                    Text("Go back")
-                }
-            }
-        }
     }
     if (tyreToBind != null)
         BindDialog(
@@ -295,6 +199,180 @@ private fun Searching(
             },
             onDismissRequest = { setTyreToBind(null) },
         )
+}
+
+private fun State.Searching.computeRoundedTopId() =
+    boundSensorToCurrentVehicle.firstOrNull()?.first?.id
+        ?: unboundTyres.firstOrNull()?.sensorId
+        ?: if (showPlaceholder) -1 else null
+
+private fun State.Searching.computeRoundedBottomId() =
+    (if (showPlaceholder) -1 else null)
+        ?: unboundTyres.lastOrNull()?.sensorId
+        ?: boundSensorToCurrentVehicle.lastOrNull()?.first?.id
+
+@ExperimentalFoundationApi
+private fun LazyListScope.currentVehicleItems(
+    currentVehicleName: String,
+    currentVehicleKind: Vehicle.Kind,
+    boundSensorToCurrentVehicle: List<Pair<Sensor, Tyre.Unlocated?>>,
+    unboundTyres: List<Tyre.Unlocated>,
+    pressureUnit: PressureUnit,
+    temperatureUnit: TemperatureUnit,
+    roundedTopId: Int?,
+    roundedBottomId: Int?,
+    setTyreToBind: (Tyre.Unlocated) -> Unit
+) {
+    stickyHeader {
+        Text(text = "Sensors for ${currentVehicleName}:", fontSize = 12.sp)
+    }
+    item { Spacer(Modifier.height(8.dp)) }
+
+    // Bound sensors
+    items(
+        items = boundSensorToCurrentVehicle,
+        key = { (sensor) -> sensor.id }
+    ) { (sensor, tyre) ->
+        BoundSensorCell(
+            kind = currentVehicleKind,
+            sensor = sensor,
+            tyre = tyre,
+            roundedTop = sensor.id == roundedTopId,
+            roundedBottom = sensor.id == roundedBottomId
+        )
+        if (sensor.id != roundedBottomId) Divider(thickness = Hairline)
+    }
+
+    // Unbound tyres
+    itemsIndexed(
+        items = unboundTyres,
+        key = { _, tyre -> tyre.sensorId }
+    ) { index, tyre ->
+        TyreCell(
+            tyre = tyre,
+            sensorToVehicle = null,
+            temperatureUnit,
+            pressureUnit,
+            showClosest = index == 0 && unboundTyres.size >= 2,
+            showFarthest = index.plus(1) == unboundTyres.size && unboundTyres.size >= 2,
+            roundedTop = tyre.sensorId == roundedTopId,
+            roundedBottom = tyre.sensorId == roundedBottomId,
+            onBind = { setTyreToBind(tyre) },
+            modifier = Modifier.fillParentMaxWidth()
+        )
+        if (tyre.sensorId != roundedBottomId) Divider(thickness = Hairline)
+    }
+}
+
+private fun LazyListScope.placeholder(
+    roundedTopId: Int?,
+    roundedBottomId: Int?,
+) {
+    item {
+        PlaceholderTyreCell(
+            roundedTop = -1 == roundedTopId,
+            roundedBottom = -1 == roundedBottomId,
+            modifier = Modifier.fillParentMaxWidth()
+        )
+        if (-1 != roundedBottomId) Divider(thickness = Hairline)
+    }
+}
+
+private fun LazyListScope.currentVehicleTyreFoundMessage(
+    unboundTyres: List<Tyre.Unlocated>,
+) {
+    item {
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = if (unboundTyres.size == 1) "Bind the sensor above ☝️"
+            else "Bind one of the sensors above ☝️",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillParentMaxWidth()
+        )
+    }
+}
+
+private fun LazyListScope.currentVehiclePlaceholderMessage() {
+    item {
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = AnnotatedString("Plug and bind a ")
+                .plus(
+                    AnnotatedString(
+                        "single sensor",
+                        SpanStyle(textDecoration = TextDecoration.Underline)
+                    )
+                )
+                .plus(AnnotatedString(" at time")),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillParentMaxWidth()
+        )
+        Text(
+            text = "If the sensor stays invisible, remove it from the wheel and plug in again",
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillParentMaxWidth()
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyListScope.otherVehicleItems(
+    boundTyresToOtherVehicle: List<Triple<Vehicle, Sensor, Tyre.Unlocated>>,
+    temperatureUnit: TemperatureUnit,
+    pressureUnit: PressureUnit,
+    setTyreToBind: (Tyre.Unlocated) -> Unit
+) {
+    item { Spacer(modifier = Modifier.height(56.dp)) }
+    stickyHeader {
+        Text(
+            text = "Already bound sensors found:",
+            fontSize = 12.sp,
+        )
+    }
+    item { Spacer(Modifier.height(8.dp)) }
+    itemsIndexed(
+        items = boundTyresToOtherVehicle,
+        key = { _, (_, _, tyre) -> tyre.sensorId }
+    ) { index, (vehicle, sensor, tyre) ->
+        TyreCell(
+            tyre = tyre,
+            sensorToVehicle = sensor to vehicle,
+            temperatureUnit = temperatureUnit,
+            pressureUnit = pressureUnit,
+            showClosest = index == 0 && boundTyresToOtherVehicle.size >= 2,
+            showFarthest = index.plus(1) == boundTyresToOtherVehicle.size && boundTyresToOtherVehicle.size >= 2,
+            roundedTop = index == 0,
+            roundedBottom = index == boundTyresToOtherVehicle.size.minus(1),
+            onBind = { setTyreToBind(tyre) },
+            modifier = Modifier.fillParentMaxWidth()
+        )
+        if (index.plus(1) < boundTyresToOtherVehicle.size) Divider(thickness = Hairline)
+    }
+    item { Spacer(Modifier.height(4.dp)) }
+}
+
+private fun LazyListScope.allWheelsBoundMessage(
+    currentVehicleName: String,
+    bindingFinished: () -> Unit,
+) {
+    item {
+        Spacer(modifier = Modifier.height(56.dp))
+        Text(
+            text = "Every tyre of your vehicle \"${currentVehicleName}\" is bound to a sensor",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillParentMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Box(Modifier.fillParentMaxWidth()) {
+            Button(
+                onClick = bindingFinished,
+                modifier = Modifier.align(Alignment.Center)
+            ) {
+                Text("Go back")
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -434,9 +512,17 @@ private fun BoundSensorCell(
                     )
             }
 
+            val states = remember(sensor.location) {
+                kind.locations
+                    .associateWith {
+                        if (it == sensor.location) WheelState.Fade
+                        else WheelState.Empty
+                    }
+                    .toImmutableMap()
+            }
             Vehicle(
                 kind = kind,
-                states = mapOf(sensor.location to WheelState.Fade).withDefault { WheelState.Empty },
+                states = states,
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 8.dp)
                     .minimumInteractiveComponentSize()

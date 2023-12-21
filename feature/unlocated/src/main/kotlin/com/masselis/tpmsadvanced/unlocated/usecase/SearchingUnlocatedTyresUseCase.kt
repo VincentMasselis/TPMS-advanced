@@ -14,6 +14,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -64,20 +65,23 @@ internal class SearchingUnlocatedTyresUseCase @AssistedInject constructor(
             }
         )
     }.flatMapLatest { (boundSensorToCurrentVehicle, unboundTyres, boundSensorAndTyres) ->
-        combine(
-            boundSensorAndTyres.map { (sensor) ->
-                vehicleDatabase.selectBySensorId(sensor.id).map { it!! }
-            }
-        ) { boundVehicles ->
-            Result(
-                boundSensorToCurrentVehicle,
-                unboundTyres,
-                boundVehicles.mapIndexed { index, boundVehicle ->
-                    val (boundSensor, boundTyre) = boundSensorAndTyres[index]
-                    Triple(boundVehicle, boundSensor, boundTyre)
+        if (boundSensorAndTyres.isEmpty())
+            flowOf(Result(boundSensorToCurrentVehicle, unboundTyres, emptyList()))
+        else
+            combine(
+                boundSensorAndTyres.map { (sensor) ->
+                    vehicleDatabase.selectBySensorId(sensor.id).map { it!! }
                 }
-            )
-        }.flowOn(IO)
+            ) { boundVehicles ->
+                Result(
+                    boundSensorToCurrentVehicle,
+                    unboundTyres,
+                    boundVehicles.mapIndexed { index, boundVehicle ->
+                        val (boundSensor, boundTyre) = boundSensorAndTyres[index]
+                        Triple(boundVehicle, boundSensor, boundTyre)
+                    }
+                )
+            }.flowOn(IO)
     }
 
     @Parcelize

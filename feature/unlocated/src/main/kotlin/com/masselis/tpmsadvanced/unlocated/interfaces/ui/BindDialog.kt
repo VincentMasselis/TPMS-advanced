@@ -22,13 +22,8 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
@@ -38,11 +33,12 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_W
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel.State
 import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion.BindSensorViewModel
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.UUID
 
-@Suppress("NAME_SHADOWING")
+@Suppress("NAME_SHADOWING", "LongMethod")
 @Composable
 internal fun BindDialog(
     vehicleUuid: UUID,
@@ -57,13 +53,17 @@ internal fun BindDialog(
     var selectedLocation by remember { mutableStateOf<Location?>(null) }
     val wheelStates by remember {
         derivedStateOf {
-            state.alreadyBoundLocations
-                .associateWith { WheelState.Fade }
-                .run {
-                    if (selectedLocation != null) plus(selectedLocation!! to WheelState.Highlighted)
-                    else this
+            state.currentVehicle
+                .kind
+                .locations
+                .associateWith {
+                    when {
+                        it == selectedLocation -> WheelState.Highlighted
+                        state.alreadyBoundLocations.contains(it) -> WheelState.Fade
+                        else -> WheelState.Empty
+                    }
                 }
-                .withDefault { WheelState.Empty }
+                .toImmutableMap()
         }
     }
     AlertDialog(

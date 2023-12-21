@@ -62,6 +62,7 @@ internal object Module {
         override fun encode(value: UShort): Long = value.toLong()
     }
 
+    @Suppress("MagicNumber")
     @Provides
     fun locationAdapter() = object : ColumnAdapter<VehicleModel.Kind.Location, Long> {
 

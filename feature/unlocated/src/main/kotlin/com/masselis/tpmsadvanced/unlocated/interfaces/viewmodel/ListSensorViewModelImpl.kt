@@ -49,6 +49,7 @@ internal class ListSensorViewModelImpl @AssistedInject constructor(
         search()
     }
 
+    @Suppress("MaxLineLength")
     private fun search() = combine(
         currentVehicleUseCase.flatMapLatest { it.vehicleStateFlow },
         searchingUnlocatedTyresUseCase.search(),

@@ -56,7 +56,7 @@ public fun <T : Any> Query<T>.asChillFlow(): Flow<Query<T>> = flow {
 
     addListener(listener)
     try {
-        for (item in channel) {
+        for (ignored in channel) {
             emit(this@asChillFlow)
         }
     } finally {

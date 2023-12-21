@@ -43,6 +43,7 @@ public class SensorDatabase @Inject internal constructor(
         database.transaction {
             val kind = vehicleQueries.selectByUuid(vehicleId).executeAsOne().kind
             require(kind.locations.any { it == sensor.location }) {
+                @Suppress("MaxLineLength")
                 "Filled sensor points to a location which is not handled by the vehicle kind. Kind: $kind, sensor: $sensor"
             }
             queries.deleteByVehicleAndLocation(vehicleId, sensor.location)

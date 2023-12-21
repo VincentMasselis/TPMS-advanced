@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,18 +32,16 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-
-public sealed interface WheelState {
-    public data object Empty : WheelState
-    public data object Fade : WheelState
-    public data object Highlighted : WheelState
-}
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.immutableMapOf
+import kotlinx.collections.immutable.persistentMapOf
 
 @Suppress("NAME_SHADOWING")
 @Composable
 internal fun Vehicle(
     kind: Vehicle.Kind,
-    states: Map<Vehicle.Kind.Location, WheelState>,
+    states: ImmutableMap<Vehicle.Kind.Location, WheelState>,
     modifier: Modifier = Modifier,
     onWheelTap: (Vehicle.Kind.Location?) -> Unit = onWheelTapPlaceholder,
 ) {
@@ -87,6 +86,12 @@ internal fun Vehicle(
             modifier = modifier
         )
     }
+}
+
+public sealed interface WheelState {
+    public data object Empty : WheelState
+    public data object Fade : WheelState
+    public data object Highlighted : WheelState
 }
 
 @Composable
@@ -226,7 +231,7 @@ private fun Tyre(
 ) {
     BoxWithConstraints(modifier) {
         Surface(
-            shape = RoundedCornerShape(percent =  if (maxHeight >= 150.dp) 20 else 40),
+            shape = RoundedCornerShape(percent = if (maxHeight >= 150.dp) 20 else 40),
             color = when (state) {
                 WheelState.Empty -> Color.Transparent
                 WheelState.Fade, WheelState.Highlighted -> MaterialTheme.colorScheme.primary
@@ -265,7 +270,7 @@ private fun ((Vehicle.Kind.Location?) -> Unit).takeIfImplemented(location: Vehic
 private fun CarPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
-        states = mapOf(
+        states = persistentMapOf(
             Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
             Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
             Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,
@@ -279,7 +284,7 @@ private fun CarPreview() {
 private fun SingleAxleTrailerPreview() {
     Vehicle(
         kind = Vehicle.Kind.SINGLE_AXLE_TRAILER,
-        states = mapOf(
+        states = persistentMapOf(
             Vehicle.Kind.Location.Side(LEFT) to WheelState.Highlighted,
             Vehicle.Kind.Location.Side(RIGHT) to WheelState.Empty,
         )
@@ -291,7 +296,7 @@ private fun SingleAxleTrailerPreview() {
 private fun MotorcyclePreview() {
     Vehicle(
         kind = Vehicle.Kind.MOTORCYCLE,
-        states = mapOf(
+        states = persistentMapOf(
             Vehicle.Kind.Location.Axle(FRONT) to WheelState.Highlighted,
             Vehicle.Kind.Location.Axle(REAR) to WheelState.Empty,
         )
@@ -303,7 +308,7 @@ private fun MotorcyclePreview() {
 private fun TadpoleThreeWheelerPreview() {
     Vehicle(
         kind = Vehicle.Kind.TADPOLE_THREE_WHEELER,
-        states = mapOf(
+        states = persistentMapOf(
             Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
             Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
             Vehicle.Kind.Location.Axle(REAR) to WheelState.Empty,
@@ -316,7 +321,7 @@ private fun TadpoleThreeWheelerPreview() {
 private fun DeltaThreeWheelerPreview() {
     Vehicle(
         kind = Vehicle.Kind.DELTA_THREE_WHEELER,
-        states = mapOf(
+        states = persistentMapOf(
             Vehicle.Kind.Location.Axle(FRONT) to WheelState.Highlighted,
             Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Fade,
             Vehicle.Kind.Location.Wheel(REAR_RIGHT) to WheelState.Empty,
@@ -329,7 +334,7 @@ private fun DeltaThreeWheelerPreview() {
 private fun CarNanoPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
-        states = mapOf(
+        states = persistentMapOf(
             Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
             Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
             Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,
@@ -344,7 +349,7 @@ private fun CarNanoPreview() {
 private fun CarMinusPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
-        states = mapOf(
+        states = persistentMapOf(
             Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
             Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
             Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,
@@ -359,7 +364,7 @@ private fun CarMinusPreview() {
 private fun CarAveragePreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
-        states = mapOf(
+        states = persistentMapOf(
             Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
             Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
             Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,
@@ -374,7 +379,7 @@ private fun CarAveragePreview() {
 private fun CarBigPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
-        states = mapOf(
+        states = persistentMapOf(
             Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
             Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
             Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,

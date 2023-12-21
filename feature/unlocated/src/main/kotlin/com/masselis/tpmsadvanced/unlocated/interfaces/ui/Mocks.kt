@@ -13,6 +13,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import java.util.UUID
 
 
+@Suppress("MagicNumber")
 internal fun mockTyre(
     id: Int,
     timestamp: Double = now(),
