@@ -5,7 +5,5 @@ import dagger.Subcomponent
 @Subcomponent
 internal interface DebugComponent {
     @Subcomponent.Factory
-    interface Factory {
-        fun build(): DebugComponent
-    }
+    interface Factory : () -> DebugComponent
 }

@@ -15,6 +15,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
@@ -26,7 +27,7 @@ internal fun Database.Companion.afterVersion3(
     driver
         .executeQuery(
             null,
-            "SELECT (location, vehicleId) FROM Sensor",
+            "SELECT location, vehicleId FROM Sensor",
             {
                 val result = mutableListOf<Pair<SensorLocation, String>>()
                 while (it.next().value)
@@ -46,9 +47,9 @@ internal fun Database.Companion.afterVersion3(
                     sql = "SELECT kind FROM Vehicle WHERE Vehicle.uuid = ?",
                     parameters = 1,
                     binders = { bindString(0, vehicleUuid) },
-                    mapper = {
-                        it.next()
-                        it.getString(0)!!
+                    mapper = { cursor ->
+                        cursor.next()
+                        cursor.getString(0)!!
                             .let { Vehicle.Kind.valueOf(it) }
                             .let { QueryResult.Value(it) }
                     },
@@ -56,7 +57,9 @@ internal fun Database.Companion.afterVersion3(
                 .value
                 .let { kind ->
                     when (kind) {
-                        CAR -> Vehicle.Kind.Location.Wheel(sensorLocation)
+                        CAR ->
+                            Vehicle.Kind.Location.Wheel(sensorLocation)
+
                         SINGLE_AXLE_TRAILER -> when (sensorLocation) {
                             FRONT_LEFT, REAR_LEFT -> Vehicle.Kind.Location.Side(LEFT)
                             FRONT_RIGHT, REAR_RIGHT -> Vehicle.Kind.Location.Side(RIGHT)
@@ -72,7 +75,7 @@ internal fun Database.Companion.afterVersion3(
                             REAR_LEFT, REAR_RIGHT -> Vehicle.Kind.Location.Axle(REAR)
                         }
 
-                        Vehicle.Kind.DELTA_THREE_WHEELER -> when (sensorLocation) {
+                        DELTA_THREE_WHEELER -> when (sensorLocation) {
                             FRONT_LEFT, FRONT_RIGHT -> Vehicle.Kind.Location.Axle(FRONT)
                             REAR_LEFT, REAR_RIGHT -> Vehicle.Kind.Location.Wheel(sensorLocation)
                         }
@@ -81,8 +84,16 @@ internal fun Database.Companion.afterVersion3(
                 .let(locationAdapter::encode)
                 .let { encodedLocation ->
                     driver.execute(
-                        0,
+                        null,
                         "UPDATE Sensor SET location = ? WHERE vehicleId = ?",
+                        2
+                    ) {
+                        bindLong(0, encodedLocation)
+                        bindString(1, vehicleUuid)
+                    }
+                    driver.execute(
+                        null,
+                        "UPDATE Tyre SET location = ? WHERE vehicleId = ?",
                         2
                     ) {
                         bindLong(0, encodedLocation)

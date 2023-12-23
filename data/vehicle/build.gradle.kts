@@ -1,5 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.android.build.gradle.internal.tasks.DeviceProviderInstrumentTestTask
+import com.android.build.gradle.tasks.MergeSourceSetFolders
+
 plugins {
     id("android-lib")
     alias(libs.plugins.sqldelight)

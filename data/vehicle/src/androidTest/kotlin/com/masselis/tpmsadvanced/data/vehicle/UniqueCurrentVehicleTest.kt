@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.data.vehicle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import com.masselis.tpmsadvanced.data.vehicle.ioc.DebugComponent
 import com.masselis.tpmsadvanced.data.vehicle.ioc.InternalComponent
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -28,8 +29,7 @@ internal class UniqueCurrentVehicleTest {
 
     @Before
     fun setup() {
-        val debugComponent = InternalComponent.debugComponentFactory.build()
-        database = debugComponent.database
+        database = DebugComponent.database
         vehicleQueries = database.vehicleQueries
         debugVehicleQueries = database.debugVehicleQueries
         vehicleQueries.currentFavourite()
