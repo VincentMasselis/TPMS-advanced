@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.core.database
 
 import app.cash.sqldelight.Query
+import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
@@ -24,7 +25,7 @@ public inline fun <reified T : Any> Query<T>.asStateFlowList(
     context: CoroutineContext = IO,
     scope: CoroutineScope = GlobalScope,
     started: SharingStarted = WhileSubscribed()
-): StateFlow<List<T>> = asChillFlow()
+): StateFlow<List<T>> = asFlow()
     .mapToList(context)
     .stateIn(scope, started, executeAsList())
 
@@ -33,7 +34,7 @@ public inline fun <reified T : Any> Query<T>.asStateFlowOne(
     context: CoroutineContext = IO,
     scope: CoroutineScope = GlobalScope,
     started: SharingStarted = WhileSubscribed()
-): StateFlow<T> = asChillFlow()
+): StateFlow<T> = asFlow()
     .mapToOne(context)
     .stateIn(scope, started, executeAsOne())
 
@@ -42,24 +43,6 @@ public inline fun <reified T : Any> Query<T>.asStateFlowOneOrNull(
     context: CoroutineContext = IO,
     scope: CoroutineScope = GlobalScope,
     started: SharingStarted = WhileSubscribed()
-): StateFlow<T?> = asChillFlow()
+): StateFlow<T?> = asFlow()
     .mapToOneOrNull(context)
     .stateIn(scope, started, executeAsOneOrNull())
-
-/** Identical to [app.cash.sqldelight.coroutines.asFlow] but this one doesn't emit at launch */
-public fun <T : Any> Query<T>.asChillFlow(): Flow<Query<T>> = flow {
-    val channel = Channel<Unit>(CONFLATED)
-
-    val listener = Query.Listener {
-        channel.trySend(Unit)
-    }
-
-    addListener(listener)
-    try {
-        for (ignored in channel) {
-            emit(this@asChillFlow)
-        }
-    } finally {
-        removeListener(listener)
-    }
-}
