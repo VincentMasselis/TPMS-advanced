@@ -83,7 +83,7 @@ internal class MainFeatureTest {
                 }
             }
             dropdownMenu {
-                assert(exists("My car").not())
+                composeTestRule.waitUntil { exists("My car").not() }
                 close()
             }
         }

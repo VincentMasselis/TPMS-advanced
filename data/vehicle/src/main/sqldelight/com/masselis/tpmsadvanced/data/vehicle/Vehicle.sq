@@ -59,6 +59,14 @@ BEGIN
     UPDATE Vehicle SET isFavourite = 1 WHERE rowid IN (SELECT rowid FROM Vehicle LIMIT 1);
 END;
 
+CREATE TRIGGER IF NOT EXISTS no_update_when_deleting
+    BEFORE UPDATE
+    ON Vehicle
+    WHEN old.isDeleting = 1
+BEGIN
+    SELECT RAISE(FAIL, "Cannot update a vehicule which is currently deleting");
+END;
+
 -- This statement is put in the end because SQLDelight executes the triggers before the statements
 
 INSERT INTO Vehicle(uuid, kind, name, isFavourite) VALUES ("466b2e13-e33a-4adf-a101-a920140a29a1","CAR", "My car",1);

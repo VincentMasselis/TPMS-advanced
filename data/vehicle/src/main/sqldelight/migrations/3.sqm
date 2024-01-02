@@ -11,7 +11,17 @@ CREATE TABLE Tyre(
     vehicleId TEXT NOT NULL,
     FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE
 );
+
 INSERT INTO Tyre(id, timestamp, rssi, location, pressure, temperature, battery, isAlarm, vehicleId)
     SELECT id, timestamp, -99, location, pressure, temperature, battery, isAlarm, vehicleId
     FROM Tyre_old;
+
 DROP TABLE Tyre_old;
+
+CREATE TRIGGER IF NOT EXISTS no_update_when_deleting
+    BEFORE UPDATE
+    ON Vehicle
+    WHEN old.isDeleting = 1
+BEGIN
+    SELECT RAISE(FAIL, "Cannot update a vehicule which is currently deleting");
+END;

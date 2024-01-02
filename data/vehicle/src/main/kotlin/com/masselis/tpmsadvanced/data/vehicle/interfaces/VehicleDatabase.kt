@@ -31,8 +31,9 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         kind: Vehicle.Kind,
         name: String,
         isCurrent: Boolean
-    ): Unit =
-        withContext(IO) { queries.insert(id, kind, name, isCurrent) }
+    ): Unit = withContext(IO) {
+        queries.insert(id, kind, name, isCurrent)
+    }
 
     public suspend fun setIsCurrent(uuid: UUID, isCurrent: Boolean): Unit = withContext(IO) {
         queries.setAsFavourite(isCurrent, uuid)

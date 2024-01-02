@@ -2,15 +2,13 @@ package com.masselis.tpmsadvanced.core.feature.usecase
 
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Named
 import kotlin.time.Duration.Companion.seconds
@@ -22,26 +20,17 @@ internal class DeleteVehicleUseCase @Inject constructor(
     private val scope: CoroutineScope,
 ) {
 
-    @OptIn(DelicateCoroutinesApi::class)
-    suspend fun delete() {
-        val deferred = CompletableDeferred<Unit>()
-        GlobalScope.launch(NonCancellable) {
-            try {
-                database.selectAll()
-                    .value
-                    .firstOrNull { it.uuid != vehicle.uuid }
-                    ?.also { currentVehicleUseCase.setAsCurrent(it) }
-                    ?: error("Cannot delete the last vehicle in the database")
-                scope.cancel()
-                database.setIsDeleting(vehicle.uuid)
-                deferred.complete(Unit)
-            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                deferred.completeExceptionally(e)
-                throw e
-            }
+    suspend fun delete() = withContext(NonCancellable) {
+        database.selectAll()
+            .value
+            .firstOrNull { it.uuid != vehicle.uuid }
+            ?.also { currentVehicleUseCase.setAsCurrent(it) }
+            ?: error("Cannot delete the last vehicle in the database")
+        scope.cancel()
+        database.setIsDeleting(vehicle.uuid)
+        launch {
             delay(1.seconds)
             database.delete(vehicle.uuid)
         }
-        deferred.await()
     }
 }
