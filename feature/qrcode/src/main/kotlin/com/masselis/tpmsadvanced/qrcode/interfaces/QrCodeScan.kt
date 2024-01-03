@@ -103,7 +103,7 @@ private fun Preview(
         QrCodeOverlay(Modifier.fillMaxSize())
     }
 
-    val viewModel = remember { QrCodeViewModel(controller) }
+    val viewModel = remember(controller) { QrCodeViewModel(controller) }
     val state by viewModel.stateFlow.collectAsState()
     when (val state = state) {
         State.Scanning -> {}

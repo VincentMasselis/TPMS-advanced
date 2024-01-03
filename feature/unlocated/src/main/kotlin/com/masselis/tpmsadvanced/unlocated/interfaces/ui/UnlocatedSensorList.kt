@@ -223,7 +223,7 @@ private fun LazyListScope.currentVehicleItems(
     roundedBottomId: Int?,
     setTyreToBind: (Tyre.Unlocated) -> Unit
 ) {
-    stickyHeader {
+    item {
         Text(text = "Sensors for ${currentVehicleName}:", fontSize = 12.sp)
     }
     item { Spacer(Modifier.height(8.dp)) }
@@ -316,7 +316,6 @@ private fun LazyListScope.currentVehiclePlaceholderMessage() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.otherVehicleItems(
     boundTyresToOtherVehicle: List<Triple<Vehicle, Sensor, Tyre.Unlocated>>,
     temperatureUnit: TemperatureUnit,
@@ -324,7 +323,7 @@ private fun LazyListScope.otherVehicleItems(
     setTyreToBind: (Tyre.Unlocated) -> Unit
 ) {
     item { Spacer(modifier = Modifier.height(56.dp)) }
-    stickyHeader {
+    item {
         Text(
             text = "Already bound sensors found:",
             fontSize = 12.sp,

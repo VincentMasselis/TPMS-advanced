@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.map
 @Composable
 public fun rememberBluetoothState(): BluetoothState {
     val context = LocalContext.current
-    val state = remember { MutableBluetoothState(context) }
+    val state = remember(context) { MutableBluetoothState(context) }
     LaunchedEffect(state) {
         IntentFilter(ACTION_STATE_CHANGED)
             .asFlow()
