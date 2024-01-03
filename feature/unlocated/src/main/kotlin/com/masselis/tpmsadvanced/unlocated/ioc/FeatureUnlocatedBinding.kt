@@ -32,5 +32,6 @@ internal interface FeatureUnlocatedBinding {
         .builder()
         .dataUnitComponent(DataUnitComponent)
         .dataVehicleComponent(DataVehicleComponent)
+        .featureCoreComponent(FeatureCoreComponent)
         .build()
 }

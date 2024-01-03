@@ -145,8 +145,8 @@ private fun Searching(
     modifier: Modifier = Modifier,
 ) {
     val (tyreToBind, setTyreToBind) = rememberSaveable { mutableStateOf<Tyre?>(null) }
-    val roundedTopId = remember { state.computeRoundedTopId() }
-    val roundedBottomId = remember { state.computeRoundedBottomId() }
+    val roundedTopId = remember(state) { state.computeRoundedTopId() }
+    val roundedBottomId = remember(state) { state.computeRoundedBottomId() }
     LazyColumn(modifier.fillMaxWidth()) {
 
         currentVehicleItems(
