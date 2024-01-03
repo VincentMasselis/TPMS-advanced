@@ -1,28 +1,35 @@
 package com.masselis.tpmsadvanced.feature.background.usecase
 
+import com.masselis.tpmsadvanced.core.database.asListFlow
+import com.masselis.tpmsadvanced.core.database.asOneFlow
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.ui.isAppVisibleFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
 import kotlin.concurrent.withLock
 
-@OptIn(DelicateCoroutinesApi::class)
+@OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 @FeatureBackgroundComponent.Scope
 public class VehiclesToMonitorUseCase @Inject internal constructor(
     private val currentVehicleUseCase: CurrentVehicleUseCase,
@@ -35,6 +42,7 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
     init {
         vehicleDatabase
             .selectUuidIsDeleting()
+            .asListFlow()
             .map { it.toSortedSet() }
             .distinctUntilChanged()
             .onEach { lock.withLock { manuals.value = (manuals.value - it).toSortedSet() } }
@@ -51,18 +59,22 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
     }
 
     public fun expectedIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
-        vehicleDatabase.selectAll().map { vehicles ->
-            vehicles
-                .groupBy { it.isBackgroundMonitor }
-                .let {
-                    Pair(
-                        it[false].orEmpty(),
-                        it[true].orEmpty()
-                    )
-                }
+        vehicleDatabase
+            .selectAll()
+            .asListFlow()
+            .map { vehicles ->
+                vehicles
+                    .groupBy { it.isBackgroundMonitor }
+                    .let {
+                        Pair(
+                            it[false].orEmpty(),
+                            it[true].orEmpty()
+                        )
+                    }
+            },
+        manuals.flatMapLatest { manuals ->
+            combine(manuals.map { vehicleDatabase.selectByUuid(it).asOneFlow() }) { it }
         },
-        manuals
-            .map { it.map { uuid -> vehicleDatabase.selectByUuid(uuid).first() } },
     ) { (automaticIgnored, automaticMonitored), manuals ->
         Pair(
             // Removes from automaticIgnored the devices with were added to manuals

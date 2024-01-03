@@ -1,5 +1,7 @@
 package com.masselis.tpmsadvanced.unlocated.usecase
 
+import com.masselis.tpmsadvanced.core.database.asListFlow
+import com.masselis.tpmsadvanced.core.database.asOneFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
@@ -21,9 +23,11 @@ internal class VehicleBindingStatusUseCase @Inject constructor(
 ) {
     fun areAllWheelBound(vehicleUuid: UUID) = vehicleDatabase
         .selectByUuid(vehicleUuid)
+        .asOneFlow()
         .map { it.kind }
         .flatMapLatest { kind ->
             sensorDatabase.selectListByVehicleId(vehicleUuid)
+                .asListFlow()
                 .map { sensors -> sensors.map { it.location } }
                 .map { it.toSet() }
                 .map { locations -> kind.locations.subtract(locations).isEmpty() }

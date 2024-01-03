@@ -1,8 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
-import com.masselis.tpmsadvanced.core.database.asStateFlowList
-import com.masselis.tpmsadvanced.core.database.asStateFlowOne
-import com.masselis.tpmsadvanced.core.database.asStateFlowOneOrNull
+import app.cash.sqldelight.Query
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
@@ -47,25 +45,17 @@ public class SensorDatabase @Inject internal constructor(
     public fun selectByVehicleAndLocation(
         vehicleId: UUID,
         location: Location,
-    ): StateFlow<Sensor?> = queries
-        .selectByVehicleAndLocation(vehicleId, location, mapper)
-        .asStateFlowOneOrNull()
+    ): Query<Sensor> = queries.selectByVehicleAndLocation(vehicleId, location, mapper)
 
-    public fun countByVehicle(vehicleId: UUID): StateFlow<Long> = queries
-        .countByVehicle(vehicleId)
-        .asStateFlowOne()
+    public fun countByVehicle(vehicleId: UUID): Query<Long> = queries.countByVehicle(vehicleId)
 
-    public fun selectById(id: Int): StateFlow<Sensor?> = queries
-        .selectById(id, mapper)
-        .asStateFlowOneOrNull()
+    public fun selectById(id: Int): Query<Sensor> = queries.selectById(id, mapper)
 
-    public fun selectListByVehicleId(uuid: UUID): StateFlow<List<Sensor>> = queries
-        .selectListByVehicleId(uuid, mapper)
-        .asStateFlowList()
+    public fun selectListByVehicleId(uuid: UUID): Query<Sensor> =
+        queries.selectListByVehicleId(uuid, mapper)
 
-    public fun selectListExcludingVehicleId(uuid: UUID): StateFlow<List<Sensor>> = queries
-        .selectListExcludingVehicleId(uuid, mapper)
-        .asStateFlowList()
+    public fun selectListExcludingVehicleId(uuid: UUID): Query<Sensor> =
+        queries.selectListExcludingVehicleId(uuid, mapper)
 
     private companion object {
         private val mapper: (

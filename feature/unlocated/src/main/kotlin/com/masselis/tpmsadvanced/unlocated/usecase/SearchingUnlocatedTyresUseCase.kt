@@ -1,7 +1,8 @@
 package com.masselis.tpmsadvanced.unlocated.usecase
 
 import android.os.Parcelable
-import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
+import com.masselis.tpmsadvanced.core.database.asListFlow
+import com.masselis.tpmsadvanced.core.database.asOneFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -16,12 +17,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.scan
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
-import javax.inject.Inject
 
 @Suppress("OPT_IN_USAGE")
 internal class SearchingUnlocatedTyresUseCase @AssistedInject constructor(
@@ -40,8 +39,8 @@ internal class SearchingUnlocatedTyresUseCase @AssistedInject constructor(
      * bound and ready to be bound to the current vehicle.
      */
     fun search() = combine(
-        sensorDatabase.selectListByVehicleId(vehicleUuid),
-        sensorDatabase.selectListExcludingVehicleId(vehicleUuid),
+        sensorDatabase.selectListByVehicleId(vehicleUuid).asListFlow(),
+        sensorDatabase.selectListExcludingVehicleId(vehicleUuid).asListFlow(),
         scanner.highDutyScan()
             .mapNotNull { it as? Tyre.Unlocated }
             .scan(mutableListOf<Tyre.Unlocated>()) { acc, value ->
@@ -70,7 +69,7 @@ internal class SearchingUnlocatedTyresUseCase @AssistedInject constructor(
         else
             combine(
                 boundSensorAndTyres.map { (sensor) ->
-                    vehicleDatabase.selectBySensorId(sensor.id).map { it!! }
+                    vehicleDatabase.selectBySensorId(sensor.id).asOneFlow()
                 }
             ) { boundVehicles ->
                 Result(

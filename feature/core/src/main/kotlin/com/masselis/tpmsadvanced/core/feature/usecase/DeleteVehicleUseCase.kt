@@ -21,12 +21,13 @@ internal class DeleteVehicleUseCase @Inject constructor(
 ) {
 
     suspend fun delete() = withContext(NonCancellable) {
+        // TODO Check if this works correctly now
+        scope.cancel()
         database.selectAll()
-            .value
+            .executeAsList()
             .firstOrNull { it.uuid != vehicle.uuid }
             ?.also { currentVehicleUseCase.setAsCurrent(it) }
             ?: error("Cannot delete the last vehicle in the database")
-        scope.cancel()
         database.setIsDeleting(vehicle.uuid)
         launch {
             delay(1.seconds)

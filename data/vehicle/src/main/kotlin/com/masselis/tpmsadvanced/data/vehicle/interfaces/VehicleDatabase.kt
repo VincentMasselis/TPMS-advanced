@@ -1,15 +1,12 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
-import com.masselis.tpmsadvanced.core.database.asStateFlowList
-import com.masselis.tpmsadvanced.core.database.asStateFlowOne
-import com.masselis.tpmsadvanced.core.database.asStateFlowOneOrNull
+import app.cash.sqldelight.Query
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import dagger.Reusable
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
@@ -85,46 +82,40 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         queries.delete(uuid)
     }
 
-    public fun selectIsBackgroundMonitor(uuid: UUID): StateFlow<Boolean> = queries
+    public fun selectIsBackgroundMonitor(uuid: UUID): Query<Boolean> = queries
         .selectIsBackgroundMonitor(uuid)
-        .asStateFlowOne()
 
-    public suspend fun updateIsBackgroundMonitor(isBackgroundMonitor: Boolean, uuid: UUID): Unit =
-        withContext(IO) {
-            queries.updateIsBackgroundMonitor(isBackgroundMonitor, uuid)
-        }
+    public suspend fun updateIsBackgroundMonitor(
+        isBackgroundMonitor: Boolean,
+        uuid: UUID
+    ): Unit = withContext(IO) {
+        queries.updateIsBackgroundMonitor(isBackgroundMonitor, uuid)
+    }
 
     public suspend fun updateIsBackgroundMonitorList(
         isBackgroundMonitor: Boolean,
         uuids: List<UUID>
-    ): Unit =
-        withContext(IO) {
-            queries.updateIsBackgroundMonitorList(isBackgroundMonitor, uuids)
-        }
+    ): Unit = withContext(IO) {
+        queries.updateIsBackgroundMonitorList(isBackgroundMonitor, uuids)
+    }
 
     public suspend fun updateEveryIsBackgroundMonitorToFalse(): Unit = withContext(IO) {
         queries.updateEveryIsBackgroundMonitorToFalse()
     }
 
-    public fun currentVehicle(): StateFlow<Vehicle> = queries
-        .currentFavourite(mapper)
-        .asStateFlowOne()
+    public fun currentVehicle(): Query<Vehicle> = queries.currentFavourite(mapper)
 
-    public fun count(): StateFlow<Long> = queries.count().asStateFlowOne()
+    public fun count(): Query<Long> = queries.count()
 
-    public fun selectUuidIsDeleting(): StateFlow<List<UUID>> = queries
-        .selectUuidIsDeleting()
-        .asStateFlowList()
+    public fun selectUuidIsDeleting(): Query<UUID> = queries.selectUuidIsDeleting()
 
-    public fun selectAll(): StateFlow<List<Vehicle>> = queries.selectAll(mapper).asStateFlowList()
+    public fun selectAll(): Query<Vehicle> = queries.selectAll(mapper)
 
-    public fun selectByUuid(vehicleId: UUID): StateFlow<Vehicle> = queries
+    public fun selectByUuid(vehicleId: UUID): Query<Vehicle> = queries
         .selectByUuid(vehicleId, mapper)
-        .asStateFlowOne()
 
-    public fun selectBySensorId(sensorId: Int): StateFlow<Vehicle?> = queries
+    public fun selectBySensorId(sensorId: Int): Query<Vehicle> = queries
         .selectBySensorId(sensorId, mapper)
-        .asStateFlowOneOrNull()
 
     private companion object {
         val mapper: (

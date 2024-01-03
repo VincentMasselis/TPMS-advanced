@@ -22,7 +22,7 @@ android {
 
 dependencies {
     implementation(project(":core:common"))
-    implementation(project(":core:database"))
+    api(project(":core:database"))
     implementation(project(":data:unit"))
 
     testImplementation(project(":core:test"))

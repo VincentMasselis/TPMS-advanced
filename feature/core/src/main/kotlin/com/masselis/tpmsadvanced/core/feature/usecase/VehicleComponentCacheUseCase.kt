@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
+import com.masselis.tpmsadvanced.core.database.asListFlow
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -27,6 +28,7 @@ internal class VehicleComponentCacheUseCase @Inject internal constructor(
     init {
         vehicleDatabase
             .selectUuidIsDeleting()
+            .asListFlow()
             .map { it.toSortedSet() }
             .distinctUntilChanged()
             .onEach { deletingList ->

@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.masselis.tpmsadvanced.core.database.asOneChillFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
@@ -43,9 +44,10 @@ internal class AutomaticBackgroundViewModel @AssistedInject constructor(
     init {
         database.selectIsBackgroundMonitor(vehicle.uuid)
             .apply {
-                mutableStateFlow = MutableStateFlow(computeState(value))
+                mutableStateFlow = MutableStateFlow(computeState(executeAsOne()))
                 stateFlow = mutableStateFlow.asStateFlow()
             }
+            .asOneChillFlow()
             .map { computeState(it) }
             .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)
