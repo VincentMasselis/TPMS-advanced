@@ -31,7 +31,9 @@ internal class ListenTyreWithDatabaseUseCase(
         .shareIn(scope, WhileSubscribed())
         .dematerializeCompletion()
         .onStart {
-            tyreDatabase.latestByTyreLocationByVehicle(location, vehicle.uuid)
+            tyreDatabase
+                .latestByTyreLocationByVehicle(location, vehicle.uuid)
+                .execute()
                 ?.also { emit(it) }
         }
         .flowOn(Dispatchers.IO)

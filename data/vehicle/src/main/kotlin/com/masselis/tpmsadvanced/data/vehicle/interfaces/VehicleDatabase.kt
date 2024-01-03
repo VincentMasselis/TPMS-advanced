@@ -1,6 +1,11 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
-import app.cash.sqldelight.Query
+import com.masselis.tpmsadvanced.core.database.QueryList
+import com.masselis.tpmsadvanced.core.database.QueryList.Companion.asList
+import com.masselis.tpmsadvanced.core.database.QueryOne
+import com.masselis.tpmsadvanced.core.database.QueryOne.Companion.asOne
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull.Companion.asOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
@@ -82,8 +87,9 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         queries.delete(uuid)
     }
 
-    public fun selectIsBackgroundMonitor(uuid: UUID): Query<Boolean> = queries
+    public fun selectIsBackgroundMonitor(uuid: UUID): QueryOne<Boolean> = queries
         .selectIsBackgroundMonitor(uuid)
+        .asOne()
 
     public suspend fun updateIsBackgroundMonitor(
         isBackgroundMonitor: Boolean,
@@ -103,19 +109,21 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         queries.updateEveryIsBackgroundMonitorToFalse()
     }
 
-    public fun currentVehicle(): Query<Vehicle> = queries.currentFavourite(mapper)
+    public fun currentVehicle(): QueryOne<Vehicle> = queries.currentFavourite(mapper).asOne()
 
-    public fun count(): Query<Long> = queries.count()
+    public fun count(): QueryOne<Long> = queries.count().asOne()
 
-    public fun selectUuidIsDeleting(): Query<UUID> = queries.selectUuidIsDeleting()
+    public fun selectUuidIsDeleting(): QueryList<UUID> = queries.selectUuidIsDeleting().asList()
 
-    public fun selectAll(): Query<Vehicle> = queries.selectAll(mapper)
+    public fun selectAll(): QueryList<Vehicle> = queries.selectAll(mapper).asList()
 
-    public fun selectByUuid(vehicleId: UUID): Query<Vehicle> = queries
+    public fun selectByUuid(vehicleId: UUID): QueryOne<Vehicle> = queries
         .selectByUuid(vehicleId, mapper)
+        .asOne()
 
-    public fun selectBySensorId(sensorId: Int): Query<Vehicle> = queries
+    public fun selectBySensorId(sensorId: Int): QueryOneOrNull<Vehicle> = queries
         .selectBySensorId(sensorId, mapper)
+        .asOneOrNull()
 
     private companion object {
         val mapper: (

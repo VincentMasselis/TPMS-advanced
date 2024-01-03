@@ -1,8 +1,6 @@
 package com.masselis.tpmsadvanced.unlocated.usecase
 
 import android.os.Parcelable
-import com.masselis.tpmsadvanced.core.database.asListFlow
-import com.masselis.tpmsadvanced.core.database.asOneFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -17,6 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.scan
 import kotlinx.parcelize.Parcelize
@@ -39,8 +38,8 @@ internal class SearchingUnlocatedTyresUseCase @AssistedInject constructor(
      * bound and ready to be bound to the current vehicle.
      */
     fun search() = combine(
-        sensorDatabase.selectListByVehicleId(vehicleUuid).asListFlow(),
-        sensorDatabase.selectListExcludingVehicleId(vehicleUuid).asListFlow(),
+        sensorDatabase.selectListByVehicleId(vehicleUuid).asFlow(),
+        sensorDatabase.selectListExcludingVehicleId(vehicleUuid).asFlow(),
         scanner.highDutyScan()
             .mapNotNull { it as? Tyre.Unlocated }
             .scan(mutableListOf<Tyre.Unlocated>()) { acc, value ->
@@ -69,7 +68,7 @@ internal class SearchingUnlocatedTyresUseCase @AssistedInject constructor(
         else
             combine(
                 boundSensorAndTyres.map { (sensor) ->
-                    vehicleDatabase.selectBySensorId(sensor.id).asOneFlow()
+                    vehicleDatabase.selectBySensorId(sensor.id).asFlow().map { it!! }
                 }
             ) { boundVehicles ->
                 Result(

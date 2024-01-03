@@ -3,9 +3,6 @@ package com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.database.asListChillFlow
-import com.masselis.tpmsadvanced.core.database.asOneChillFlow
-import com.masselis.tpmsadvanced.core.database.asOneOrNullChillFlow
 import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -48,17 +45,17 @@ internal class BindSensorViewModelImpl @AssistedInject constructor(
         val boundVehicleLocation = sensorDatabase.selectById(tyre.sensorId)
         stateFlow = savedStateHandle.getMutableStateFlow("STATE") {
             computeState(
-                currentVehicle.executeAsOne(),
-                knownSensors.executeAsList(),
-                boundVehicle.executeAsOneOrNull(),
-                boundVehicleLocation.executeAsOneOrNull()?.location
+                currentVehicle.execute(),
+                knownSensors.execute(),
+                boundVehicle.execute(),
+                boundVehicleLocation.execute()?.location
             )
         }
         combine(
-            currentVehicle.asOneChillFlow(),
-            knownSensors.asListChillFlow(),
-            boundVehicle.asOneOrNullChillFlow(),
-            boundVehicleLocation.asOneOrNullChillFlow()
+            currentVehicle.asChillFlow(),
+            knownSensors.asChillFlow(),
+            boundVehicle.asChillFlow(),
+            boundVehicleLocation.asChillFlow()
         ) { currentVehicle, knownSensors, boundVehicle, boundVehicleLocation ->
             computeState(currentVehicle, knownSensors, boundVehicle, boundVehicleLocation?.location)
         }.onEach { stateFlow.value = it }

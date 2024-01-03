@@ -4,6 +4,7 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -20,11 +21,11 @@ internal class DeleteVehicleUseCase @Inject constructor(
     private val scope: CoroutineScope,
 ) {
 
-    suspend fun delete() = withContext(NonCancellable) {
+    suspend fun delete() = withContext(NonCancellable + IO) {
         // TODO Check if this works correctly now
         scope.cancel()
         database.selectAll()
-            .executeAsList()
+            .execute()
             .firstOrNull { it.uuid != vehicle.uuid }
             ?.also { currentVehicleUseCase.setAsCurrent(it) }
             ?: error("Cannot delete the last vehicle in the database")

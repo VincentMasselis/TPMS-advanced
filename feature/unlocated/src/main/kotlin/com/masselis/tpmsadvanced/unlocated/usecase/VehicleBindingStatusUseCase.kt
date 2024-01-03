@@ -1,13 +1,8 @@
 package com.masselis.tpmsadvanced.unlocated.usecase
 
-import com.masselis.tpmsadvanced.core.database.asListFlow
-import com.masselis.tpmsadvanced.core.database.asOneFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -23,11 +18,11 @@ internal class VehicleBindingStatusUseCase @Inject constructor(
 ) {
     fun areAllWheelBound(vehicleUuid: UUID) = vehicleDatabase
         .selectByUuid(vehicleUuid)
-        .asOneFlow()
+        .asFlow()
         .map { it.kind }
         .flatMapLatest { kind ->
             sensorDatabase.selectListByVehicleId(vehicleUuid)
-                .asListFlow()
+                .asFlow()
                 .map { sensors -> sensors.map { it.location } }
                 .map { it.toSet() }
                 .map { locations -> kind.locations.subtract(locations).isEmpty() }

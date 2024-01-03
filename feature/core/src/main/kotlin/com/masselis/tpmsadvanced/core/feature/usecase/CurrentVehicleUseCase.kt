@@ -1,7 +1,5 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.core.database.asOneChillFlow
-import com.masselis.tpmsadvanced.core.database.asOneFlow
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -33,9 +31,9 @@ public class CurrentVehicleUseCase private constructor(
         database,
         database.currentVehicle()
             .let { query ->
-                val mutableStateFlow = MutableStateFlow(VehicleComponent(query.executeAsOne()))
+                val mutableStateFlow = MutableStateFlow(VehicleComponent(query.execute()))
                 query
-                    .asOneChillFlow()
+                    .asChillFlow()
                     .filter { it.uuid != mutableStateFlow.value.vehicle.uuid }
                     .map(VehicleComponent)
                     .onEach { mutableStateFlow.value = it }

@@ -1,5 +1,7 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull.Companion.asOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
@@ -32,12 +34,12 @@ public class TyreDatabase @Inject internal constructor(
     public fun latestByTyreLocationByVehicle(
         location: Location,
         vehicleId: UUID
-    ): Tyre.Located? = queries
+    ): QueryOneOrNull<Tyre.Located> = queries
         .latestByTyreLocationByVehicle(
             location,
             vehicleId
         ) { id, timestamp, rssi, _, pressure, temperature, battery, isAlarm ->
             Tyre.Located(timestamp, rssi, id, pressure, temperature, battery, isAlarm, location)
         }
-        .executeAsOneOrNull()
+        .asOneOrNull()
 }

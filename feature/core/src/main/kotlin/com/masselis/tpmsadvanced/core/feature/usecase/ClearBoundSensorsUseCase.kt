@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.core.database.asOneFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -17,7 +16,7 @@ internal class ClearBoundSensorsUseCase @Inject constructor(
     suspend fun clear() = sensorDatabase.deleteFromVehicle(vehicle.uuid)
 
     fun isClearingAllowed() = sensorDatabase.countByVehicle(vehicle.uuid)
-        .asOneFlow()
+        .asFlow()
         .map { it > 0 }
         .distinctUntilChanged()
 

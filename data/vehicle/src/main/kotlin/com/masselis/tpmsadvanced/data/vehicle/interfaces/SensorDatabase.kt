@@ -1,6 +1,12 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
 import app.cash.sqldelight.Query
+import com.masselis.tpmsadvanced.core.database.QueryList
+import com.masselis.tpmsadvanced.core.database.QueryList.Companion.asList
+import com.masselis.tpmsadvanced.core.database.QueryOne
+import com.masselis.tpmsadvanced.core.database.QueryOne.Companion.asOne
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull.Companion.asOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
@@ -45,17 +51,25 @@ public class SensorDatabase @Inject internal constructor(
     public fun selectByVehicleAndLocation(
         vehicleId: UUID,
         location: Location,
-    ): Query<Sensor> = queries.selectByVehicleAndLocation(vehicleId, location, mapper)
+    ): QueryOneOrNull<Sensor> = queries
+        .selectByVehicleAndLocation(vehicleId, location, mapper)
+        .asOneOrNull()
 
-    public fun countByVehicle(vehicleId: UUID): Query<Long> = queries.countByVehicle(vehicleId)
+    public fun countByVehicle(vehicleId: UUID): QueryOne<Long> = queries
+        .countByVehicle(vehicleId)
+        .asOne()
 
-    public fun selectById(id: Int): Query<Sensor> = queries.selectById(id, mapper)
+    public fun selectById(id: Int): QueryOneOrNull<Sensor> = queries
+        .selectById(id, mapper)
+        .asOneOrNull()
 
-    public fun selectListByVehicleId(uuid: UUID): Query<Sensor> =
-        queries.selectListByVehicleId(uuid, mapper)
+    public fun selectListByVehicleId(uuid: UUID): QueryList<Sensor> = queries
+        .selectListByVehicleId(uuid, mapper)
+        .asList()
 
-    public fun selectListExcludingVehicleId(uuid: UUID): Query<Sensor> =
-        queries.selectListExcludingVehicleId(uuid, mapper)
+    public fun selectListExcludingVehicleId(uuid: UUID): QueryList<Sensor> = queries
+        .selectListExcludingVehicleId(uuid, mapper)
+        .asList()
 
     private companion object {
         private val mapper: (
