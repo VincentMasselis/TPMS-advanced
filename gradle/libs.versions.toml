@@ -4,8 +4,8 @@ lifecycle = "2.6.2"
 testServices = "1.4.2"
 sqlDelight = "2.0.1"
 # Check the compatiblity of the compose compiler with the latest kotlin version here https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
-composeCompiler = "1.5.4"
-dagger = "2.49"
+composeCompiler = "1.5.5"
+dagger = "2.50"
 mockk = "1.13.8"
 ksp = "1.0.14"
 
@@ -13,9 +13,9 @@ ksp = "1.0.14"
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.32.0"
 android-gradle-plugin = "com.android.tools.build:gradle:8.2.0"
 androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
-androidx-camera2-core = "androidx.camera:camera-camera2:1.3.0"
-androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.3.0"
-androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.4.0-alpha02"
+androidx-camera2-core = "androidx.camera:camera-camera2:1.3.1"
+androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.3.1"
+androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.4.0-alpha03"
 androidx-compose-bom = "androidx.compose:compose-bom:2023.10.01"
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
@@ -28,20 +28,20 @@ androidx-test-core = "androidx.test:core-ktx:1.5.0"
 androidx-test-expresso = "androidx.test.espresso:espresso-core:3.5.1"
 androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-rules = "androidx.test:rules:1.5.0"
-androidx-activity = "androidx.activity:activity-ktx:1.8.1"
+androidx-activity = "androidx.activity:activity-ktx:1.8.2"
 androidx-fragment = "androidx.fragment:fragment-ktx:1.6.2"
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-compose-activity = "androidx.activity:activity-compose:1.8.1"
+compose-activity = "androidx.activity:activity-compose:1.8.2"
 compose-constraintlayout = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-compose-detekt = "io.nlopez.compose.rules:detekt:0.3.5"
+compose-detekt = "io.nlopez.compose.rules:detekt:0.3.8"
 compose-navigation = "androidx.navigation:navigation-compose:2.7.4" # 2.7.5 crashes when running instrumented tests
 dagger-lib = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
-detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.1"
+detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.4"
 google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20211125-1.32.1"
-google-firebase-bom = "com.google.firebase:firebase-bom:32.6.0"
+google-firebase-bom = "com.google.firebase:firebase-bom:32.7.0"
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0"
 google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.18.0"
@@ -62,7 +62,7 @@ lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
 material3 = "androidx.compose.material3:material3:1.1.2"
-material = "com.google.android.material:material:1.10.0"
+material = "com.google.android.material:material:1.11.0"
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
@@ -75,6 +75,6 @@ test-services = { module = "androidx.test.services:test-services", version.ref =
 turbine = "app.cash.turbine:turbine:1.0.0"
 
 [plugins]
-crashlytics = "com.google.firebase.crashlytics:2.9.6"
-google-services = "com.google.gms.google-services:4.3.15"
+crashlytics = "com.google.firebase.crashlytics:2.9.9"
+google-services = "com.google.gms.google-services:4.4.0"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
