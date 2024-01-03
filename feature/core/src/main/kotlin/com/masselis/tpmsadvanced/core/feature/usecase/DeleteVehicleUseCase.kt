@@ -22,15 +22,19 @@ internal class DeleteVehicleUseCase @Inject constructor(
 ) {
 
     suspend fun delete() = withContext(NonCancellable + IO) {
-        // TODO Check if this works correctly now
+        // Cancel the current vehicle
         scope.cancel()
+        // Set one of the available vehicle has the current vehicle. Doing this trigger compose
+        // methods and reload the screens to the main screen where the vehicle tyres are displayed.
         database.selectAll()
             .execute()
             .firstOrNull { it.uuid != vehicle.uuid }
             ?.also { currentVehicleUseCase.setAsCurrent(it) }
             ?: error("Cannot delete the last vehicle in the database")
+        // Flags the vehicle to be deleted
         database.setIsDeleting(vehicle.uuid)
         launch {
+            // Deletes the vehicle after a 1 second timeout
             delay(1.seconds)
             database.delete(vehicle.uuid)
         }

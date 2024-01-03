@@ -129,7 +129,7 @@ setAsFavourite:
 UPDATE Vehicle SET isFavourite = ? WHERE uuid = ?;
 
 currentFavourite:
-SELECT * FROM Vehicle WHERE isFavourite = 1;
+SELECT * FROM Vehicle WHERE isFavourite = 1 AND isDeleting = 0;
 
 selectUuidIsDeleting:
 SELECT uuid FROM Vehicle WHERE isDeleting = 1;
@@ -141,9 +141,9 @@ count:
 SELECT count(uuid) FROM Vehicle WHERE isDeleting = 0;
 
 selectByUuid:
-SELECT * FROM Vehicle WHERE uuid = ?;
+SELECT * FROM Vehicle WHERE uuid = ? AND isDeleting = 0;
 
 selectBySensorId:
 SELECT Vehicle.* FROM Vehicle
 INNER JOIN Sensor ON Sensor.vehicleId = Vehicle.uuid
-WHERE Sensor.id = ?;
+WHERE Sensor.id = ? AND isDeleting = 0;
