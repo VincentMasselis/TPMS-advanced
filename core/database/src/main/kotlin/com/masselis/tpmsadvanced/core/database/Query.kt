@@ -132,7 +132,7 @@ private fun <T : Any> SqlDelightQuery<T>.asChillFlow(): Flow<SqlDelightQuery<T>>
 
     addListener(listener)
     try {
-        for (item in channel) {
+        for (ignored in channel) {
             emit(this@asChillFlow)
         }
     } finally {

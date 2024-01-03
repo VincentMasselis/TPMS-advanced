@@ -13,4 +13,6 @@ dependencies {
     api(libs.mockk.jvm)
     api(libs.kotlin.test)
     api(libs.turbine)
+
+    implementation(project(":core:database"))
 }

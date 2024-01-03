@@ -1,14 +1,13 @@
 package com.masselis.tpmsadvanced.core
 
 import app.cash.turbine.test
-import app.cash.turbine.turbineScope
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.feature.usecase.ListenTyreUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.ListenTyreWithDatabaseUseCase
+import com.masselis.tpmsadvanced.core.test.mockkQueryOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
@@ -22,7 +21,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -54,7 +52,8 @@ internal class ListenTyreWithDatabaseUseCaseTest {
         location = Location.Wheel(FRONT_LEFT)
         tyreDatabase = mockk {
             coEvery { insert(any(), any()) } returns Unit
-            every { latestByTyreLocationByVehicle(any(), any()) } returns null
+            every { latestByTyreLocationByVehicle(any(), any()) } returns
+                    mockkQueryOneOrNull(null as Tyre.Located?)
         }
         listenTyreUseCase = mockk {
             every { listen() } returns emptyFlow()
@@ -81,8 +80,8 @@ internal class ListenTyreWithDatabaseUseCaseTest {
     fun `No tyre emit but a cache exists`() = runTest {
         val savedTyre =
             Tyre.Located(now(), -20, 1, 1f.bar, 1f.celsius, 1u, false, Location.Wheel(FRONT_LEFT))
-        every { tyreDatabase.latestByTyreLocationByVehicle(location, any()) }
-            .returns(savedTyre)
+        every { tyreDatabase.latestByTyreLocationByVehicle(location, any()) } returns
+                mockkQueryOneOrNull(savedTyre)
         test().listen().test {
             assertEquals(savedTyre, awaitItem())
         }

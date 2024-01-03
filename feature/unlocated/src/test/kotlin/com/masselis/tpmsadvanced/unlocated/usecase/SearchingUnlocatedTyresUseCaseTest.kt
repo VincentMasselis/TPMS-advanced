@@ -1,9 +1,12 @@
 package com.masselis.tpmsadvanced.unlocated.usecase
 
 import app.cash.turbine.test
+import com.masselis.tpmsadvanced.core.test.mockkQueryList
+import com.masselis.tpmsadvanced.core.test.mockkQueryOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.mockSensor
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.mockTyre
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.mockVehicle
@@ -31,11 +34,14 @@ internal class SearchingUnlocatedTyresUseCaseTest {
             every { highDutyScan() } returns MutableSharedFlow()
         }
         sensorDatabase = mockk {
-            every { selectListByVehicleId(vehicleUuid) } returns MutableStateFlow(emptyList())
-            every { selectListExcludingVehicleId(vehicleUuid) } returns MutableStateFlow(emptyList())
+            every { selectListByVehicleId(vehicleUuid) } returns
+                    mockkQueryList(emptyList())
+            every { selectListExcludingVehicleId(vehicleUuid) } returns
+                    mockkQueryList(emptyList())
         }
         vehicleDatabase = mockk {
-            every { selectBySensorId(any()) } returns MutableStateFlow(null)
+            every { selectBySensorId(any()) } returns
+                    mockkQueryOneOrNull(null as Vehicle?)
         }
     }
 
@@ -62,7 +68,7 @@ internal class SearchingUnlocatedTyresUseCaseTest {
     fun `no tyre found but bound sensor exists`() = runTest {
         val boundSensor = mockSensor(1)
         every { sensorDatabase.selectListByVehicleId(vehicleUuid) }
-            .returns(MutableStateFlow(listOf(boundSensor)))
+            .returns(mockkQueryList(listOf(boundSensor)))
 
         test().search().test {
             assertEquals(
@@ -77,7 +83,7 @@ internal class SearchingUnlocatedTyresUseCaseTest {
     fun `only tyre found was bound to a sensor`() = runTest {
         val boundSensor = mockSensor(1)
         every { sensorDatabase.selectListByVehicleId(vehicleUuid) }
-            .returns(MutableStateFlow(listOf(boundSensor)))
+            .returns(mockkQueryList(listOf(boundSensor)))
 
         val foundTyre = mockTyre(1)
         every { scanner.highDutyScan() } returns MutableStateFlow(foundTyre)
@@ -96,7 +102,7 @@ internal class SearchingUnlocatedTyresUseCaseTest {
     fun `a tyre was found and a different bound sensor exists`() = runTest {
         val boundSensor = mockSensor(1)
         every { sensorDatabase.selectListByVehicleId(vehicleUuid) }
-            .returns(MutableStateFlow(listOf(boundSensor)))
+            .returns(mockkQueryList(listOf(boundSensor)))
 
         val foundTyre = mockTyre(2)
         every { scanner.highDutyScan() } returns MutableStateFlow(foundTyre)
@@ -133,11 +139,11 @@ internal class SearchingUnlocatedTyresUseCaseTest {
 
         val otherVehicleSensor = mockSensor(1)
         every { sensorDatabase.selectListExcludingVehicleId(vehicleUuid) }
-            .returns(MutableStateFlow(listOf(otherVehicleSensor)))
+            .returns(mockkQueryList(listOf(otherVehicleSensor)))
 
         val otherVehicle = mockVehicle()
         every { vehicleDatabase.selectBySensorId(otherVehicleSensor.id) }
-            .returns(MutableStateFlow(otherVehicle))
+            .returns(mockkQueryOneOrNull(otherVehicle))
 
         test().search().test {
             awaitItem()
