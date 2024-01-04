@@ -53,7 +53,7 @@ internal class QrCodeAnalyserUseCase @Inject constructor(
     private val executor = Executors.newCachedThreadPool()
 
     @OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
-    @Suppress("MagicNumber", "CyclomaticComplexMethod")
+    @Suppress("MagicNumber", "CyclomaticComplexMethod", "LongMethod", "MaxLineLength")
     fun analyse(controller: CameraController): Flow<Pair<QrCodeSensors, Set<Location>>> =
         callbackFlow<List<Barcode>> {
             controller.setImageAnalysisAnalyzer(

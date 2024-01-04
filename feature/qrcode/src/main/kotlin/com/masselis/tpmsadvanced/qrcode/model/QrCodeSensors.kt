@@ -10,6 +10,7 @@ internal data class QrCodeSensor(
     val wheel: Vehicle.Kind.Location.Wheel
 ) : Parcelable
 
+@Suppress("MagicNumber")
 internal sealed interface QrCodeSensors : Parcelable {
 
     fun toSet(): Set<QrCodeSensor>
