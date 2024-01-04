@@ -16,6 +16,7 @@ import com.masselis.tpmsadvanced.qrcode.model.QrCodeSensors
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -23,11 +24,10 @@ internal class BoundSensorMapUseCase @Inject constructor(
     private val sensorDatabase: SensorDatabase,
     private val currentVehicleUseCase: CurrentVehicleUseCase,
 ) {
-    suspend fun bind(qrCodeSensors: QrCodeSensors) = withContext(IO) {
+    suspend fun bind(qrCodeSensors: QrCodeSensors) = coroutineScope {
         val currentUuid = currentVehicleUseCase.value.vehicle.uuid
         val kind = currentVehicleUseCase.value.vehicle.kind
         qrCodeSensors
-            .toSet()
             .map {
                 Sensor(
                     it.id,

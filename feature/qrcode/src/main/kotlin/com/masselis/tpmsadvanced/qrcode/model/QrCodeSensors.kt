@@ -11,37 +11,32 @@ internal data class QrCodeSensor(
 ) : Parcelable
 
 @Suppress("MagicNumber")
-internal sealed interface QrCodeSensors : Parcelable {
-
-    fun toSet(): Set<QrCodeSensor>
+internal sealed interface QrCodeSensors : Set<QrCodeSensor>, Parcelable {
 
     @Parcelize
-    data class FourWheel(
-        val first: QrCodeSensor,
-        val second: QrCodeSensor,
-        val third: QrCodeSensor,
-        val fourth: QrCodeSensor,
-    ) : QrCodeSensors {
-        init {
-            val list = toSet()
-            require(list.distinctBy { it.wheel }.size == 4)
-            require(list.distinctBy { it.id }.size == 4)
+    @JvmInline
+    value class FourWheel private constructor(
+        private val set: Set<QrCodeSensor>
+    ) : QrCodeSensors, Set<QrCodeSensor> by set {
+        constructor(
+            first: QrCodeSensor,
+            second: QrCodeSensor,
+            third: QrCodeSensor,
+            fourth: QrCodeSensor
+        ) : this(setOf(first, second, third, fourth)) {
+            require(distinctBy { it.wheel }.size == 4)
+            require(distinctBy { it.id }.size == 4)
         }
-
-        override fun toSet(): Set<QrCodeSensor> = setOf(first, second, third, fourth)
     }
 
     @Parcelize
-    data class TwoWheel(
-        val first: QrCodeSensor,
-        val second: QrCodeSensor,
-    ) : QrCodeSensors {
-        init {
-            val list = toSet()
-            require(list.distinctBy { it.wheel }.size == 2)
-            require(list.distinctBy { it.id }.size == 2)
+    @JvmInline
+    value class TwoWheel private constructor(
+        private val set: Set<QrCodeSensor>
+    ) : QrCodeSensors, Set<QrCodeSensor> by set {
+        constructor(first: QrCodeSensor, second: QrCodeSensor) : this(setOf(first, second)) {
+            require(distinctBy { it.wheel }.size == 2)
+            require(distinctBy { it.id }.size == 2)
         }
-
-        override fun toSet(): Set<QrCodeSensor> = setOf(first, second)
     }
 }

@@ -131,20 +131,13 @@ internal class QrCodeAnalyserUseCase @Inject constructor(
                         .locations
                         .subtract(
                             when (vehicleKind) {
-                                CAR -> qrCodeSensors
-                                    .toSet()
-                                    .map { it.wheel }
+                                CAR -> qrCodeSensors.map { it.wheel }
 
-                                SINGLE_AXLE_TRAILER -> qrCodeSensors
-                                    .toSet()
-                                    .map { it.wheel.toSide() }
+                                SINGLE_AXLE_TRAILER -> qrCodeSensors.map { it.wheel.toSide() }
 
-                                MOTORCYCLE -> qrCodeSensors
-                                    .toSet()
-                                    .map { it.wheel.toAxle() }
+                                MOTORCYCLE -> qrCodeSensors.map { it.wheel.toAxle() }
 
                                 TADPOLE_THREE_WHEELER -> qrCodeSensors
-                                    .toSet()
                                     .map {
                                         when (it.wheel.location) {
                                             FRONT_LEFT, FRONT_RIGHT -> it.wheel
@@ -153,7 +146,6 @@ internal class QrCodeAnalyserUseCase @Inject constructor(
                                     }
 
                                 DELTA_THREE_WHEELER -> qrCodeSensors
-                                    .toSet()
                                     .map {
                                         when (it.wheel.location) {
                                             FRONT_LEFT, FRONT_RIGHT -> it.wheel.toAxle()
