@@ -55,6 +55,9 @@ import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit.CELSIUS
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
@@ -102,10 +105,9 @@ private fun Content(
                 onAcknowledge = viewModel::acknowledgeSensorUnplugged,
             )
 
-            is State.Searching -> Searching(
+            is State.Search -> Searching(
                 state = state,
                 vehicleUUID = vehicleUuid,
-                onSensorBound = viewModel::onSensorBound,
                 bindingFinished = bindingFinished,
             )
 
@@ -138,9 +140,8 @@ private fun UnplugEverySensor(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Searching(
-    state: State.Searching,
+    state: State.Search,
     vehicleUUID: UUID,
-    onSensorBound: () -> Unit,
     bindingFinished: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -153,7 +154,10 @@ private fun Searching(
             currentVehicleName = state.currentVehicleName,
             currentVehicleKind = state.currentVehicleKind,
             boundSensorToCurrentVehicle = state.boundSensorToCurrentVehicle,
-            unboundTyres = state.unboundTyres,
+            unboundTyres = when (state) {
+                is State.Searching -> state.unboundTyres
+                is State.Completed -> emptyList()
+            },
             pressureUnit = state.pressureUnit,
             temperatureUnit = state.temperatureUnit,
             roundedTopId = roundedTopId,
@@ -161,21 +165,21 @@ private fun Searching(
             setTyreToBind = setTyreToBind
         )
 
-        if (state.showPlaceholder)
+        if (state is State.Searching)
             placeholder(
                 roundedBottomId = roundedBottomId,
                 roundedTopId = roundedTopId
             )
 
-        if (state.unboundTyres.isNotEmpty())
+        if (state is State.Searching && state.unboundTyres.isNotEmpty())
             currentVehicleTyreFoundMessage(
                 unboundTyres = state.unboundTyres
             )
 
-        if (state.showPlaceholder)
+        if (state is State.Searching)
             currentVehiclePlaceholderMessage()
 
-        if (state.boundTyresToOtherVehicle.isNotEmpty())
+        if (state is State.Searching && state.boundTyresToOtherVehicle.isNotEmpty())
             otherVehicleItems(
                 boundTyresToOtherVehicle = state.boundTyresToOtherVehicle,
                 temperatureUnit = state.temperatureUnit,
@@ -183,7 +187,7 @@ private fun Searching(
                 setTyreToBind = setTyreToBind
             )
 
-        if (state.allWheelsBound)
+        if (state is State.Completed)
             allWheelsBoundMessage(
                 currentVehicleName = state.currentVehicleName,
                 bindingFinished = bindingFinished
@@ -193,23 +197,25 @@ private fun Searching(
         BindDialog(
             vehicleUuid = vehicleUUID,
             tyre = tyreToBind,
-            onBound = {
-                onSensorBound()
-                setTyreToBind(null)
-            },
+            onBound = { setTyreToBind(null) },
             onDismissRequest = { setTyreToBind(null) },
         )
 }
 
-private fun State.Searching.computeRoundedTopId() =
-    boundSensorToCurrentVehicle.firstOrNull()?.first?.id
-        ?: unboundTyres.firstOrNull()?.sensorId
-        ?: if (showPlaceholder) -1 else null
+private fun State.Search.computeRoundedTopId() = when (this) {
+    is State.Searching ->
+        boundSensorToCurrentVehicle.firstOrNull()?.first?.id
+            ?: unboundTyres.firstOrNull()?.sensorId
+            ?: -1
 
-private fun State.Searching.computeRoundedBottomId() =
-    (if (showPlaceholder) -1 else null)
-        ?: unboundTyres.lastOrNull()?.sensorId
-        ?: boundSensorToCurrentVehicle.lastOrNull()?.first?.id
+    is State.Completed -> boundSensorToCurrentVehicle.firstOrNull()?.first?.id
+}
+
+
+private fun State.Search.computeRoundedBottomId() = when (this) {
+    is State.Searching -> -1
+    is State.Completed -> boundSensorToCurrentVehicle.lastOrNull()?.first?.id
+}
 
 @ExperimentalFoundationApi
 private fun LazyListScope.currentVehicleItems(
@@ -356,7 +362,7 @@ private fun LazyListScope.allWheelsBoundMessage(
     bindingFinished: () -> Unit,
 ) {
     item {
-        Spacer(modifier = Modifier.height(56.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Every tyre of your vehicle \"${currentVehicleName}\" is bound to a sensor",
             textAlign = TextAlign.Center,
@@ -574,8 +580,6 @@ private fun SearchingNoResultPreview() {
                 emptyList(),
                 BAR,
                 CELSIUS,
-                allWheelsBound = false,
-                showPlaceholder = true,
             )
         )
     )
@@ -596,8 +600,6 @@ private fun SearchingFoundSingleTyrePreview() {
                 emptyList(),
                 BAR,
                 CELSIUS,
-                allWheelsBound = false,
-                showPlaceholder = false,
             )
         )
     )
@@ -643,8 +645,6 @@ private fun SearchingFoundMultipleTyrePreview() {
                 ),
                 BAR,
                 CELSIUS,
-                allWheelsBound = true,
-                showPlaceholder = false,
             )
         )
     )
@@ -681,8 +681,32 @@ private fun SearchingFoundOnlyBoundTyrePreview() {
                 ),
                 BAR,
                 CELSIUS,
-                allWheelsBound = false,
-                showPlaceholder = true,
+            )
+        )
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
+@Composable
+private fun CompletedPreview() {
+    Content(
+        vehicleUuid = UUID.randomUUID(),
+        bindingFinished = {},
+        viewModel = MockListSensorViewModel(
+            State.Completed(
+                "MOCK",
+                Vehicle.Kind.CAR,
+                listOf(
+                    Sensor(0, Vehicle.Kind.Location.Wheel(FRONT_LEFT)) to null,
+                    Pair(
+                        Sensor(1, Vehicle.Kind.Location.Wheel(FRONT_RIGHT)),
+                        Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false),
+                    ),
+                    Sensor(2, Vehicle.Kind.Location.Wheel(REAR_LEFT)) to null,
+                    Sensor(3, Vehicle.Kind.Location.Wheel(REAR_RIGHT)) to null
+                ),
+                BAR,
+                CELSIUS,
             )
         )
     )
@@ -691,5 +715,4 @@ private fun SearchingFoundOnlyBoundTyrePreview() {
 private class MockListSensorViewModel(state: State) : ListSensorViewModel {
     override val stateFlow = MutableStateFlow(state)
     override fun acknowledgeSensorUnplugged() = error("")
-    override fun onSensorBound() = error("")
 }

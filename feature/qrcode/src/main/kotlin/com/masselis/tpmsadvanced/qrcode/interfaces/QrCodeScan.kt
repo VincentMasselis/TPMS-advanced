@@ -30,15 +30,6 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.qrcode.R
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.State

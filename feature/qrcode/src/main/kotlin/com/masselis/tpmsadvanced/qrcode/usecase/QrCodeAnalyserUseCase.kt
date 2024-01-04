@@ -7,20 +7,30 @@ import androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
+import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
-import com.masselis.tpmsadvanced.qrcode.model.SensorMap
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
+import com.masselis.tpmsadvanced.qrcode.model.QrCodeSensor
+import com.masselis.tpmsadvanced.qrcode.model.QrCodeSensors
+import com.masselis.tpmsadvanced.qrcode.model.QrCodeSensors.FourWheel
+import com.masselis.tpmsadvanced.qrcode.model.QrCodeSensors.TwoWheel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOn
@@ -32,7 +42,9 @@ import java.nio.ByteOrder
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
-internal class QrCodeAnalyserUseCase @Inject constructor() {
+internal class QrCodeAnalyserUseCase @Inject constructor(
+    private val currentVehicleUseCase: CurrentVehicleUseCase
+) {
 
     private val scanner = BarcodeScannerOptions.Builder()
         .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
@@ -42,67 +54,117 @@ internal class QrCodeAnalyserUseCase @Inject constructor() {
 
     @OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
     @Suppress("MagicNumber", "CyclomaticComplexMethod")
-    fun analyse(controller: CameraController): Flow<SensorMap> = callbackFlow<List<Barcode>> {
-        controller.setImageAnalysisAnalyzer(
-            executor,
-            MlKitAnalyzer(
-                listOf(scanner),
-                COORDINATE_SYSTEM_VIEW_REFERENCED,
-                executor
-            ) {
-                it.getValue(scanner)?.also { barcodes -> launch { send(barcodes) } }
+    fun analyse(controller: CameraController): Flow<Pair<QrCodeSensors, Set<Location>>> =
+        callbackFlow<List<Barcode>> {
+            controller.setImageAnalysisAnalyzer(
+                executor,
+                MlKitAnalyzer(
+                    listOf(scanner),
+                    COORDINATE_SYSTEM_VIEW_REFERENCED,
+                    executor
+                ) {
+                    it.getValue(scanner)?.also { barcodes -> launch { send(barcodes) } }
+                }
+            )
+            awaitClose { controller.clearImageAnalysisAnalyzer() }
+        }.flowOn(Dispatchers.Main.immediate)
+            .flatMapConcat { it.asFlow() }
+            .filter { it.valueType == Barcode.TYPE_TEXT }
+            .mapNotNull { it.rawValue }
+            .mapNotNull {
+                fourSensorRegex.find(it)?.groupValues?.subList(1, 5)
+                    ?: twoSensorRegex.find(it)?.groupValues?.subList(1, 3)
             }
-        )
-        awaitClose { controller.clearImageAnalysisAnalyzer() }
-    }.flowOn(Dispatchers.Main.immediate)
-        .flatMapConcat { it.asFlow() }
-        .filter { it.valueType == Barcode.TYPE_TEXT }
-        .mapNotNull { it.rawValue }
-        .mapNotNull {
-            fourSensorRegex.find(it)?.groupValues?.subList(1, 5)
-                ?: twoSensorRegex.find(it)?.groupValues?.subList(1, 3)
-        }
-        .map { stringHexs ->
-            stringHexs
-                .map { stringHex ->
-                    Pair(
-                        // Trying to recognize the location with the id of the sensor
-                        when (stringHex.first()) {
-                            '1' -> Location.Wheel(FRONT_LEFT)
-                            '2' -> Location.Wheel(FRONT_RIGHT)
-                            '3' -> Location.Wheel(REAR_LEFT)
-                            '4' -> Location.Wheel(REAR_RIGHT)
-                            else -> null
-                        },
-                        // Converts the hexadecimal id to an int
-                        stringHex
-                            .hexToByteArray()
-                            .let {
-                                ByteBuffer
-                                    .wrap(byteArrayOf(0x00) + it)
-                                    .order(ByteOrder.LITTLE_ENDIAN)
-                                    .int
+            .map { stringHexs ->
+                stringHexs
+                    .map { stringHex ->
+                        Pair(
+                            // Trying to recognize the location with the id of the sensor
+                            when (stringHex.first()) {
+                                '1' -> Location.Wheel(FRONT_LEFT)
+                                '2' -> Location.Wheel(FRONT_RIGHT)
+                                '3' -> Location.Wheel(REAR_LEFT)
+                                '4' -> Location.Wheel(REAR_RIGHT)
+                                else -> null
                             },
-                    )
-                }
-                .mapIndexed { index, (location, id) ->
-                    Sensor(
-                        id,
-                        // The sensor id didn't provided the location, let's determine it with the
-                        // list index
-                        location ?: when (index) {
-                            0 -> Location.Wheel(FRONT_LEFT)
-                            1 -> Location.Wheel(FRONT_RIGHT)
-                            2 -> Location.Wheel(REAR_LEFT)
-                            3 -> Location.Wheel(REAR_RIGHT)
-                            else -> error("Filled list cannot have more than 4 entries")
+                            // Converts the hexadecimal id to an int
+                            stringHex
+                                .hexToByteArray()
+                                .let {
+                                    ByteBuffer
+                                        .wrap(byteArrayOf(0x00) + it)
+                                        .order(ByteOrder.LITTLE_ENDIAN)
+                                        .int
+                                },
+                        )
+                    }
+                    .mapIndexed { index, (location, id) ->
+                        QrCodeSensor(
+                            id,
+                            // The sensor id didn't provided the location, let's determine it with the
+                            // list index
+                            location ?: when (index) {
+                                0 -> Location.Wheel(FRONT_LEFT)
+                                1 -> Location.Wheel(FRONT_RIGHT)
+                                2 -> Location.Wheel(REAR_LEFT)
+                                3 -> Location.Wheel(REAR_RIGHT)
+                                else -> error("Filled list cannot have more than 4 entries")
+                            }
+                        )
+                    }
+                    .let {
+                        when (it.size) {
+                            2 -> TwoWheel(it[0], it[1])
+                            4 -> FourWheel(it[0], it[1], it[2], it[3])
+                            else -> error("Unreachable state, previous regex should only contains 2 or 4 sensors, current sensors: $it")
                         }
-                    )
-                }
-                .distinctBy { (_, location) -> location }
-                .let(::SensorMap)
-        }
-        .flowOn(Dispatchers.Default)
+                    }
+            }
+            .combine(
+                currentVehicleUseCase
+                    .map { it.vehicle.kind }
+                    .distinctUntilChanged()
+            ) { qrCodeSensors, vehicleKind ->
+                Pair(
+                    qrCodeSensors,
+                    vehicleKind
+                        .locations
+                        .subtract(
+                            when (vehicleKind) {
+                                CAR -> qrCodeSensors
+                                    .toSet()
+                                    .map { it.wheel }
+
+                                SINGLE_AXLE_TRAILER -> qrCodeSensors
+                                    .toSet()
+                                    .map { it.wheel.toSide() }
+
+                                MOTORCYCLE -> qrCodeSensors
+                                    .toSet()
+                                    .map { it.wheel.toAxle() }
+
+                                TADPOLE_THREE_WHEELER -> qrCodeSensors
+                                    .toSet()
+                                    .map {
+                                        when (it.wheel.location) {
+                                            FRONT_LEFT, FRONT_RIGHT -> it.wheel
+                                            REAR_LEFT, REAR_RIGHT -> it.wheel.toAxle()
+                                        }
+                                    }
+
+                                DELTA_THREE_WHEELER -> qrCodeSensors
+                                    .toSet()
+                                    .map {
+                                        when (it.wheel.location) {
+                                            FRONT_LEFT, FRONT_RIGHT -> it.wheel.toAxle()
+                                            REAR_LEFT, REAR_RIGHT -> it.wheel
+                                        }
+                                    }
+                            }.toSet()
+                        )
+                )
+            }
+            .flowOn(Default)
 
     fun requiredPermission() = CAMERA
 

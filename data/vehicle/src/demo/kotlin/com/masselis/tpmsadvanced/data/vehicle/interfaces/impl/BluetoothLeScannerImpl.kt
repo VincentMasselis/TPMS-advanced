@@ -7,9 +7,9 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
-import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 @DataVehicleComponent.Scope
@@ -103,11 +103,11 @@ internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner
         )
     )
 
-    private val source = channelFlow {
+    private val source = flow {
         (frontLeft + frontRight + rearLeft + rearRight).forEach {
-            send(it)
+            emit(it)
         }
-        awaitClose { }
+        awaitCancellation()
     }
 
     override fun highDutyScan(): Flow<Tyre.SensorInput> = source

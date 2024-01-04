@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel.State
 import com.masselis.tpmsadvanced.unlocated.usecase.SearchingUnlocatedTyresUseCase
 import com.masselis.tpmsadvanced.unlocated.usecase.VehicleBindingStatusUseCase
@@ -19,6 +18,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.transformWhile
 import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -43,20 +43,13 @@ internal class ListSensorViewModelImpl @AssistedInject constructor(
         search()
     }
 
-    override fun onSensorBound() {
-        if (stateFlow.value !is State.Searching)
-            return
-        search()
-    }
-
     @Suppress("MaxLineLength")
     private fun search() = combine(
         currentVehicleUseCase.flatMapLatest { it.vehicleStateFlow },
         searchingUnlocatedTyresUseCase.search(),
         unitPreferences.pressure,
         unitPreferences.temperature,
-        vehicleBindingStatusUseCase.areAllWheelBound(vehicleUuid),
-    ) { vehicle, (boundSensorToCurrentVehicle, unboundTyres, boundTyresToOtherVehicle), pressureUnit, temperatureUnit, allWheelsBound ->
+    ) { vehicle, (boundSensorToCurrentVehicle, unboundTyres, boundTyresToOtherVehicle), pressureUnit, temperatureUnit ->
         State.Searching(
             vehicle.name,
             vehicle.kind,
@@ -65,10 +58,27 @@ internal class ListSensorViewModelImpl @AssistedInject constructor(
             boundTyresToOtherVehicle,
             pressureUnit,
             temperatureUnit,
-            allWheelsBound,
-            unboundTyres.isEmpty(),
         )
-    }.catch { State.Issue }
+    }.combine(vehicleBindingStatusUseCase.boundLocations(vehicleUuid)) { a, b -> a to b }
+        .transformWhile { (searching, boundLocations) ->
+            val (kind, boundSensors) = boundLocations
+            if (kind.locations.subtract(boundSensors.map { it.location }.toSet()).isNotEmpty()) {
+                emit(searching)
+                true
+            } else {
+                emit(
+                    State.Completed(
+                        searching.currentVehicleName,
+                        searching.currentVehicleKind,
+                        boundSensors.map { it to null },
+                        searching.pressureUnit,
+                        searching.temperatureUnit
+                    )
+                )
+                false
+            }
+        }
+        .catch { State.Issue }
         .onEach { stateFlow.value = it }
         .launchIn(viewModelScope)
         .also {
