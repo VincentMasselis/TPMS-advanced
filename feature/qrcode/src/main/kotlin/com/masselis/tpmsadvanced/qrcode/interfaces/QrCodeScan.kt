@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.qrcode.interfaces
 
+import android.Manifest.permission.CAMERA
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
 import androidx.camera.view.LifecycleCameraController
@@ -24,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.appendLoc
@@ -33,24 +33,15 @@ import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.qrcode.R
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel.State
-import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent.Companion.CameraPreconditionsViewModel
 import com.masselis.tpmsadvanced.qrcode.ioc.FeatureQrCodeComponent.Companion.QrCodeViewModel
 
-@Composable
-public fun QrCodeScan(
-    modifier: Modifier = Modifier,
-): Unit = QrCodeScan(
-    modifier,
-    viewModel { CameraPreconditionsViewModel() },
-)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-internal fun QrCodeScan(
+public fun QrCodeScan(
     modifier: Modifier = Modifier,
-    viewModel: CameraPreconditionsViewModel = viewModel { CameraPreconditionsViewModel() },
 ) {
-    val permissionState = rememberMultiplePermissionsState(listOf(viewModel.requiredPermissions()))
+    val permissionState = rememberMultiplePermissionsState(listOf(CAMERA))
     when {
         permissionState.allPermissionsGranted.not() -> MissingPermission(
             text = "TPMS Advanced need you to approve a permission to scan the QR Code",

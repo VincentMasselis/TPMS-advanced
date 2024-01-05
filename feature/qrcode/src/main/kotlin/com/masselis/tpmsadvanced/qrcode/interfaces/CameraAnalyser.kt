@@ -1,0 +1,45 @@
+package com.masselis.tpmsadvanced.qrcode.interfaces
+
+import androidx.camera.mlkit.vision.MlKitAnalyzer
+import androidx.camera.view.CameraController
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
+import javax.inject.Inject
+
+@Suppress("OPT_IN_USAGE")
+internal class CameraAnalyser @Inject constructor() {
+
+    private val scanner = BarcodeScannerOptions.Builder()
+        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+        .build()
+        .let { BarcodeScanning.getClient(it) }
+    private val executor = Executors.newCachedThreadPool()
+    fun findQrCode(controller: CameraController) =
+        callbackFlow<List<Barcode>> {
+            controller.setImageAnalysisAnalyzer(
+                executor,
+                MlKitAnalyzer(
+                    listOf(scanner),
+                    CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED,
+                    executor
+                ) {
+                    it.getValue(scanner)?.also { barcodes -> launch { send(barcodes) } }
+                }
+            )
+            awaitClose { controller.clearImageAnalysisAnalyzer() }
+        }.flowOn(Dispatchers.Main.immediate)
+            .flatMapConcat { it.asFlow() }
+            .filter { it.valueType == Barcode.TYPE_TEXT }
+            .mapNotNull { it.rawValue }
+}

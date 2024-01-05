@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.qrcode.model.QrCodeSensors
 import com.masselis.tpmsadvanced.qrcode.usecase.BoundSensorMapUseCase
-import com.masselis.tpmsadvanced.qrcode.usecase.QrCodeAnalyserUseCase
+import com.masselis.tpmsadvanced.qrcode.usecase.QrCodeSensorUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class QRCodeViewModel @AssistedInject constructor(
-    private val qrCodeAnalyserUseCase: QrCodeAnalyserUseCase,
+    private val qrCodeSensorUseCase: QrCodeSensorUseCase,
     private val boundSensorMapUseCase: BoundSensorMapUseCase,
     @Assisted private val controller: CameraController
 ) : ViewModel() {
@@ -63,7 +63,7 @@ internal class QRCodeViewModel @AssistedInject constructor(
             .flatMapLatest { state ->
                 when (state) {
                     is State.AskForBinding -> emptyFlow()
-                    State.Scanning -> qrCodeAnalyserUseCase
+                    State.Scanning -> qrCodeSensorUseCase
                         .analyse(controller)
                         .map { (sensors, missingLocations) ->
                             if (missingLocations.isEmpty())
