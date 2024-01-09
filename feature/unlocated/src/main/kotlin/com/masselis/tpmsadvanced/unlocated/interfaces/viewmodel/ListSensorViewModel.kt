@@ -13,6 +13,11 @@ internal interface ListSensorViewModel {
     sealed interface State : Parcelable {
 
         @Parcelize
+        data class AllWheelsAreAlreadyBound(
+            val kind: Vehicle.Kind
+        ) : State
+
+        @Parcelize
         data object UnplugEverySensor : State
 
         sealed interface Search {
@@ -48,6 +53,8 @@ internal interface ListSensorViewModel {
     }
 
     val stateFlow: StateFlow<State>
+
+    fun acknowledgeAndClearBinding()
 
     fun acknowledgeSensorUnplugged()
 }

@@ -68,6 +68,7 @@ import io.github.fornewid.placeholder.foundation.PlaceholderHighlight
 import io.github.fornewid.placeholder.material3.placeholder
 import io.github.fornewid.placeholder.material3.shimmer
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.DateFormat
 import java.util.Date
@@ -101,6 +102,11 @@ private fun Content(
         modifier = modifier.padding(end = 16.dp, start = 16.dp)
     ) {
         when (val state = state) {
+            is State.AllWheelsAreAlreadyBound -> AllWheelsAreAlreadyBound(
+                kind = state.kind,
+                onAcknowledge = viewModel::acknowledgeAndClearBinding
+            )
+
             State.UnplugEverySensor -> UnplugEverySensor(
                 onAcknowledge = viewModel::acknowledgeSensorUnplugged,
             )
@@ -112,6 +118,37 @@ private fun Content(
             )
 
             State.Issue -> TODO()
+        }
+    }
+}
+
+@Composable
+private fun AllWheelsAreAlreadyBound(
+    kind: Vehicle.Kind,
+    onAcknowledge: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        Vehicle(
+            kind = kind,
+            states = kind.locations.associateWith { WheelState.Fade }.toPersistentMap(),
+            modifier = Modifier.height(100.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Each tyre of your vehicle is already bound to a sensor,\ndo your really want to continue ?",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = onAcknowledge,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("Clear bindings and continue")
         }
     }
 }
@@ -557,7 +594,17 @@ private fun roundedShape(
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun PlugSensorFirstTry() {
+private fun AllWheelsAreAlreadyBoundPreview() {
+    Content(
+        UUID.randomUUID(),
+        bindingFinished = {},
+        viewModel = MockListSensorViewModel(State.AllWheelsAreAlreadyBound(Vehicle.Kind.CAR))
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
+@Composable
+private fun UnplugEverySensorPreview() {
     Content(
         UUID.randomUUID(),
         bindingFinished = {},
@@ -714,5 +761,6 @@ private fun CompletedPreview() {
 
 private class MockListSensorViewModel(state: State) : ListSensorViewModel {
     override val stateFlow = MutableStateFlow(state)
+    override fun acknowledgeAndClearBinding() = error("")
     override fun acknowledgeSensorUnplugged() = error("")
 }

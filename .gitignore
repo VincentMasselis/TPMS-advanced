@@ -29,3 +29,4 @@ local.properties
 buildSrc/build/**
 .idea/.name
 .idea/vcs.xml
+.idea/migrations.xml

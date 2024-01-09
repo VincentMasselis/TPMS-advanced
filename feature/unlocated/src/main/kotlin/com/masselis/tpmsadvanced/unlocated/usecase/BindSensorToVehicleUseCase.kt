@@ -19,4 +19,6 @@ internal class BindSensorToVehicleUseCase @Inject constructor(
         sensorDatabase.upsert(sensor, vehicleUuid)
         tyreDatabase.insert(Tyre.Located(tyre, sensor.location), vehicleUuid)
     }
+
+    suspend fun clearBindings(vehicleUuid: UUID) = sensorDatabase.deleteFromVehicle(vehicleUuid)
 }
