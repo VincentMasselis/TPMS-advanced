@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+@Suppress("LongParameterList")
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ListSensorViewModelImpl @AssistedInject constructor(
     private val vehicleBindingStatusUseCase: VehicleBindingStatusUseCase,
