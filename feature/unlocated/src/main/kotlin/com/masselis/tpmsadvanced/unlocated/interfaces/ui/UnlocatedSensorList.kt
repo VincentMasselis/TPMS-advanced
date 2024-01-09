@@ -512,7 +512,7 @@ private fun BoundSensorCell(
                 )
                 if (tyre != null)
                     Text(
-                        text = "Sensor seen at ${df.format(tyre.timestamp)}",
+                        text = "Sensor seen at ${df.format(Date(tyre.timestamp.seconds.inWholeMilliseconds))}",
                         fontSize = 11.sp,
                     )
             }
