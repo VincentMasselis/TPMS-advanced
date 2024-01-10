@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.interfaces
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.masselis.tpmsadvanced.interfaces.Home.Companion.home
+import com.masselis.tpmsadvanced.interfaces.screens.Home.Companion.home
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,15 +12,15 @@ import org.junit.runner.RunWith
 internal class OrientationChangeTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<RootActivity>()
+    val androidComposeTestRule = createAndroidComposeRule<RootActivity>()
 
     @Test
     fun settingScreen() {
-        composeTestRule.home {
+        androidComposeTestRule.home {
             actionOverflow {
                 settings {
                     assertVehicleSettingsDisplayed()
-                    composeTestRule.activity.requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE
+                    androidComposeTestRule.activity.requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE
                     assertVehicleSettingsDisplayed()
                     leave()
                 }

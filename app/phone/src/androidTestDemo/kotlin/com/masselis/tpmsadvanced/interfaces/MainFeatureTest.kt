@@ -3,10 +3,13 @@ package com.masselis.tpmsadvanced.interfaces
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
-import com.masselis.tpmsadvanced.interfaces.Home.Companion.home
+import com.masselis.tpmsadvanced.interfaces.screens.Home.Companion.home
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,77 +18,123 @@ import org.junit.runner.RunWith
 internal class MainFeatureTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<RootActivity>()
+    val androidComposeTestRule = createAndroidComposeRule<RootActivity>()
 
     @Suppress("LongMethod")
     @Test
-    fun mainFeatures() {
-        composeTestRule.home {
-            actionOverflow {
-                settings {
-                    assert(isVehicleDeleteEnabled().not())
-                    leave()
-                }
-            }
-            dropdownMenu {
-                addVehicle {
-                    cancel()
-                }
-            }
-            dropdownMenu {
-                addVehicle {
-                    setVehicleName("Car")
-                    setKind(CAR)
-                    add()
-                }
-            }
-            dropdownMenu {
-                addVehicle {
-                    setVehicleName("Motorcycle")
-                    setKind(MOTORCYCLE)
-                    add()
-                }
-            }
-            dropdownMenu {
-                assert(exists("Car") && exists("Motorcycle"))
-                close()
-            }
-            dropdownMenu {
-                select("Car")
-            }
-            assert(isBindSensorAvailable(Location.Wheel(FRONT_LEFT)))
-            bindSensorDialog(Location.Wheel(FRONT_LEFT)) {
-                cancel()
-            }
-            bindSensorDialog(Location.Wheel(FRONT_LEFT)) {
-                addToFavorites()
-            }
-            composeTestRule.waitUntil { isBindSensorAvailable(Location.Wheel(FRONT_LEFT)).not() }
-            actionOverflow {
-                settings {
-                    composeTestRule.waitUntil { isClearFavouritesEnabled() }
-                    clearFavourites()
-                    composeTestRule.waitUntil { isClearFavouritesEnabled().not() }
-                    leave()
-                }
-            }
-            dropdownMenu {
-                select("My car")
-            }
-            actionOverflow {
-                settings {
-                    deleteVehicle {
-                        cancel()
-                    }
-                    deleteVehicle {
-                        delete()
-                    }
-                }
-            }
-            dropdownMenu {
-                assert(exists("My car").not())
-                close()
+    fun mainFeatures() = androidComposeTestRule.home {
+        actionOverflow {
+            settings {
+                assertVehicleDeleteIsNotEnabled()
+                leave()
             }
         }
+        dropdownMenu {
+            addVehicle {
+                cancel()
+            }
+        }
+        dropdownMenu {
+            addVehicle {
+                setVehicleName("Car")
+                setKind(CAR)
+                add()
+            }
+        }
+        dropdownMenu {
+            addVehicle {
+                setVehicleName("Motorcycle")
+                setKind(MOTORCYCLE)
+                add()
+            }
+        }
+        dropdownMenu {
+            assertVehicleExists("Car")
+            assertVehicleExists("Motorcycle")
+            close()
+        }
+        dropdownMenu {
+            select("Car")
+        }
+        assertBindSensorButtonVisible(Location.Wheel(FRONT_LEFT))
+        bindSensorDialog(Location.Wheel(FRONT_LEFT)) {
+            cancel()
+        }
+        bindSensorDialog(Location.Wheel(FRONT_LEFT)) {
+            addToFavorites()
+        }
+        waitBindSensorButtonHidden(Location.Wheel(FRONT_LEFT))
+        actionOverflow {
+            settings {
+                waitClearFavouritesEnabled()
+                clearFavourites()
+                waitClearFavouritesDisabled()
+                leave()
+            }
+        }
+        dropdownMenu {
+            select("My car")
+        }
+        actionOverflow {
+            settings {
+                deleteVehicle {
+                    cancel()
+                }
+                deleteVehicle {
+                    delete()
+                }
+            }
+        }
+        dropdownMenu {
+            assertVehicleDoesNotExists("My car")
+            select("Car")
+        }
+        actionOverflow {
+            bindingMethod {
+                goBack()
+            }
+        }
+        actionOverflow {
+            bindingMethod {
+                assertNextButtonHidden()
+                tapQrCode()
+                tapBindManually()
+                tapGoToNextButton {
+                    tapSensorUnplugged()
+                    tapSensor(2) {
+                        assertBindButtonIsNotEnabled()
+                        tapLocation(Location.Wheel(FRONT_LEFT))
+                        tapCancel()
+                    }
+                    tapSensor(2) {
+                        tapLocation(Location.Wheel(FRONT_LEFT))
+                        tapBindButton()
+                    }
+                    tapSensor(4) {
+                        tapLocation(Location.Wheel(FRONT_RIGHT))
+                        tapBindButton()
+                    }
+                    tapSensor(6) {
+                        tapLocation(Location.Wheel(REAR_LEFT))
+                        tapBindButton()
+                    }
+                    tapSensor(8) {
+                        tapLocation(Location.Wheel(REAR_RIGHT))
+                        tapBindButton()
+                    }
+                    assertAllLocationBound(
+                        2 to Location.Wheel(FRONT_LEFT),
+                        4 to Location.Wheel(FRONT_RIGHT),
+                        6 to Location.Wheel(REAR_LEFT),
+                        8 to Location.Wheel(REAR_RIGHT),
+                    )
+                    tapGoBack()
+                }
+            }
+        }
+        assertBindSensorButtonHidden(Location.Wheel(FRONT_LEFT))
+        assertBindSensorButtonHidden(Location.Wheel(FRONT_RIGHT))
+        assertBindSensorButtonHidden(Location.Wheel(REAR_LEFT))
+        assertBindSensorButtonHidden(Location.Wheel(REAR_RIGHT))
     }
 }

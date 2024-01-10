@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
@@ -30,6 +31,9 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.bindButton
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.bindDialog
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.cancelButton
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel.State
 import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion.BindSensorViewModel
@@ -103,7 +107,10 @@ internal fun BindDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismissRequest) {
+            TextButton(
+                onClick = onDismissRequest,
+                modifier = Modifier.testTag(cancelButton)
+            ) {
                 Text(text = "Cancel")
             }
         },
@@ -113,11 +120,13 @@ internal fun BindDialog(
                 onClick = {
                     viewModel.bind(selectedLocation!!)
                     onBound()
-                }
+                },
+                modifier = Modifier.testTag(bindButton)
             ) {
                 Text(text = "Bind")
             }
-        }
+        },
+        modifier = Modifier.testTag(bindDialog)
     )
 }
 
@@ -227,7 +236,11 @@ private fun BindDialogAlreadyBoundPreview() {
 
 private class MockViewModel(state: State) : BindSensorViewModel {
     override val stateFlow: StateFlow<State> = MutableStateFlow(state)
-
     override fun bind(location: Location) = error("")
+}
 
+public object BindDialogTags {
+    public const val bindDialog: String = "BindDialogTags_bindDialog"
+    public const val cancelButton: String = "cancelButton"
+    public const val bindButton: String = "bindButton"
 }

@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -61,6 +62,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.goBackButton
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.sensorUnplugged
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel.State
 import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion.ListSensorViewModel
@@ -167,7 +170,9 @@ private fun UnplugEverySensor(
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = onAcknowledge,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .testTag(sensorUnplugged)
         ) {
             Text("Sensors unplugged")
         }
@@ -406,7 +411,11 @@ private fun LazyListScope.allWheelsBoundMessage(
             modifier = Modifier.fillParentMaxWidth()
         )
         Spacer(modifier = Modifier.height(4.dp))
-        Box(Modifier.fillParentMaxWidth()) {
+        Box(
+            Modifier
+                .fillParentMaxWidth()
+                .testTag(goBackButton)
+        ) {
             Button(
                 onClick = bindingFinished,
                 modifier = Modifier.align(Alignment.Center)
@@ -436,7 +445,7 @@ private fun TyreCell(
         shape = roundedShape(roundedTop, roundedBottom),
         enabled = isPlaceholder.not(),
         onClick = onBind,
-        modifier = modifier,
+        modifier = modifier.testTag(UnlocatedSensorListTags.tyreCell(tyre.sensorId)),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -530,7 +539,7 @@ private fun BoundSensorCell(
 ) {
     ElevatedCard(
         shape = roundedShape(roundedTop, roundedBottom),
-        modifier = modifier,
+        modifier = modifier.testTag(UnlocatedSensorListTags.boundCell(sensor.id)),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -763,4 +772,13 @@ private class MockListSensorViewModel(state: State) : ListSensorViewModel {
     override val stateFlow = MutableStateFlow(state)
     override fun acknowledgeAndClearBinding() = error("")
     override fun acknowledgeSensorUnplugged() = error("")
+}
+
+public object UnlocatedSensorListTags {
+    public const val clearBindingsAndContinue: String =
+        "UnlocatedSensorListTags_clearBindingsAndContinue"
+    public const val sensorUnplugged: String = "UnlocatedSensorListTags_sensorUnplugged"
+    public fun tyreCell(sensorId: Int): String = "UnlocatedSensorListTags_tyreCell_$sensorId"
+    public fun boundCell(sensorId: Int): String = "UnlocatedSensorListTags_boundCell_$sensorId"
+    public const val goBackButton: String = "UnlocatedSensorListTags_goBackButton"
 }

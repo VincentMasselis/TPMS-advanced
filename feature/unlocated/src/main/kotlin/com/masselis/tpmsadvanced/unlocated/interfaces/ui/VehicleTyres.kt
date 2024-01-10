@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
@@ -25,6 +26,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.VehicleTyresTags.tyreLocation
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
 
@@ -98,22 +100,30 @@ private fun Car(
         Tyre(
             state = frontLeft,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(FRONT_LEFT)),
-            modifier = Modifier.align(Alignment.TopStart)
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(FRONT_LEFT)))
         )
         Tyre(
             state = frontRight,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)),
-            modifier = Modifier.align(Alignment.TopEnd)
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)))
         )
         Tyre(
             state = rearLeft,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(REAR_LEFT)),
-            modifier = Modifier.align(Alignment.BottomStart)
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(REAR_LEFT)))
         )
         Tyre(
             state = rearRight,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(REAR_RIGHT)),
-            modifier = Modifier.align(Alignment.BottomEnd)
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(REAR_RIGHT)))
         )
     }
 }
@@ -129,12 +139,16 @@ private fun SingleAxleTrailer(
         Tyre(
             state = left,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Side(LEFT)),
-            modifier = Modifier.align(Alignment.CenterStart)
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Side(LEFT))),
         )
         Tyre(
             state = right,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Side(RIGHT)),
-            modifier = Modifier.align(Alignment.CenterEnd)
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Side(RIGHT))),
         )
     }
 }
@@ -150,12 +164,16 @@ private fun Motorcycle(
         Tyre(
             state = front,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Axle(FRONT)),
-            modifier = Modifier.align(Alignment.TopCenter)
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Axle(FRONT))),
         )
         Tyre(
             state = rear,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Axle(REAR)),
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Axle(REAR))),
         )
     }
 }
@@ -172,17 +190,23 @@ private fun TadpoleThreeWheeler(
         Tyre(
             state = frontLeft,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(FRONT_LEFT)),
-            modifier = Modifier.align(Alignment.TopStart)
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(FRONT_LEFT)))
         )
         Tyre(
             state = frontRight,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)),
-            modifier = Modifier.align(Alignment.TopEnd)
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)))
         )
         Tyre(
             state = rear,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Axle(REAR)),
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Axle(REAR)))
         )
     }
 }
@@ -199,17 +223,23 @@ private fun DeltaThreeWheeler(
         Tyre(
             state = front,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Axle(FRONT)),
-            modifier = Modifier.align(Alignment.TopCenter)
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Axle(FRONT)))
         )
         Tyre(
             state = rearLeft,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(REAR_LEFT)),
-            modifier = Modifier.align(Alignment.BottomStart)
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(REAR_LEFT)))
         )
         Tyre(
             state = rearRight,
             onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(REAR_RIGHT)),
-            modifier = Modifier.align(Alignment.BottomEnd)
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(REAR_RIGHT)))
         )
     }
 }
@@ -378,4 +408,8 @@ private fun CarBigPreview() {
         ),
         modifier = Modifier.height(400.dp),
     )
+}
+
+public object VehicleTyresTags {
+    public fun tyreLocation(location: Vehicle.Kind.Location): String = "tyreLocation_$location"
 }

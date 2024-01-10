@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,14 +55,18 @@ internal fun ChooseBindingMethod(
                 method = QR_CODE,
                 isSelected = bindingMethod == QR_CODE,
                 onClick = { bindingMethod = QR_CODE },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag(ChooseBindingMethodTags.scanQrCode)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Method(
                 method = MANUALLY,
                 isSelected = bindingMethod == MANUALLY,
                 onClick = { bindingMethod = MANUALLY },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag(ChooseBindingMethodTags.bindManually)
             )
         }
         AnimatedVisibility(
@@ -71,12 +76,15 @@ internal fun ChooseBindingMethod(
             val bindingMethod = bindingMethod!!
             Column {
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = {
-                    when (bindingMethod) {
-                        QR_CODE -> scanQrCode()
-                        MANUALLY -> searchUnlocatedSensors()
-                    }
-                }) {
+                Button(
+                    onClick = {
+                        when (bindingMethod) {
+                            QR_CODE -> scanQrCode()
+                            MANUALLY -> searchUnlocatedSensors()
+                        }
+                    },
+                    modifier = Modifier.testTag(ChooseBindingMethodTags.goNextButton)
+                ) {
                     Text(
                         when (bindingMethod) {
                             QR_CODE -> "Scan QR Code"
@@ -173,4 +181,10 @@ private fun Preview() {
             searchUnlocatedSensors = {}
         )
     }
+}
+
+public object ChooseBindingMethodTags {
+    public const val scanQrCode: String = "scanQrCode"
+    public const val bindManually: String = "bindManually"
+    public const val goNextButton: String = "goNextButton"
 }
