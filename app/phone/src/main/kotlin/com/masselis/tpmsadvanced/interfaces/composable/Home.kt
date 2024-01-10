@@ -114,6 +114,20 @@ internal fun VehicleHome(
                     composable(route = "${Path.Home(vehicleComponent.vehicle.uuid)}") {
                         CurrentVehicle(modifier = modifier)
                     }
+                    composable("${Path.Settings(vehicleComponent.vehicle.uuid)}") {
+                        Settings(modifier = modifier)
+                    }
+                    composable("${Path.BindingMethod(vehicleComponent.vehicle.uuid)}") {
+                        ChooseBindingMethod(
+                            scanQrCode = {
+                                navController.navigate("${Path.QrCode(vehicleComponent.vehicle.uuid)}")
+                            },
+                            searchUnlocatedSensors = {
+                                navController.navigate("${Path.Unlocated(vehicleComponent.vehicle.uuid)}")
+                            },
+                            modifier = modifier
+                        )
+                    }
                     composable("${Path.QrCode(vehicleComponent.vehicle.uuid)}") {
                         QrCodeScan(modifier = modifier)
                     }
@@ -128,9 +142,6 @@ internal fun VehicleHome(
                             },
                             modifier = modifier
                         )
-                    }
-                    composable("${Path.Settings(vehicleComponent.vehicle.uuid)}") {
-                        Settings(modifier = modifier)
                     }
                 }
             }
@@ -187,13 +198,14 @@ private fun TopAppBar(
             when (currentPath) {
                 is Path.Home -> CurrentVehicleDropdown()
                 is Path.Settings -> Text(text = "Settings")
+                is Path.BindingMethod -> Text(text = "Binding method")
                 is Path.Unlocated -> Text(text = "Binding")
                 is Path.QrCode, null -> {}
             }
         },
         navigationIcon = {
             when (currentPath) {
-                is Path.Settings, is Path.QrCode, is Path.Unlocated -> {
+                is Path.Settings, is Path.BindingMethod, is Path.QrCode, is Path.Unlocated -> {
                     IconButton(
                         onClick = { navController.popBackStack() },
                         content = {
@@ -232,20 +244,12 @@ private fun TopAppBar(
                         modifier = Modifier.testTag(HomeTags.Actions.Overflow.name)
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Scan QRCode") },
+                            text = { Text("Bind sensors") },
                             onClick = {
                                 showMenu = false
-                                navController.navigate("${Path.QrCode(currentPath.vehicleUUID)}")
+                                navController.navigate("${Path.BindingMethod(currentPath.vehicleUUID)}")
                             },
-                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.qrCode)
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Manual binding") },
-                            onClick = {
-                                showMenu = false
-                                navController.navigate("${Path.Unlocated(currentPath.vehicleUUID)}")
-                            },
-                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.unlocated)
+                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.bindingMethod)
                         )
                         DropdownMenuItem(
                             text = { Text("Settings") },
@@ -258,7 +262,7 @@ private fun TopAppBar(
                     }
                 }
 
-                is Path.Settings, is Path.QrCode, is Path.Unlocated, null -> {}
+                is Path.Settings, is Path.BindingMethod, is Path.QrCode, is Path.Unlocated, null -> {}
             }
         },
         modifier = modifier
@@ -272,8 +276,7 @@ public object HomeTags {
 
         public object Overflow {
             public const val name: String = "overflow_menu"
-            public const val qrCode: String = "action_qr_code"
-            public const val unlocated: String = "action_unlocated"
+            public const val bindingMethod: String = "bindingMethod"
             public const val settings: String = "action_settings"
         }
     }
