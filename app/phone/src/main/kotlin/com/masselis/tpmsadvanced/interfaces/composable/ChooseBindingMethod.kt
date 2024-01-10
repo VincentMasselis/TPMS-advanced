@@ -10,14 +10,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
@@ -37,7 +35,7 @@ import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.interfaces.composable.BindingMethod.MANUALLY
 import com.masselis.tpmsadvanced.interfaces.composable.BindingMethod.QR_CODE
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Suppress("NAME_SHADOWING")
 @Composable
 internal fun ChooseBindingMethod(
     scanQrCode: () -> Unit,
@@ -52,113 +50,107 @@ internal fun ChooseBindingMethod(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val qrCodeColor by animateColorAsState(
-                targetValue =
-                if (bindingMethod == QR_CODE) colorScheme.primary
-                else colorScheme.onSurfaceVariant,
-                animationSpec = tween(durationMillis = 100),
-                label = "qrCodeColor"
-            )
-            OutlinedCard(
-                shape = RoundedCornerShape(percent = 20),
-                border = BorderStroke(2.dp, qrCodeColor),
+            Method(
+                method = QR_CODE,
+                isSelected = bindingMethod == QR_CODE,
                 onClick = { bindingMethod = QR_CODE },
                 modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Scan QR Code",
-                    style = AppTypography.titleLarge,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 16.dp),
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.sysgration_sensor),
-                    contentDescription = "Sysgration sensor",
-                    contentScale = ContentScale.FillHeight,
-                    modifier = Modifier
-                        .height(100.dp)
-                        .align(Alignment.CenterHorizontally),
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Sysgration sensor",
-                    style = AppTypography.labelMedium,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                )
-                RadioButton(
-                    selected = bindingMethod == QR_CODE,
-                    onClick = { bindingMethod = QR_CODE },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            val manuallyColor by animateColorAsState(
-                targetValue =
-                if (bindingMethod == MANUALLY) colorScheme.primary
-                else colorScheme.onSurfaceVariant,
-                animationSpec = tween(durationMillis = 100),
-                label = "manuallyColor"
             )
-            OutlinedCard(
-                shape = RoundedCornerShape(percent = 20),
-                border = BorderStroke(2.dp, manuallyColor),
+            Spacer(modifier = Modifier.width(16.dp))
+            Method(
+                method = MANUALLY,
+                isSelected = bindingMethod == MANUALLY,
                 onClick = { bindingMethod = MANUALLY },
                 modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Bind manually",
-                    style = AppTypography.titleLarge,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 16.dp),
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.pecham),
-                    contentDescription = "Pecham sensor",
-                    contentScale = ContentScale.FillHeight,
-                    modifier = Modifier
-                        .height(100.dp)
-                        .align(Alignment.CenterHorizontally),
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Pecham sensor",
-                    style = AppTypography.labelMedium,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                )
-                RadioButton(
-                    selected = bindingMethod == MANUALLY,
-                    onClick = { bindingMethod = MANUALLY },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-            }
+            )
         }
         AnimatedVisibility(
             visible = bindingMethod != null,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
+            val bindingMethod = bindingMethod!!
             Column {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = {
                     when (bindingMethod) {
                         QR_CODE -> scanQrCode()
                         MANUALLY -> searchUnlocatedSensors()
-                        null -> error("")
                     }
                 }) {
                     Text(
                         when (bindingMethod) {
                             QR_CODE -> "Scan QR Code"
                             MANUALLY -> "Bind sensor one by one"
-                            null -> error("")
                         }
                     )
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun Method(
+    method: BindingMethod,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val borderColor by animateColorAsState(
+        targetValue =
+        if (isSelected) colorScheme.primary
+        else colorScheme.onSurfaceVariant,
+        animationSpec = tween(durationMillis = 100),
+        label = "color_animation_$method"
+    )
+    OutlinedCard(
+        shape = RoundedCornerShape(percent = 20),
+        border = BorderStroke(2.dp, borderColor),
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Text(
+            text = when (method) {
+                QR_CODE -> "Scan QR Code"
+                MANUALLY -> "Bind manually"
+            },
+            style = AppTypography.titleLarge,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 16.dp),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Image(
+            painter = painterResource(
+                id = when (method) {
+                    QR_CODE -> R.drawable.sysgration_sensor
+                    MANUALLY -> R.drawable.pecham_sensor
+                }
+            ),
+            contentDescription = when (method) {
+                QR_CODE -> "Sysgration sensors"
+                MANUALLY -> "Pecham sensor"
+            },
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier
+                .height(100.dp)
+                .align(Alignment.CenterHorizontally),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = when (method) {
+                QR_CODE -> "Sysgration sensors"
+                MANUALLY -> "Pecham sensor"
+            },
+            style = AppTypography.labelMedium,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
+        RadioButton(
+            selected = isSelected,
+            onClick = onClick,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
     }
 }
 
