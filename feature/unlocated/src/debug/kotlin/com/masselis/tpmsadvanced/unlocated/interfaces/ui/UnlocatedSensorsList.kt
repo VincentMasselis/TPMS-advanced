@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.interfaces.screens
+package com.masselis.tpmsadvanced.unlocated.interfaces.ui
 
 import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasAnyAncestor
@@ -7,34 +7,38 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.masselis.tpmsadvanced.core.androidtest.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.Screen
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.VehicleTyresTags
 
 context(ComposeTestRule)
-internal class UnlocatedSensorsList {
+public class UnlocatedSensorsList(block: UnlocatedSensorsList.() -> ExitToken<UnlocatedSensorsList>) :
+    Screen<UnlocatedSensorsList>(block) {
     private val sensorUnpluggedButton
-        get() = onNodeWithTag(UnlocatedSensorListTags.sensorUnplugged)
+        get() = onNodeWithTag(UnlocatedSensorListTags.sensorUnpluggedButton)
 
     private val goBackButton
-        get() = onNodeWithTag(UnlocatedSensorListTags.goBackButton)
+        get() = onNodeWithTag(UnlocatedSensorListTags.bindingFinishedGoBackButton)
 
     private fun tyreCellCard(sensorId: Int) =
         onNodeWithTag(UnlocatedSensorListTags.tyreCell(sensorId))
 
-    fun tapSensorUnplugged() {
+    init {
+        runBlock()
+    }
+
+    public fun tapSensorUnplugged() {
         sensorUnpluggedButton.performClick()
     }
 
-    fun tapSensor(sensorId: Int, block: BindDialog.() -> Unit) {
+    public fun tapSensor(sensorId: Int, block: BindDialog.() -> ExitToken<BindDialog>) {
         tyreCellCard(sensorId).performClick()
-        BindDialog().block()
+        BindDialog(block)
         waitForIdle()
         onNodeWithTag(BindDialogTags.bindDialog).assertDoesNotExist()
     }
 
-    fun assertAllLocationBound(vararg locations: Pair<Int, Vehicle.Kind.Location>) {
+    public fun assertAllLocationBound(vararg locations: Pair<Int, Vehicle.Kind.Location>) {
         locations.forEach { (sensorId, location) ->
             onAllNodesWithTag(VehicleTyresTags.tyreLocation(location))
                 .filterToOne(hasAnyAncestor(hasTestTag(UnlocatedSensorListTags.boundCell(sensorId))))
@@ -42,7 +46,8 @@ internal class UnlocatedSensorsList {
         }
     }
 
-    fun tapGoBack() {
+    public fun tapGoBack(): ExitToken<UnlocatedSensorsList> {
         goBackButton.performClick()
+        return exitToken
     }
 }

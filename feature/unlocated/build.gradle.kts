@@ -17,5 +17,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
 
+    debugImplementation(project(":core:android-test"))
+
     testImplementation(project(":core:test"))
 }

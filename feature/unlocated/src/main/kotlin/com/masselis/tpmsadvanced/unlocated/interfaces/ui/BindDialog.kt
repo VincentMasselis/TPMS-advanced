@@ -239,8 +239,9 @@ private class MockViewModel(state: State) : BindSensorViewModel {
     override fun bind(location: Location) = error("")
 }
 
-public object BindDialogTags {
-    public const val bindDialog: String = "BindDialogTags_bindDialog"
-    public const val cancelButton: String = "cancelButton"
-    public const val bindButton: String = "bindButton"
+@Suppress("ConstPropertyName")
+internal object BindDialogTags {
+    const val bindDialog: String = "BindDialogTags_bindDialog"
+    const val cancelButton: String = "BindDialogTags_cancelButton"
+    const val bindButton: String = "BindDialogTags_bindButton"
 }

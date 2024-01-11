@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.interfaces.screens
+package com.masselis.tpmsadvanced.unlocated.interfaces.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -11,13 +11,16 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.masselis.tpmsadvanced.core.androidtest.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.Screen
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.VehicleTyresTags
 
 context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-internal class BindDialog {
+public class BindDialog(block: BindDialog.() -> ExitToken<BindDialog>) :
+    Screen<BindDialog>(block) {
     private val cancelButton
         get() = onNodeWithTag(BindDialogTags.cancelButton)
 
@@ -26,25 +29,28 @@ internal class BindDialog {
 
     private fun location(location: Vehicle.Kind.Location) =
         onAllNodesWithTag(VehicleTyresTags.tyreLocation(location))
-            .filterToOne(hasAnyAncestor(isDialog()))
+            .filterToOne(hasAnyAncestor(hasTestTag(BindDialogTags.bindDialog)))
 
     init {
         waitUntilExactlyOneExists(hasTestTag(BindDialogTags.cancelButton))
+        runBlock()
     }
 
-    fun assertBindButtonIsNotEnabled() {
+    public fun assertBindButtonIsNotEnabled() {
         bindButton.assertIsNotEnabled()
     }
 
-    fun tapCancel() {
+    public fun tapCancel(): ExitToken<BindDialog> {
         cancelButton.performClick()
+        return exitToken
     }
 
-    fun tapLocation(location: Vehicle.Kind.Location) {
+    public fun tapLocation(location: Vehicle.Kind.Location) {
         location(location).performClick()
     }
 
-    fun tapBindButton() {
+    public fun tapBindButton(): ExitToken<BindDialog> {
         bindButton.performClick()
+        return exitToken
     }
 }

@@ -51,6 +51,7 @@ import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
+import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.carListDropdownMenu
 import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent.Companion.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent.Companion.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
@@ -196,7 +197,7 @@ private fun TopAppBar(
     CenterAlignedTopAppBar(
         title = {
             when (currentPath) {
-                is Path.Home -> CurrentVehicleDropdown()
+                is Path.Home -> CurrentVehicleDropdown(Modifier.testTag(carListDropdownMenu))
                 is Path.Settings -> Text(text = "Settings")
                 is Path.BindingMethod -> Text(text = "Binding method")
                 is Path.Unlocated -> Text(text = "Binding")
@@ -269,17 +270,20 @@ private fun TopAppBar(
     )
 }
 
-public object HomeTags {
-    public object Actions {
-        public const val manualBackground: String = "put_in_manual_background"
-        public const val overflow: String = "overflow_menu_icon"
+@Suppress("ConstPropertyName")
+internal object HomeTags {
 
-        public object Overflow {
-            public const val name: String = "overflow_menu"
-            public const val bindingMethod: String = "bindingMethod"
-            public const val settings: String = "action_settings"
+    const val backButton: String = "back_button"
+    const val carListDropdownMenu: String = "HomeTags_carListDropdownMenu"
+
+    object Actions {
+        const val manualBackground: String = "put_in_manual_background"
+        const val overflow: String = "overflow_menu_icon"
+
+        object Overflow {
+            const val name: String = "overflow_menu"
+            const val bindingMethod: String = "bindingMethod"
+            const val settings: String = "action_settings"
         }
     }
-
-    public const val backButton: String = "back_button"
 }

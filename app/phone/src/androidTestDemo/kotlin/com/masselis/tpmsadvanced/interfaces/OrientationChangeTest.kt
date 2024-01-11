@@ -21,6 +21,7 @@ internal class OrientationChangeTest {
                 settings {
                     assertVehicleSettingsDisplayed()
                     androidComposeTestRule.activity.requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE
+                    androidComposeTestRule.waitForIdle()
                     assertVehicleSettingsDisplayed()
                     leave()
                 }

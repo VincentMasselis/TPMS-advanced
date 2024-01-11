@@ -3,41 +3,53 @@ package com.masselis.tpmsadvanced.interfaces.screens
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.masselis.tpmsadvanced.core.androidtest.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.Screen
 import com.masselis.tpmsadvanced.interfaces.composable.ChooseBindingMethodTags
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorsList
 
 context (ComposeTestRule)
-internal class BindingMethod {
+internal class BindingMethod(block: BindingMethod.() -> ExitToken<BindingMethod>) :
+    Screen<BindingMethod>(block) {
     private val backButton
         get() = onNodeWithTag(HomeTags.backButton)
 
-    private val scanQrCode
-        get() = onNodeWithTag(ChooseBindingMethodTags.scanQrCode)
+    private val scanQrCodeRadioEntry
+        get() = onNodeWithTag(ChooseBindingMethodTags.scanQrCodeRadioEntry)
 
-    private val bindManually
-        get() = onNodeWithTag(ChooseBindingMethodTags.bindManually)
+    private val bindManuallyRadioEntry
+        get() = onNodeWithTag(ChooseBindingMethodTags.bindManuallyRadioEntry)
 
     private val goNextButton
         get() = onNodeWithTag(ChooseBindingMethodTags.goNextButton)
 
-    fun goBack() {
+    init {
+        runBlock()
+    }
+
+    fun goBack(): ExitToken<BindingMethod> {
         backButton.performClick()
+        return exitToken
     }
 
     fun tapQrCode() {
-        scanQrCode.performClick()
+        scanQrCodeRadioEntry.performClick()
     }
 
     fun tapBindManually() {
-        bindManually.performClick()
+        bindManuallyRadioEntry.performClick()
     }
 
     fun assertNextButtonHidden() {
         goNextButton.assertDoesNotExist()
     }
 
-    fun tapGoToNextButton(block: UnlocatedSensorsList.() -> Unit) {
+    fun tapGoToNextButton(
+        block: UnlocatedSensorsList.() -> ExitToken<UnlocatedSensorsList>
+    ): ExitToken<BindingMethod> {
         goNextButton.performClick()
-        UnlocatedSensorsList().block()
+        UnlocatedSensorsList(block)
+        return exitToken
     }
 }

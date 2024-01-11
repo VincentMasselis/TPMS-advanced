@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
@@ -57,7 +58,7 @@ internal fun ChooseBindingMethod(
                 onClick = { bindingMethod = QR_CODE },
                 modifier = Modifier
                     .weight(1f)
-                    .testTag(ChooseBindingMethodTags.scanQrCode)
+                    .testTag(ChooseBindingMethodTags.scanQrCodeRadioEntry)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Method(
@@ -66,7 +67,7 @@ internal fun ChooseBindingMethod(
                 onClick = { bindingMethod = MANUALLY },
                 modifier = Modifier
                     .weight(1f)
-                    .testTag(ChooseBindingMethodTags.bindManually)
+                    .testTag(ChooseBindingMethodTags.bindManuallyRadioEntry)
             )
         }
         AnimatedVisibility(
@@ -123,7 +124,7 @@ private fun Method(
                 QR_CODE -> "Scan QR Code"
                 MANUALLY -> "Bind manually"
             },
-            style = AppTypography.titleLarge,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 16.dp),
@@ -151,7 +152,7 @@ private fun Method(
                 QR_CODE -> "Sysgration sensors"
                 MANUALLY -> "Pecham sensor"
             },
-            style = AppTypography.labelMedium,
+            style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         RadioButton(
@@ -183,8 +184,9 @@ private fun Preview() {
     }
 }
 
-public object ChooseBindingMethodTags {
-    public const val scanQrCode: String = "scanQrCode"
-    public const val bindManually: String = "bindManually"
-    public const val goNextButton: String = "goNextButton"
+@Suppress("ConstPropertyName")
+internal object ChooseBindingMethodTags {
+    const val scanQrCodeRadioEntry: String = "ChooseBindingMethodTags_scanQrCodeRadioEntry"
+    const val bindManuallyRadioEntry: String = "ChooseBindingMethodTags_bindManuallyRadioEntry"
+    const val goNextButton: String = "ChooseBindingMethodTags_goNextButton"
 }

@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.interfaces
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorButton
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
@@ -56,14 +57,16 @@ internal class MainFeatureTest {
         dropdownMenu {
             select("Car")
         }
-        assertBindSensorButtonVisible(Location.Wheel(FRONT_LEFT))
-        bindSensorDialog(Location.Wheel(FRONT_LEFT)) {
-            cancel()
+        bindSensorButton(Location.Wheel(FRONT_LEFT)) {
+            assertIsDisplayed()
+            tap {
+                cancel()
+            }
+            tap {
+                addToFavorites()
+            }
+            assertIsNotDisplayed()
         }
-        bindSensorDialog(Location.Wheel(FRONT_LEFT)) {
-            addToFavorites()
-        }
-        waitBindSensorButtonHidden(Location.Wheel(FRONT_LEFT))
         actionOverflow {
             settings {
                 waitClearFavouritesEnabled()
@@ -132,9 +135,9 @@ internal class MainFeatureTest {
                 }
             }
         }
-        assertBindSensorButtonHidden(Location.Wheel(FRONT_LEFT))
-        assertBindSensorButtonHidden(Location.Wheel(FRONT_RIGHT))
-        assertBindSensorButtonHidden(Location.Wheel(REAR_LEFT))
-        assertBindSensorButtonHidden(Location.Wheel(REAR_RIGHT))
+        bindSensorButton(Location.Wheel(FRONT_LEFT)) { assertIsNotDisplayed() }
+        bindSensorButton(Location.Wheel(FRONT_RIGHT)) { assertIsNotDisplayed() }
+        bindSensorButton(Location.Wheel(REAR_LEFT)) { assertIsNotDisplayed() }
+        bindSensorButton(Location.Wheel(REAR_RIGHT)) { assertIsNotDisplayed() }
     }
 }

@@ -77,7 +77,6 @@ internal fun CurrentVehicleDropdown(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
         modifier = modifier
-            .testTag(CurrentVehicleDropdownTags.dropdownMenu)
     ) {
         Row(
             verticalAlignment = Alignment.Bottom,
@@ -215,18 +214,18 @@ private fun AddVehicle(
     }
 }
 
-public object CurrentVehicleDropdownTags {
-    public const val dropdownMenu: String = "vehicle_dropdown"
-    public fun dropdownEntry(vehicleName: String): String = "dropdown_entry_$vehicleName"
-    public const val dropdownEntryAddVehicle: String = "dropdown_item_add_vehicle"
+@Suppress("ConstPropertyName")
+internal object CurrentVehicleDropdownTags {
+    fun dropdownEntry(vehicleName: String): String = "dropdown_entry_$vehicleName"
+    const val dropdownEntryAddVehicle: String = "dropdown_item_add_vehicle"
 
-    public object AddVehicle {
-        public const val textField: String = "dialog_add_vehicle_text_field"
-        public fun kindRadio(kind: Vehicle.Kind): String =
+    object AddVehicle {
+        const val textField: String = "dialog_add_vehicle_text_field"
+        fun kindRadio(kind: Vehicle.Kind): String =
             "dialog_add_vehicle_kind_radio_${kind.name}"
 
-        public const val addButton: String = "dialog_add_vehicle_add_button"
-        public const val cancelButton: String = "dialog_add_vehicle_cancel_button"
+        const val addButton: String = "dialog_add_vehicle_add_button"
+        const val cancelButton: String = "dialog_add_vehicle_cancel_button"
 
     }
 }

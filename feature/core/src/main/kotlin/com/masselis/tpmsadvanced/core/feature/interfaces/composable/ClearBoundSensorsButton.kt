@@ -50,6 +50,7 @@ internal fun ClearBoundSensorsButton(
     }
 }
 
-public object ClearBoundSensorsButtonTags {
-    public const val tag: String = "ClearBoundSensorsButtonTags_tag"
+@Suppress("ConstPropertyName")
+internal object ClearBoundSensorsButtonTags {
+    const val tag: String = "ClearBoundSensorsButtonTags_tag"
 }

@@ -62,8 +62,9 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.goBackButton
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.sensorUnplugged
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.clearBindingsAndContinueButton
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.bindingFinishedGoBackButton
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.sensorUnpluggedButton
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel.State
 import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion.ListSensorViewModel
@@ -149,7 +150,9 @@ private fun AllWheelsAreAlreadyBound(
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = onAcknowledge,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .testTag(clearBindingsAndContinueButton)
         ) {
             Text("Clear bindings and continue")
         }
@@ -172,7 +175,7 @@ private fun UnplugEverySensor(
             onClick = onAcknowledge,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .testTag(sensorUnplugged)
+                .testTag(sensorUnpluggedButton)
         ) {
             Text("Sensors unplugged")
         }
@@ -414,7 +417,7 @@ private fun LazyListScope.allWheelsBoundMessage(
         Box(
             Modifier
                 .fillParentMaxWidth()
-                .testTag(goBackButton)
+                .testTag(bindingFinishedGoBackButton)
         ) {
             Button(
                 onClick = bindingFinished,
@@ -774,11 +777,12 @@ private class MockListSensorViewModel(state: State) : ListSensorViewModel {
     override fun acknowledgeSensorUnplugged() = error("")
 }
 
-public object UnlocatedSensorListTags {
-    public const val clearBindingsAndContinue: String =
-        "UnlocatedSensorListTags_clearBindingsAndContinue"
-    public const val sensorUnplugged: String = "UnlocatedSensorListTags_sensorUnplugged"
-    public fun tyreCell(sensorId: Int): String = "UnlocatedSensorListTags_tyreCell_$sensorId"
-    public fun boundCell(sensorId: Int): String = "UnlocatedSensorListTags_boundCell_$sensorId"
-    public const val goBackButton: String = "UnlocatedSensorListTags_goBackButton"
+internal object UnlocatedSensorListTags {
+    const val clearBindingsAndContinueButton: String =
+        "UnlocatedSensorListTags_clearBindingsAndContinueButton"
+    const val sensorUnpluggedButton: String = "UnlocatedSensorListTags_sensorUnpluggedButton"
+    fun tyreCell(sensorId: Int): String = "UnlocatedSensorListTags_tyreCell_$sensorId"
+    fun boundCell(sensorId: Int): String = "UnlocatedSensorListTags_boundCell_$sensorId"
+    const val bindingFinishedGoBackButton: String =
+        "UnlocatedSensorListTags_bindingFinishedGoBackButton"
 }

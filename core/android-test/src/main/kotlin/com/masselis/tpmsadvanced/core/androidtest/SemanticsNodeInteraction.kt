@@ -1,21 +1,21 @@
-package com.masselis.tpmsadvanced.interfaces.tools
+package com.masselis.tpmsadvanced.core.androidtest
 
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 
-internal fun SemanticsNodeInteraction.check(
+public fun SemanticsNodeInteraction.check(
     matcher: SemanticsMatcher,
     messagePrefixOnError: (() -> String)? = null
-) = try {
+): Boolean = try {
     assert(matcher, messagePrefixOnError)
     true
 } catch (_: AssertionError) {
     false
 }
 
-internal fun SemanticsNodeInteraction.isDisplayed() = try {
+public fun SemanticsNodeInteraction.isDisplayed(): Boolean = try {
     assertIsDisplayed()
     true
 } catch (_: AssertionError) {
