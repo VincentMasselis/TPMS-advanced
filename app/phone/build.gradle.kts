@@ -117,12 +117,14 @@ val copyScreenshot by tasks.creating(Copy::class) {
     from(downloadTestOutputFiles.destination)
     into(path)
     eachFile {
-        when {
-            name.startsWith("light_main") -> name = "1.png"
-            name.startsWith("light_settings") -> name = "2.png"
-            name.startsWith("dark_main") -> name = "3.png"
-            name.startsWith("dark_settings") -> name = "4.png"
-            else -> exclude()
+        name = when {
+            name.startsWith("light_main") -> "1.png"
+            name.startsWith("light_settings") -> "2.png"
+            name.startsWith("light_binding_method") -> "3.png"
+            name.startsWith("dark_main") -> "4.png"
+            name.startsWith("dark_settings") -> "5.png"
+            name.startsWith("dark_binding_method") -> "6.png"
+            else -> throw GradleException("File with name $name not recognized")
         }
     }
 }

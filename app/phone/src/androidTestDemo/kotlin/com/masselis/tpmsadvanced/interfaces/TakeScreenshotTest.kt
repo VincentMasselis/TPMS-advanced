@@ -60,6 +60,13 @@ internal class TakeScreenshotTest {
                 leave()
             }
         }
+        actionOverflow {
+            bindingMethod {
+                tapBindManually()
+                capture("${prefix}binding_method")
+                goBack()
+            }
+        }
     }
 
     private fun capture(name: String) = androidComposeTestRule
