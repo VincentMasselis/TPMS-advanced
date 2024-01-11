@@ -2,6 +2,8 @@ package com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel.State
@@ -81,7 +83,7 @@ internal class ListSensorViewModelImpl @AssistedInject constructor(
         .transformWhile { (searching, boundLocations) ->
             val (kind, boundSensors) = boundLocations
             if (kind.locations.subtract(boundSensors.map { it.location }.toSet()).isNotEmpty()) {
-                emit(searching)
+                emit(searching as State)
                 true
             } else {
                 emit(
@@ -96,7 +98,10 @@ internal class ListSensorViewModelImpl @AssistedInject constructor(
                 false
             }
         }
-        .catch { State.Issue }
+        .catch {
+            Firebase.crashlytics.recordException(it)
+            emit(State.Issue)
+        }
         .onEach { stateFlow.value = it }
         .launchIn(viewModelScope)
         .also {

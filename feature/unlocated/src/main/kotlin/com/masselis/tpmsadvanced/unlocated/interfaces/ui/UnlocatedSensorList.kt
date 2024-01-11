@@ -1,6 +1,8 @@
 package com.masselis.tpmsadvanced.unlocated.interfaces.ui
 
+import android.content.Intent
 import android.icu.text.DateFormat.SHORT
+import android.provider.Settings
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -19,6 +22,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -32,7 +37,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -49,6 +56,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.appendLoc
+import com.masselis.tpmsadvanced.core.ui.restartApp
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit.BAR
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
@@ -121,7 +129,7 @@ private fun Content(
                 bindingFinished = bindingFinished,
             )
 
-            State.Issue -> TODO()
+            State.Issue -> Issue()
         }
     }
 }
@@ -604,6 +612,48 @@ private fun roundedShape(
     else -> RectangleShape
 }
 
+@Composable
+private fun Issue(
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.alert_octagon),
+                contentDescription = "There is an issue to find the sensor",
+                tint = MaterialTheme.colorScheme.error,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                "Failed to search for sensors, there is an issue with the Bluetooth chip",
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row {
+            OutlinedButton(
+                onClick = {
+                    context.startActivity(Intent().apply {
+                        action = Settings.ACTION_BLUETOOTH_SETTINGS
+                    })
+                },
+            ) {
+                Text("Disable Bluetooth")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            OutlinedButton(onClick = context::restartApp) {
+                Text("Restart the app")
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
 private fun AllWheelsAreAlreadyBoundPreview() {
@@ -771,12 +821,23 @@ private fun CompletedPreview() {
     )
 }
 
+@Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
+@Composable
+private fun IssuePreview() {
+    Content(
+        vehicleUuid = UUID.randomUUID(),
+        bindingFinished = { },
+        viewModel = MockListSensorViewModel(State.Issue)
+    )
+}
+
 private class MockListSensorViewModel(state: State) : ListSensorViewModel {
     override val stateFlow = MutableStateFlow(state)
     override fun acknowledgeAndClearBinding() = error("")
     override fun acknowledgeSensorUnplugged() = error("")
 }
 
+@Suppress("ConstPropertyName")
 internal object UnlocatedSensorListTags {
     const val clearBindingsAndContinueButton: String =
         "UnlocatedSensorListTags_clearBindingsAndContinueButton"
