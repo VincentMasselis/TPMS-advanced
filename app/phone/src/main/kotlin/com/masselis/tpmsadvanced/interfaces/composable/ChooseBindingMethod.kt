@@ -139,7 +139,7 @@ private fun Method(
             ),
             contentDescription = when (method) {
                 QR_CODE -> "Sysgration sensors"
-                MANUALLY -> "Pecham sensor"
+                MANUALLY -> "Pecham sensors"
             },
             contentScale = ContentScale.FillHeight,
             modifier = Modifier
@@ -150,7 +150,7 @@ private fun Method(
         Text(
             text = when (method) {
                 QR_CODE -> "Sysgration sensors"
-                MANUALLY -> "Pecham sensor"
+                MANUALLY -> "Pecham sensors"
             },
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally),
