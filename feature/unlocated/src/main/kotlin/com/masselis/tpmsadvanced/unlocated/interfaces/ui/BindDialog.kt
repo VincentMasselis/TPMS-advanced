@@ -34,9 +34,9 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_W
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.bindButton
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.bindDialog
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.cancelButton
-import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel
-import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel.State
-import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion.BindSensorViewModel
+import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindDialogViewModel
+import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindDialogViewModel.State
+import com.masselis.tpmsadvanced.unlocated.ioc.FeatureUnlocatedBinding.Companion.BindDialogViewModel
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,8 +49,8 @@ internal fun BindDialog(
     tyre: Tyre,
     onBound: () -> Unit,
     onDismissRequest: () -> Unit,
-    viewModel: BindSensorViewModel = viewModel(key = "BindSensorViewModel_${vehicleUuid}_${tyre}") {
-        BindSensorViewModel(vehicleUuid, tyre, createSavedStateHandle())
+    viewModel: BindDialogViewModel = viewModel(key = "BindSensorViewModel_${vehicleUuid}_${tyre}") {
+        BindDialogViewModel(vehicleUuid, tyre, createSavedStateHandle())
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()
@@ -136,7 +136,7 @@ private fun BindDialogCarPreview() {
     BindDialog(
         UUID.randomUUID(),
         tyre = mockTyre(1),
-        viewModel = MockViewModel(
+        viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(),
                 setOf(Location.Wheel(FRONT_LEFT))
@@ -153,7 +153,7 @@ private fun BindDialogTrailerPreview() {
     BindDialog(
         UUID.randomUUID(),
         tyre = mockTyre(1),
-        viewModel = MockViewModel(
+        viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(kind = SINGLE_AXLE_TRAILER),
                 setOf(Location.Side(LEFT))
@@ -170,7 +170,7 @@ private fun BindDialogMotorcyclePreview() {
     BindDialog(
         UUID.randomUUID(),
         tyre = mockTyre(1),
-        viewModel = MockViewModel(
+        viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(kind = MOTORCYCLE),
                 setOf(Location.Axle(FRONT))
@@ -187,7 +187,7 @@ private fun BindDialogTadpolePreview() {
     BindDialog(
         UUID.randomUUID(),
         tyre = mockTyre(1),
-        viewModel = MockViewModel(
+        viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(kind = TADPOLE_THREE_WHEELER),
                 setOf(Location.Wheel(FRONT_LEFT))
@@ -204,7 +204,7 @@ private fun BindDialogDeltaPreview() {
     BindDialog(
         UUID.randomUUID(),
         tyre = mockTyre(1),
-        viewModel = MockViewModel(
+        viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(kind = DELTA_THREE_WHEELER),
                 setOf(Location.Axle(FRONT))
@@ -221,7 +221,7 @@ private fun BindDialogAlreadyBoundPreview() {
     BindDialog(
         UUID.randomUUID(),
         tyre = mockTyre(1),
-        viewModel = MockViewModel(
+        viewModel = MockBindDialogViewModel(
             State.BoundToAnOtherVehicle(
                 mockVehicle(),
                 emptySet(),
@@ -234,7 +234,7 @@ private fun BindDialogAlreadyBoundPreview() {
     )
 }
 
-private class MockViewModel(state: State) : BindSensorViewModel {
+private class MockBindDialogViewModel(state: State) : BindDialogViewModel {
     override val stateFlow: StateFlow<State> = MutableStateFlow(state)
     override fun bind(location: Location) = error("")
 }

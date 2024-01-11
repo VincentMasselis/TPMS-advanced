@@ -10,7 +10,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
-import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindSensorViewModel.State
+import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindDialogViewModel.State
 import com.masselis.tpmsadvanced.unlocated.usecase.BindSensorToVehicleUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -24,17 +24,17 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 @Suppress("NAME_SHADOWING")
-internal class BindSensorViewModelImpl @AssistedInject constructor(
+internal class BindDialogViewModelImpl @AssistedInject constructor(
     private val bindSensorToVehicleUseCase: BindSensorToVehicleUseCase,
     sensorDatabase: SensorDatabase,
     vehicleDatabase: VehicleDatabase,
     @Assisted private val vehicleUuid: UUID,
     @Assisted private val tyre: Tyre,
     @Assisted savedStateHandle: SavedStateHandle,
-) : ViewModel(), BindSensorViewModel {
+) : ViewModel(), BindDialogViewModel {
 
     @AssistedFactory
-    interface Factory : (UUID, Tyre, SavedStateHandle) -> BindSensorViewModelImpl
+    interface Factory : (UUID, Tyre, SavedStateHandle) -> BindDialogViewModelImpl
 
     override val stateFlow: StateFlow<State>
 

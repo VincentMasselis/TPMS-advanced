@@ -5,7 +5,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.parcelize.Parcelize
 
-internal interface BindSensorViewModel {
+internal interface BindDialogViewModel {
     sealed interface State : Parcelable {
 
         val currentVehicle: Vehicle
