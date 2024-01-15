@@ -6,29 +6,26 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.masselis.tpmsadvanced.core.androidtest.ExitToken
-import com.masselis.tpmsadvanced.core.androidtest.Screen
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.oneOffComposable
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
 context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class AddVehicle(block: AddVehicle.() -> ExitToken<AddVehicle>) :
-    Screen<AddVehicle>(block) {
-    private val textField
+public class AddVehicle : OneOffComposable<AddVehicle> by oneOffComposable(
+    { waitUntilExactlyOneExists(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.root)) },
+    { waitUntilDoesNotExist(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.root)) }
+) {
+    private val textFieldNode
         get() = onNodeWithTag(CurrentVehicleDropdownTags.AddVehicle.textField)
-    private val addButton
+    private val addButtonNode
         get() = onNodeWithTag(CurrentVehicleDropdownTags.AddVehicle.addButton)
-    private val cancelButton
+    private val cancelButtonNode
         get() = onNodeWithTag(CurrentVehicleDropdownTags.AddVehicle.cancelButton)
 
-    init {
-        waitUntilExactlyOneExists(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.addButton))
-        runBlock()
-    }
-
     public fun setVehicleName(name: String) {
-        textField.performTextInput(name)
+        textFieldNode.performTextInput(name)
     }
 
     public fun setKind(kind: Vehicle.Kind) {
@@ -37,12 +34,12 @@ public class AddVehicle(block: AddVehicle.() -> ExitToken<AddVehicle>) :
     }
 
     public fun add(): ExitToken<AddVehicle> {
-        addButton.performClick()
+        addButtonNode.performClick()
         return exitToken
     }
 
     public fun cancel(): ExitToken<AddVehicle> {
-        cancelButton.performClick()
+        cancelButtonNode.performClick()
         return exitToken
     }
 }

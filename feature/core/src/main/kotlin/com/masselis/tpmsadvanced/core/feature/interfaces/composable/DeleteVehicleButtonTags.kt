@@ -99,18 +99,19 @@ private fun DeleteVehicleDialog(
                 modifier = Modifier.testTag(delete)
             )
         },
-        modifier = modifier
+        modifier = modifier.testTag(DeleteVehicleButtonTags.Dialog.root)
     )
 }
 
 @Suppress("ConstPropertyName")
 internal object DeleteVehicleButtonTags {
     object Button {
-        const val tag: String = "DeleteVehicleButton_Button_tag"
+        const val tag = "DeleteVehicleButton_Button_tag"
     }
 
     object Dialog {
-        const val cancel: String = "DeleteVehicleButton_Dialog_cancel"
-        const val delete: String = "DeleteVehicleButton_Dialog_delete"
+        const val root = "DeleteVehicleButtonTags_Dialog_root"
+        const val cancel = "DeleteVehicleButton_Dialog_cancel"
+        const val delete = "DeleteVehicleButton_Dialog_delete"
     }
 }

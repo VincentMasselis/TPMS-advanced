@@ -411,5 +411,5 @@ private fun CarBigPreview() {
 }
 
 internal object VehicleTyresTags {
-    fun tyreLocation(location: Vehicle.Kind.Location): String = "tyreLocation_$location"
+    fun tyreLocation(location: Vehicle.Kind.Location) = "tyreLocation_$location"
 }

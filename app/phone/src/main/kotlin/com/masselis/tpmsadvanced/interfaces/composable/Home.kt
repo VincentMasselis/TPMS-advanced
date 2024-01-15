@@ -242,7 +242,7 @@ private fun TopAppBar(
                     DropdownMenu(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false },
-                        modifier = Modifier.testTag(HomeTags.Actions.Overflow.name)
+                        modifier = Modifier.testTag(HomeTags.Overflow.root)
                     ) {
                         DropdownMenuItem(
                             text = { Text("Bind sensors") },
@@ -250,7 +250,7 @@ private fun TopAppBar(
                                 showMenu = false
                                 navController.navigate("${Path.BindingMethod(currentPath.vehicleUUID)}")
                             },
-                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.bindingMethod)
+                            modifier = Modifier.testTag(HomeTags.Overflow.bindingMethod)
                         )
                         DropdownMenuItem(
                             text = { Text("Settings") },
@@ -258,7 +258,7 @@ private fun TopAppBar(
                                 showMenu = false
                                 navController.navigate("${Path.Settings(currentPath.vehicleUUID)}")
                             },
-                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.settings)
+                            modifier = Modifier.testTag(HomeTags.Overflow.settings)
                         )
                     }
                 }
@@ -272,18 +272,18 @@ private fun TopAppBar(
 
 @Suppress("ConstPropertyName")
 internal object HomeTags {
-
-    const val backButton: String = "back_button"
-    const val carListDropdownMenu: String = "HomeTags_carListDropdownMenu"
+    const val backButton = "HomeTags_backButton"
+    const val carListDropdownMenu = "HomeTags_carListDropdownMenu"
 
     object Actions {
-        const val manualBackground: String = "put_in_manual_background"
-        const val overflow: String = "overflow_menu_icon"
+        const val manualBackground = "HomeTags_Actions_manualBackground"
+        const val overflow = "HomeTags_Actions_overflow"
 
-        object Overflow {
-            const val name: String = "overflow_menu"
-            const val bindingMethod: String = "bindingMethod"
-            const val settings: String = "action_settings"
-        }
+    }
+
+    object Overflow {
+        const val root = "HomeTags_Overflow_root"
+        const val bindingMethod = "HomeTags_Overflow_bindingMethod"
+        const val settings = "HomeTags_Overflow_settings"
     }
 }

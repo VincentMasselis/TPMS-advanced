@@ -1,55 +1,61 @@
 package com.masselis.tpmsadvanced.interfaces.screens
 
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.masselis.tpmsadvanced.core.androidtest.ExitToken
-import com.masselis.tpmsadvanced.core.androidtest.Screen
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.Instructions
+import com.masselis.tpmsadvanced.core.androidtest.oneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.interfaces.composable.ChooseBindingMethodTags
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorsList
 
 context (ComposeTestRule)
-internal class BindingMethod(block: BindingMethod.() -> ExitToken<BindingMethod>) :
-    Screen<BindingMethod>(block) {
-    private val backButton
+@OptIn(ExperimentalTestApi::class)
+internal class BindingMethod : OneOffComposable<BindingMethod> by oneOffComposable(
+    { waitUntilExactlyOneExists(hasTestTag(ChooseBindingMethodTags.root)) },
+    { waitUntilDoesNotExist(hasTestTag(ChooseBindingMethodTags.root)) }
+) {
+    private val backButtonNode
         get() = onNodeWithTag(HomeTags.backButton)
 
-    private val scanQrCodeRadioEntry
+    private val scanQrCodeRadioEntryNode
         get() = onNodeWithTag(ChooseBindingMethodTags.scanQrCodeRadioEntry)
 
-    private val bindManuallyRadioEntry
+    private val bindManuallyRadioEntryNode
         get() = onNodeWithTag(ChooseBindingMethodTags.bindManuallyRadioEntry)
 
-    private val goNextButton
+    private val goNextButtonNode
         get() = onNodeWithTag(ChooseBindingMethodTags.goNextButton)
 
-    init {
-        runBlock()
-    }
+    private val unlocatedSensorsListTest = UnlocatedSensorsList()
 
     fun goBack(): ExitToken<BindingMethod> {
-        backButton.performClick()
+        backButtonNode.performClick()
         return exitToken
     }
 
     fun tapQrCode() {
-        scanQrCodeRadioEntry.performClick()
+        scanQrCodeRadioEntryNode.performClick()
     }
 
     fun tapBindManually() {
-        bindManuallyRadioEntry.performClick()
+        bindManuallyRadioEntryNode.performClick()
     }
 
     fun assertNextButtonHidden() {
-        goNextButton.assertDoesNotExist()
+        goNextButtonNode.assertDoesNotExist()
     }
 
     fun tapGoToNextButton(
-        block: UnlocatedSensorsList.() -> ExitToken<UnlocatedSensorsList>
+        instructions: Instructions<UnlocatedSensorsList>
     ): ExitToken<BindingMethod> {
-        goNextButton.performClick()
-        UnlocatedSensorsList(block)
+        goNextButtonNode.performClick()
+        unlocatedSensorsListTest.process(instructions)
         return exitToken
     }
 }

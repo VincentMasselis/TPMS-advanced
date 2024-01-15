@@ -32,7 +32,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.bindButton
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.bindDialog
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.root
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.BindDialogTags.cancelButton
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindDialogViewModel
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.BindDialogViewModel.State
@@ -126,7 +126,7 @@ internal fun BindDialog(
                 Text(text = "Bind")
             }
         },
-        modifier = Modifier.testTag(bindDialog)
+        modifier = Modifier.testTag(root)
     )
 }
 
@@ -241,7 +241,7 @@ private class MockBindDialogViewModel(state: State) : BindDialogViewModel {
 
 @Suppress("ConstPropertyName")
 internal object BindDialogTags {
-    const val bindDialog: String = "BindDialogTags_bindDialog"
-    const val cancelButton: String = "BindDialogTags_cancelButton"
-    const val bindButton: String = "BindDialogTags_bindButton"
+    const val root = "BindDialogTags_root"
+    const val cancelButton = "BindDialogTags_cancelButton"
+    const val bindButton = "BindDialogTags_bindButton"
 }

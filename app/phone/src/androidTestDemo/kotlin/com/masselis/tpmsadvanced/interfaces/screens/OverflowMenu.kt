@@ -5,37 +5,40 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.masselis.tpmsadvanced.core.androidtest.ExitToken
-import com.masselis.tpmsadvanced.core.androidtest.Screen
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.Instructions
+import com.masselis.tpmsadvanced.core.androidtest.process
+import com.masselis.tpmsadvanced.core.androidtest.oneOffComposable
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Settings
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 import com.masselis.tpmsadvanced.interfaces.composable.SettingsTag
 
 context(ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-internal class OverflowMenu(block: OverflowMenu.() -> ExitToken<OverflowMenu>) :
-    Screen<OverflowMenu>(block) {
-    private val settings
-        get() = onNodeWithTag(HomeTags.Actions.Overflow.settings)
+internal class OverflowMenu : OneOffComposable<OverflowMenu> by oneOffComposable(
+    { waitUntilExactlyOneExists(hasTestTag(HomeTags.Overflow.root)) },
+    { waitUntilDoesNotExist(hasTestTag(HomeTags.Overflow.root)) }
+) {
 
-    private val bindingMethod
-        get() = onNodeWithTag(HomeTags.Actions.Overflow.bindingMethod)
+    private val settingsNode
+        get() = onNodeWithTag(HomeTags.Overflow.settings)
 
-    init {
-        runBlock()
-    }
+    private val bindingMethodNode
+        get() = onNodeWithTag(HomeTags.Overflow.bindingMethod)
 
-    fun settings(block: Settings.() -> ExitToken<Settings>): ExitToken<OverflowMenu> {
-        settings.performClick()
-        Settings(HomeTags.backButton, SettingsTag.vehicle, block)
-        waitUntilExactlyOneExists(hasTestTag(HomeTags.Actions.overflow))
+    private val settingsTest = Settings(HomeTags.backButton, SettingsTag.vehicle)
+    private val bindingMethodTest = BindingMethod()
+
+    fun settings(instructions: Instructions<Settings>): ExitToken<OverflowMenu> {
+        settingsNode.performClick()
+        settingsTest.process(instructions)
         return exitToken
     }
 
-    fun bindingMethod(block: BindingMethod.() -> ExitToken<BindingMethod>): ExitToken<OverflowMenu> {
-        bindingMethod.performClick()
-        BindingMethod(block)
-        waitUntilExactlyOneExists(hasTestTag(HomeTags.Actions.overflow))
+    fun bindingMethod(instructions: Instructions<BindingMethod>): ExitToken<OverflowMenu> {
+        bindingMethodNode.performClick()
+        bindingMethodTest.process(instructions)
         return exitToken
     }
 }

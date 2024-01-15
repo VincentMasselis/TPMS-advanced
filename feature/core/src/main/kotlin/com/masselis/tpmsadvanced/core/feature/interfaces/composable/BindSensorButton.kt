@@ -102,7 +102,8 @@ private fun BindSensorDialog(
                 content = { Text("Add to favorites") },
                 modifier = Modifier.testTag(addToFavoritesButton)
             )
-        }
+        },
+        modifier = Modifier.testTag(BindSensorTags.Dialog.root)
     )
 }
 
@@ -114,7 +115,8 @@ internal object BindSensorTags {
     }
 
     object Dialog {
-        const val addToFavoritesButton: String = "BindSensor_Dialog_addToFavoritesTag"
-        const val cancelButton: String = "BindSensor_Dialog_cancel"
+        const val root = "BindSensorTags_Dialog_root"
+        const val addToFavoritesButton = "BindSensor_Dialog_addToFavoritesTag"
+        const val cancelButton = "BindSensor_Dialog_cancel"
     }
 }

@@ -111,7 +111,9 @@ private fun Content(
     val state by viewModel.stateFlow.collectAsState()
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.padding(end = 16.dp, start = 16.dp)
+        modifier = modifier
+            .padding(end = 16.dp, start = 16.dp)
+            .testTag(UnlocatedSensorListTags.root)
     ) {
         when (val state = state) {
             is State.AllWheelsAreAlreadyBound -> AllWheelsAreAlreadyBound(
@@ -839,11 +841,11 @@ private class MockListSensorViewModel(state: State) : ListSensorViewModel {
 
 @Suppress("ConstPropertyName")
 internal object UnlocatedSensorListTags {
-    const val clearBindingsAndContinueButton: String =
+    const val root = "UnlocatedSensorListTags_root"
+    const val clearBindingsAndContinueButton =
         "UnlocatedSensorListTags_clearBindingsAndContinueButton"
-    const val sensorUnpluggedButton: String = "UnlocatedSensorListTags_sensorUnpluggedButton"
-    fun tyreCell(sensorId: Int): String = "UnlocatedSensorListTags_tyreCell_$sensorId"
-    fun boundCell(sensorId: Int): String = "UnlocatedSensorListTags_boundCell_$sensorId"
-    const val bindingFinishedGoBackButton: String =
-        "UnlocatedSensorListTags_bindingFinishedGoBackButton"
+    const val sensorUnpluggedButton = "UnlocatedSensorListTags_sensorUnpluggedButton"
+    fun tyreCell(sensorId: Int) = "UnlocatedSensorListTags_tyreCell_$sensorId"
+    fun boundCell(sensorId: Int) = "UnlocatedSensorListTags_boundCell_$sensorId"
+    const val bindingFinishedGoBackButton = "UnlocatedSensorListTags_bindingFinishedGoBackButton"
 }

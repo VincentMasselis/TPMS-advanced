@@ -48,5 +48,5 @@ internal fun Settings(
 }
 
 internal object SettingsTag {
-    const val vehicle: String = "vehicle_settings"
+    const val vehicle = "SettingsTag_vehicle"
 }

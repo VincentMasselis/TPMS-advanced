@@ -148,7 +148,7 @@ private fun AddVehicle(
     var currentKind by remember { mutableStateOf<Vehicle.Kind?>(null) }
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        modifier = modifier,
+        modifier = modifier.testTag(CurrentVehicleDropdownTags.AddVehicle.root),
         title = { Text(text = "Add a new vehicle") },
         text = {
             Column(modifier = Modifier.selectableGroup()) {
@@ -216,16 +216,16 @@ private fun AddVehicle(
 
 @Suppress("ConstPropertyName")
 internal object CurrentVehicleDropdownTags {
-    fun dropdownEntry(vehicleName: String): String = "dropdown_entry_$vehicleName"
-    const val dropdownEntryAddVehicle: String = "dropdown_item_add_vehicle"
+    fun dropdownEntry(vehicleName: String) = "dropdown_entry_$vehicleName"
+    const val dropdownEntryAddVehicle = "dropdown_item_add_vehicle"
 
     object AddVehicle {
-        const val textField: String = "dialog_add_vehicle_text_field"
-        fun kindRadio(kind: Vehicle.Kind): String =
-            "dialog_add_vehicle_kind_radio_${kind.name}"
+        const val root = "CurrentVehicleDropdownTags_AddVehicle_root"
+        const val textField = "dialog_add_vehicle_text_field"
+        fun kindRadio(kind: Vehicle.Kind) = "dialog_add_vehicle_kind_radio_${kind.name}"
 
-        const val addButton: String = "dialog_add_vehicle_add_button"
-        const val cancelButton: String = "dialog_add_vehicle_cancel_button"
+        const val addButton = "dialog_add_vehicle_add_button"
+        const val cancelButton = "dialog_add_vehicle_cancel_button"
 
     }
 }

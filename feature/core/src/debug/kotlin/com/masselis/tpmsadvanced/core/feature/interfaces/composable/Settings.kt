@@ -10,17 +10,22 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import com.masselis.tpmsadvanced.core.androidtest.ExitToken
-import com.masselis.tpmsadvanced.core.androidtest.Screen
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.Instructions
 import com.masselis.tpmsadvanced.core.androidtest.check
+import com.masselis.tpmsadvanced.core.androidtest.oneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.process
 
 context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
 public class Settings(
     private val backButtonTag: String,
     private val containerTag: String,
-    block: Settings.() -> ExitToken<Settings>
-) : Screen<Settings>(block) {
+) : OneOffComposable<Settings> by oneOffComposable(
+    { waitUntilExactlyOneExists(hasTestTag(containerTag)) },
+    { waitUntilDoesNotExist(hasTestTag(containerTag)) }
+) {
     private val backButton
         get() = onNodeWithTag(backButtonTag)
 
@@ -28,21 +33,18 @@ public class Settings(
         get() = onNodeWithTag(DeleteVehicleButtonTags.Button.tag)
 
     private val clearFavouritesButton
-        get() = onNodeWithTag(ClearBoundSensorsButtonTags.tag)
+        get() = onNodeWithTag(ClearBoundSensorsButtonTags.root)
 
-    init {
-        runBlock()
-    }
+    private val deleteVehicleDialogTest = DeleteVehicleDialog()
 
     public fun assertVehicleSettingsDisplayed() {
         onNodeWithTag(containerTag).assertIsDisplayed()
     }
 
-    public fun deleteVehicle(block: DeleteVehicleDialog.() -> ExitToken<DeleteVehicleDialog>): ExitToken<Settings> {
+    public fun deleteVehicle(instructions: Instructions<DeleteVehicleDialog>): ExitToken<Settings> {
         deleteVehicleButton.performScrollTo()
         deleteVehicleButton.performClick()
-        DeleteVehicleDialog(block)
-        waitUntilDoesNotExist(hasTestTag(DeleteVehicleButtonTags.Dialog.delete))
+        deleteVehicleDialogTest.process(instructions)
         return exitToken
     }
 
@@ -59,7 +61,7 @@ public class Settings(
         waitUntil { clearFavouritesButton.check(isEnabled()) }
 
     public fun waitClearFavouritesDisabled() {
-        clearFavouritesButton.check(isNotEnabled())
+        waitUntil { clearFavouritesButton.check(isNotEnabled()) }
     }
 
     public fun leave(): ExitToken<Settings> {

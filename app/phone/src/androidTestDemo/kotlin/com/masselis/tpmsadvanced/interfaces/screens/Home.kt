@@ -7,34 +7,35 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.masselis.tpmsadvanced.core.androidtest.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.Instructions
+import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorButton
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorDialog
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.DropdownMenu
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 
 
 context (ComposeTestRule)
-@OptIn(ExperimentalTestApi::class)
 internal class Home private constructor() {
 
     private val carListDropdownMenu get() = onNodeWithTag(HomeTags.carListDropdownMenu)
     private val actionOverflowButton get() = onNodeWithTag(HomeTags.Actions.overflow)
 
-    fun dropdownMenu(block: DropdownMenu.() -> ExitToken<DropdownMenu>) {
+    private val dropdownMenuTest = DropdownMenu(HomeTags.carListDropdownMenu)
+    private val overflowMenuTest = OverflowMenu()
+
+    fun dropdownMenu(instructions: Instructions<DropdownMenu>) {
         carListDropdownMenu.performClick()
-        DropdownMenu(HomeTags.carListDropdownMenu, block)
+        dropdownMenuTest.process(instructions)
         waitForIdle()
     }
 
     fun bindSensorButton(location: Vehicle.Kind.Location, block: BindSensorButton.() -> Unit) =
-        BindSensorButton(location, block)
+        BindSensorButton(location).block()
 
-    fun actionOverflow(block: OverflowMenu.() -> ExitToken<OverflowMenu>) {
+    fun actionOverflow(block: Instructions<OverflowMenu>) {
         actionOverflowButton.performClick()
-        OverflowMenu(block)
-        waitUntilDoesNotExist(hasTestTag(HomeTags.Actions.Overflow.name))
+        overflowMenuTest.process(block)
     }
 
     companion object {

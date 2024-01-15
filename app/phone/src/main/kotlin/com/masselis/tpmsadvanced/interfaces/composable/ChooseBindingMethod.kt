@@ -47,7 +47,9 @@ internal fun ChooseBindingMethod(
     var bindingMethod by rememberSaveable { mutableStateOf(null as BindingMethod?) }
     Column(
         verticalArrangement = Arrangement.Center,
-        modifier = modifier.padding(start = 16.dp, end = 16.dp)
+        modifier = modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .testTag(ChooseBindingMethodTags.root)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -186,7 +188,8 @@ private fun Preview() {
 
 @Suppress("ConstPropertyName")
 internal object ChooseBindingMethodTags {
-    const val scanQrCodeRadioEntry: String = "ChooseBindingMethodTags_scanQrCodeRadioEntry"
-    const val bindManuallyRadioEntry: String = "ChooseBindingMethodTags_bindManuallyRadioEntry"
-    const val goNextButton: String = "ChooseBindingMethodTags_goNextButton"
+    const val root = "ChooseBindingMethodTags_root"
+    const val scanQrCodeRadioEntry = "ChooseBindingMethodTags_scanQrCodeRadioEntry"
+    const val bindManuallyRadioEntry = "ChooseBindingMethodTags_bindManuallyRadioEntry"
+    const val goNextButton = "ChooseBindingMethodTags_goNextButton"
 }

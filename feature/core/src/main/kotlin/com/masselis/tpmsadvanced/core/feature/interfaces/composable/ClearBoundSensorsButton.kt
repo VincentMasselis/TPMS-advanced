@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.ClearBoundSensorsButtonTags.tag
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.ClearBoundSensorsButtonTags.root
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
@@ -41,7 +41,7 @@ internal fun ClearBoundSensorsButton(
             onClick = { viewModel.clear() },
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .testTag(tag),
+                .testTag(root),
         ) {
             Icon(ImageVector.vectorResource(id = R.drawable.link_variant_remove), null)
             Spacer(Modifier.width(6.dp))
@@ -52,5 +52,5 @@ internal fun ClearBoundSensorsButton(
 
 @Suppress("ConstPropertyName")
 internal object ClearBoundSensorsButtonTags {
-    const val tag: String = "ClearBoundSensorsButtonTags_tag"
+    const val root = "ClearBoundSensorsButtonTags_root"
 }
