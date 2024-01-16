@@ -3,7 +3,6 @@ package com.masselis.tpmsadvanced.feature.shortcut.usecase
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.feature.shortcut.ioc.ShortcutUseCase
 import dagger.Component
-import javax.inject.Inject
 
 @Component(
     dependencies = [
@@ -13,28 +12,18 @@ import javax.inject.Inject
 @FeatureShortcutComponent.Scope
 internal interface FeatureShortcutComponent {
 
-    @Component.Factory
-    interface Factory {
-        fun build(featureCoreComponent: FeatureCoreComponent = FeatureCoreComponent): FeatureShortcutComponent
-    }
-
     @javax.inject.Scope
     annotation class Scope
 
-    fun inject(injectable: Injectable)
+    val shortcutUseCase: ShortcutUseCase
 
-    companion object : Injectable()
-
-    abstract class Injectable : FeatureShortcutComponent by DaggerFeatureShortcutComponent
-        .factory()
+    companion object : FeatureShortcutComponent by DaggerFeatureShortcutComponent
+        .builder()
+        .featureCoreComponent(FeatureCoreComponent)
         .build() {
-
-        @Inject
-        lateinit var shortcutUseCase: ShortcutUseCase
-
         init {
-            @Suppress("LeakingThis")
-            inject(this)
+            // Initialize it
+            shortcutUseCase
         }
     }
 }

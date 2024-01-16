@@ -1,21 +1,27 @@
 plugins {
     id("android-lib")
+    id("compose")
     id("dagger")
 }
 
 android {
     namespace = "com.masselis.tpmsadvanced.qrcode"
-    enableCompose(this)
 }
 
 dependencies {
-    api(project(":feature:core"))
+    implementation(project(":feature:core"))
 
-    api(project(":core:common"))
-    api(project(":core:ui"))
+    implementation(project(":data:vehicle"))
+    implementation(project(":data:unit"))
+    implementation(project(":data:app"))
 
-    implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.2.0")
-    implementation("androidx.camera:camera-camera2:1.2.3")
-    implementation("androidx.camera:camera-lifecycle:1.2.3")
-    implementation("androidx.camera:camera-mlkit-vision:1.3.0-beta01")
+    implementation(project(":core:common"))
+    implementation(project(":core:ui"))
+
+    testImplementation(project(":core:test"))
+
+    implementation(libs.google.mlkit.barecode)
+    implementation(libs.androidx.camera2.core)
+    implementation(libs.androidx.camera2.lifecycle)
+    implementation(libs.androidx.camera2.mlkitvision)
 }

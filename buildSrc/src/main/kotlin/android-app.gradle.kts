@@ -1,9 +1,5 @@
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    id("kotlin-parcelize")
-}
-
-android {
-    base(this)
+    com.android.application
+    `kotlin-parcelize`
+    id("android-common")
 }

@@ -1,0 +1,50 @@
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle;
+import java.util.UUID;
+import kotlin.Int;
+
+CREATE TABLE Sensor(
+    id INTEGER AS Int NOT NULL PRIMARY KEY,
+    location INTEGER AS Vehicle.Kind.Location NOT NULL,
+    vehicleId TEXT AS UUID NOT NULL,
+    FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE,
+    UNIQUE(location, vehicleId)
+);
+
+/**
+Insert the sensor. If the sensor already exists in the database, this instruction moves the sensor
+from the previous car and set it into the new car.
+*/
+upsert:
+INSERT INTO Sensor (id, location, vehicleId)
+VALUES (?, ?, ?)
+ON CONFLICT(id) DO
+UPDATE SET location=excluded.location, vehicleId=excluded.vehicleId;
+
+deleteByVehicle:
+DELETE FROM Sensor WHERE rowid IN (
+    SELECT Sensor.rowid FROM Sensor
+    INNER JOIN Vehicle ON Sensor.vehicleId = Vehicle.uuid
+    WHERE Vehicle.uuid = ?
+);
+
+deleteByVehicleAndLocation:
+DELETE FROM Sensor WHERE vehicleId = ? AND location = ?;
+
+selectByVehicleAndLocation:
+SELECT Sensor.* FROM Sensor
+INNER JOIN Vehicle ON Sensor.vehicleId = Vehicle.uuid
+WHERE Vehicle.uuid = ? AND location = ?;
+
+countByVehicle:
+SELECT COUNT(Sensor.rowid) FROM Sensor
+INNER JOIN Vehicle ON Sensor.vehicleId = Vehicle.uuid
+WHERE Vehicle.uuid = ?;
+
+selectById:
+SELECT * FROM Sensor WHERE Sensor.id = ?;
+
+selectListByVehicleId:
+SELECT * FROM Sensor WHERE Sensor.vehicleId = ?;
+
+selectListExcludingVehicleId:
+SELECT * FROM Sensor WHERE Sensor.vehicleId != ?;

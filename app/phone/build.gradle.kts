@@ -1,20 +1,32 @@
-@file:Suppress("LocalVariableName")
+@file:Suppress("LocalVariableName", "UnstableApiUsage")
 
-import com.masselis.tpmsadvanced.publisher.AndroidPublisherExtension
-import com.masselis.tpmsadvanced.publisher.AndroidPublisherPlugin
-import com.masselis.tpmsadvanced.publisher.PromoteToMain
-import com.masselis.tpmsadvanced.publisher.PublishToBeta
+import com.masselis.tpmsadvanced.github.GithubExtension
+import com.masselis.tpmsadvanced.github.GithubPlugin
+import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
+import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
+import com.masselis.tpmsadvanced.playstore.UpdatePlayStoreScreenshots
 
 plugins {
     id("android-app")
+    id("compose")
     id("dagger")
 }
 
 val isDecrypted: Boolean by rootProject.extra
 if (isDecrypted) {
     // Needs the google-services.json file to work
-    apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
+    apply(plugin = libs.plugins.google.services.get().pluginId)
+    apply(plugin = libs.plugins.crashlytics.get().pluginId)
+
+    apply<PlayStorePlugin>()
+    configure<PlayStoreExtension> {
+        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
+    }
+    apply<GithubPlugin>()
+    configure<GithubExtension> {
+        val GITHUB_TOKEN: String by rootProject.extra
+        githubToken = GITHUB_TOKEN
+    }
 }
 
 val tpmsAdvancedVersionCode: Int by rootProject.extra
@@ -24,7 +36,7 @@ android {
         namespace = "com.masselis.tpmsadvanced"
 
         versionCode = tpmsAdvancedVersionCode
-        versionName = "1.2"
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
@@ -61,77 +73,66 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    enableCompose(this)
 }
 
 dependencies {
-    val testServicesVersion: String by project
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:debug-ui"))
+
     implementation(project(":data:app"))
-    implementation(project(":feature:core"))
-    implementation(project(":feature:unit"))
-    implementation(project(":feature:qrcode"))
+    implementation(project(":data:unit"))
+    implementation(project(":data:vehicle"))
+
     implementation(project(":feature:background"))
+    implementation(project(":feature:core"))
+    implementation(project(":feature:unlocated"))
+    implementation(project(":feature:qrcode"))
     implementation(project(":feature:shortcut"))
+    implementation(project(":feature:unit"))
 
     testImplementation(project(":core:test"))
-    androidTestUtil("androidx.test:orchestrator:$testServicesVersion")
-    androidTestUtil("androidx.test.services:test-services:$testServicesVersion")
+
+    androidTestUtil(libs.test.orchestrator)
+    androidTestUtil(libs.test.services)
     androidTestImplementation(project(":core:android-test"))
 }
 
-afterEvaluate {
-    val connectedDemoDebugAndroidTest = tasks.getByPath("connectedDemoDebugAndroidTest")
+val clearTestOutputFilesFolder by tasks.creating(ClearTestOutputFilesFolder::class) {
+    dependsOn(":waitForDevice")
+    adbExecutable = android.adbExecutable
+}
 
-    tasks.create<ClearTestOutputFilesFolder>("clearTestOutputFilesFolder") {
-        connectedDemoDebugAndroidTest.dependsOn(this)
-        adbExecutable = android.adbExecutable
-    }
+val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
+    adbExecutable = android.adbExecutable
+    destination = layout.buildDirectory.dir("test_outputfiles")
+}
 
-    val outputFilesDir = layout.buildDirectory.dir("test_outputfiles")
-    val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
-        dependsOn(connectedDemoDebugAndroidTest)
-        adbExecutable = android.adbExecutable
-        destination = outputFilesDir
-    }
-
-    tasks.create<Copy>("copyScreenshot") {
-        dependsOn(downloadTestOutputFiles)
-        group = "publishing"
-        description =
-            "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
-        val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
-        from(outputFilesDir)
-        into(path)
-        eachFile {
-            when {
-                name.startsWith("light_main") -> name = "1.png"
-                name.startsWith("light_settings") -> name = "2.png"
-                name.startsWith("dark_main") -> name = "3.png"
-                name.startsWith("dark_settings") -> name = "4.png"
-                else -> exclude()
-            }
+val copyScreenshot by tasks.creating(Copy::class) {
+    dependsOn(downloadTestOutputFiles)
+    group = "publishing"
+    description =
+        "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
+    val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
+    from(downloadTestOutputFiles.destination)
+    into(path)
+    eachFile {
+        name = when {
+            name.startsWith("light_main") -> "1.png"
+            name.startsWith("light_settings") -> "2.png"
+            name.startsWith("light_binding_method") -> "3.png"
+            name.startsWith("dark_main") -> "4.png"
+            name.startsWith("dark_settings") -> "5.png"
+            name.startsWith("dark_binding_method") -> "6.png"
+            else -> throw GradleException("File with name $name not recognized")
         }
     }
 }
+tasks.withType<UpdatePlayStoreScreenshots> {
+    dependsOn(copyScreenshot)
+}
 
-if (isDecrypted) {
-    apply<AndroidPublisherPlugin>()
-    configure<AndroidPublisherExtension> {
-        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
-    }
-    tasks.create<PublishToBeta>("publishToBeta") {
-        dependsOn("bundleNormalRelease")
-        packageName = android.defaultConfig.applicationId
-        releaseBundle = layout.buildDirectory.file("outputs/bundle/normalRelease/phone-normal-release.aab")
-        releaseNotes = layout.projectDirectory.file("src/normal/play/release-notes/en-US/beta.txt")
-    }
-    tasks.create<PromoteToMain>("promoteToMain") {
-        dependsOn("copyScreenshot")
-        packageName = android.defaultConfig.applicationId
-        currentVc = tpmsAdvancedVersionCode
-        screenshotDirectory = layout.projectDirectory.dir("src/normal/play/listings/en-US/graphics/phone-screenshots")
-    }
+tasks.matching { it.name == "connectedDemoDebugAndroidTest" }.configureEach {
+    dependsOn(clearTestOutputFilesFolder)
+    downloadTestOutputFiles.dependsOn(this)
 }

@@ -6,23 +6,12 @@ pluginManagement {
         google()
         mavenCentral()
     }
-    val agpVersion: String by settings
-    val kotlinVersion: String by settings
-    val sqlDelightVersion: String by settings
-    plugins {
-        id("com.android.application") version agpVersion
-        id("com.android.library") version agpVersion
-        id("org.jetbrains.kotlin.android") version kotlinVersion
-        id("org.jetbrains.kotlin.kapt") version kotlinVersion
-        id("com.google.gms.google-services") version "4.3.15"
-        id("com.google.firebase.crashlytics") version "2.9.6"
-        id("app.cash.sqldelight") version sqlDelightVersion
-        id("io.gitlab.arturbosch.detekt") version "1.23.0"
-        id("dev.shreyaspatil.compose-compiler-report-generator") version "1.0.0"
-    }
 }
 
 plugins {
+    // From https://docs.gradle.org/current/userguide/platforms.html: "You cannot use a plugin
+    // declared in a version catalog in your settings file or settings plugin (because catalogs are
+    // defined in settings themselves, it would be a chicken and egg problem)."
     id("com.gradle.enterprise") version "3.13.3"
 }
 
@@ -43,20 +32,20 @@ gradleEnterprise {
     }
 }
 
-rootProject.name = "TPMS Advanced"
+//rootProject.name = "TPMS Advanced" <-- Avoid to set this to keep module naming clean into the IDE, learn more: https://stackoverflow.com/questions/62762955/module-names-in-android-studio#comment136480349_62762955
 include(":core:common")
 include(":core:test")
 include(":core:android-test")
 include(":core:ui")
 include(":core:debug-ui")
 include(":core:database")
-include(":data:record")
 include(":data:unit")
 include(":data:app")
-include(":data:car")
+include(":data:vehicle")
 include(":feature:core")
-include(":feature:unit")
+include(":feature:unlocated")
 include(":feature:qrcode")
 include(":feature:background")
 include(":feature:shortcut")
+include(":feature:unit")
 include(":app:phone")

@@ -14,6 +14,7 @@ public abstract class ClearTestOutputFilesFolder : DefaultTask() {
     public abstract val adbExecutable: RegularFileProperty
 
     init {
+        group = "verification"
         description = "Clears the phone\'s test output files folder"
     }
 

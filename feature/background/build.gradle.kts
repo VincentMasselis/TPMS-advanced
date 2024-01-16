@@ -1,19 +1,22 @@
 plugins {
     id("android-lib")
+    id("compose")
     id("dagger")
 }
 
 android {
     namespace = "com.masselis.tpmsadvanced.feature.background"
-    enableCompose(this)
 }
 
 dependencies {
-    api(project(":core:ui"))
-    api(project(":core:common"))
-    api(project(":data:car"))
-    api(project(":data:unit"))
-    api(project(":feature:core"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:common"))
 
-    api(project(":core:debug-ui"))
+    implementation(project(":data:vehicle"))
+    implementation(project(":data:unit"))
+    implementation(project(":data:app"))
+
+    implementation(project(":feature:core"))
+
+    debugImplementation(project(":core:debug-ui"))
 }

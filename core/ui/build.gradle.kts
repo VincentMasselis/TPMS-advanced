@@ -1,42 +1,41 @@
 plugins {
     id("android-lib")
+    id("compose")
 }
 
 android {
     namespace = "com.masselis.tpmsadvanced.core.ui"
-    enableCompose(this)
 }
 
 dependencies {
-    val lifecycleVersion: String by project
-    val accompanist: String by project
     api(project(":core:common"))
-    api("androidx.savedstate:savedstate-ktx:1.2.1")
-    api("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
-    api("androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion")
-    api("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
-    api("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
-    api("androidx.lifecycle:lifecycle-process:$lifecycleVersion")
+    api(libs.androidx.savedstate)
+    api(libs.lifecycle.livedata.ktx)
+    api(libs.lifecycle.viewmodel.savedstate)
+    api(libs.lifecycle.viewmodel.ktx)
+    api(libs.lifecycle.viewmodel.compose)
+    api(libs.lifecycle.process)
 
 
-    api("androidx.compose.ui:ui")
-    api("androidx.compose.ui:ui-tooling-preview")
-    api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+    api(libs.compose.ui)
+    api(libs.compose.preview)
+    api(libs.kotlinx.collection)
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    api("androidx.compose.foundation:foundation")
+    api(libs.compose.foundation)
     // Material Design
-    api("androidx.compose.material3:material3:1.1.0-rc01")
-    api("com.google.android.material:material:1.9.0")
+    api(libs.material3)
+    api(libs.material)
     // Integration with activities
-    api("androidx.activity:activity-compose:1.7.2")
-    api("androidx.activity:activity-ktx:1.7.2")
-    api("androidx.fragment:fragment-ktx:1.6.0")
+    api(libs.compose.activity)
+    api(libs.androidx.activity)
+    api(libs.androidx.fragment)
     // Layout
-    api("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    api(libs.compose.constraintlayout)
     // Navigation
-    api("androidx.navigation:navigation-compose:2.5.3")
-    // Accompanist
-    api("com.google.accompanist:accompanist-permissions:$accompanist")
+    api(libs.compose.navigation)
+    // Tools
+    api(libs.accompanist.permissions)
+    api(libs.placeholder)
 
     implementation(project(":core:debug-ui"))
 

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -29,4 +29,4 @@ jobs:
       - name: Upload release
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: publishToBeta
+          arguments: createGithubReleaseNormalRelease publishToPlayStoreBetaNormalRelease

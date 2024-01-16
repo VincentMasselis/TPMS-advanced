@@ -4,19 +4,13 @@ buildscript {
 }
 
 plugins {
-    id("com.android.application") apply false
-    id("com.android.library") apply false
-    id("org.jetbrains.kotlin.android") apply false
-    id("org.jetbrains.kotlin.kapt") apply false
-    id("com.google.gms.google-services") apply false
-    id("com.google.firebase.crashlytics") apply false
-    id("app.cash.sqldelight") apply false
-    id("io.gitlab.arturbosch.detekt")
-    id("dev.shreyaspatil.compose-compiler-report-generator") apply false
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.crashlytics) apply false
+    alias(libs.plugins.sqldelight) apply false
 }
 
 task<Delete>("clean") {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
 
 var isDecrypted by extra(false)
@@ -28,5 +22,4 @@ try {
     println("Project secrets encrypted")
 }
 
-apply(plugin = "gittag")
 subprojects { apply(plugin = "detekt") }
