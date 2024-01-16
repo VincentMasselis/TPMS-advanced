@@ -9,7 +9,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import dagger.Module
 import dagger.Provides
 
@@ -20,58 +20,58 @@ import dagger.Provides
 )
 internal object TyreSubComponentModule {
     @Provides
-    fun internalFindTyre(useCase: FindTyreComponentUseCase): (Vehicle.Kind.Location) -> InternalTyreComponent =
+    fun internalFindTyre(useCase: FindTyreComponentUseCase): (Location) -> InternalTyreComponent =
         useCase
 
     @Provides
-    fun findTyre(useCase: FindTyreComponentUseCase): (Vehicle.Kind.Location) -> TyreComponent =
+    fun findTyre(useCase: FindTyreComponentUseCase): (Location) -> TyreComponent =
         useCase
 
     @Provides
     @VehicleComponent.Scope
-    @TyreLocationQualifier(FRONT_LEFT)
+    @WheelLocationQualifier(FRONT_LEFT)
     fun frontLeftTyreComponent(factory: InternalTyreComponent.Factory) =
-        factory.build(setOf(FRONT_LEFT))
+        factory.build(Location.Wheel(FRONT_LEFT))
 
     @Provides
     @VehicleComponent.Scope
-    @TyreLocationQualifier(FRONT_RIGHT)
+    @WheelLocationQualifier(FRONT_RIGHT)
     fun frontRightTyreComponent(factory: InternalTyreComponent.Factory) =
-        factory.build(setOf(FRONT_RIGHT))
+        factory.build(Location.Wheel(FRONT_RIGHT))
 
     @Provides
     @VehicleComponent.Scope
-    @TyreLocationQualifier(REAR_LEFT)
+    @WheelLocationQualifier(REAR_LEFT)
     fun rearLeftTyreComponent(factory: InternalTyreComponent.Factory) =
-        factory.build(setOf(REAR_LEFT))
+        factory.build(Location.Wheel(REAR_LEFT))
 
     @Provides
     @VehicleComponent.Scope
-    @TyreLocationQualifier(REAR_RIGHT)
+    @WheelLocationQualifier(REAR_RIGHT)
     fun rearRightTyreComponent(factory: InternalTyreComponent.Factory) =
-        factory.build(setOf(REAR_RIGHT))
+        factory.build(Location.Wheel(REAR_RIGHT))
 
     @Provides
     @VehicleComponent.Scope
-    @TyreAxleQualifier(FRONT)
+    @AxleQualifier(FRONT)
     fun frontTyreComponent(factory: InternalTyreComponent.Factory) =
-        factory.build(setOf(FRONT_LEFT, FRONT_RIGHT))
+        factory.build(Location.Axle(FRONT))
 
     @Provides
     @VehicleComponent.Scope
-    @TyreAxleQualifier(REAR)
+    @AxleQualifier(REAR)
     fun rearTyreComponent(factory: InternalTyreComponent.Factory) =
-        factory.build(setOf(REAR_LEFT, REAR_RIGHT))
+        factory.build(Location.Axle(REAR))
 
     @Provides
     @VehicleComponent.Scope
-    @TyreSideQualifier(LEFT)
+    @SideQualifier(LEFT)
     fun leftTyreComponent(factory: InternalTyreComponent.Factory) =
-        factory.build(setOf(FRONT_LEFT, REAR_LEFT))
+        factory.build(Location.Side(LEFT))
 
     @Provides
     @VehicleComponent.Scope
-    @TyreSideQualifier(RIGHT)
+    @SideQualifier(RIGHT)
     fun rightTyreComponent(factory: InternalTyreComponent.Factory) =
-        factory.build(setOf(FRONT_RIGHT, REAR_RIGHT))
+        factory.build(Location.Side(RIGHT))
 }

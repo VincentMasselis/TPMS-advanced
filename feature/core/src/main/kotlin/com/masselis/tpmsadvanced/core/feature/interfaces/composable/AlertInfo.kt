@@ -95,7 +95,7 @@ private class DemoVehicleComponent : InternalVehicleComponent {
         get() = error("Not implemented")
     override val vehicle: Vehicle
         get() = error("Not implemented")
-    override val carFlow: StateFlow<Vehicle>
+    override val vehicleStateFlow: StateFlow<Vehicle>
         get() = error("Not implemented")
     override val vehicleRangesUseCase: VehicleRangesUseCase
         get() = error("Not implemented")

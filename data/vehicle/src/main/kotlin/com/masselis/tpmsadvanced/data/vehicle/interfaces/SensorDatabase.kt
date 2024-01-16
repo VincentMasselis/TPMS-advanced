@@ -1,20 +1,19 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToOne
-import app.cash.sqldelight.coroutines.mapToOneOrNull
+import app.cash.sqldelight.Query
+import com.masselis.tpmsadvanced.core.database.QueryList
+import com.masselis.tpmsadvanced.core.database.QueryList.Companion.asList
+import com.masselis.tpmsadvanced.core.database.QueryOne
+import com.masselis.tpmsadvanced.core.database.QueryOne.Companion.asOne
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull.Companion.asOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 public class SensorDatabase @Inject internal constructor(
@@ -26,10 +25,8 @@ public class SensorDatabase @Inject internal constructor(
     /**
      * This method insert a sensor for a vehicle. If the sensor is already saved for an other
      * vehicle, this method moves the sensor to the new vehicle. If a sensor already exists at the
-     * same location, it replaces it. This method also check the vehicle kind when replacing the
-     * sensor. For instance, if [vehicleId] is a motorcycle with [FRONT_LEFT] sensor, putting a new
-     * [FRONT_RIGHT] sensor will automatically remove the [FRONT_LEFT] sensor because a motorcycle
-     * cannot have 2 front wheels.
+     * same location, it replaces it. This method also check the vehicle kind when before inserting
+     * the sensor.
      */
     @Suppress("CyclomaticComplexMethod")
     public suspend fun upsert(
@@ -38,31 +35,11 @@ public class SensorDatabase @Inject internal constructor(
     ): Unit = withContext(IO) {
         database.transaction {
             val kind = vehicleQueries.selectByUuid(vehicleId).executeAsOne().kind
-            fun locationToClear(vararg location: SensorLocation) {
-                queries.deleteByVehicleAndLocation(vehicleId, location.toList())
+            require(kind.locations.any { it == sensor.location }) {
+                @Suppress("MaxLineLength")
+                "Filled sensor points to a location which is not handled by the vehicle kind. Kind: $kind, sensor: $sensor"
             }
-            when (kind) {
-                Vehicle.Kind.CAR -> locationToClear(sensor.location)
-                Vehicle.Kind.SINGLE_AXLE_TRAILER -> when (sensor.location) {
-                    FRONT_LEFT, REAR_LEFT -> locationToClear(REAR_LEFT, FRONT_LEFT)
-                    FRONT_RIGHT, REAR_RIGHT -> locationToClear(FRONT_RIGHT, REAR_RIGHT)
-                }
-
-                Vehicle.Kind.MOTORCYCLE -> when (sensor.location) {
-                    FRONT_LEFT, FRONT_RIGHT -> locationToClear(FRONT_LEFT, FRONT_RIGHT)
-                    REAR_LEFT, REAR_RIGHT -> locationToClear(REAR_LEFT, REAR_RIGHT)
-                }
-
-                Vehicle.Kind.TADPOLE_THREE_WHEELER -> when (sensor.location) {
-                    FRONT_LEFT, FRONT_RIGHT -> locationToClear(sensor.location)
-                    REAR_LEFT, REAR_RIGHT -> locationToClear(REAR_LEFT, REAR_RIGHT)
-                }
-
-                Vehicle.Kind.DELTA_THREE_WHEELER -> when (sensor.location) {
-                    FRONT_LEFT, FRONT_RIGHT -> locationToClear(FRONT_LEFT, FRONT_RIGHT)
-                    REAR_LEFT, REAR_RIGHT -> locationToClear(sensor.location)
-                }
-            }
+            queries.deleteByVehicleAndLocation(vehicleId, sensor.location)
             queries.upsert(sensor.id, sensor.location, vehicleId)
         }
     }
@@ -71,21 +48,36 @@ public class SensorDatabase @Inject internal constructor(
         queries.deleteByVehicle(vehicleId)
     }
 
-    @Suppress("NAME_SHADOWING")
-    public fun selectByVehicleAndLocationFlow(
+    public fun selectByVehicleAndLocation(
         vehicleId: UUID,
-        vararg location: SensorLocation
-    ): Flow<Sensor?> = queries
-        .selectByVehicleAndLocation(vehicleId, location.toList()) { id, location, _ ->
-            Sensor(
-                id,
-                location
-            )
-        }
-        .asFlow()
-        .mapToOneOrNull(IO)
+        location: Location,
+    ): QueryOneOrNull<Sensor> = queries
+        .selectByVehicleAndLocation(vehicleId, location, mapper)
+        .asOneOrNull()
 
-    public fun countByVehicle(vehicleId: UUID): Flow<Long> = queries.countByVehicle(vehicleId)
-        .asFlow()
-        .mapToOne(IO)
+    public fun countByVehicle(vehicleId: UUID): QueryOne<Long> = queries
+        .countByVehicle(vehicleId)
+        .asOne()
+
+    public fun selectById(id: Int): QueryOneOrNull<Sensor> = queries
+        .selectById(id, mapper)
+        .asOneOrNull()
+
+    public fun selectListByVehicleId(uuid: UUID): QueryList<Sensor> = queries
+        .selectListByVehicleId(uuid, mapper)
+        .asList()
+
+    public fun selectListExcludingVehicleId(uuid: UUID): QueryList<Sensor> = queries
+        .selectListExcludingVehicleId(uuid, mapper)
+        .asList()
+
+    private companion object {
+        private val mapper: (
+            id: Int,
+            location: Location,
+            vehicleId: UUID,
+        ) -> Sensor = { id, location, _ ->
+            Sensor(id, location)
+        }
+    }
 }

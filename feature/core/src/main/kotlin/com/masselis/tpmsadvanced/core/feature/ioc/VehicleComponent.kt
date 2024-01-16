@@ -19,7 +19,7 @@ public interface VehicleComponent {
 
     @get:Named("base")
     public val vehicle: Vehicle
-    public val carFlow: StateFlow<Vehicle>
+    public val vehicleStateFlow: StateFlow<Vehicle>
 
     public val vehicleRangesUseCase: VehicleRangesUseCase
 

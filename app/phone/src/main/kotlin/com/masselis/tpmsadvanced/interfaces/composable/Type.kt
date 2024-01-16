@@ -14,7 +14,7 @@ internal val AppTypography = Typography(
     labelLarge = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
-        letterSpacing = 0.10000000149011612.sp,
+        letterSpacing = 0.1.sp,
         lineHeight = 20.sp,
         fontSize = 14.sp
     ),
@@ -77,7 +77,7 @@ internal val AppTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.W400,
-        letterSpacing = -0.25.sp,
+        letterSpacing = (-0.25).sp,
         lineHeight = 64.sp,
         fontSize = 57.sp
     ),
@@ -105,14 +105,14 @@ internal val AppTypography = Typography(
     titleMedium = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
-        letterSpacing = 0.15000000596046448.sp,
+        letterSpacing = 0.15.sp,
         lineHeight = 24.sp,
         fontSize = 16.sp
     ),
     titleSmall = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
-        letterSpacing = 0.10000000149011612.sp,
+        letterSpacing = 0.1.sp,
         lineHeight = 20.sp,
         fontSize = 14.sp
     ),

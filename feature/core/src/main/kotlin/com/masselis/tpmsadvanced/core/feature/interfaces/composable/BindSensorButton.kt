@@ -22,8 +22,8 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags.Button.tag
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags.Dialog.addToFavoritesTag
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags.Dialog.cancelTag
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags.Dialog.addToFavoritesButton
+import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorTags.Dialog.cancelButton
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
@@ -93,27 +93,30 @@ private fun BindSensorDialog(
             TextButton(
                 onClick = onDismissRequest,
                 content = { Text("Cancel") },
-                modifier = Modifier.testTag(cancelTag)
+                modifier = Modifier.testTag(cancelButton)
             )
         },
         confirmButton = {
             TextButton(
                 onClick = onBind,
                 content = { Text("Add to favorites") },
-                modifier = Modifier.testTag(addToFavoritesTag)
+                modifier = Modifier.testTag(addToFavoritesButton)
             )
-        }
+        },
+        modifier = Modifier.testTag(BindSensorTags.Dialog.root)
     )
 }
 
-public object BindSensorTags {
-    public object Button {
-        public fun tag(location: Location): String =
+@Suppress("ConstPropertyName")
+internal object BindSensorTags {
+    object Button {
+        fun tag(location: Location): String =
             "bindSensorButton_${location}"
     }
 
-    public object Dialog {
-        public const val addToFavoritesTag: String = "BindSensor_Dialog_addToFavoritesTag"
-        public const val cancelTag: String = "BindSensor_Dialog_cancel"
+    object Dialog {
+        const val root = "BindSensorTags_Dialog_root"
+        const val addToFavoritesButton = "BindSensor_Dialog_addToFavoritesTag"
+        const val cancelButton = "BindSensor_Dialog_cancel"
     }
 }

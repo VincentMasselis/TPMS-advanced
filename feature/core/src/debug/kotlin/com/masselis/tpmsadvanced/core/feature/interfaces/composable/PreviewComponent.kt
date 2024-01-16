@@ -49,7 +49,7 @@ internal class PreviewVehicleComponent(
             every { it.find(any()) } returns PreviewTyreComponent()
         },
     override val vehicle: Vehicle = previewVehicle,
-    override val carFlow: StateFlow<Vehicle> = MutableStateFlow(previewVehicle),
+    override val vehicleStateFlow: StateFlow<Vehicle> = MutableStateFlow(previewVehicle),
     override val ClearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory =
         object : ClearBoundSensorsViewModel.Factory {
             override fun invoke(savedStateHandle: SavedStateHandle): ClearBoundSensorsViewModel =

@@ -1,5 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.android.build.gradle.internal.tasks.DeviceProviderInstrumentTestTask
+import com.android.build.gradle.tasks.MergeSourceSetFolders
+
 plugins {
     id("android-lib")
     alias(libs.plugins.sqldelight)
@@ -19,8 +22,10 @@ android {
 
 dependencies {
     implementation(project(":core:common"))
-    implementation(project(":core:database"))
+    api(project(":core:database"))
     implementation(project(":data:unit"))
+
+    testImplementation(project(":core:test"))
 
     androidTestImplementation(project(":core:android-test"))
     androidTestUtil(libs.test.orchestrator)

@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName", "VariableNaming")
+
 package com.masselis.tpmsadvanced.data.vehicle.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
@@ -28,7 +30,7 @@ public interface DataVehicleComponent {
 )
 internal interface InternalComponent : DataVehicleComponent {
 
-    val debugComponentFactory: DebugComponent.Factory
+    val DebugComponent: DebugComponent.Factory
 
     companion object : InternalComponent by DaggerInternalComponent
         .builder()

@@ -3,7 +3,6 @@ package com.masselis.tpmsadvanced.qrcode.ioc
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
-import com.masselis.tpmsadvanced.qrcode.interfaces.CameraPreconditionsViewModel
 import com.masselis.tpmsadvanced.qrcode.interfaces.QRCodeViewModel
 import dagger.Component
 
@@ -22,7 +21,6 @@ internal interface FeatureQrCodeComponent {
 
     @Suppress("VariableNaming")
     val QrCodeViewModel: QRCodeViewModel.Factory
-    fun CameraPreconditionsViewModel(): CameraPreconditionsViewModel
 
     companion object : FeatureQrCodeComponent by DaggerFeatureQrCodeComponent
         .builder()

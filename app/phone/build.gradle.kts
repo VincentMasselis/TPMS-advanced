@@ -36,7 +36,7 @@ android {
         namespace = "com.masselis.tpmsadvanced"
 
         versionCode = tpmsAdvancedVersionCode
-        versionName = "1.2"
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
@@ -84,13 +84,15 @@ dependencies {
     implementation(project(":data:unit"))
     implementation(project(":data:vehicle"))
 
-    implementation(project(":feature:core"))
-    implementation(project(":feature:unit"))
-    implementation(project(":feature:qrcode"))
     implementation(project(":feature:background"))
+    implementation(project(":feature:core"))
+    implementation(project(":feature:unlocated"))
+    implementation(project(":feature:qrcode"))
     implementation(project(":feature:shortcut"))
+    implementation(project(":feature:unit"))
 
     testImplementation(project(":core:test"))
+
     androidTestUtil(libs.test.orchestrator)
     androidTestUtil(libs.test.services)
     androidTestImplementation(project(":core:android-test"))
@@ -115,12 +117,14 @@ val copyScreenshot by tasks.creating(Copy::class) {
     from(downloadTestOutputFiles.destination)
     into(path)
     eachFile {
-        when {
-            name.startsWith("light_main") -> name = "1.png"
-            name.startsWith("light_settings") -> name = "2.png"
-            name.startsWith("dark_main") -> name = "3.png"
-            name.startsWith("dark_settings") -> name = "4.png"
-            else -> exclude()
+        name = when {
+            name.startsWith("light_main") -> "1.png"
+            name.startsWith("light_settings") -> "2.png"
+            name.startsWith("light_binding_method") -> "3.png"
+            name.startsWith("dark_main") -> "4.png"
+            name.startsWith("dark_settings") -> "5.png"
+            name.startsWith("dark_binding_method") -> "6.png"
+            else -> throw GradleException("File with name $name not recognized")
         }
     }
 }

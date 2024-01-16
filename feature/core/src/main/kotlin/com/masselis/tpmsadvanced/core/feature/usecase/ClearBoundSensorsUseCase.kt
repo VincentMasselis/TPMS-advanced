@@ -16,6 +16,7 @@ internal class ClearBoundSensorsUseCase @Inject constructor(
     suspend fun clear() = sensorDatabase.deleteFromVehicle(vehicle.uuid)
 
     fun isClearingAllowed() = sensorDatabase.countByVehicle(vehicle.uuid)
+        .asFlow()
         .map { it > 0 }
         .distinctUntilChanged()
 

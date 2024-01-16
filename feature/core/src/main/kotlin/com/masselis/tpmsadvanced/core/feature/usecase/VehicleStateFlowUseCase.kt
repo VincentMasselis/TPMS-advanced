@@ -4,9 +4,10 @@ import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.plus
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -14,8 +15,6 @@ import javax.inject.Named
 @VehicleComponent.Scope
 internal class VehicleStateFlowUseCase @Inject constructor(
     @Named("base") vehicle: Vehicle,
-    scope: CoroutineScope,
     database: VehicleDatabase,
-) : StateFlow<Vehicle> by database
-    .selectByUuidFlow(vehicle.uuid)
-    .stateIn(scope, WhileSubscribed(), vehicle)
+    scope: CoroutineScope,
+) : StateFlow<Vehicle> by database.selectByUuid(vehicle.uuid).asStateFlow(scope + IO, Eagerly)

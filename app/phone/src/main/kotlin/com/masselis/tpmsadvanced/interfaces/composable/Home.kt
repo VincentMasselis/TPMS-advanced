@@ -51,12 +51,14 @@ import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
+import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.carListDropdownMenu
 import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent.Companion.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent.Companion.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.SpotlightEvent
 import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorList
 import java.util.UUID
 
 @Composable
@@ -113,11 +115,34 @@ internal fun VehicleHome(
                     composable(route = "${Path.Home(vehicleComponent.vehicle.uuid)}") {
                         CurrentVehicle(modifier = modifier)
                     }
+                    composable("${Path.Settings(vehicleComponent.vehicle.uuid)}") {
+                        Settings(modifier = modifier)
+                    }
+                    composable("${Path.BindingMethod(vehicleComponent.vehicle.uuid)}") {
+                        ChooseBindingMethod(
+                            scanQrCode = {
+                                navController.navigate("${Path.QrCode(vehicleComponent.vehicle.uuid)}")
+                            },
+                            searchUnlocatedSensors = {
+                                navController.navigate("${Path.Unlocated(vehicleComponent.vehicle.uuid)}")
+                            },
+                            modifier = modifier
+                        )
+                    }
                     composable("${Path.QrCode(vehicleComponent.vehicle.uuid)}") {
                         QrCodeScan(modifier = modifier)
                     }
-                    composable("${Path.Settings(vehicleComponent.vehicle.uuid)}") {
-                        Settings(modifier = modifier)
+                    composable("${Path.Unlocated(vehicleComponent.vehicle.uuid)}") {
+                        UnlocatedSensorList(
+                            vehicleUuid = vehicleComponent.vehicle.uuid,
+                            bindingFinished = {
+                                navController.popBackStack(
+                                    "${Path.Home(vehicleComponent.vehicle.uuid)}",
+                                    false
+                                )
+                            },
+                            modifier = modifier
+                        )
                     }
                 }
             }
@@ -172,14 +197,16 @@ private fun TopAppBar(
     CenterAlignedTopAppBar(
         title = {
             when (currentPath) {
-                is Path.Home -> CurrentVehicleDropdown()
+                is Path.Home -> CurrentVehicleDropdown(Modifier.testTag(carListDropdownMenu))
                 is Path.Settings -> Text(text = "Settings")
+                is Path.BindingMethod -> Text(text = "Binding method")
+                is Path.Unlocated -> Text(text = "Binding")
                 is Path.QrCode, null -> {}
             }
         },
         navigationIcon = {
             when (currentPath) {
-                is Path.Settings, is Path.QrCode -> {
+                is Path.Settings, is Path.BindingMethod, is Path.QrCode, is Path.Unlocated -> {
                     IconButton(
                         onClick = { navController.popBackStack() },
                         content = {
@@ -215,15 +242,15 @@ private fun TopAppBar(
                     DropdownMenu(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false },
-                        modifier = Modifier.testTag(HomeTags.Actions.Overflow.name)
+                        modifier = Modifier.testTag(HomeTags.Overflow.root)
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Scan QRCode") },
+                            text = { Text("Bind sensors") },
                             onClick = {
                                 showMenu = false
-                                navController.navigate("${Path.QrCode(currentPath.vehicleUUID)}")
+                                navController.navigate("${Path.BindingMethod(currentPath.vehicleUUID)}")
                             },
-                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.qrCode)
+                            modifier = Modifier.testTag(HomeTags.Overflow.bindingMethod)
                         )
                         DropdownMenuItem(
                             text = { Text("Settings") },
@@ -231,29 +258,32 @@ private fun TopAppBar(
                                 showMenu = false
                                 navController.navigate("${Path.Settings(currentPath.vehicleUUID)}")
                             },
-                            modifier = Modifier.testTag(HomeTags.Actions.Overflow.settings)
+                            modifier = Modifier.testTag(HomeTags.Overflow.settings)
                         )
                     }
                 }
 
-                is Path.Settings, is Path.QrCode, null -> {}
+                is Path.Settings, is Path.BindingMethod, is Path.QrCode, is Path.Unlocated, null -> {}
             }
         },
         modifier = modifier
     )
 }
 
-public object HomeTags {
-    public object Actions {
-        public const val manualBackground: String = "put_in_manual_background"
-        public const val overflow: String = "overflow_menu_icon"
+@Suppress("ConstPropertyName")
+internal object HomeTags {
+    const val backButton = "HomeTags_backButton"
+    const val carListDropdownMenu = "HomeTags_carListDropdownMenu"
 
-        public object Overflow {
-            public const val name: String = "overflow_menu"
-            public const val qrCode: String = "action_qr_code"
-            public const val settings: String = "action_settings"
-        }
+    object Actions {
+        const val manualBackground = "HomeTags_Actions_manualBackground"
+        const val overflow = "HomeTags_Actions_overflow"
+
     }
 
-    public const val backButton: String = "back_button"
+    object Overflow {
+        const val root = "HomeTags_Overflow_root"
+        const val bindingMethod = "HomeTags_Overflow_bindingMethod"
+        const val settings = "HomeTags_Overflow_settings"
+    }
 }

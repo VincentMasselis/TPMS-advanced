@@ -1,18 +1,19 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
-import app.cash.sqldelight.coroutines.mapToOne
-import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.masselis.tpmsadvanced.core.database.QueryList
+import com.masselis.tpmsadvanced.core.database.QueryList.Companion.asList
+import com.masselis.tpmsadvanced.core.database.QueryOne
+import com.masselis.tpmsadvanced.core.database.QueryOne.Companion.asOne
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull
+import com.masselis.tpmsadvanced.core.database.QueryOneOrNull.Companion.asOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import dagger.Reusable
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -32,8 +33,9 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         kind: Vehicle.Kind,
         name: String,
         isCurrent: Boolean
-    ): Unit =
-        withContext(IO) { queries.insert(id, kind, name, isCurrent) }
+    ): Unit = withContext(IO) {
+        queries.insert(id, kind, name, isCurrent)
+    }
 
     public suspend fun setIsCurrent(uuid: UUID, isCurrent: Boolean): Unit = withContext(IO) {
         queries.setAsFavourite(isCurrent, uuid)
@@ -85,61 +87,43 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         queries.delete(uuid)
     }
 
-    public fun selectIsBackgroundMonitor(uuid: UUID): Boolean = queries
+    public fun selectIsBackgroundMonitor(uuid: UUID): QueryOne<Boolean> = queries
         .selectIsBackgroundMonitor(uuid)
-        .executeAsOne()
+        .asOne()
 
-    public fun selectIsBackgroundMonitorFlow(uuid: UUID): Flow<Boolean> = queries
-        .selectIsBackgroundMonitor(uuid)
-        .asFlow()
-        .mapToOne(IO)
-
-    public suspend fun updateIsBackgroundMonitor(isBackgroundMonitor: Boolean, uuid: UUID): Unit =
-        withContext(IO) {
-            queries.updateIsBackgroundMonitor(isBackgroundMonitor, uuid)
-        }
+    public suspend fun updateIsBackgroundMonitor(
+        isBackgroundMonitor: Boolean,
+        uuid: UUID
+    ): Unit = withContext(IO) {
+        queries.updateIsBackgroundMonitor(isBackgroundMonitor, uuid)
+    }
 
     public suspend fun updateIsBackgroundMonitorList(
         isBackgroundMonitor: Boolean,
         uuids: List<UUID>
-    ): Unit =
-        withContext(IO) {
-            queries.updateIsBackgroundMonitorList(isBackgroundMonitor, uuids)
-        }
+    ): Unit = withContext(IO) {
+        queries.updateIsBackgroundMonitorList(isBackgroundMonitor, uuids)
+    }
 
     public suspend fun updateEveryIsBackgroundMonitorToFalse(): Unit = withContext(IO) {
         queries.updateEveryIsBackgroundMonitorToFalse()
     }
 
-    public fun currentVehicleFlow(): Flow<Vehicle> = queries.currentFavourite(mapper)
-        .asFlow()
-        .mapToOne(IO)
+    public fun currentVehicle(): QueryOne<Vehicle> = queries.currentFavourite(mapper).asOne()
 
-    public fun currentVehicle(): Vehicle = queries.currentFavourite(mapper).executeAsOne()
+    public fun count(): QueryOne<Long> = queries.count().asOne()
 
-    public fun count(): Long = queries.count().executeAsOne()
+    public fun selectUuidIsDeleting(): QueryList<UUID> = queries.selectUuidIsDeleting().asList()
 
-    public fun countFlow(): Flow<Long> = queries.count().asFlow().mapToOne(IO)
+    public fun selectAll(): QueryList<Vehicle> = queries.selectAll(mapper).asList()
 
-    public fun selectUuidIsDeleting(): Flow<List<UUID>> = queries.selectUuidIsDeleting()
-        .asFlow()
-        .mapToList(IO)
+    public fun selectByUuid(vehicleId: UUID): QueryOne<Vehicle> = queries
+        .selectByUuid(vehicleId, mapper)
+        .asOne()
 
-    public fun selectAllFlow(): Flow<List<Vehicle>> = queries.selectAll(mapper)
-        .asFlow()
-        .mapToList(IO)
-
-    public fun selectAll(): List<Vehicle> = queries.selectAll(mapper).executeAsList()
-
-    public fun selectByUuidFlow(vehicleId: UUID): Flow<Vehicle> =
-        queries.selectByUuid(vehicleId, mapper)
-            .asFlow()
-            .mapToOne(IO)
-
-    public fun selectBySensorId(sensorId: Int): Flow<Vehicle?> = queries
+    public fun selectBySensorId(sensorId: Int): QueryOneOrNull<Vehicle> = queries
         .selectBySensorId(sensorId, mapper)
-        .asFlow()
-        .mapToOneOrNull(IO)
+        .asOneOrNull()
 
     private companion object {
         val mapper: (

@@ -3,6 +3,8 @@ package com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
@@ -65,52 +67,57 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                 values[4] as Pressure,
                 values[5] as Pressure
             )
-        }.flatMapLatest { (atmosphere, highTemp, normalTemp, lowTemp, lowPressure, highPressure) ->
-            flow {
-                emit(
-                    if (atmosphere.pressure.hasPressure().not() ||
-                        atmosphere.pressure !in lowPressure..highPressure
+        }
+            .flatMapLatest { (atmosphere, highTemp, normalTemp, lowTemp, lowPressure, highPressure) ->
+                flow {
+                    emit(
+                        if (atmosphere.pressure.hasPressure().not() ||
+                            atmosphere.pressure !in lowPressure..highPressure
+                        )
+                            State.Alerting
+                        else
+                            when (atmosphere.temperature) {
+                                in Temperature(NEGATIVE_INFINITY)..lowTemp ->
+                                    State.Normal.BlueToGreen(Fraction(0f))
+
+                                in lowTemp..normalTemp ->
+                                    State.Normal.BlueToGreen(
+                                        Fraction(
+                                            atmosphere.temperature.celsius
+                                                .minus(lowTemp.celsius)
+                                                .div(normalTemp.celsius - lowTemp.celsius)
+                                        )
+                                    )
+
+                                in normalTemp..highTemp ->
+                                    State.Normal.GreenToRed(
+                                        Fraction(
+                                            atmosphere.temperature.celsius
+                                                .minus(normalTemp.celsius)
+                                                .div(highTemp.celsius - normalTemp.celsius)
+                                        )
+                                    )
+
+                                in highTemp..Temperature(POSITIVE_INFINITY) ->
+                                    State.Alerting
+
+                                else ->
+                                    @Suppress("ThrowingExceptionsWithoutMessageOrCause")
+                                    throw IllegalArgumentException()
+                            }
                     )
-                        State.Alerting
-                    else
-                        when (atmosphere.temperature) {
-                            in Temperature(NEGATIVE_INFINITY)..lowTemp ->
-                                State.Normal.BlueToGreen(Fraction(0f))
-
-                            in lowTemp..normalTemp ->
-                                State.Normal.BlueToGreen(
-                                    Fraction(
-                                        atmosphere.temperature.celsius
-                                            .minus(lowTemp.celsius)
-                                            .div(normalTemp.celsius - lowTemp.celsius)
-                                    )
-                                )
-
-                            in normalTemp..highTemp ->
-                                State.Normal.GreenToRed(
-                                    Fraction(
-                                        atmosphere.temperature.celsius
-                                            .minus(normalTemp.celsius)
-                                            .div(highTemp.celsius - normalTemp.celsius)
-                                    )
-                                )
-
-                            in highTemp..Temperature(POSITIVE_INFINITY) ->
-                                State.Alerting
-
-                            else ->
-                                @Suppress("ThrowingExceptionsWithoutMessageOrCause")
-                                throw IllegalArgumentException()
-                        }
-                )
-                atmosphere.timestamp
-                    .plus(obsoleteTimeout.toDouble(DurationUnit.SECONDS))
-                    .let { it - now() }
-                    .seconds
-                    .also { delay(it) }
-                emit(State.NotDetected)
+                    atmosphere.timestamp
+                        .plus(obsoleteTimeout.toDouble(DurationUnit.SECONDS))
+                        .let { it - now() }
+                        .seconds
+                        .also { delay(it) }
+                    emit(State.NotDetected)
+                }
             }
-        }.catch { emit(State.DetectionIssue) }
+            .catch {
+                Firebase.crashlytics.recordException(it)
+                emit(State.DetectionIssue)
+            }
             .onEach { mutableStateFlow.value = it }
             .launchIn(viewModelScope)
     }

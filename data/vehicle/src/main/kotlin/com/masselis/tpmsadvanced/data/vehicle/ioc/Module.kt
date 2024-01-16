@@ -1,7 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.ioc
 
 import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.sqlite.db.SupportSQLiteOpenHelper
 import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
@@ -13,10 +12,12 @@ import com.masselis.tpmsadvanced.data.vehicle.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.afterVersion3
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.BluetoothLeScannerImpl
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import dagger.Provides
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import java.util.UUID
@@ -61,15 +62,47 @@ internal object Module {
         override fun encode(value: UShort): Long = value.toLong()
     }
 
+    @Suppress("MagicNumber")
+    @Provides
+    fun locationAdapter() = object : ColumnAdapter<Location, Long> {
+
+        override fun encode(value: Location): Long = when (value) {
+            is Location.Axle -> 0L + value.axle.ordinal.toLong()
+            is Location.Side -> 10L + value.side.ordinal
+            is Location.Wheel -> 20L + value.location.ordinal
+        }
+
+        override fun decode(databaseValue: Long): Location {
+            val ordinal = databaseValue.toInt() % 10
+            return when (databaseValue) {
+                in 0..9 -> Location.Axle(
+                    SensorLocation.Axle.entries.first { it.ordinal == ordinal }
+                )
+
+                in 10..19 -> Location.Side(
+                    SensorLocation.Side.entries.first { it.ordinal == ordinal }
+                )
+
+                in 20..29 -> Location.Wheel(
+                    SensorLocation.entries.first { it.ordinal == ordinal }
+                )
+
+                else -> error("Unable to parse this input $databaseValue")
+            }
+        }
+    }
+
     @DataVehicleComponent.Scope
     @Provides
-    fun driver(): SqlDriver = AndroidSqliteDriver(
+    fun driver(locationAdapter: ColumnAdapter<Location, Long>): SqlDriver = AndroidSqliteDriver(
         schema = Database.Schema,
         context = appContext,
         name = "car.db",
         factory = RequerySQLiteOpenHelperFactory(),
-        callback = object : SupportSQLiteOpenHelper.Callback(Database.Schema.version.toInt()) {
-
+        callback = object : AndroidSqliteDriver.Callback(
+            Database.Schema,
+            Database.afterVersion3(locationAdapter),
+        ) {
             val delegate = AndroidSqliteDriver.Callback(Database.Schema)
 
             override fun onConfigure(db: SupportSQLiteDatabase) {
@@ -79,15 +112,7 @@ internal object Module {
                 db.enableWriteAheadLogging()
                 db.execSQL("PRAGMA synchronous = NORMAL")
             }
-
-            override fun onCreate(db: SupportSQLiteDatabase) {
-                delegate.onCreate(db)
-            }
-
-            override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
-                delegate.onUpgrade(db, oldVersion, newVersion)
-            }
-        }
+        },
     )
 
     @DataVehicleComponent.Scope
@@ -95,7 +120,7 @@ internal object Module {
     fun database(
         driver: SqlDriver,
         uuidAdapter: ColumnAdapter<UUID, String>,
-        sensorLocationAdapter: ColumnAdapter<SensorLocation, Long>,
+        sensorLocationAdapter: ColumnAdapter<Location, Long>,
         pressureAdapter: ColumnAdapter<Pressure, Double>,
         temperatureAdapter: ColumnAdapter<Temperature, Double>,
         uShortAdapter: ColumnAdapter<UShort, Long>,
@@ -112,6 +137,7 @@ internal object Module {
         ),
         SensorAdapter = Sensor.Adapter(IntColumnAdapter, sensorLocationAdapter, uuidAdapter),
         TyreAdapter = Tyre.Adapter(
+            IntColumnAdapter,
             IntColumnAdapter,
             sensorLocationAdapter,
             pressureAdapter,

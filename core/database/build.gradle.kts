@@ -8,6 +8,7 @@ android {
 
 dependencies {
     api(libs.sqldelight.android.driver)
+    api(libs.sqldelight.coroutines.ext)
     api(libs.sqldelight.coroutines.jvm)
     api(libs.sqldelight.primitive.adapters)
     // By default, sqldelight uses the sqlite engine bundled into the android framework which could

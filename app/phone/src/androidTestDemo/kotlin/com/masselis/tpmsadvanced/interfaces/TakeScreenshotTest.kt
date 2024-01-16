@@ -10,7 +10,8 @@ import androidx.compose.ui.test.onRoot
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
-import com.masselis.tpmsadvanced.interfaces.Home.Companion.home
+import com.masselis.tpmsadvanced.interfaces.screens.Home
+import com.masselis.tpmsadvanced.interfaces.screens.Home.Companion.home
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,18 +20,18 @@ import org.junit.runner.RunWith
 internal class TakeScreenshotTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<RootActivity>()
+    val androidComposeTestRule = createAndroidComposeRule<RootActivity>()
 
     @Test
     fun lightModeScreenshots() {
-        composeTestRule.home {
+        androidComposeTestRule.home {
             takeScreenshots(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 
     @Test
     fun darkModeScreenshots() {
-        composeTestRule.home {
+        androidComposeTestRule.home {
             dropdownMenu {
                 addVehicle {
                     setVehicleName("Motorcycle")
@@ -43,10 +44,10 @@ internal class TakeScreenshotTest {
     }
 
     private fun Home.takeScreenshots(@AppCompatDelegate.NightMode mode: Int) {
-        composeTestRule.activityRule.scenario.onActivity {
+        androidComposeTestRule.activityRule.scenario.onActivity {
             AppCompatDelegate.setDefaultNightMode(mode)
         }
-        composeTestRule.waitForIdle()
+        androidComposeTestRule.waitForIdle()
         val prefix = when (mode) {
             MODE_NIGHT_NO -> "light_"
             MODE_NIGHT_YES -> "dark_"
@@ -59,9 +60,16 @@ internal class TakeScreenshotTest {
                 leave()
             }
         }
+        actionOverflow {
+            bindingMethod {
+                tapBindManually()
+                capture("${prefix}binding_method")
+                goBack()
+            }
+        }
     }
 
-    private fun capture(name: String) = composeTestRule
+    private fun capture(name: String) = androidComposeTestRule
         .onRoot()
         .captureToImage()
         .asAndroidBitmap()

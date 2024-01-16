@@ -4,8 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.feature.usecase.SearchSensorUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.SearchSensorToBindUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.SensorBindingUseCase
+import com.masselis.tpmsadvanced.core.feature.usecase.SearchSensorToBindUseCase.Result
 import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
@@ -16,10 +17,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -27,8 +28,8 @@ import kotlinx.parcelize.Parcelize
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class BindSensorButtonViewModel @AssistedInject constructor(
     private val sensorBindingUseCase: SensorBindingUseCase,
-    private val searchSensorUseCase: SearchSensorUseCase,
-    private val currentVehicleFlow: StateFlow<Vehicle>,
+    vehicleFlow: StateFlow<Vehicle>,
+    searchSensorToBindUseCase: SearchSensorToBindUseCase,
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     @AssistedFactory
@@ -39,14 +40,14 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
         data object Empty : State()
 
         sealed class RequestBond : State() {
-            abstract val sensor: Sensor
+            abstract val foundSensor: Sensor
 
             @Parcelize
-            data class NewBinding(override val sensor: Sensor) : RequestBond()
+            data class NewBinding(override val foundSensor: Sensor) : RequestBond()
 
             @Parcelize
             data class AlreadyBound(
-                override val sensor: Sensor,
+                override val foundSensor: Sensor,
                 val currentVehicle: Vehicle,
                 val targetVehicle: Vehicle
             ) : RequestBond()
@@ -58,24 +59,21 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
     val stateFlow = mutableStateFlow.asStateFlow()
 
     init {
-        sensorBindingUseCase
-            .boundSensor()
-            .flatMapLatest { savedId ->
-                if (savedId == null) searchSensorUseCase
-                    .search()
-                    .flatMapLatest { sensor ->
-                        combine(
-                            sensorBindingUseCase.boundVehicle(sensor),
-                            currentVehicleFlow
-                        ) { boundVehicle, currentVehicle ->
-                            if (boundVehicle == null)
-                                State.RequestBond.NewBinding(sensor)
-                            else
-                                State.RequestBond.AlreadyBound(sensor, boundVehicle, currentVehicle)
-                        }
+        searchSensorToBindUseCase()
+            .flatMapLatest { result ->
+                when (result) {
+                    is Result.AlreadyBound -> flowOf(State.Empty)
+
+                    is Result.NewBinding -> flowOf(State.RequestBond.NewBinding(result.foundSensor))
+
+                    is Result.DuplicateBinding -> vehicleFlow.map { targetVehicle ->
+                        State.RequestBond.AlreadyBound(
+                            result.foundSensor,
+                            result.boundVehicle,
+                            targetVehicle
+                        )
                     }
-                else
-                    flowOf(State.Empty)
+                }
             }
             .catch { emit(State.Empty) }
             .onEach { mutableStateFlow.value = it }
@@ -84,10 +82,10 @@ internal class BindSensorButtonViewModel @AssistedInject constructor(
 
     fun bind() {
         viewModelScope.launch {
-            when (val state = stateFlow.value) {
-                State.Empty -> return@launch
-                is State.RequestBond -> sensorBindingUseCase.bind(state.sensor)
-            }
+            val state = stateFlow.value
+            if (state !is State.RequestBond)
+                return@launch
+            sensorBindingUseCase.bind(state.foundSensor)
         }
     }
 }

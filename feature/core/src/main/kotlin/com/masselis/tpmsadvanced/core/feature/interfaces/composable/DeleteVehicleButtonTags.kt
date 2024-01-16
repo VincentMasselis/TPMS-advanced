@@ -43,7 +43,7 @@ internal fun DeleteVehicleButton(
     }
 ) {
     val navController = LocalHomeNavController.current
-    val state = viewModel.stateFlow.collectAsState().value
+    val state by viewModel.stateFlow.collectAsState()
     var showDeleteDialog by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
         OutlinedButton(
@@ -99,17 +99,19 @@ private fun DeleteVehicleDialog(
                 modifier = Modifier.testTag(delete)
             )
         },
-        modifier = modifier
+        modifier = modifier.testTag(DeleteVehicleButtonTags.Dialog.root)
     )
 }
 
-public object DeleteVehicleButtonTags {
-    public object Button {
-        public const val tag: String = "DeleteVehicleButton_Button_tag"
+@Suppress("ConstPropertyName")
+internal object DeleteVehicleButtonTags {
+    object Button {
+        const val tag = "DeleteVehicleButton_Button_tag"
     }
 
-    public object Dialog {
-        public const val cancel: String = "DeleteVehicleButton_Dialog_cancel"
-        public const val delete: String = "DeleteVehicleButton_Dialog_delete"
+    object Dialog {
+        const val root = "DeleteVehicleButtonTags_Dialog_root"
+        const val cancel = "DeleteVehicleButton_Dialog_cancel"
+        const val delete = "DeleteVehicleButton_Dialog_delete"
     }
 }

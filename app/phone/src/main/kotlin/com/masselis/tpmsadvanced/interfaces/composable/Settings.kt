@@ -47,6 +47,6 @@ internal fun Settings(
     Spacer(modifier = Modifier.height(56.dp))
 }
 
-public object SettingsTag {
-    public const val vehicle: String = "vehicle_settings"
+internal object SettingsTag {
+    const val vehicle = "SettingsTag_vehicle"
 }
