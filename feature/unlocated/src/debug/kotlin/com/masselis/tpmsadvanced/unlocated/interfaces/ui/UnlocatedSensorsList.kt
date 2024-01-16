@@ -8,16 +8,16 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.ExitToken
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.Instructions
-import com.masselis.tpmsadvanced.core.androidtest.oneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
+import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
 context(ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class UnlocatedSensorsList : OneOffComposable<UnlocatedSensorsList> by oneOffComposable(
+public class UnlocatedSensorsList : EnterExitComposable<UnlocatedSensorsList> by onEnterAndOnExit(
     { waitUntilExactlyOneExists(hasTestTag(UnlocatedSensorListTags.root)) },
     { waitUntilDoesNotExist(hasTestTag(UnlocatedSensorListTags.root)) },
 ) {

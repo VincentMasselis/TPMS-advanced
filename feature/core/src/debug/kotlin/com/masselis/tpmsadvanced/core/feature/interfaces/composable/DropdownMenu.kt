@@ -5,11 +5,11 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.ExitToken
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.Instructions
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
 import com.masselis.tpmsadvanced.core.androidtest.process
-import com.masselis.tpmsadvanced.core.androidtest.oneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 
@@ -17,7 +17,7 @@ context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
 public class DropdownMenu(
     private val containerTag: String,
-) : OneOffComposable<DropdownMenu> by oneOffComposable(
+) : EnterExitComposable<DropdownMenu> by onEnterAndOnExit(
     { waitUntilExactlyOneExists(hasTestTag(dropdownEntryAddVehicle)) },
     { waitUntilDoesNotExist(hasTestTag(dropdownEntryAddVehicle)) }
 ) {

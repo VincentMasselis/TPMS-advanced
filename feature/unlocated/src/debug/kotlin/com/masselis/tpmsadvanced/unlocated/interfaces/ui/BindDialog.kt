@@ -9,14 +9,14 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.ExitToken
-import com.masselis.tpmsadvanced.core.androidtest.oneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
 context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class BindDialog : OneOffComposable<BindDialog> by oneOffComposable(
+public class BindDialog : EnterExitComposable<BindDialog> by onEnterAndOnExit(
     { waitUntilExactlyOneExists(hasTestTag(BindDialogTags.root)) },
     { waitUntilDoesNotExist(hasTestTag(BindDialogTags.root)) },
 ) {

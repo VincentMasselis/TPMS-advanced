@@ -6,14 +6,14 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.ExitToken
-import com.masselis.tpmsadvanced.core.androidtest.oneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
 context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class AddVehicle : OneOffComposable<AddVehicle> by oneOffComposable(
+public class AddVehicle : EnterExitComposable<AddVehicle> by onEnterAndOnExit(
     { waitUntilExactlyOneExists(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.root)) },
     { waitUntilDoesNotExist(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.root)) }
 ) {

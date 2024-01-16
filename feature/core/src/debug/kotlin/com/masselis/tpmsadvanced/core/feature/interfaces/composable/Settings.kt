@@ -10,11 +10,11 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.ExitToken
-import com.masselis.tpmsadvanced.core.androidtest.OneOffComposable.Instructions
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
+import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
 import com.masselis.tpmsadvanced.core.androidtest.check
-import com.masselis.tpmsadvanced.core.androidtest.oneOffComposable
+import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
 
 context (ComposeTestRule)
@@ -22,7 +22,7 @@ context (ComposeTestRule)
 public class Settings(
     private val backButtonTag: String,
     private val containerTag: String,
-) : OneOffComposable<Settings> by oneOffComposable(
+) : EnterExitComposable<Settings> by onEnterAndOnExit(
     { waitUntilExactlyOneExists(hasTestTag(containerTag)) },
     { waitUntilDoesNotExist(hasTestTag(containerTag)) }
 ) {
