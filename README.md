@@ -33,8 +33,8 @@ the [Play Store](https://play.google.com/store/apps/details?id=com.masselis.tpms
 
 You can buy them on Ali*xpress, it looks like this:
 
-![BLE5](https://user-images.githubusercontent.com/6769250/192489323-00d1f481-635e-459b-9a43-f2ff75299fa5.png)
-or  ![BLE4](https://user-images.githubusercontent.com/6769250/192489440-88d8f885-7679-4b99-9ecf-b9fff51723ed.png)
+<img width="95" alt="Capture d’écran 2024-01-16 à 16 18 59" src="https://user-images.githubusercontent.com/6769250/192489323-00d1f481-635e-459b-9a43-f2ff75299fa5.png"> or <img width="95" alt="Capture d’écran 2024-01-16 à 16 18 59" src="https://github.com/VincentMasselis/TPMS-advanced/assets/6769250/7534982b-5a44-435a-a489-0877d61adc97">
+
 
 ## Contributing
 
