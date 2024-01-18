@@ -35,6 +35,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -46,11 +47,15 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel.State
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.CurrentVehicleDropdownViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalComponent.Companion.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import java.util.UUID
 
 @Composable
 public fun CurrentVehicleDropdown(
@@ -64,7 +69,7 @@ public fun CurrentVehicleDropdown(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CurrentVehicleDropdown(
+private fun CurrentVehicleDropdown(
     modifier: Modifier = Modifier,
     viewModel: CurrentVehicleDropdownViewModel = viewModel {
         CurrentVehicleDropdownViewModel(createSavedStateHandle())
@@ -212,6 +217,32 @@ private fun AddVehicle(
         delay(200)
         focusRequester.requestFocus()
     }
+}
+
+@Preview
+@Composable
+private fun CurrentVehicleDropdownPreview() {
+    CurrentVehicleDropdown(
+        viewModel = MockCurrentVehicleDropdownViewModel(
+            State.Vehicles(
+                previewVehicle,
+                listOf(
+                    previewVehicle,
+                    previewVehicle.copy(
+                        uuid = UUID.randomUUID(),
+                        kind = Vehicle.Kind.MOTORCYCLE,
+                        name = "PREVIEW 2"
+                    )
+                )
+            )
+        )
+    )
+}
+
+private class MockCurrentVehicleDropdownViewModel(state: State) : CurrentVehicleDropdownViewModel {
+    override val stateFlow: StateFlow<State> = MutableStateFlow(state)
+    override fun setCurrent(vehicle: Vehicle) = error("")
+    override fun insert(carName: String, kind: Vehicle.Kind) = error("")
 }
 
 @Suppress("ConstPropertyName")

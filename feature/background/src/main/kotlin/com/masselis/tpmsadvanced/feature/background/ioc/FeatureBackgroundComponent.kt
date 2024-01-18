@@ -4,7 +4,7 @@ import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.DisableMonitorBroadcastReceiver
 import com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService
-import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel
+import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.impl.AutomaticBackgroundViewModelImpl
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
 import com.masselis.tpmsadvanced.feature.background.usecase.ForegroundServiceUseCase
@@ -33,7 +33,7 @@ internal interface InternalComponent : FeatureBackgroundComponent {
     val checkForPermissionUseCase: CheckForPermissionUseCase
     val foregroundServiceUseCase: ForegroundServiceUseCase
     @Suppress("VariableNaming")
-    val AutomaticBackgroundViewModel: AutomaticBackgroundViewModel.Factory
+    val AutomaticBackgroundViewModel: AutomaticBackgroundViewModelImpl.Factory
     @Suppress("VariableNaming")
     val ManualBackgroundViewModel: ManualBackgroundViewModel.Factory
 

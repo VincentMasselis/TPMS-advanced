@@ -10,6 +10,7 @@ plugins {
     id("android-app")
     id("compose")
     id("dagger")
+    id("paparazzi")
 }
 
 val isDecrypted: Boolean by rootProject.extra

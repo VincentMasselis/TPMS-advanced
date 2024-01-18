@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.CurrentVehicleDropdownViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.CurrentVehicleDropdownViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
@@ -42,7 +42,7 @@ internal interface InternalComponent : FeatureCoreComponent {
     fun PreconditionsViewModel(): PreconditionsViewModel
 
     @Suppress("VariableNaming")
-    val CurrentVehicleDropdownViewModel: CurrentVehicleDropdownViewModel.Factory
+    val CurrentVehicleDropdownViewModel: CurrentVehicleDropdownViewModelImpl.Factory
 
     val vehicleComponentCacheUseCase: VehicleComponentCacheUseCase
 

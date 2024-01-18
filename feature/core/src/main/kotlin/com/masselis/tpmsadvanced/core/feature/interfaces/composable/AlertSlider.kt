@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
@@ -29,12 +30,12 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.fahrenhe
 
 @Composable
 internal fun PressureRangeSlider(
-    onInfo: () -> Unit,
-    pressures: ClosedFloatingPointRange<Pressure>,
-    unit: PressureUnit,
-    valueRange: ClosedFloatingPointRange<Pressure>,
-    modifier: Modifier = Modifier,
+    minMaxRange: ClosedFloatingPointRange<Pressure>,
+    values: ClosedFloatingPointRange<Pressure>,
     onValue: (ClosedFloatingPointRange<Pressure>) -> Unit,
+    openInfo: () -> Unit,
+    unit: PressureUnit,
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -44,13 +45,13 @@ internal fun PressureRangeSlider(
                     "Expected pressure range: ",
                     SpanStyle(fontWeight = FontWeight.Medium)
                 ) + AnnotatedString(
-                    "${pressures.start.string(unit)} to ${pressures.endInclusive.string(unit)}",
+                    "${values.start.string(unit)} to ${values.endInclusive.string(unit)}",
                     SpanStyle(fontWeight = FontWeight.Bold)
                 ),
                 modifier = Modifier.weight(1f)
             )
             IconButton(
-                onClick = onInfo,
+                onClick = openInfo,
                 content = {
                     Icon(
                         imageVector = Icons.Outlined.Info,
@@ -61,17 +62,17 @@ internal fun PressureRangeSlider(
         }
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                valueRange.start.string(unit),
+                minMaxRange.start.string(unit),
                 Modifier.align(Alignment.TopStart)
             )
             Text(
-                valueRange.endInclusive.string(unit),
+                minMaxRange.endInclusive.string(unit),
                 Modifier.align(Alignment.TopEnd)
             )
         }
         RangeSlider(
-            value = pressures.start.convert(unit)..pressures.endInclusive.convert(unit),
-            valueRange = valueRange.start.convert(unit)..valueRange.endInclusive.convert(unit),
+            value = values.start.convert(unit)..values.endInclusive.convert(unit),
+            valueRange = minMaxRange.start.convert(unit)..minMaxRange.endInclusive.convert(unit),
             onValueChange = {
                 onValue(
                     when (unit) {
@@ -85,14 +86,26 @@ internal fun PressureRangeSlider(
     }
 }
 
+@Preview
+@Composable
+internal fun PressureRangeSliderPreview() {
+    PressureRangeSlider(
+        values = 1.5f.bar..2.5f.bar,
+        minMaxRange = 0.5f.bar..5f.bar,
+        onValue = {},
+        openInfo = {},
+        unit = PressureUnit.BAR,
+    )
+}
+
 @Composable
 internal fun TemperatureSlider(
-    onInfo: () -> Unit,
     title: String,
-    temperature: Temperature,
-    unit: TemperatureUnit,
+    minMaxRange: ClosedFloatingPointRange<Temperature>,
+    value: Temperature,
     onValue: (Temperature) -> Unit,
-    valueRange: ClosedFloatingPointRange<Temperature>,
+    openInfo: () -> Unit,
+    unit: TemperatureUnit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
@@ -103,13 +116,13 @@ internal fun TemperatureSlider(
                     "$title ",
                     SpanStyle(fontWeight = FontWeight.Medium)
                 ) + AnnotatedString(
-                    temperature.string(unit),
+                    value.string(unit),
                     SpanStyle(fontWeight = FontWeight.Bold)
                 ),
                 Modifier.weight(1f)
             )
             IconButton(
-                onClick = onInfo,
+                onClick = openInfo,
                 content = {
                     Icon(
                         imageVector = Icons.Outlined.Info,
@@ -120,17 +133,17 @@ internal fun TemperatureSlider(
         }
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                valueRange.start.string(unit),
+                minMaxRange.start.string(unit),
                 Modifier.align(Alignment.TopStart)
             )
             Text(
-                valueRange.endInclusive.string(unit),
+                minMaxRange.endInclusive.string(unit),
                 Modifier.align(Alignment.TopEnd)
             )
         }
         Slider(
-            value = temperature.convert(unit),
-            valueRange = valueRange.start.convert(unit)..valueRange.endInclusive.convert(unit),
+            value = value.convert(unit),
+            valueRange = minMaxRange.start.convert(unit)..minMaxRange.endInclusive.convert(unit),
             onValueChange = {
                 onValue(
                     when (unit) {
@@ -141,4 +154,17 @@ internal fun TemperatureSlider(
             }
         )
     }
+}
+
+@Preview
+@Composable
+internal fun TemperatureSliderPreview() {
+    TemperatureSlider(
+        title = "Normal temp",
+        minMaxRange = 5f.celsius..80f.celsius,
+        value = 20f.celsius,
+        onValue = {},
+        openInfo = { },
+        unit = TemperatureUnit.CELSIUS
+    )
 }

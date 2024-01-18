@@ -1,11 +1,9 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModelImpl
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.BindSensorButtonViewModelImpl
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.TyreStatsViewModelImpl
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.TyreViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.usecase.TyreAtmosphereUseCase
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import dagger.BindsInstance
 import dagger.Subcomponent
@@ -30,6 +28,6 @@ internal interface InternalTyreComponent : TyreComponent {
     }
 
     val TyreViewModel: TyreViewModelImpl.Factory
-    val TyreStatViewModel: TyreStatsViewModel.Factory
-    val BindSensorButtonViewModel: BindSensorButtonViewModel.Factory
+    val TyreStatViewModel: TyreStatsViewModelImpl.Factory
+    val BindSensorButtonViewModel: BindSensorButtonViewModelImpl.Factory
 }

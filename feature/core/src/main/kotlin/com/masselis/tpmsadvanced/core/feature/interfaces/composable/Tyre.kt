@@ -10,6 +10,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -33,10 +36,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
+import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
@@ -44,6 +49,7 @@ import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.restartApp
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -62,6 +68,15 @@ internal fun Tyre(
     },
 ) {
     val state by viewModel.stateFlow.collectAsState()
+    Tyre(state, modifier)
+}
+
+@Suppress("LongMethod")
+@Composable
+private fun Tyre(
+    state: State,
+    modifier: Modifier = Modifier,
+) {
     var isVisible by remember { mutableStateOf(true) }
     if (state is State.Alerting) {
         LaunchedEffect(key1 = isVisible) {
@@ -162,4 +177,58 @@ private fun AlertButton(
             },
             onDismissRequest = { showDialog = false },
         )
+}
+
+@Preview
+@Composable
+internal fun NotDetectedPreview() {
+    Tyre(State.NotDetected)
+}
+
+@Preview
+@Composable
+internal fun BlueToGreenPreview() {
+    Tyre(State.Normal.BlueToGreen(Fraction(0f)))
+}
+
+@Preview
+@Composable
+internal fun BlueToGreen2Preview() {
+    Tyre(State.Normal.BlueToGreen(Fraction(0.5f)))
+}
+
+@Preview
+@Composable
+internal fun BlueToGreen3Preview() {
+    Tyre(State.Normal.BlueToGreen(Fraction(1f)))
+}
+
+@Preview
+@Composable
+internal fun GreenToRedPreview() {
+    Tyre(State.Normal.GreenToRed(Fraction(0f)))
+}
+
+@Preview
+@Composable
+internal fun GreenToRed2Preview() {
+    Tyre(State.Normal.GreenToRed(Fraction(0.5f)))
+}
+
+@Preview
+@Composable
+internal fun GreenToRed3Preview() {
+    Tyre(State.Normal.GreenToRed(Fraction(1f)))
+}
+
+@Preview
+@Composable
+internal fun AlertingPreview() {
+    Tyre(State.Alerting)
+}
+
+@Preview
+@Composable
+internal fun DetectionIssuePreview()    {
+    Tyre(State.DetectionIssue)
 }

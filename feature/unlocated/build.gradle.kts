@@ -2,6 +2,7 @@ plugins {
     id("android-lib")
     id("compose")
     id("dagger")
+    id("paparazzi")
 }
 
 android {

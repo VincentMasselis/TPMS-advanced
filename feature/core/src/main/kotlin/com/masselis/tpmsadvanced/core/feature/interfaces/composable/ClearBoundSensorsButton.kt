@@ -20,6 +20,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.ClearBoundSensorsButtonTags.root
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel.State
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 
@@ -27,7 +29,7 @@ import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 internal fun ClearBoundSensorsButton(
     modifier: Modifier = Modifier,
     vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: ClearBoundSensorsViewModel = viewModel(
+    viewModel: ClearBoundSensorsViewModelImpl = viewModel(
         key = "ClearBoundSensorsButton_${vehicleComponent.vehicle.uuid}"
     ) {
         (vehicleComponent as InternalVehicleComponent)
@@ -37,7 +39,7 @@ internal fun ClearBoundSensorsButton(
     val state by viewModel.stateFlow.collectAsState()
     Box(modifier = modifier) {
         OutlinedButton(
-            enabled = state is ClearBoundSensorsViewModel.State.ClearingPossible,
+            enabled = state is State.ClearingPossible,
             onClick = { viewModel.clear() },
             modifier = Modifier
                 .align(Alignment.TopEnd)

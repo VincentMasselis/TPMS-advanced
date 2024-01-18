@@ -27,7 +27,7 @@ jobs:
       - name: Build everything and run unit tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build --scan
+          arguments: build verifyPaparazzi --scan
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v2
@@ -48,6 +48,13 @@ jobs:
         with:
           name: Detekt-reports
           path: "**/build/reports/detekt/*.html"
+
+      - name: Paparazzi failures screens
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: Paparazzi-failures
+          path: "**/build/paparazzi/failures/*.png"
 
       - name: APKs
         uses: actions/upload-artifact@v3

@@ -1,6 +1,8 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.composable
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,14 +24,18 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsView
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreStatsViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-@Suppress("NAME_SHADOWING", "LongMethod", "CyclomaticComplexMethod")
 @Composable
 internal fun TyreStat(
     location: Location,
@@ -43,6 +50,16 @@ internal fun TyreStat(
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()
+    TyreStat(location, state, modifier)
+}
+
+@Suppress("NAME_SHADOWING", "LongMethod", "CyclomaticComplexMethod")
+@Composable
+private fun TyreStat(
+    location: Location,
+    state: State,
+    modifier: Modifier = Modifier,
+) {
     val (pressure, temperature) = when (val state = state) {
         State.NotDetected -> null to null
         is State.Normal -> Pair(
@@ -104,4 +121,43 @@ internal fun TyreStat(
             modifier = Modifier.align(alignment),
         )
     }
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatNotDetectedPreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state = State.NotDetected,
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatNormalPreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state =
+        State.Normal(
+            2f.bar,
+            PressureUnit.BAR, 30f.celsius,
+            TemperatureUnit.CELSIUS
+        ),
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatAlertingPreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state = State.Alerting(
+            0.5f.bar,
+            PressureUnit.BAR, 150f.celsius,
+            TemperatureUnit.CELSIUS
+        ),
+    )
 }

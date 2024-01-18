@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
@@ -28,7 +29,10 @@ import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorBut
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.BindSensorButtonViewModel.State
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 internal fun BindSensorButton(
@@ -43,7 +47,17 @@ internal fun BindSensorButton(
             .BindSensorButtonViewModel(createSavedStateHandle())
     }
 ) {
-    val state by viewModel.stateFlow.collectAsState(State.Empty)
+    val state by viewModel.stateFlow.collectAsState()
+    BindSensorButton(location, state, viewModel::bind, modifier)
+}
+
+@Composable
+private fun BindSensorButton(
+    location: Location,
+    state: State,
+    onBind: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var bondRequest by remember { mutableStateOf<State.RequestBond?>(null) }
     Box(modifier = modifier.testTag(tag(location))) {
         when (val state = state) {
@@ -62,7 +76,7 @@ internal fun BindSensorButton(
     if (bondRequest != null)
         BindSensorDialog(
             bondRequest = bondRequest!!,
-            onBind = { viewModel.bind(); bondRequest = null },
+            onBind = { onBind(); bondRequest = null },
             onDismissRequest = { bondRequest = null }
         )
 }
@@ -104,6 +118,30 @@ private fun BindSensorDialog(
             )
         },
         modifier = Modifier.testTag(BindSensorTags.Dialog.root)
+    )
+}
+
+@Preview
+@Composable
+private fun BindSensorButtonNewBindingPreview() {
+    BindSensorButton(
+        location = Location.Wheel(SensorLocation.REAR_LEFT),
+        state = State.RequestBond.NewBinding(previewSensor),
+        onBind = {}
+    )
+}
+
+@Preview
+@Composable
+private fun BindSensorButtonAlreadyBoundPreview() {
+    BindSensorButton(
+        location = Location.Wheel(SensorLocation.REAR_LEFT),
+        state = State.RequestBond.AlreadyBound(
+            previewSensor,
+            previewVehicle,
+            previewVehicle
+        ),
+        onBind = {}
     )
 }
 
