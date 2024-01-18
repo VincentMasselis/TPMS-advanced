@@ -26,7 +26,7 @@ jobs:
         env:
           GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
 
-      - name: Upload release
+      - name: Publish to beta and create a github release
         uses: gradle/gradle-build-action@v2
         with:
           arguments: createGithubReleaseNormalRelease publishToPlayStoreBetaNormalRelease

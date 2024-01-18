@@ -25,7 +25,7 @@ jobs:
         with:
           git_crypt_key: ${{ secrets.GIT_CRYPT_KEY }}
 
-      - name: Promotion
+      - name: Promotes the github release, promotes from the beta channel to production, updates the screenshots
         uses: ./.github/actions/run-emulator
         with:
           script: ./gradlew promoteGithubReleaseNormalRelease updatePlayStoreScreenshotsNormalRelease promoteToPlayStoreProductionNormalRelease
