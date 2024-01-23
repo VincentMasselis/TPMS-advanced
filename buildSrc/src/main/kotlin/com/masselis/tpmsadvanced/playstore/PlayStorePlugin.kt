@@ -18,7 +18,7 @@ import org.gradle.kotlin.dsl.registerIfAbsent
 import java.io.File
 import org.gradle.kotlin.dsl.the
 
-@Suppress("NAME_SHADOWING")
+@Suppress("UnstableApiUsage")
 public class PlayStorePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val ext = project.extensions.create<PlayStoreExtension>("playStore")
@@ -36,6 +36,7 @@ public class PlayStorePlugin : Plugin<Project> {
                 project.tasks.create<PublishToPlayStoreBeta>("publishToPlayStoreBeta${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")
                     packageName = variant.applicationId
+                    versionName = variant.outputs.single().versionName
                     releaseBundle = variant
                         .outputs
                         .single()
