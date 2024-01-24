@@ -13,13 +13,16 @@ import org.gradle.kotlin.dsl.provideDelegate
 internal abstract class PublishToPlayStoreBeta : DefaultTask(), ServiceHolder {
 
     @get:Input
-    public abstract val packageName: Property<String>
+    abstract val packageName: Property<String>
+
+    @get:Input
+    abstract val versionName: Property<String>
 
     @get:InputFile
-    public abstract val releaseBundle: RegularFileProperty
+    abstract val releaseBundle: RegularFileProperty
 
     @get:InputFile
-    public abstract val releaseNotes: RegularFileProperty
+    abstract val releaseNotes: RegularFileProperty
 
     init {
         group = "publishing"
@@ -30,6 +33,7 @@ internal abstract class PublishToPlayStoreBeta : DefaultTask(), ServiceHolder {
     internal fun process() {
         // Pushes bundle to the play store
         val packageName by packageName
+        val versionName by versionName
         androidPublisher
             .edits()
             .withEdit(this, packageName) { edit ->
@@ -48,6 +52,7 @@ internal abstract class PublishToPlayStoreBeta : DefaultTask(), ServiceHolder {
                     .also { versionCode ->
                         updateTrack(packageName, edit.id, "beta") {
                             releases.first().apply {
+                                name = versionName
                                 releaseNotes
                                     .first { it.language == "en-US" }
                                     .setText(this@PublishToPlayStoreBeta.releaseNotes.get().asFile.readText())

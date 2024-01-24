@@ -288,7 +288,7 @@ private fun ((Vehicle.Kind.Location?) -> Unit).takeIfImplemented(location: Vehic
 
 @Preview
 @Composable
-private fun CarPreview() {
+internal fun CarPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(
@@ -302,7 +302,7 @@ private fun CarPreview() {
 
 @Preview
 @Composable
-private fun SingleAxleTrailerPreview() {
+internal fun SingleAxleTrailerPreview() {
     Vehicle(
         kind = Vehicle.Kind.SINGLE_AXLE_TRAILER,
         states = persistentMapOf(
@@ -314,7 +314,7 @@ private fun SingleAxleTrailerPreview() {
 
 @Preview
 @Composable
-private fun MotorcyclePreview() {
+internal fun MotorcyclePreview() {
     Vehicle(
         kind = Vehicle.Kind.MOTORCYCLE,
         states = persistentMapOf(
@@ -326,7 +326,7 @@ private fun MotorcyclePreview() {
 
 @Preview
 @Composable
-private fun TadpoleThreeWheelerPreview() {
+internal fun TadpoleThreeWheelerPreview() {
     Vehicle(
         kind = Vehicle.Kind.TADPOLE_THREE_WHEELER,
         states = persistentMapOf(
@@ -339,7 +339,7 @@ private fun TadpoleThreeWheelerPreview() {
 
 @Preview
 @Composable
-private fun DeltaThreeWheelerPreview() {
+internal fun DeltaThreeWheelerPreview() {
     Vehicle(
         kind = Vehicle.Kind.DELTA_THREE_WHEELER,
         states = persistentMapOf(
@@ -352,7 +352,7 @@ private fun DeltaThreeWheelerPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun CarNanoPreview() {
+internal fun CarNanoPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(
@@ -367,7 +367,7 @@ private fun CarNanoPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun CarMinusPreview() {
+internal fun CarMinusPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(
@@ -382,7 +382,7 @@ private fun CarMinusPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun CarAveragePreview() {
+internal fun CarAveragePreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(
@@ -397,7 +397,7 @@ private fun CarAveragePreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun CarBigPreview() {
+internal fun CarBigPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(

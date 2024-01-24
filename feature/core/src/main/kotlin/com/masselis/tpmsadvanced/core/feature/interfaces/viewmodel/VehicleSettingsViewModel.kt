@@ -1,25 +1,20 @@
 package com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel
 
-import androidx.lifecycle.ViewModel
-import com.masselis.tpmsadvanced.core.feature.usecase.VehicleRangesUseCase
-import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
-import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
+import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
+import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-internal class VehicleSettingsViewModel @Inject constructor(
-    vehicleRangesUseCase: VehicleRangesUseCase,
-    unitPreferences: UnitPreferences,
-) : ViewModel() {
+internal interface VehicleSettingsViewModel {
+    val lowPressure: MutableStateFlow<Pressure>
+    val highPressure: MutableStateFlow<Pressure>
+    val pressureUnit: StateFlow<PressureUnit>
 
-    val lowPressure = vehicleRangesUseCase.lowPressure
-    val highPressure = vehicleRangesUseCase.highPressure
+    val highTemp: MutableStateFlow<Temperature>
+    val normalTemp: MutableStateFlow<Temperature>
+    val lowTemp: MutableStateFlow<Temperature>
 
-    val pressureUnit = unitPreferences.pressure.asStateFlow()
-
-    val highTemp = vehicleRangesUseCase.highTemp
-    val normalTemp = vehicleRangesUseCase.normalTemp
-    val lowTemp = vehicleRangesUseCase.lowTemp
-
-    val temperatureUnit = unitPreferences.temperature.asStateFlow()
-
+    val temperatureUnit: StateFlow<TemperatureUnit>
 }

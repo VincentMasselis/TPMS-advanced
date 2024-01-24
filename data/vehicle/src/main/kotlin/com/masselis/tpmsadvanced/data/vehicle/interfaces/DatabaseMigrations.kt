@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
+import android.database.sqlite.SQLiteConstraintException
 import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.db.AfterVersion
 import app.cash.sqldelight.db.QueryResult
@@ -83,13 +84,20 @@ internal fun Database.Companion.afterVersion3(
                 }
                 .let(locationAdapter::encode)
                 .let { encodedLocation ->
-                    driver.execute(
-                        null,
-                        "UPDATE Sensor SET location = ? WHERE vehicleId = ?",
-                        2
-                    ) {
-                        bindLong(0, encodedLocation)
-                        bindString(1, vehicleUuid)
+                    try {
+                        driver.execute(
+                            null,
+                            "UPDATE Sensor SET location = ? WHERE vehicleId = ?",
+                            2
+                        ) {
+                            bindLong(0, encodedLocation)
+                            bindString(1, vehicleUuid)
+                        }
+                    } catch (_: SQLiteConstraintException) {
+                        // Appends if a vehicle like a motorcycle has 2 front wheels associated.
+                        // The new database schema version 4 doesn't accept this case so the first
+                        // sensor is set as the front wheel, the 2nd one is dropped from the
+                        // database.
                     }
                     driver.execute(
                         null,

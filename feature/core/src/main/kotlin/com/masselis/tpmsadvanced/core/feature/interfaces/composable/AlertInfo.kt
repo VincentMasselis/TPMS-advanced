@@ -10,11 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DeleteVehicleViewModel
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.DemoTyreViewModel
+import androidx.lifecycle.ViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.TyreComponent
 import com.masselis.tpmsadvanced.core.feature.usecase.FindTyreComponentUseCase
@@ -26,6 +27,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -88,6 +90,10 @@ internal fun TemperatureInfo(
     )
 }
 
+private class DemoTyreViewModel(state: State) : ViewModel(), TyreViewModel {
+    override val stateFlow: StateFlow<State> = MutableStateFlow(state)
+}
+
 private class DemoVehicleComponent : InternalVehicleComponent {
     override val TyreComponent: (Location) -> TyreComponent
         get() = error("Not implemented")
@@ -99,12 +105,12 @@ private class DemoVehicleComponent : InternalVehicleComponent {
         get() = error("Not implemented")
     override val vehicleRangesUseCase: VehicleRangesUseCase
         get() = error("Not implemented")
-    override val ClearBoundSensorsViewModel: ClearBoundSensorsViewModel.Factory
+    override val ClearBoundSensorsViewModel: ClearBoundSensorsViewModelImpl.Factory
         get() = error("Not implemented")
 
-    override fun VehicleSettingsViewModel(): VehicleSettingsViewModel =
+    override fun VehicleSettingsViewModel(): VehicleSettingsViewModelImpl =
         error("Not implemented")
 
-    override fun DeleteVehicleViewModel(): DeleteVehicleViewModel =
+    override fun DeleteVehicleViewModel(): DeleteVehicleViewModelImpl =
         error("Not implemented")
 }

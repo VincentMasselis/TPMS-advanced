@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -54,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
-import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.core.ui.restartApp
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
@@ -70,8 +70,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.clearBindingsAndContinueButton
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.bindingFinishedGoBackButton
+import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.clearBindingsAndContinueButton
 import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorListTags.sensorUnpluggedButton
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel
 import com.masselis.tpmsadvanced.unlocated.interfaces.viewmodel.ListSensorViewModel.State
@@ -454,6 +454,8 @@ private fun TyreCell(
     modifier: Modifier = Modifier,
     isPlaceholder: Boolean = false,
 ) {
+    val locale = LocalConfiguration.current.locales[0]
+    val df = remember(locale) { DateFormat.getTimeInstance(SHORT, locale) }
     ElevatedCard(
         shape = roundedShape(roundedTop, roundedBottom),
         enabled = isPlaceholder.not(),
@@ -512,12 +514,10 @@ private fun TyreCell(
     }
 }
 
-private val df = DateFormat.getTimeInstance(SHORT)
-
 @Composable
 private fun PlaceholderTyreCell(
     modifier: Modifier = Modifier,
-    tyre: Tyre = Tyre.Unlocated(now(), 0, Int.MAX_VALUE, 2f.bar, 20f.celsius, 50u, false),
+    tyre: Tyre = Tyre.Unlocated(ts, 0, Int.MAX_VALUE, 2f.bar, 20f.celsius, 50u, false),
     temperatureUnit: TemperatureUnit = CELSIUS,
     pressureUnit: PressureUnit = BAR,
     showClosest: Boolean = false,
@@ -550,6 +550,8 @@ private fun BoundSensorCell(
     roundedBottom: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val locale = LocalConfiguration.current.locales.get(0)
+    val df = remember(locale) { DateFormat.getTimeInstance(SHORT, locale) }
     ElevatedCard(
         shape = roundedShape(roundedTop, roundedBottom),
         modifier = modifier.testTag(UnlocatedSensorListTags.boundCell(sensor.id)),
@@ -658,7 +660,7 @@ private fun Issue(
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun AllWheelsAreAlreadyBoundPreview() {
+internal fun AllWheelsAreAlreadyBoundPreview() {
     Content(
         UUID.randomUUID(),
         bindingFinished = {},
@@ -668,7 +670,7 @@ private fun AllWheelsAreAlreadyBoundPreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun UnplugEverySensorPreview() {
+internal fun UnplugEverySensorPreview() {
     Content(
         UUID.randomUUID(),
         bindingFinished = {},
@@ -678,7 +680,7 @@ private fun UnplugEverySensorPreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun SearchingNoResultPreview() {
+internal fun SearchingNoResultPreview() {
     Content(
         UUID.randomUUID(),
         bindingFinished = {},
@@ -698,7 +700,7 @@ private fun SearchingNoResultPreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun SearchingFoundSingleTyrePreview() {
+internal fun SearchingFoundSingleTyrePreview() {
     Content(
         vehicleUuid = UUID.randomUUID(),
         bindingFinished = {},
@@ -707,7 +709,7 @@ private fun SearchingFoundSingleTyrePreview() {
                 "MOCK",
                 Vehicle.Kind.CAR,
                 emptyList(),
-                listOf(Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false)),
+                listOf(Tyre.Unlocated(ts, -20, 1, 1.5f.bar, 20f.celsius, 20u, false)),
                 emptyList(),
                 BAR,
                 CELSIUS,
@@ -718,7 +720,7 @@ private fun SearchingFoundSingleTyrePreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun SearchingFoundMultipleTyrePreview() {
+internal fun SearchingFoundMultipleTyrePreview() {
     Content(
         vehicleUuid = UUID.randomUUID(),
         bindingFinished = {},
@@ -729,29 +731,29 @@ private fun SearchingFoundMultipleTyrePreview() {
                 listOf(
                     Pair(
                         Sensor(0, Vehicle.Kind.Location.Wheel(FRONT_LEFT)),
-                        Tyre.Unlocated(now(), -20, 0, 1.5f.bar, 20f.celsius, 20u, false),
+                        Tyre.Unlocated(ts, -20, 0, 1.5f.bar, 20f.celsius, 20u, false),
                     )
                 ),
                 listOf(
-                    Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false),
-                    Tyre.Unlocated(now(), -20, 2, 1.75f.bar, 17f.celsius, 20u, false),
-                    Tyre.Unlocated(now(), -20, 3, 2f.bar, 18f.celsius, 20u, false),
+                    Tyre.Unlocated(ts, -20, 1, 1.5f.bar, 20f.celsius, 20u, false),
+                    Tyre.Unlocated(ts, -20, 2, 1.75f.bar, 17f.celsius, 20u, false),
+                    Tyre.Unlocated(ts, -20, 3, 2f.bar, 18f.celsius, 20u, false),
                 ),
                 listOf(
                     Triple(
                         mockVehicle(),
                         mockSensor(4),
-                        Tyre.Unlocated(now(), -20, 4, 1.5f.bar, 20f.celsius, 20u, false),
+                        Tyre.Unlocated(ts, -20, 4, 1.5f.bar, 20f.celsius, 20u, false),
                     ),
                     Triple(
                         mockVehicle(),
                         mockSensor(5),
-                        Tyre.Unlocated(now(), -20, 5, 1.75f.bar, 17f.celsius, 20u, false),
+                        Tyre.Unlocated(ts, -20, 5, 1.75f.bar, 17f.celsius, 20u, false),
                     ),
                     Triple(
                         mockVehicle(),
                         mockSensor(6),
-                        Tyre.Unlocated(now(), -20, 6, 2f.bar, 18f.celsius, 20u, false),
+                        Tyre.Unlocated(ts, -20, 6, 2f.bar, 18f.celsius, 20u, false),
                     ),
                 ),
                 BAR,
@@ -763,7 +765,7 @@ private fun SearchingFoundMultipleTyrePreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun SearchingFoundOnlyBoundTyrePreview() {
+internal fun SearchingFoundOnlyBoundTyrePreview() {
     Content(
         vehicleUuid = UUID.randomUUID(),
         bindingFinished = {},
@@ -777,17 +779,17 @@ private fun SearchingFoundOnlyBoundTyrePreview() {
                     Triple(
                         mockVehicle(),
                         mockSensor(4),
-                        Tyre.Unlocated(now(), -20, 4, 1.5f.bar, 20f.celsius, 20u, false),
+                        Tyre.Unlocated(ts, -20, 4, 1.5f.bar, 20f.celsius, 20u, false),
                     ),
                     Triple(
                         mockVehicle(),
                         mockSensor(5),
-                        Tyre.Unlocated(now(), -20, 5, 1.75f.bar, 17f.celsius, 20u, false),
+                        Tyre.Unlocated(ts, -20, 5, 1.75f.bar, 17f.celsius, 20u, false),
                     ),
                     Triple(
                         mockVehicle(),
                         mockSensor(6),
-                        Tyre.Unlocated(now(), -20, 6, 2f.bar, 18f.celsius, 20u, false),
+                        Tyre.Unlocated(ts, -20, 6, 2f.bar, 18f.celsius, 20u, false),
                     ),
                 ),
                 BAR,
@@ -799,7 +801,7 @@ private fun SearchingFoundOnlyBoundTyrePreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun CompletedPreview() {
+internal fun CompletedPreview() {
     Content(
         vehicleUuid = UUID.randomUUID(),
         bindingFinished = {},
@@ -811,7 +813,7 @@ private fun CompletedPreview() {
                     Sensor(0, Vehicle.Kind.Location.Wheel(FRONT_LEFT)) to null,
                     Pair(
                         Sensor(1, Vehicle.Kind.Location.Wheel(FRONT_RIGHT)),
-                        Tyre.Unlocated(now(), -20, 1, 1.5f.bar, 20f.celsius, 20u, false),
+                        Tyre.Unlocated(ts, -20, 1, 1.5f.bar, 20f.celsius, 20u, false),
                     ),
                     Sensor(2, Vehicle.Kind.Location.Wheel(REAR_LEFT)) to null,
                     Sensor(3, Vehicle.Kind.Location.Wheel(REAR_RIGHT)) to null
@@ -825,7 +827,7 @@ private fun CompletedPreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFCCCCCC)
 @Composable
-private fun IssuePreview() {
+internal fun IssuePreview() {
     Content(
         vehicleUuid = UUID.randomUUID(),
         bindingFinished = { },

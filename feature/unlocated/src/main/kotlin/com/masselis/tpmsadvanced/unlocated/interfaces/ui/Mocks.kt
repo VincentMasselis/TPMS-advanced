@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.unlocated.interfaces.ui
 
-import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
@@ -12,11 +11,13 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import java.util.UUID
 
+@Suppress("MagicNumber", "TopLevelPropertyNaming")
+internal const val ts = 1642887240.0
 
 @Suppress("MagicNumber")
 internal fun mockTyre(
     id: Int,
-    timestamp: Double = now(),
+    timestamp: Double = ts,
     rssi: Int = -20,
     pressure: Pressure = 2f.bar,
     temperature: Temperature = 20f.celsius,

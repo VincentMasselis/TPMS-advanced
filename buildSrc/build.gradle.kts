@@ -47,4 +47,5 @@ dependencies {
             .copy()
             .apply { version { prefer("$embeddedKotlinVersion-${libs.versions.ksp.get()}") } }
     )
+    implementation(libs.paparazzi.gradle.plugin)
 }

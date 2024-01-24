@@ -13,6 +13,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.VehicleSettingsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.Separator
@@ -87,18 +88,22 @@ private fun PressureRange(
 ) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
     PressureRangeSlider(
-        { showLowPressureDialog = true },
-        lowPressure..highPressure,
-        unit,
-        0.5f.bar..5f.bar,
-        modifier
-    ) { range ->
-        onLowPressure(range.start)
-        onHighPressure(range.endInclusive)
-    }
-    if (showLowPressureDialog) PressureInfo(lowPressure..highPressure, unit) {
-        showLowPressureDialog = false
-    }
+        minMaxRange = 0.5f.bar..5f.bar,
+        values = lowPressure..highPressure,
+        onValue = {
+            onLowPressure(it.start)
+            onHighPressure(it.endInclusive)
+        },
+        openInfo = { showLowPressureDialog = true },
+        unit = unit,
+        modifier = modifier
+    )
+    if (showLowPressureDialog)
+        PressureInfo(
+            pressureRange = lowPressure..highPressure,
+            unit = unit,
+            onDismissRequest = { showLowPressureDialog = false }
+        )
 }
 
 @Composable
@@ -111,13 +116,13 @@ private fun HighTemp(
 ) {
     var showHighTempDialog by remember { mutableStateOf(false) }
     TemperatureSlider(
-        { showHighTempDialog = true },
-        "Max temperature:",
-        highTemp,
-        unit,
-        onHighTemp,
-        normalTemp..(150f.celsius),
-        modifier
+        openInfo = { showHighTempDialog = true },
+        title = "Max temperature:",
+        value = highTemp,
+        unit = unit,
+        onValue = onHighTemp,
+        minMaxRange = normalTemp..(150f.celsius),
+        modifier = modifier
     )
     if (showHighTempDialog) TemperatureInfo(
         text = "When the temperature is equals or superior to %s, the tyre starts to blink in red to alert you",
@@ -138,13 +143,13 @@ private fun NormalTemp(
 ) {
     var showNormalTempDialog by remember { mutableStateOf(false) }
     TemperatureSlider(
-        { showNormalTempDialog = true },
-        "Normal temperature:",
-        normalTemp,
-        unit,
-        onNormalTemp,
-        lowTemp..highTemp,
-        modifier
+        openInfo = { showNormalTempDialog = true },
+        title = "Normal temperature:",
+        value = normalTemp,
+        unit = unit,
+        onValue = onNormalTemp,
+        minMaxRange = lowTemp..highTemp,
+        modifier = modifier
     )
     if (showNormalTempDialog) TemperatureInfo(
         text = "When the temperature is close to %s, the tyre is colored in green",
@@ -164,13 +169,13 @@ private fun LowTemp(
 ) {
     var showLowTempDialog by remember { mutableStateOf(false) }
     TemperatureSlider(
-        { showLowTempDialog = true },
-        "Low temperature:",
-        lowTemp,
-        unit,
-        onLowTemp,
-        5f.celsius..normalTemp,
-        modifier
+        openInfo = { showLowTempDialog = true },
+        title = "Low temperature:",
+        value = lowTemp,
+        unit = unit,
+        onValue = onLowTemp,
+        minMaxRange = 5f.celsius..normalTemp,
+        modifier = modifier
     )
     if (showLowTempDialog) TemperatureInfo(
         text = "When the temperature is close to %s, the tyre is colored in blue",
