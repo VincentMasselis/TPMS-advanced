@@ -56,7 +56,7 @@ internal abstract class PublishToPlayStoreBeta : DefaultTask(), ServiceHolder {
                                 releaseNotes
                                     .first { it.language == "en-US" }
                                     .setText(this@PublishToPlayStoreBeta.releaseNotes.get().asFile.readText())
-                                versionCodes.set(0, versionCode)
+                                versionCodes[0] = versionCode
                             }
                         }
                     }

@@ -9,14 +9,15 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.provideDelegate
 
 internal abstract class PromoteToPlayStoreProduction : DefaultTask(), ServiceHolder {
 
     @get:Input
-    public abstract val packageName: Property<String>
+    abstract val packageName: Property<String>
 
     @get:Input
-    public abstract val currentVc: Property<Int>
+    abstract val currentVc: Property<Int>
 
     init {
         group = "publishing"
@@ -49,7 +50,8 @@ internal abstract class PromoteToPlayStoreProduction : DefaultTask(), ServiceHol
                         // Take the atifact and release note from beta and push them in production
                         updateTrack(packageName, edit.id, "production") {
                             releases.first().apply {
-                                versionCodes.set(0, betaTrack.versionCodes.first())
+                                name = betaTrack.name
+                                versionCodes[0] = betaTrack.versionCodes.first()
                                 setReleaseNotes(betaTrack.releaseNotes)
                             }
                         }
