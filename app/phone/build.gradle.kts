@@ -37,7 +37,7 @@ android {
         namespace = "com.masselis.tpmsadvanced"
 
         versionCode = tpmsAdvancedVersionCode
-        versionName = "1.3"
+        versionName = "1.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
