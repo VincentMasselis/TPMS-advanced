@@ -17,17 +17,17 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import java.util.UUID
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class ListenTyreWithDatabaseUseCaseTest {
 
     private lateinit var vehicle: Vehicle
@@ -56,7 +56,7 @@ internal class ListenTyreWithDatabaseUseCaseTest {
                     mockkQueryOneOrNull(null as Tyre.Located?)
         }
         listenTyreUseCase = mockk {
-            every { listen() } returns emptyFlow()
+            every { listen() } returns MutableSharedFlow()
         }
     }
 
@@ -66,11 +66,12 @@ internal class ListenTyreWithDatabaseUseCaseTest {
             Tyre.Located(now(), -20, 1, 1f.bar, 1f.celsius, 50u, false, Location.Wheel(FRONT_LEFT)),
             Tyre.Located(now(), -30, 1, 2f.bar, 2f.celsius, 25u, false, Location.Wheel(FRONT_LEFT))
         )
-        every { listenTyreUseCase.listen() } returns tyresToEmit.asFlow()
+        every { listenTyreUseCase.listen() } returns tyresToEmit
+            .asFlow()
+            .onCompletion { awaitCancellation() }
         test().listen().test {
             assertEquals(tyresToEmit[0], awaitItem())
             assertEquals(tyresToEmit[1], awaitItem())
-            cancelAndIgnoreRemainingEvents()
         }
         coVerify(exactly = 2) { tyreDatabase.insert(any(), any()) }
         coroutineContext.cancelChildren()
