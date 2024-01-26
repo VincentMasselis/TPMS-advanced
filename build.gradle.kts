@@ -23,3 +23,8 @@ try {
 }
 
 subprojects { apply(plugin = "detekt") }
+
+task<AssertNoCommitDiff>("assertDevelopIsUpToDateWithMain") {
+    currentBranch = "develop"
+    baseBranch = "main"
+}
