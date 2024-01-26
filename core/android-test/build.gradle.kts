@@ -1,5 +1,5 @@
 plugins {
-    id("android-lib")
+    `android-lib`
 }
 
 android {

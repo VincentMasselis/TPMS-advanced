@@ -7,10 +7,10 @@ import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
 import com.masselis.tpmsadvanced.playstore.UpdatePlayStoreScreenshots
 
 plugins {
-    id("android-app")
-    id("compose")
-    id("dagger")
-    id("paparazzi")
+    `android-app`
+    compose
+    dagger
+    paparazzi
 }
 
 val isDecrypted: Boolean by rootProject.extra
@@ -31,13 +31,14 @@ if (isDecrypted) {
 }
 
 val tpmsAdvancedVersionCode: Int by rootProject.extra
+val tpmsAdvancedVersionName: String by rootProject.extra
 android {
     defaultConfig {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
 
         versionCode = tpmsAdvancedVersionCode
-        versionName = "1.3.1"
+        versionName = tpmsAdvancedVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.

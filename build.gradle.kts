@@ -1,12 +1,25 @@
+import com.masselis.tpmsadvanced.gitflow.GitflowExtension
+import com.masselis.tpmsadvanced.gitflow.GitflowPlugin
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     extra.set("tpmsAdvancedVersionCode", providers.of(CommitCountValueSource::class) {}.get())
+    extra.set("tpmsAdvancedVersionName", "1.3.1")
 }
 
 plugins {
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.crashlytics) apply false
     alias(libs.plugins.sqldelight) apply false
+}
+
+apply<GitflowPlugin>()
+configure<GitflowExtension> {
+    val tpmsAdvancedVersionName: String by extra
+    developBranch = "develop"
+    releaseBranch = "release/$tpmsAdvancedVersionName"
+    hotfixBranch = "hotfix/$tpmsAdvancedVersionName"
+    mainBranch = "main"
 }
 
 task<Delete>("clean") {
@@ -23,8 +36,3 @@ try {
 }
 
 subprojects { apply(plugin = "detekt") }
-
-task<AssertNoCommitDiff>("assertDevelopIsUpToDateWithMain") {
-    currentBranch = "develop"
-    baseBranch = "main"
-}
