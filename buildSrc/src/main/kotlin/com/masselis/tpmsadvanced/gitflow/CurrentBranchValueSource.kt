@@ -6,22 +6,24 @@ import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-public abstract class CurrentBranchValueSource : ValueSource<String, ValueSourceParameters.None> {
+internal abstract class CurrentBranchValueSource : ValueSource<String, ValueSourceParameters.None> {
 
     @get:Inject
     protected abstract val execOperations: ExecOperations
 
-    override fun obtain(): String {
-        val stdout = ByteArrayOutputStream()
-        execOperations.exec {
-            commandLine(
-                "git",
-                "rev-parse",
-                "--abbrev-ref",
-                "HEAD"
-            )
-            standardOutput = stdout
+    override fun obtain(): String = ByteArrayOutputStream()
+        .also {
+            execOperations.exec {
+                commandLine(
+                    "git",
+                    "rev-parse",
+                    "--abbrev-ref",
+                    "HEAD"
+                )
+                standardOutput = it
+            }
         }
-        return stdout.toString().trim()
-    }
+        .use { it.toString() }
+        .trim()
+
 }

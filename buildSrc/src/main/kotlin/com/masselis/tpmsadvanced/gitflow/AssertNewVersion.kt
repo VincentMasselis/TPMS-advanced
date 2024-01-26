@@ -9,41 +9,38 @@ import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-internal abstract class AssertNoCommitDiff : DefaultTask() {
+internal abstract class AssertNewVersion : DefaultTask() {
 
     @get:Inject
     protected abstract val execOperations: ExecOperations
 
     @get:Input
-    abstract val baseBranch: Property<String>
-
-    @get:Input
-    abstract val currentBranch: Property<String>
+    abstract val version: Property<String>
 
     init {
         group = "verification"
-        description = "Check currentBranch is up-to-date with baseBranch"
+        description = "Check the version to come was not created yet"
     }
 
     @TaskAction
     internal fun process() {
         ByteArrayOutputStream()
-            .also { stdout ->
+            .also {
                 execOperations.exec {
                     commandLine(
                         "git",
-                        "cherry",
-                        "-v",
-                        currentBranch.get(),
-                        baseBranch.get()
+                        "tag",
+                        "-l",
+                        version.get()
                     )
-                    standardOutput = stdout
+                    standardOutput = it
                 }
             }
             .use { it.toString() }
-            .also { unmergedCommits ->
-                if (unmergedCommits.isNotBlank())
-                    throw GradleException("Some commits from \"${baseBranch.get()}\" are missing in \"${currentBranch.get()}\". Missing commits: $unmergedCommits")
+            .trimIndent()
+            .also {
+                if (it.isNotBlank())
+                    throw GradleException("Cannot create a new version for \"${version.get()}\", it already exists")
             }
     }
 }

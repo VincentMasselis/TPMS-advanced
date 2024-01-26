@@ -9,12 +9,14 @@ public abstract class CommitCountValueSource : ValueSource<Int, ValueSourceParam
     @get:Inject
     protected abstract val execOperations: ExecOperations
 
-    override fun obtain(): Int {
-        val stdout = ByteArrayOutputStream()
-        execOperations.exec {
-            commandLine("git", "rev-list", "--first-parent", "--count", "origin/main")
-            standardOutput = stdout
+    override fun obtain(): Int = ByteArrayOutputStream()
+        .also {
+            execOperations.exec {
+                commandLine("git", "rev-list", "--first-parent", "--count", "origin/main")
+                standardOutput = it
+            }
         }
-        return stdout.toString().trim().toInt() + 1000
-    }
+        .use { it.toString() }
+        .trim().toInt()
+        .plus(1000)
 }

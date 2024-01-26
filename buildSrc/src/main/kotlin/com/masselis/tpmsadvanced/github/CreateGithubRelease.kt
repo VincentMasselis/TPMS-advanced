@@ -55,7 +55,7 @@ internal abstract class CreateGithubRelease : DefaultTask() {
                     standardOutput = stdout
                 }.assertNormalExitValue()
             }
-            .toString()
+            .use { it.toString() }
             .trim()
             .also { commitsNames ->
                 execOperations.exec {

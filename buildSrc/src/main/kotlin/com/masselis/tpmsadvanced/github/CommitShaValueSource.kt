@@ -17,16 +17,17 @@ internal abstract class CommitShaValueSource :
     @get:Inject
     protected abstract val execOperations: ExecOperations
 
-    override fun obtain(): String {
-        val stdout = ByteArrayOutputStream()
-        execOperations.exec {
-            commandLine(
-                "git",
-                "rev-parse",
-                "HEAD^${parameters.backwardCount.get()}"
-            )
-            standardOutput = stdout
+    override fun obtain(): String = ByteArrayOutputStream()
+        .also {
+            execOperations.exec {
+                commandLine(
+                    "git",
+                    "rev-parse",
+                    "HEAD^${parameters.backwardCount.get()}"
+                )
+                standardOutput = it
+            }
         }
-        return stdout.toString().trim()
-    }
+        .use { it.toString() }
+        .trim()
 }

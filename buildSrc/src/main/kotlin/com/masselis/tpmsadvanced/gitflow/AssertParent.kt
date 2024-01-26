@@ -3,22 +3,19 @@ package com.masselis.tpmsadvanced.gitflow
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.of
+import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.create
 import org.gradle.process.ExecOperations
-import org.jetbrains.kotlin.gradle.utils.provider
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
+@Suppress("LeakingThis")
 internal abstract class AssertParent : DefaultTask() {
 
     @get:Inject
     protected abstract val execOperations: ExecOperations
-
-    @get:Inject
-    protected abstract val providerFactory: ProviderFactory
 
     @get:Input
     abstract val currentBranch: Property<String>
@@ -29,14 +26,13 @@ internal abstract class AssertParent : DefaultTask() {
     init {
         group = "verification"
         description = "Check the current branch's source is \"parentBranch\""
+        dependsOn(project.tasks.create<AssertCurrentBranch>("${name}CurrentBranchCheck") {
+            currentBranch = this@AssertParent.currentBranch
+        })
     }
 
     @TaskAction
     internal fun process() {
-        val realCurrentBranch = providerFactory.of(CurrentBranchValueSource::class) {}.get()
-        if (realCurrentBranch != currentBranch.get())
-            throw GradleException("Current branch is $realCurrentBranch but ${currentBranch.get()} was expected")
-
         ByteArrayOutputStream()
             .also { stdout ->
                 execOperations.exec {
@@ -57,7 +53,7 @@ internal abstract class AssertParent : DefaultTask() {
             .singleOrNull { it == parentBranch.get() }
             .also { parent ->
                 if (parent == null)
-                    throw GradleException("Parent branch ${parentBranch.get()} not found for the current branch ${currentBranch.get()}")
+                    throw GradleException("Parent branch \"${parentBranch.get()}\" not found for the current branch \"${currentBranch.get()}\"")
             }
     }
 }

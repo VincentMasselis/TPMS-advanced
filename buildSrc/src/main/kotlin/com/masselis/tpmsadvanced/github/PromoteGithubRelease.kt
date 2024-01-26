@@ -45,7 +45,7 @@ internal abstract class PromoteGithubRelease : DefaultTask() {
                     standardOutput = stdout
                 }.assertNormalExitValue()
             }
-            .toString()
+            .use { it.toString() }
             .let(Json::parseToJsonElement)
             .jsonObject
             .getValue("id")

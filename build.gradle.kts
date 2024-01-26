@@ -16,6 +16,7 @@ plugins {
 apply<GitflowPlugin>()
 configure<GitflowExtension> {
     val tpmsAdvancedVersionName: String by extra
+    versionName = tpmsAdvancedVersionName
     developBranch = "develop"
     releaseBranch = "release/$tpmsAdvancedVersionName"
     hotfixBranch = "hotfix/$tpmsAdvancedVersionName"
