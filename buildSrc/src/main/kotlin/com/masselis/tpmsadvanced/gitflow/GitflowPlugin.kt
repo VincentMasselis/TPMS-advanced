@@ -9,7 +9,7 @@ public class GitflowPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val ext = project.extensions.create<GitflowExtension>("gitflow")
 
-        // Assertions pre branch creation
+        // Pre branch creation
         val assertNewVersion = project.tasks.create<AssertNewVersion>("assertNewVersion") {
             version = ext.versionName
         }
@@ -17,9 +17,17 @@ public class GitflowPlugin : Plugin<Project> {
             project.tasks.create<AssertCurrentBranch>("assertCurrentBranchIsDevelop") {
                 currentBranch = ext.developBranch
             }
+        val assertCurrentBranchIsRelease =
+            project.tasks.create<AssertCurrentBranch>("assertCurrentBranchIsRelease") {
+                currentBranch = ext.releaseBranch
+            }
         val assertCurrentBranchIsMain =
             project.tasks.create<AssertCurrentBranch>("assertCurrentBranchIsMain") {
                 currentBranch = ext.mainBranch
+            }
+        val assertCurrentBranchIsHotfix =
+            project.tasks.create<AssertCurrentBranch>("assertCurrentBranchIsHotfix") {
+                currentBranch = ext.hotfixBranch
             }
         val assertDevelopIsUpToDateWithMain =
             project.tasks.create<AssertNoCommitDiff>("assertDevelopIsUpToDateWithMain") {
@@ -44,12 +52,14 @@ public class GitflowPlugin : Plugin<Project> {
             branch = ext.versionName.map { "hotfix/$it" }
         }
 
-        // Assertions post branch creation
+        // Post branch creation
         project.tasks.create<AssertParent>("assertReleaseSourceIsDevelop") {
+            dependsOn(assertCurrentBranchIsRelease)
             parentBranch = ext.developBranch
             currentBranch = ext.releaseBranch
         }
         project.tasks.create<AssertParent>("assertHotfixSourceIsMain") {
+            dependsOn(assertCurrentBranchIsHotfix)
             parentBranch = ext.mainBranch
             currentBranch = ext.hotfixBranch
         }

@@ -8,8 +8,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.of
 import org.gradle.process.ExecOperations
-import org.jetbrains.kotlin.gradle.utils.provider
-import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 internal abstract class AssertCurrentBranch : DefaultTask() {

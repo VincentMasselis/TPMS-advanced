@@ -26,9 +26,6 @@ internal abstract class AssertParent : DefaultTask() {
     init {
         group = "verification"
         description = "Check the current branch's source is \"parentBranch\""
-        dependsOn(project.tasks.create<AssertCurrentBranch>("${name}CurrentBranchCheck") {
-            currentBranch = this@AssertParent.currentBranch
-        })
     }
 
     @TaskAction
