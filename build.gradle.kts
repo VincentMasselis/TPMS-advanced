@@ -3,7 +3,7 @@ import com.masselis.tpmsadvanced.gitflow.GitflowPlugin
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    extra.set("tpmsAdvancedVersionCode", providers.of(CommitCountValueSource::class) {}.get())
+    extra.set("tpmsAdvancedVersionCode", providers.from(CommitCountValueSource::class).get())
     extra.set("tpmsAdvancedVersionName", "1.3.1")
 }
 

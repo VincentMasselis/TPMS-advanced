@@ -42,14 +42,14 @@ public class GitflowPlugin : Plugin<Project> {
                 assertCurrentBranchIsDevelop,
                 assertDevelopIsUpToDateWithMain,
             )
-            branch = ext.versionName.map { "release/$it" }
+            branch = ext.releaseBranch
         }
         project.tasks.create<CreateBranch>("createHotfix") {
             dependsOn(
                 assertNewVersion,
                 assertCurrentBranchIsMain,
             )
-            branch = ext.versionName.map { "hotfix/$it" }
+            branch = ext.hotfixBranch
         }
 
         // Post branch creation

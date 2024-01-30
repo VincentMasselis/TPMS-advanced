@@ -1,15 +1,13 @@
 package com.masselis.tpmsadvanced.gitflow
 
+import org.gradle.kotlin.dsl.from
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
-import org.gradle.process.ExecOperations
-import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 @Suppress("LeakingThis")
@@ -32,7 +30,7 @@ internal abstract class AssertNewBranchVersion : DefaultTask() {
                     .let { it ?: throwError() }
                     .also {
                         if (providerFactory
-                                .of(IsSemVerValueSource::class.java) { parameters { version.set(it) } }
+                                .from(IsSemVerValueSource::class) { version = it }
                                 .get()
                                 .not()
                         ) throwError()

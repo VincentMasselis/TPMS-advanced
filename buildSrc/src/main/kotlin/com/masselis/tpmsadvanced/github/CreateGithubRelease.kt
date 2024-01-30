@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.github
 
+import org.gradle.kotlin.dsl.from
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import org.gradle.api.DefaultTask
@@ -7,7 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.of
+import org.gradle.kotlin.dsl.assign
 import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
@@ -26,6 +27,12 @@ internal abstract class CreateGithubRelease : DefaultTask() {
     @get:Inject
     abstract val execOperations: ExecOperations
 
+    private val fromCommit
+        get() = providerFactory.from(CommitShaValueSource::class) { backwardCount = 1 }
+
+    private val toCommit
+        get() = providerFactory.from(CommitShaValueSource::class) { backwardCount = 0 }
+
     init {
         group = "publishing"
         description = "Creates a release on github"
@@ -35,12 +42,6 @@ internal abstract class CreateGithubRelease : DefaultTask() {
     internal fun process() {
         ByteArrayOutputStream()
             .also { stdout ->
-                val fromCommit = providerFactory.of(CommitShaValueSource::class) {
-                    parameters { backwardCount.set(1) }
-                }
-                val toCommit = providerFactory.of(CommitShaValueSource::class) {
-                    parameters { backwardCount.set(0) }
-                }
                 execOperations.exec {
                     commandLine(
                         "git",
