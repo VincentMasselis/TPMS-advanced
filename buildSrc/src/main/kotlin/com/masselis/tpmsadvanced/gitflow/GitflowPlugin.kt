@@ -53,29 +53,49 @@ public class GitflowPlugin : Plugin<Project> {
         }
 
         // Post branch creation
-        project.tasks.create<AssertParent>("assertReleaseSourceIsDevelop") {
-            dependsOn(assertCurrentBranchIsRelease)
-            parentBranch = ext.developBranch
-            currentBranch = ext.releaseBranch
+        val assertReleaseSourceIsDevelop =
+            project.tasks.create<AssertParent>("assertReleaseSourceIsDevelop") {
+                dependsOn(assertCurrentBranchIsRelease)
+                parentBranch = ext.developBranch
+                currentBranch = ext.releaseBranch
+            }
+        val assertHotfixSourceIsMain =
+            project.tasks.create<AssertParent>("assertHotfixSourceIsMain") {
+                dependsOn(assertCurrentBranchIsHotfix)
+                parentBranch = ext.mainBranch
+                currentBranch = ext.hotfixBranch
+            }
+        val assertHotfixBranchVersionIsNew =
+            project.tasks.create<AssertNewBranchVersion>("assertHotfixBranchVersionIsNew") {
+                versionedBranch = ext.hotfixBranch
+            }
+        val assertReleaseBranchVersionIsNew =
+            project.tasks.create<AssertNewBranchVersion>("assertReleaseBranchVersionIsNew") {
+                versionedBranch = ext.releaseBranch
+            }
+        val assertReleaseIsUpToDateWithMain =
+            project.tasks.create<AssertNoCommitDiff>("assertReleaseIsUpToDateWithMain") {
+                baseBranch = ext.mainBranch
+                currentBranch = ext.releaseBranch
+            }
+        val assertHotfixIsUpToDateWithMain =
+            project.tasks.create<AssertNoCommitDiff>("assertHotfixIsUpToDateWithMain") {
+                baseBranch = ext.mainBranch
+                currentBranch = ext.hotfixBranch
+            }
+        project.tasks.create("assertReleaseBranchIsValid") {
+            dependsOn(
+                assertReleaseSourceIsDevelop,
+                assertReleaseBranchVersionIsNew,
+                assertReleaseIsUpToDateWithMain,
+            )
         }
-        project.tasks.create<AssertParent>("assertHotfixSourceIsMain") {
-            dependsOn(assertCurrentBranchIsHotfix)
-            parentBranch = ext.mainBranch
-            currentBranch = ext.hotfixBranch
-        }
-        project.tasks.create<AssertNewBranchVersion>("assertHotfixBranchVersionIsNew") {
-            versionedBranch = ext.hotfixBranch
-        }
-        project.tasks.create<AssertNewBranchVersion>("assertReleaseBranchVersionIsNew") {
-            versionedBranch = ext.releaseBranch
-        }
-        project.tasks.create<AssertNoCommitDiff>("assertReleaseIsUpToDateWithMain") {
-            baseBranch = ext.mainBranch
-            currentBranch = ext.releaseBranch
-        }
-        project.tasks.create<AssertNoCommitDiff>("assertHotfixIsUpToDateWithMain") {
-            baseBranch = ext.mainBranch
-            currentBranch = ext.hotfixBranch
+        project.tasks.create("assertHotfixBranchIsValid") {
+            dependsOn(
+                assertHotfixSourceIsMain,
+                assertHotfixBranchVersionIsNew,
+                assertHotfixIsUpToDateWithMain,
+            )
         }
     }
 }

@@ -16,7 +16,7 @@ don't need the secrets keys to run this project, the gradle configuration works 
 ## Release in beta
 
 The preferred way to release is by pushing a commit into the `main` branch. That will
-trigger [this workflow](.github/workflows/main.yml) which calls the gradle
+trigger [this workflow](.github/workflows/beta.yml) which calls the gradle
 tasks `createGithubReleaseNormalRelease` and  `publishToPlayStoreBetaNormalRelease`.
 
 - `createGithubReleaseNormalRelease` Tags the current commit with the version code and it will

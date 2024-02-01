@@ -1,17 +1,11 @@
 package com.masselis.tpmsadvanced.github
 
-import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.android.build.api.variant.impl.VariantOutputImpl
-import com.android.build.gradle.internal.scope.getOutputPath
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.registerIfAbsent
-import java.io.File
 import org.gradle.kotlin.dsl.the
 
 @Suppress("UnstableApiUsage")

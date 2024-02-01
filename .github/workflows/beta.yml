@@ -1,9 +1,9 @@
-name: Main
+name: Beta
 
 on:
   push:
     branches:
-      - main
+      - release/*
 
 concurrency:
   group: ${{ github.ref }}
@@ -27,6 +27,8 @@ jobs:
           GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
 
       - name: Publish to beta and create a github release
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: createGithubReleaseNormalRelease publishToPlayStoreBetaNormalRelease
+        run: >
+          ./gradlew
+          assertReleaseBranchIsValid
+          createGithubReleaseNormalRelease
+          publishToPlayStoreBetaNormalRelease

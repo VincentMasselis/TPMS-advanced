@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - hotfix/*
   pull_request:
     branches:
       - develop
@@ -25,9 +26,11 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Build everything and run unit tests
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build verifyPaparazzi --scan
+        run: >
+          ./gradlew
+          build
+          verifyPaparazzi
+          --scan
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v2
@@ -74,10 +77,13 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - uses: ./.github/actions/run-emulator
+
       - name: Run androidTest + take screenshots
-        uses: ./.github/actions/run-emulator
-        with:
-          script: ./gradlew connectedDemoDebugAndroidTest copyScreenshot
+        run: >
+          ./gradlew
+          connectedDemoDebugAndroidTest
+          copyScreenshot
 
       - name: Instrumented tests reports
         uses: actions/upload-artifact@v3
