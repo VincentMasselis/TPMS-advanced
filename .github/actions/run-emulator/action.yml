@@ -52,3 +52,8 @@ runs:
         nohup $ANDROID_HOME/emulator/emulator -avd android_emulator -no-snapshot -no-audio -gpu host -no-boot-anim -qemu -m 2048 > /dev/null 2>&1 &
 
         echo "Emulator starting"
+
+    - name: Run script
+      shell: bash
+      run: |
+        ${{ inputs.script }}

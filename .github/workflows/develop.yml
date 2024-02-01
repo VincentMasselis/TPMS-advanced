@@ -77,13 +77,13 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - uses: ./.github/actions/run-emulator
-
       - name: Run androidTest + take screenshots
-        run: >
-          ./gradlew
-          connectedDemoDebugAndroidTest
-          copyScreenshot
+        uses: ./.github/actions/run-emulator
+        with:
+          script: >
+            ./gradlew
+            connectedDemoDebugAndroidTest
+            copyScreenshot
 
       - name: Instrumented tests reports
         uses: actions/upload-artifact@v3
