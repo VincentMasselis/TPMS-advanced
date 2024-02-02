@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.gitflow
+package com.masselis.tpmsadvanced.gitflow.valuesource
 
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
@@ -6,7 +6,7 @@ import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-internal abstract class CurrentBranchValueSource : ValueSource<String, ValueSourceParameters.None> {
+internal abstract class CurrentBranch : ValueSource<String, ValueSourceParameters.None> {
 
     @get:Inject
     protected abstract val execOperations: ExecOperations

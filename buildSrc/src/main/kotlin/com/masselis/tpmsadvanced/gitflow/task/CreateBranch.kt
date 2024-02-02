@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.gitflow
+package com.masselis.tpmsadvanced.gitflow.task
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException

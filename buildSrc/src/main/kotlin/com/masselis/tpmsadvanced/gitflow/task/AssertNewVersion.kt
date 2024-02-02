@@ -1,5 +1,6 @@
-package com.masselis.tpmsadvanced.gitflow
+package com.masselis.tpmsadvanced.gitflow.task
 
+import SemanticVersion
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.provider.Property
@@ -15,7 +16,7 @@ internal abstract class AssertNewVersion : DefaultTask() {
     protected abstract val execOperations: ExecOperations
 
     @get:Input
-    abstract val version: Property<String>
+    abstract val version: Property<SemanticVersion>
 
     init {
         group = "verification"
@@ -31,7 +32,7 @@ internal abstract class AssertNewVersion : DefaultTask() {
                         "git",
                         "tag",
                         "-l",
-                        version.get()
+                        version.get().toString()
                     )
                     standardOutput = it
                 }

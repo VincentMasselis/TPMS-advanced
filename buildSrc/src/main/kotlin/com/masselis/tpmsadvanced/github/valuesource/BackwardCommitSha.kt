@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.github
+package com.masselis.tpmsadvanced.github.valuesource
 
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
@@ -7,8 +7,8 @@ import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-internal abstract class CommitShaValueSource :
-    ValueSource<String, CommitShaValueSource.Parameters> {
+internal abstract class BackwardCommitSha :
+    ValueSource<String, BackwardCommitSha.Parameters> {
 
     interface Parameters : ValueSourceParameters {
         val backwardCount: Property<Int>

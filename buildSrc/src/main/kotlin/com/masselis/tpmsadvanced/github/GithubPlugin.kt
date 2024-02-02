@@ -1,6 +1,9 @@
 package com.masselis.tpmsadvanced.github
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.masselis.tpmsadvanced.github.task.CreateBetaRelease
+import com.masselis.tpmsadvanced.github.task.CreateOrPromoteProdRelease
+import com.masselis.tpmsadvanced.github.task.ForceTagCommit
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
@@ -19,19 +22,24 @@ public class GithubPlugin : Plugin<Project> {
                     return@onVariants
 
                 val variantName = variant.name.capitalized()
-                val versionCodeTag = "vc${variant.outputs.single().versionCode.get()}"
+                val tagName = ext.versionName.map { it.toString() }
 
-                val tagCommit = project.tasks.create<TagCommit>("tagCommit$variantName") {
-                    tag = versionCodeTag
+                val forceTagCommit = project.tasks.create<ForceTagCommit>("forceTagCommit$variantName") {
+                    tag = tagName
                 }
-                project.tasks.create<CreateGithubRelease>("createGithubRelease$variantName") {
-                    dependsOn(tagCommit)
+                project.tasks.create<CreateBetaRelease>("createGithubBetaRelease$variantName") {
+                    dependsOn(forceTagCommit)
                     githubToken = ext.githubToken
-                    tagName = versionCodeTag
+                    this.tagName = tagName
+                    betaBranch = ext.betaBranch
+                    prodBranch = ext.prodBranch
                 }
-                project.tasks.create<PromoteGithubRelease>("promoteGithubRelease$variantName") {
+                project.tasks.create<CreateOrPromoteProdRelease>("createOrPromoteGithubProdRelease$variantName") {
+                    dependsOn(forceTagCommit)
                     githubToken = ext.githubToken
-                    tagName = versionCodeTag
+                    this.tagName = tagName
+                    betaBranch = ext.betaBranch
+                    prodBranch = ext.prodBranch
                 }
             }
         }

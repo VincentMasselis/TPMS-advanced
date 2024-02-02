@@ -1,13 +1,43 @@
 package com.masselis.tpmsadvanced.gitflow
 
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.masselis.tpmsadvanced.gitflow.task.AssertCurrentBranch
+import com.masselis.tpmsadvanced.gitflow.task.AssertNewBranchVersion
+import com.masselis.tpmsadvanced.gitflow.task.AssertNewVersion
+import com.masselis.tpmsadvanced.gitflow.task.AssertNoCommitDiff
+import com.masselis.tpmsadvanced.gitflow.task.AssertParent
+import com.masselis.tpmsadvanced.gitflow.task.CreateBranch
+import com.masselis.tpmsadvanced.gitflow.valuesource.BranchCommitCount
+import com.masselis.tpmsadvanced.gitflow.valuesource.CurrentBranch
+import com.masselis.tpmsadvanced.gitflow.valuesource.VersionCode
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.from
+import org.gradle.kotlin.dsl.the
 
 public class GitflowPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val ext = project.extensions.create<GitflowExtension>("gitflow")
+
+        val versionCode = project.providers.from(VersionCode::class) {
+            versionName = ext.versionName
+            currentBranch = project.providers.from(CurrentBranch::class)
+            releaseBranch = ext.releaseBranch
+            mainBranch = ext.mainBranch
+            mainToReleaseCommitCount = project.providers.from(BranchCommitCount::class) {
+                baseBranch = ext.mainBranch
+                currentBranch = ext.releaseBranch
+            }
+        }
+        project.subprojects {
+            plugins.whenPluginAdded {
+                if (this is AppPlugin)
+                    the<BaseAppModuleExtension>().defaultConfig.versionCode = versionCode.get()
+            }
+        }
 
         // Pre branch creation
         val assertNewVersion = project.tasks.create<AssertNewVersion>("assertNewVersion") {
@@ -90,6 +120,7 @@ public class GitflowPlugin : Plugin<Project> {
                 assertReleaseIsUpToDateWithMain,
             )
         }
+        // TODO Call this task with GA
         project.tasks.create("assertHotfixBranchIsValid") {
             dependsOn(
                 assertHotfixSourceIsMain,

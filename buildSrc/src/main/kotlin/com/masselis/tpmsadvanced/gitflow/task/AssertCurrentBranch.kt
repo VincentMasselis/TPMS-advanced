@@ -1,5 +1,6 @@
-package com.masselis.tpmsadvanced.gitflow
+package com.masselis.tpmsadvanced.gitflow.task
 
+import com.masselis.tpmsadvanced.gitflow.valuesource.CurrentBranch
 import org.gradle.kotlin.dsl.from
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -22,7 +23,7 @@ internal abstract class AssertCurrentBranch : DefaultTask() {
     abstract val currentBranch: Property<String>
 
     private val realCurrentBranch
-        get() = providerFactory.from(CurrentBranchValueSource::class)
+        get() = providerFactory.from(CurrentBranch::class)
 
     init {
         group = "verification"

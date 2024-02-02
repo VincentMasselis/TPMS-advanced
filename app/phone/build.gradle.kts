@@ -1,5 +1,6 @@
 @file:Suppress("LocalVariableName", "UnstableApiUsage")
 
+import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.github.GithubExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
@@ -27,18 +28,21 @@ if (isDecrypted) {
     configure<GithubExtension> {
         val GITHUB_TOKEN: String by rootProject.extra
         githubToken = GITHUB_TOKEN
+        rootProject.the<GitflowExtension>().apply {
+            this@configure.versionName = versionName
+            betaBranch = releaseBranch
+            prodBranch = mainBranch
+        }
     }
 }
 
-val tpmsAdvancedVersionCode: Int by rootProject.extra
-val tpmsAdvancedVersionName: String by rootProject.extra
+val tpmsAdvancedVersionName: SemanticVersion by rootProject.extra
 android {
     defaultConfig {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
 
-        versionCode = tpmsAdvancedVersionCode
-        versionName = tpmsAdvancedVersionName
+        versionName = "$tpmsAdvancedVersionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
