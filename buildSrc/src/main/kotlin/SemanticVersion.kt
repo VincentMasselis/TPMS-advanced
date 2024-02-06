@@ -7,8 +7,6 @@ public data class SemanticVersion(val input: String) : Serializable {
     public val major: Int
     public val minor: Int
     public val patch: Int
-    public val prerelease: String?
-    public val buildmetadata: String?
 
     init {
         val matcher = pattern.matcher(input)
@@ -17,8 +15,11 @@ public data class SemanticVersion(val input: String) : Serializable {
         major = matcher.group("major").toInt()
         minor = matcher.group("minor").toInt()
         patch = matcher.group("patch").toInt()
-        prerelease = matcher.group("prerelease")
-        buildmetadata = matcher.group("buildmetadata")
+        for (index in 0 until matcher.groupCount()) {
+            when (matcher.group(index)) {
+                "prerelease", "buildmetadata" -> throw GradleException("Setting \"prerelease\" and \"buildmetadata\" is illegal, theses groups and directly managed by the gradle plugins. Input: \"$input\"")
+            }
+        }
     }
 
     override fun toString(): String = input

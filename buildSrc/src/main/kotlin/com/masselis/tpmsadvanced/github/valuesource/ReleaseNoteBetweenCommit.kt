@@ -16,7 +16,7 @@ internal abstract class ReleaseNoteBetweenCommit : ValueSource<String, Parameter
     }
 
     @get:Inject
-    abstract val execOperations: ExecOperations
+    protected abstract val execOperations: ExecOperations
 
     override fun obtain(): String = ByteArrayOutputStream()
         .also { stdout ->

@@ -14,6 +14,15 @@ plugins {
     alias(libs.plugins.sqldelight) apply false
 }
 
+var isDecrypted by extra(false)
+try {
+    apply(from = "secrets/keys.gradle")
+    isDecrypted = true
+    println("Project secrets decrypted")
+} catch (_: Exception) {
+    println("Project secrets encrypted")
+}
+
 val tpmsAdvancedVersionName: SemanticVersion by extra
 
 apply<GitflowPlugin>()
@@ -25,28 +34,18 @@ configure<GitflowExtension> {
     mainBranch = "main"
 }
 
-task<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
-}
-
-var isDecrypted by extra(false)
-try {
-    apply(from = "secrets/keys.gradle")
-    isDecrypted = true
-    println("Project secrets decrypted")
-} catch (_: Exception) {
-    println("Project secrets encrypted")
-}
-
-if(isDecrypted) {
+if (isDecrypted) {
     apply<GithubPlugin>()
     configure<GithubExtension> {
         val GITHUB_TOKEN: String by extra
         githubToken = GITHUB_TOKEN
-        versionName = tpmsAdvancedVersionName
-        preReleaseBranch = the<GitflowExtension>().releaseBranch
-        releaseBranch = the<GitflowExtension>().mainBranch
+        currentReleaseTag = the<GitflowExtension>().currentReleaseTag
+        lastReleaseCommitSha = the<GitflowExtension>().lastReleaseCommitSha
     }
+}
+
+task<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
 }
 
 subprojects { apply(plugin = "detekt") }

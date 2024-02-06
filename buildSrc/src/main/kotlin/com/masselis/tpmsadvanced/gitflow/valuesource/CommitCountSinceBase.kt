@@ -1,5 +1,6 @@
-package com.masselis.tpmsadvanced.github.valuesource
+package com.masselis.tpmsadvanced.gitflow.valuesource
 
+import com.masselis.tpmsadvanced.gitflow.valuesource.CommitCountSinceBase.Parameters
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
@@ -7,27 +8,29 @@ import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-internal abstract class BackwardCommitSha :
-    ValueSource<String, BackwardCommitSha.Parameters> {
+internal abstract class CommitCountSinceBase : ValueSource<Int, Parameters> {
 
     interface Parameters : ValueSourceParameters {
-        val backwardCount: Property<Int>
+        val baseBranch: Property<String>
     }
 
     @get:Inject
     protected abstract val execOperations: ExecOperations
 
-    override fun obtain(): String = ByteArrayOutputStream()
+    override fun obtain(): Int? = ByteArrayOutputStream()
         .also {
             execOperations.exec {
                 commandLine(
                     "git",
-                    "rev-parse",
-                    "HEAD^${parameters.backwardCount.get()}"
+                    "rev-list",
+                    "--count",
+                    "HEAD",
+                    "^${parameters.baseBranch.get()}"
                 )
                 standardOutput = it
             }
         }
         .use { it.toString() }
         .trim()
+        .toInt()
 }

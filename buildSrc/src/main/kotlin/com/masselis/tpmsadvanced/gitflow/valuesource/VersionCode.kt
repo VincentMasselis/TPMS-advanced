@@ -13,7 +13,7 @@ internal abstract class VersionCode : ValueSource<Int, Parameters> {
         val currentBranch: Property<String>
         val releaseBranch: Property<String>
         val mainBranch: Property<String>
-        val mainToReleaseCommitCount: Property<Int>
+        val releaseBuildCount: Property<Int>
     }
 
     // Max value for the Play Store is: 210_00_00_000
@@ -27,7 +27,7 @@ internal abstract class VersionCode : ValueSource<Int, Parameters> {
                 .plus(
                     when (parameters.currentBranch.get()) {
                         parameters.mainBranch.get() -> 999
-                        parameters.releaseBranch.get() -> parameters.mainToReleaseCommitCount.get()
+                        parameters.releaseBranch.get() -> parameters.releaseBuildCount.get()
                         else -> 0
                     }
                 )
