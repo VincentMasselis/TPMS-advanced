@@ -1,5 +1,7 @@
 import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.gitflow.GitflowPlugin
+import com.masselis.tpmsadvanced.github.GithubExtension
+import com.masselis.tpmsadvanced.github.GithubPlugin
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
@@ -12,9 +14,10 @@ plugins {
     alias(libs.plugins.sqldelight) apply false
 }
 
+val tpmsAdvancedVersionName: SemanticVersion by extra
+
 apply<GitflowPlugin>()
 configure<GitflowExtension> {
-    val tpmsAdvancedVersionName: SemanticVersion by extra
     versionName = tpmsAdvancedVersionName
     developBranch = "develop"
     releaseBranch = "release/${tpmsAdvancedVersionName}"
@@ -33,6 +36,17 @@ try {
     println("Project secrets decrypted")
 } catch (_: Exception) {
     println("Project secrets encrypted")
+}
+
+if(isDecrypted) {
+    apply<GithubPlugin>()
+    configure<GithubExtension> {
+        val GITHUB_TOKEN: String by extra
+        githubToken = GITHUB_TOKEN
+        versionName = tpmsAdvancedVersionName
+        preReleaseBranch = the<GitflowExtension>().releaseBranch
+        releaseBranch = the<GitflowExtension>().mainBranch
+    }
 }
 
 subprojects { apply(plugin = "detekt") }

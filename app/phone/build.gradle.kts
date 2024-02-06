@@ -1,8 +1,5 @@
 @file:Suppress("LocalVariableName", "UnstableApiUsage")
 
-import com.masselis.tpmsadvanced.gitflow.GitflowExtension
-import com.masselis.tpmsadvanced.github.GithubExtension
-import com.masselis.tpmsadvanced.github.GithubPlugin
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
 import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
 import com.masselis.tpmsadvanced.playstore.UpdatePlayStoreScreenshots
@@ -23,16 +20,6 @@ if (isDecrypted) {
     apply<PlayStorePlugin>()
     configure<PlayStoreExtension> {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
-    }
-    apply<GithubPlugin>()
-    configure<GithubExtension> {
-        val GITHUB_TOKEN: String by rootProject.extra
-        githubToken = GITHUB_TOKEN
-        rootProject.the<GitflowExtension>().apply {
-            this@configure.versionName = versionName
-            betaBranch = releaseBranch
-            prodBranch = mainBranch
-        }
     }
 }
 

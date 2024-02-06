@@ -18,7 +18,7 @@ import org.gradle.kotlin.dsl.assign
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
-internal abstract class CreateOrPromoteProdRelease : DefaultTask() {
+internal abstract class UpsertRelease : DefaultTask() {
 
     @get:Inject
     abstract val providerFactory: ProviderFactory
@@ -33,24 +33,33 @@ internal abstract class CreateOrPromoteProdRelease : DefaultTask() {
     abstract val tagName: Property<String>
 
     @get:Input
-    abstract val betaBranch: Property<String>
+    abstract val preRelease: Property<Boolean>
 
     @get:Input
-    abstract val prodBranch: Property<String>
+    abstract val preReleaseBranch: Property<String>
+
+    @get:Input
+    abstract val releaseBranch: Property<String>
 
     private val releaseList
         get() = providerFactory.from(ListRelease::class)
 
-    private val releaseNoteBetweenCommit
-        get() = providerFactory.from(ReleaseNoteBetweenCommit::class) {
-            fromCommitSha = providerFactory.from(BackwardCommitSha::class) { backwardCount = 1 }
-            toCommitSha = providerFactory.from(BackwardCommitSha::class) { backwardCount = 0 }
-        }
-
-    private val releaseNoteBetweenBranch
-        get() = providerFactory.from(ReleaseNoteBetweenBranch::class) {
-            baseBranch = prodBranch
-            currentBranch = betaBranch
+    private val releaseNotes
+        get() = preRelease.flatMap { isPreRelease ->
+            if (isPreRelease)
+                providerFactory.from(ReleaseNoteBetweenBranch::class) {
+                    baseBranch = releaseBranch
+                    currentBranch = preReleaseBranch
+                }
+            else
+                providerFactory.from(ReleaseNoteBetweenCommit::class) {
+                    fromCommitSha = providerFactory.from(BackwardCommitSha::class) {
+                        backwardCount = 1
+                    }
+                    toCommitSha = providerFactory.from(BackwardCommitSha::class) {
+                        backwardCount = 0
+                    }
+                }
         }
 
     init {
@@ -76,8 +85,8 @@ internal abstract class CreateOrPromoteProdRelease : DefaultTask() {
                     "-d",
                     JsonObject(
                         mapOf(
-                            "body" to JsonPrimitive(releaseNoteBetweenBranch.get()),
-                            "prerelease" to JsonPrimitive(false)
+                            "body" to JsonPrimitive(releaseNotes.get()),
+                            "prerelease" to JsonPrimitive(preRelease.get())
                         )
                     ).toString()
                 )
@@ -97,8 +106,8 @@ internal abstract class CreateOrPromoteProdRelease : DefaultTask() {
                     JsonObject(
                         mapOf(
                             "tag_name" to JsonPrimitive(tagName.get()),
-                            "body" to JsonPrimitive(releaseNoteBetweenCommit.get()),
-                            "prerelease" to JsonPrimitive(false)
+                            "body" to JsonPrimitive(releaseNotes.get()),
+                            "prerelease" to JsonPrimitive(preRelease.get())
                         )
                     )
                 )
