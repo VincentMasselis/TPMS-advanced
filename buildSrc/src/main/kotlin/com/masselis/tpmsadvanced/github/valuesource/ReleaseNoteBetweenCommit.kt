@@ -36,5 +36,5 @@ internal abstract class ReleaseNoteBetweenCommit : ValueSource<String, Parameter
                 }
         }
         .use { it.toString() }
-        .trim()
+        .trimIndent()
 }

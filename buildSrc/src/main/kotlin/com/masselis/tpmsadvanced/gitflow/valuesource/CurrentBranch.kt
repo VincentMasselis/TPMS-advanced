@@ -24,6 +24,6 @@ internal abstract class CurrentBranch : ValueSource<String, ValueSourceParameter
             }
         }
         .use { it.toString() }
-        .trim()
+        .trimIndent()
 
 }

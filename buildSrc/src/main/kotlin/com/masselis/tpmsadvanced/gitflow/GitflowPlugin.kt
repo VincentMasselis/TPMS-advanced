@@ -6,13 +6,13 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.masselis.tpmsadvanced.gitflow.task.AssertCurrentBranch
 import com.masselis.tpmsadvanced.gitflow.task.AssertNewBranchVersion
+import com.masselis.tpmsadvanced.gitflow.task.AssertNewVersionTag
 import com.masselis.tpmsadvanced.gitflow.task.AssertNewVersionTagAndBranch
 import com.masselis.tpmsadvanced.gitflow.task.AssertNoCommitDiff
-import com.masselis.tpmsadvanced.gitflow.task.TagCommit
-import com.masselis.tpmsadvanced.gitflow.task.AssertNewVersionTag
 import com.masselis.tpmsadvanced.gitflow.task.AssertParent
 import com.masselis.tpmsadvanced.gitflow.task.CreateBranch
-import com.masselis.tpmsadvanced.gitflow.valuesource.CommitCountSinceBase
+import com.masselis.tpmsadvanced.gitflow.task.TagCommit
+import com.masselis.tpmsadvanced.gitflow.valuesource.CommitCountBetweenBranch
 import com.masselis.tpmsadvanced.gitflow.valuesource.CurrentBranch
 import com.masselis.tpmsadvanced.gitflow.valuesource.VersionCode
 import org.gradle.api.GradleException
@@ -35,15 +35,16 @@ public class GitflowPlugin : Plugin<Project> {
             currentReleaseTag,
             lastReleaseCommitSha
         )
-
+        val releaseBuildCount = project.providers.from(CommitCountBetweenBranch::class) {
+            fromBranch = ext.developBranch
+            toBranch = ext.releaseBranch
+        }
         val versionCode = project.providers.from(VersionCode::class) {
             version = ext.version
             this.currentBranch = currentBranch
             releaseBranch = ext.releaseBranch
             mainBranch = ext.mainBranch
-            releaseBuildCount = project.providers.from(CommitCountSinceBase::class) {
-                baseBranch = ext.developBranch
-            }
+            this.releaseBuildCount = releaseBuildCount
         }
         currentReleaseTag.set(versionCode.flatMap {
             if (currentBranch.get() == ext.releaseBranch.get())
@@ -61,13 +62,10 @@ public class GitflowPlugin : Plugin<Project> {
                     // We're working on release, if this is the first commit of this branch, the
                     // latest release is main, if not, the latest release is the previous commit
                     // from the current release branch
-                    ext.releaseBranch.get() -> project
-                        .providers
-                        .from(CommitCountSinceBase::class) { baseBranch = ext.developBranch }
-                        .flatMap { commitCount ->
-                            if (commitCount == 0) ext.mainBranch
-                            else ext.releaseBranch.map { "$it^1" }
-                        }
+                    ext.releaseBranch.get() -> releaseBuildCount.flatMap { commitCount ->
+                        if (commitCount == 0) ext.mainBranch
+                        else ext.releaseBranch.map { "$it^1" }
+                    }
 
                     else -> project.providers.provider { throw GradleException("Cannot compute the latest release commit because the current branch is not a releasable branch. Current branch \"$currentBranch\"") }
                 }

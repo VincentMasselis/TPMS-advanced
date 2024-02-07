@@ -27,17 +27,17 @@ internal abstract class TagCommit : DefaultTask() {
         execOperations.exec {
             commandLine("git", "fetch")
             args("--all", "--tags")
-        }.assertNormalExitValue()
+        }
 
         // If the tag already exists, this step fails
         execOperations.exec {
             commandLine("git", "tag", tag.get())
-        }.assertNormalExitValue()
+        }
 
         // Push the tag to the remote
         execOperations.exec {
             commandLine("git", "push")
             args("--tags")
-        }.assertNormalExitValue()
+        }
     }
 }

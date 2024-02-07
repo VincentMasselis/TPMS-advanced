@@ -28,5 +28,5 @@ internal abstract class CommitSha : ValueSource<String, Parameters> {
             }
         }
         .use { it.toString() }
-        .trim()
+        .trimIndent()
 }
