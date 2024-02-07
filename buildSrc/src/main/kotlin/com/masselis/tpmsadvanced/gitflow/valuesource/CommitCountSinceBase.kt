@@ -24,11 +24,10 @@ internal abstract class CommitCountSinceBase : ValueSource<Int, Parameters> {
                     "git",
                     "rev-list",
                     "--count",
-                    "HEAD",
-                    "^${parameters.baseBranch.get()}"
+                    "HEAD ^${parameters.baseBranch.get()}",
                 )
                 standardOutput = it
-            }
+            }.assertNormalExitValue()
         }
         .use { it.toString() }
         .trim()
