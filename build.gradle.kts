@@ -3,11 +3,6 @@ import com.masselis.tpmsadvanced.gitflow.GitflowPlugin
 import com.masselis.tpmsadvanced.github.GithubExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
-    extra.set("tpmsAdvancedVersionName", SemanticVersion("1.3.1"))
-}
-
 plugins {
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.crashlytics) apply false
@@ -23,14 +18,14 @@ try {
     println("Project secrets encrypted")
 }
 
-val tpmsAdvancedVersionName: SemanticVersion by extra
 
 apply<GitflowPlugin>()
 configure<GitflowExtension> {
-    versionName = tpmsAdvancedVersionName
+    val currentVersion = StricSemanticVersion("1.3.1")
+    version = currentVersion
     developBranch = "develop"
-    releaseBranch = "release/${tpmsAdvancedVersionName}"
-    hotfixBranch = "hotfix/${tpmsAdvancedVersionName}"
+    releaseBranch = "release/${currentVersion}"
+    hotfixBranch = "hotfix/${currentVersion}"
     mainBranch = "main"
 }
 

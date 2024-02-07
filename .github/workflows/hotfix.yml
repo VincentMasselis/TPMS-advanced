@@ -1,17 +1,17 @@
-name: Beta
+name: Hotfix
 
 on:
   push:
     branches:
-      - release/*
+      - hotfix/*
 
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  publication:
-    name: Publish to beta
+  build:
+    name: Build everything, test and report
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
@@ -26,11 +26,10 @@ jobs:
         env:
           GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
 
-      - name: Publish to beta and create a github release
+      - name: Build everything and run unit tests
         run: >
           ./gradlew
-          assertReleaseBranchIsValid
+          assertHotfixBranchIsValid
           build
           verifyPaparazzi
-          createGithubPreRelease
-          publishToPlayStoreBetaNormalRelease
+

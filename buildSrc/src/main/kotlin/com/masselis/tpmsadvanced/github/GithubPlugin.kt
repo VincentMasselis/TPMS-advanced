@@ -30,17 +30,13 @@ public class GithubPlugin : Plugin<Project> {
         }
         project.subprojects {
             plugins.all {
-                if (this is AppPlugin) {
-                    the<BaseAppModuleExtension>()
-                        .applicationVariants
-                        .all {
-                            upsertGithubPreRelease.dependsOn("${this@subprojects.path}:assemble${name.capitalized()}")
-                            upsertGithubRelease.dependsOn("${this@subprojects.path}:assemble${name.capitalized()}")
-                            outputs.all {
-                                upsertGithubPreRelease.assets.from(outputFile)
-                                upsertGithubRelease.assets.from(outputFile)
-                            }
-                        }
+                if (this is AppPlugin) the<BaseAppModuleExtension>().applicationVariants.all {
+                    upsertGithubPreRelease.dependsOn("${this@subprojects.path}:assemble${name.capitalized()}")
+                    upsertGithubRelease.dependsOn("${this@subprojects.path}:assemble${name.capitalized()}")
+                    outputs.all {
+                        upsertGithubPreRelease.assets.from(outputFile)
+                        upsertGithubRelease.assets.from(outputFile)
+                    }
                 }
             }
         }

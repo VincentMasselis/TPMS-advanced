@@ -27,10 +27,10 @@ jobs:
 
       - name: Promotes the github release, promotes from the beta channel to production, updates the screenshots
         uses: ./.github/actions/run-emulator
-        with: # TODO
+        with:
           script: >
             ./gradlew
-            assertNewVersion
-            createOrPromoteGithubProdReleaseNormalRelease
+            assertMainCommitNewVersion
+            createGithubRelease
+            publishToPlayStoreProductionNormalRelease
             updatePlayStoreScreenshotsNormalRelease
-            promoteToPlayStoreProductionNormalRelease

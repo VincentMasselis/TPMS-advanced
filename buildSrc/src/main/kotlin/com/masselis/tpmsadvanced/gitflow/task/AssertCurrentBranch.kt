@@ -20,7 +20,7 @@ internal abstract class AssertCurrentBranch : DefaultTask() {
     protected abstract val providerFactory: ProviderFactory
 
     @get:Input
-    abstract val currentBranch: Property<String>
+    abstract val expectedBranch: Property<String>
 
     private val realCurrentBranch
         get() = providerFactory.from(CurrentBranch::class)
@@ -32,7 +32,7 @@ internal abstract class AssertCurrentBranch : DefaultTask() {
 
     @TaskAction
     internal fun process() {
-        if (realCurrentBranch.get() != currentBranch.get())
-            throw GradleException("Current branch is \"$realCurrentBranch\" but \"${currentBranch.get()}\" was expected")
+        if (realCurrentBranch.get() != expectedBranch.get())
+            throw GradleException("Current branch is \"$realCurrentBranch\" but \"${expectedBranch.get()}\" was expected")
     }
 }

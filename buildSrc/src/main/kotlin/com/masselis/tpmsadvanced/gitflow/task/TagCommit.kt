@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.gitflow.task
 
+import SemanticVersion
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -10,7 +11,7 @@ import javax.inject.Inject
 internal abstract class TagCommit : DefaultTask() {
 
     @get:Input
-    abstract val tag: Property<String>
+    abstract val tag: Property<SemanticVersion>
 
     @get:Inject
     abstract val execOperations: ExecOperations

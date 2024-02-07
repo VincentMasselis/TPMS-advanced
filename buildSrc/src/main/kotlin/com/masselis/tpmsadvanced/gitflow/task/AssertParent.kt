@@ -42,7 +42,6 @@ internal abstract class AssertParent : DefaultTask() {
             .use { it.toString() }
             .trimIndent()
             .split('\n')
-            .map { it.trim() }
             .filter { it.isNotBlank() }
             .singleOrNull { it == parentBranch.get() }
             .also { parent ->

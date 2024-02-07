@@ -2,7 +2,7 @@
 
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
 import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
-import com.masselis.tpmsadvanced.playstore.UpdatePlayStoreScreenshots
+import com.masselis.tpmsadvanced.playstore.task.UpdatePlayStoreScreenshots
 
 plugins {
     `android-app`
@@ -23,13 +23,10 @@ if (isDecrypted) {
     }
 }
 
-val tpmsAdvancedVersionName: SemanticVersion by rootProject.extra
 android {
     defaultConfig {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
-
-        versionName = "$tpmsAdvancedVersionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
