@@ -2,10 +2,16 @@ import org.gradle.api.GradleException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-public interface SemanticVersion : StricSemanticVersion {
+public sealed interface SemanticVersion : StricSemanticVersion {
 
     public val prerelease: String?
     public val buildmetadata: String?
+
+    override fun compareTo(other: StricSemanticVersion): Int {
+        if (prerelease != null || buildmetadata != null)
+            error("Cannot compare this version because prerelease and buildmetadata are not comparable")
+        return super.compareTo(other)
+    }
 
     public data class Impl(
         override val major: Int,
