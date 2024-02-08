@@ -15,8 +15,6 @@ runs:
       run: |
         #!/usr/bin/env bash
 
-        brew install android-commandlinetools android-platform-tools
-        
         # Install AVD files
         echo "y" | sdkmanager --install 'system-images;android-27;default;arm64-v8a'
 
