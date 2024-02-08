@@ -50,7 +50,7 @@ runs:
         echo "Starting emulator"
 
         # Start emulator in background
-        nohup $ANDROID_HOME/emulator/emulator -avd android_emulator -no-snapshot -no-audio -gpu host -no-boot-anim -qemu -m 2048 > /dev/null 2>&1 &
+        nohup $ANDROID_HOME/emulator/emulator -avd android_emulator -no-snapshot -no-audio -gpu host -no-boot-anim -qemu -m 2048 > emulator.out 2>&1 &
 
         echo "Emulator starting"
 
@@ -58,3 +58,10 @@ runs:
       shell: bash
       run: |
         ${{ inputs.script }}
+
+    - name: Emulator output
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: Emulator-output
+        path: "emulator.out"

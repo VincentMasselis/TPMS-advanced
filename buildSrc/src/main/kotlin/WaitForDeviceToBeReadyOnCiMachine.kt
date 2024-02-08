@@ -24,7 +24,7 @@ public abstract class WaitForDeviceToBeReadyOnCiMachine : DefaultTask() {
     init {
         group = "verification"
         description = "Wait for an android device run on a C.I. machine"
-        timeout = Duration.ofMinutes(20)
+        timeout = Duration.ofMinutes(10)
     }
 
     @TaskAction
