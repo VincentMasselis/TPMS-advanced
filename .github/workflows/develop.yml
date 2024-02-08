@@ -65,7 +65,7 @@ jobs:
 
   instrumented_test_n_screenshots:
     name: Run instrumented tests and take screenshots
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Checkout project
         uses: actions/checkout@v3

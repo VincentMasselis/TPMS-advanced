@@ -15,13 +15,13 @@ runs:
       run: |
         #!/usr/bin/env bash
 
-        brew install intel-haxm android-commandlinetools android-platform-tools
+        brew install android-commandlinetools android-platform-tools
         
         # Install AVD files
-        echo "y" | sdkmanager --install 'system-images;android-27;default;x86_64'
+        echo "y" | sdkmanager --install 'system-images;android-27;default;arm64-v8a'
 
         # Create emulator
-        echo "no" | avdmanager create avd -n android_emulator -d 19 --package 'system-images;android-27;default;x86_64'
+        echo "no" | avdmanager create avd -n android_emulator -d 19 --package 'system-images;android-27;default;arm64-v8a'
         
         # list emulator
         echo "Available emulator"
