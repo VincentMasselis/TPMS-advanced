@@ -2,17 +2,16 @@ package com.masselis.tpmsadvanced.playstore
 
 import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.VariantOutputConfiguration.OutputType.SINGLE
 import com.android.build.api.variant.impl.VariantOutputImpl
 import com.android.build.gradle.internal.scope.getOutputPath
 import com.masselis.tpmsadvanced.playstore.task.PublishToPlayStore
 import com.masselis.tpmsadvanced.playstore.task.UpdatePlayStoreScreenshots
-import com.masselis.tpmsadvanced.playstore.valuesource.ReleaseNote
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.from
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.kotlin.dsl.the
 
@@ -32,21 +31,19 @@ public class PlayStorePlugin : Plugin<Project> {
                     return@onVariants
 
                 val packageName = variant.applicationId
-                val versionName = variant.outputs.single().versionName
-                val releaseBundle = variant
+                val output = variant
                     .outputs
-                    .single()
-                    .let { it as VariantOutputImpl }
-                    .outputFileName
-                    .map { fileName ->
-                        SingleArtifact
-                            .BUNDLE
-                            .getOutputPath(
-                                project.layout.buildDirectory,
-                                variant.name,
-                                forceFilename = fileName.substringBeforeLast(".") + ".aab"
-                            )
-                    }
+                    .map { it as VariantOutputImpl }
+                    // Learn more: https://developer.android.com/build/configure-apk-splits#configure-split
+                    .single { it.outputType == SINGLE }
+                val versionName = output.versionName
+                val releaseBundle = output.outputFileName.map { fileName ->
+                    SingleArtifact.BUNDLE.getOutputPath(
+                        project.layout.buildDirectory,
+                        variant.name,
+                        forceFilename = fileName.substringBeforeLast('.') + ".aab"
+                    )
+                }
                 val releaseNotesDir = project
                     .layout
                     .projectDirectory

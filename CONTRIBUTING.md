@@ -7,6 +7,8 @@
 * [Compose](https://developer.android.com/jetpack/compose)
 * IOC with [Dagger2](https://dagger.dev/)
 * Gradle with [Android Gradle Plugin](https://developer.android.com/studio/build)
+* Gradle KTS with custom plugins
+* Git-flow
 
 ## How to build
 
@@ -15,7 +17,7 @@ don't need the secrets keys to run this project, the gradle configuration works 
 
 ## Publish in beta
 
-TPMS-Advance follow the rules of git-flow. To create a release from `develop`, call the task
+TPMS-Advanced follow the rules of git-flow. To create a release from `develop`, call the task
 `createRelease`. This task will create a release with a version which match the one filled into the
 root [build.gradle file](build.gradle.kts). Push this release to github to run the tasks:
 
