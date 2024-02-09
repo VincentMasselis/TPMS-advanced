@@ -8,9 +8,15 @@ import javax.inject.Inject
 
 internal abstract class CommitSha : ValueSource<String, Parameters> {
 
-    @Suppress("SpellCheckingInspection")
     interface Parameters : ValueSourceParameters {
-        val refname: Property<String>
+        /**
+         *  Related to https://git-scm.com/docs/git-rev-parse#_specifying_revisions
+         *  Some examples:
+         *  - `HEAD` for the current commit
+         *  - `1.3.1` for the commit associated to the tag `1.3.1`
+         *  - `main` for the latest commit in the `main`
+         */
+        val argument: Property<String>
     }
 
     @get:Inject
@@ -22,7 +28,7 @@ internal abstract class CommitSha : ValueSource<String, Parameters> {
                 commandLine(
                     "git",
                     "rev-parse",
-                    parameters.refname.get()
+                    parameters.argument.get()
                 )
                 standardOutput = it
             }

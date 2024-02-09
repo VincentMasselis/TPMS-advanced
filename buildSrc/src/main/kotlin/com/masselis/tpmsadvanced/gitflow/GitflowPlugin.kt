@@ -9,7 +9,7 @@ import com.masselis.tpmsadvanced.gitflow.task.AssertNewBranchVersion
 import com.masselis.tpmsadvanced.gitflow.task.AssertNewVersionTag
 import com.masselis.tpmsadvanced.gitflow.task.AssertNewVersionTagAndBranch
 import com.masselis.tpmsadvanced.gitflow.task.AssertNoCommitDiff
-import com.masselis.tpmsadvanced.gitflow.task.AssertParent
+import com.masselis.tpmsadvanced.gitflow.task.AssertNearestParent
 import com.masselis.tpmsadvanced.gitflow.task.CreateBranch
 import com.masselis.tpmsadvanced.gitflow.task.TagCommit
 import com.masselis.tpmsadvanced.gitflow.valuesource.CommitCountBetweenBranch
@@ -54,7 +54,7 @@ public class GitflowPlugin : Plugin<Project> {
         })
 
         lastReleaseCommitSha.set(project.providers.from(CommitSha::class) {
-            refname = currentBranch.flatMap { currentBranch ->
+            argument = currentBranch.flatMap { currentBranch ->
                 when (currentBranch) {
                     // We're working on main, latest release was the previous commit on main
                     ext.mainBranch.get() -> ext.mainBranch.map { "$it^1" }
@@ -132,13 +132,13 @@ public class GitflowPlugin : Plugin<Project> {
 
         // Post branch creation
         val assertReleaseSourceIsDevelop =
-            project.tasks.create<AssertParent>("assertReleaseSourceIsDevelop") {
+            project.tasks.create<AssertNearestParent>("assertReleaseSourceIsDevelop") {
                 dependsOn(assertCurrentBranchIsRelease)
                 parentBranch = ext.developBranch
                 this.currentBranch = ext.releaseBranch
             }
         val assertHotfixSourceIsMain =
-            project.tasks.create<AssertParent>("assertHotfixSourceIsMain") {
+            project.tasks.create<AssertNearestParent>("assertHotfixSourceIsMain") {
                 dependsOn(assertCurrentBranchIsHotfix)
                 parentBranch = ext.mainBranch
                 this.currentBranch = ext.hotfixBranch

@@ -47,7 +47,7 @@ internal abstract class CreateRelease : DefaultTask() {
     private val releaseNotes
         get() = providerFactory.from(ReleaseNoteBetweenCommit::class) {
             fromCommitSha = lastReleaseCommitSha
-            toCommitSha = providerFactory.from(CommitSha::class) { refname = "HEAD" }
+            toCommitSha = providerFactory.from(CommitSha::class) { argument = "HEAD" }
         }
 
     init {
