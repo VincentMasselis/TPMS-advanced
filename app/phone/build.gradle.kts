@@ -1,16 +1,14 @@
 @file:Suppress("LocalVariableName", "UnstableApiUsage")
 
-import com.masselis.tpmsadvanced.github.GithubExtension
-import com.masselis.tpmsadvanced.github.GithubPlugin
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
 import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
-import com.masselis.tpmsadvanced.playstore.UpdatePlayStoreScreenshots
+import com.masselis.tpmsadvanced.playstore.task.UpdatePlayStoreScreenshots
 
 plugins {
-    id("android-app")
-    id("compose")
-    id("dagger")
-    id("paparazzi")
+    `android-app`
+    compose
+    dagger
+    paparazzi
 }
 
 val isDecrypted: Boolean by rootProject.extra
@@ -23,21 +21,12 @@ if (isDecrypted) {
     configure<PlayStoreExtension> {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
     }
-    apply<GithubPlugin>()
-    configure<GithubExtension> {
-        val GITHUB_TOKEN: String by rootProject.extra
-        githubToken = GITHUB_TOKEN
-    }
 }
 
-val tpmsAdvancedVersionCode: Int by rootProject.extra
 android {
     defaultConfig {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
-
-        versionCode = tpmsAdvancedVersionCode
-        versionName = "1.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.

@@ -4,9 +4,9 @@ import com.android.build.gradle.internal.tasks.DeviceProviderInstrumentTestTask
 import com.android.build.gradle.tasks.MergeSourceSetFolders
 
 plugins {
-    id("android-lib")
+    `android-lib`
     alias(libs.plugins.sqldelight)
-    id("dagger")
+    dagger
 }
 
 android {

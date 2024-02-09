@@ -1,0 +1,2 @@
+- Multi vehicle layout support
+- Improved performance on the main screen

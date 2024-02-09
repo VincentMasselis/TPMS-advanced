@@ -1,7 +1,7 @@
 plugins {
-    id("android-lib")
-    id("compose")
-    id("dagger")
+    `android-lib`
+    compose
+    dagger
 }
 
 android {

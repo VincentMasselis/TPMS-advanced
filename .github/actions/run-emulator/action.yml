@@ -7,9 +7,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Gradle cache
-      uses: gradle/gradle-build-action@v2
-
     - name: Starts emulator
       shell: bash
       run: |

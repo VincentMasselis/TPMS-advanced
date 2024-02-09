@@ -1,9 +1,9 @@
-name: Main production
+name: Production
 
 on:
   push:
-    tags:
-      - production
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.ref }}
@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -28,4 +28,9 @@ jobs:
       - name: Promotes the github release, promotes from the beta channel to production, updates the screenshots
         uses: ./.github/actions/run-emulator
         with:
-          script: ./gradlew promoteGithubReleaseNormalRelease updatePlayStoreScreenshotsNormalRelease promoteToPlayStoreProductionNormalRelease
+          script: >
+            ./gradlew
+            assertMainCommitNewVersion
+            createGithubRelease
+            publishToPlayStoreProductionNormalRelease
+            updatePlayStoreScreenshotsNormalRelease

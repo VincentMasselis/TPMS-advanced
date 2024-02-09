@@ -1,9 +1,3 @@
 /build
 /release/**
-src/*/play/*
-!src/*/play/PRIVACY.md
-!src/*/play/release-notes
-src/*/play/release-notes/*
-!src/*/play/release-notes/en-US
-src/*/play/release-notes/en-US/*
-!src/*/play/release-notes/en-US/beta.txt
+src/*/play/listings/en-US/graphics/phone-screenshots/*

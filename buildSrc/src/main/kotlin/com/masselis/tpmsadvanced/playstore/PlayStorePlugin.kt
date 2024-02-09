@@ -1,21 +1,18 @@
 package com.masselis.tpmsadvanced.playstore
 
 import com.android.build.api.artifact.SingleArtifact
-import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.android.build.api.variant.impl.ApplicationVariantImpl
+import com.android.build.api.variant.VariantOutputConfiguration.OutputType.SINGLE
 import com.android.build.api.variant.impl.VariantOutputImpl
-import com.android.build.api.variant.impl.dirName
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.android.build.gradle.internal.scope.getOutputPath
+import com.masselis.tpmsadvanced.playstore.task.PublishToPlayStore
+import com.masselis.tpmsadvanced.playstore.task.UpdatePlayStoreScreenshots
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.registerIfAbsent
-import java.io.File
 import org.gradle.kotlin.dsl.the
 
 @Suppress("UnstableApiUsage")
@@ -33,39 +30,47 @@ public class PlayStorePlugin : Plugin<Project> {
                 if (variant.isMinifyEnabled.not())
                     return@onVariants
 
-                project.tasks.create<PublishToPlayStoreBeta>("publishToPlayStoreBeta${variant.name.capitalized()}") {
-                    dependsOn("bundle${variant.name.capitalized()}")
-                    packageName = variant.applicationId
-                    versionName = variant.outputs.single().versionName
-                    releaseBundle = variant
-                        .outputs
-                        .single()
-                        .let { it as VariantOutputImpl }
-                        .outputFileName
-                        .map { fileName ->
-                            SingleArtifact
-                                .BUNDLE
-                                .getOutputPath(
-                                    project.layout.buildDirectory,
-                                    variant.name,
-                                    forceFilename = fileName.substringBeforeLast(".") + ".aab"
-                                )
-                        }
-                    releaseNotes = project
-                        .layout
-                        .projectDirectory
-                        .file("src/${variant.flavorName}/play/release-notes/en-US/beta.txt")
+                val packageName = variant.applicationId
+                val output = variant
+                    .outputs
+                    .map { it as VariantOutputImpl }
+                    // Learn more: https://developer.android.com/build/configure-apk-splits#configure-split
+                    .single { it.outputType == SINGLE }
+                val versionName = output.versionName
+                val releaseBundle = output.outputFileName.map { fileName ->
+                    SingleArtifact.BUNDLE.getOutputPath(
+                        project.layout.buildDirectory,
+                        variant.name,
+                        forceFilename = fileName.substringBeforeLast('.') + ".aab"
+                    )
                 }
-                project.tasks.create<PromoteToPlayStoreProduction>("promoteToPlayStoreProduction${variant.name.capitalized()}") {
-                    packageName = variant.applicationId
-                    currentVc = variant.outputs.single().versionCode
+                val releaseNotesDir = project
+                    .layout
+                    .projectDirectory
+                    .dir("src/${variant.flavorName}/play/release-notes/en-US/")
+
+                project.tasks.create<PublishToPlayStore>("publishToPlayStoreBeta${variant.name.capitalized()}") {
+                    dependsOn("bundle${variant.name.capitalized()}")
+                    track = "beta"
+                    this.packageName = packageName
+                    this.versionName = versionName
+                    this.releaseBundle = releaseBundle
+                    this.releaseNotesDir = releaseNotesDir
+                }
+                project.tasks.create<PublishToPlayStore>("publishToPlayStoreProduction${variant.name.capitalized()}") {
+                    dependsOn("bundle${variant.name.capitalized()}")
+                    track = "production"
+                    this.packageName = packageName
+                    this.versionName = versionName
+                    this.releaseBundle = releaseBundle
+                    this.releaseNotesDir = releaseNotesDir
                 }
                 project.tasks.create<UpdatePlayStoreScreenshots>("updatePlayStoreScreenshots${variant.name.capitalized()}") {
+                    this.packageName = packageName
                     screenshotDirectory = project
                         .layout
                         .projectDirectory
                         .dir("src/${variant.flavorName}/play/listings/en-US/graphics/phone-screenshots")
-                    packageName = variant.applicationId
                 }
             }
         }

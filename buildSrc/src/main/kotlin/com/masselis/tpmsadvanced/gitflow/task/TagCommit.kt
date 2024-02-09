@@ -1,5 +1,6 @@
-package com.masselis.tpmsadvanced.github
+package com.masselis.tpmsadvanced.gitflow.task
 
+import SemanticVersion
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -10,7 +11,7 @@ import javax.inject.Inject
 internal abstract class TagCommit : DefaultTask() {
 
     @get:Input
-    abstract val tag: Property<String>
+    abstract val tag: Property<SemanticVersion>
 
     @get:Inject
     abstract val execOperations: ExecOperations
@@ -22,21 +23,21 @@ internal abstract class TagCommit : DefaultTask() {
 
     @TaskAction
     internal fun process() {
-        // Pushes the git tag
+        // Fetch every tags
         execOperations.exec {
             commandLine("git", "fetch")
             args("--all", "--tags")
-        }.assertNormalExitValue()
+        }
 
         // If the tag already exists, this step fails
         execOperations.exec {
             commandLine("git", "tag", tag.get())
-        }.assertNormalExitValue()
+        }
 
         // Push the tag to the remote
         execOperations.exec {
             commandLine("git", "push")
             args("--tags")
-        }.assertNormalExitValue()
+        }
     }
 }

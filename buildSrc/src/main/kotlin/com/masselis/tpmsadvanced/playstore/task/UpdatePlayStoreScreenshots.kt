@@ -1,6 +1,9 @@
-package com.masselis.tpmsadvanced.playstore
+package com.masselis.tpmsadvanced.playstore.task
 
 import com.google.api.client.http.FileContent
+import com.masselis.tpmsadvanced.playstore.ServiceHolder
+import com.masselis.tpmsadvanced.playstore.androidPublisher
+import com.masselis.tpmsadvanced.playstore.withEdit
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.DirectoryProperty
