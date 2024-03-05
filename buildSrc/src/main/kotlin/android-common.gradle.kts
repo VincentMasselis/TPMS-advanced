@@ -9,11 +9,11 @@ plugins {
 
 // `android {}` is unavailable since I only use the plugin com.android.base
 the<BaseExtension>().apply android@{
-    compileSdkVersion(34)
+    compileSdkVersion(libs.versions.sdk.compile.map { it.toInt() }.get())
     defaultConfig {
-        minSdk = 27
-        targetSdk = 34
-        buildToolsVersion("34.0.0")
+        minSdk = libs.versions.sdk.min.map { it.toInt() }.get()
+        targetSdk = libs.versions.sdk.target.map { it.toInt() }.get()
+        buildToolsVersion(libs.versions.build.tool.get())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

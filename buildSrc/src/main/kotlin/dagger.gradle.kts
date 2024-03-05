@@ -1,15 +1,10 @@
-import com.android.build.api.variant.AndroidComponentsExtension
-import org.gradle.api.reflect.TypeOf.typeOf
-import org.gradle.configurationcache.extensions.capitalized
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("com.google.devtools.ksp")
 }
 
 dependencies {
-    "implementation"(versionCatalog.findLibrary("dagger-lib").get())
-    "ksp"(versionCatalog.findLibrary("dagger-compiler").get())
+    "implementation"(libs.dagger.lib)
+    "ksp"(libs.dagger.compiler)
 }
 
 /*

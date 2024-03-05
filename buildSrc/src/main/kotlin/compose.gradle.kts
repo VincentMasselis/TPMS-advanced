@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.android.build.gradle.BaseExtension
 
 plugins {
@@ -8,10 +10,9 @@ plugins {
 the<BaseExtension>().apply android@{
     buildFeatures.compose = true
     composeOptions {
-        kotlinCompilerExtensionVersion =
-            versionCatalog.findVersion("composeCompiler").get().toString()
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
     dependencies {
-        "detektPlugins"(versionCatalog.findLibrary("compose-detekt").get())
+        "detektPlugins"(libs.compose.detekt)
     }
 }

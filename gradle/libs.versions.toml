@@ -1,4 +1,8 @@
 [versions]
+sdk-min = "27"
+sdk-compile = "34"
+sdk-target = "34"
+build-tool = "34.0.0"
 coroutine = "1.7.3"
 lifecycle = "2.6.2"
 testServices = "1.4.2"

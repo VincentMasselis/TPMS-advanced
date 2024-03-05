@@ -48,4 +48,7 @@ dependencies {
             .apply { version { prefer("$embeddedKotlinVersion-${libs.versions.ksp.get()}") } }
     )
     implementation(libs.paparazzi.gradle.plugin)
+
+    // https://github.com/gradle/gradle/issues/15383
+    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }
