@@ -5,11 +5,9 @@ import android.bluetooth.le.ScanResult
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.psi
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 @OptIn(ExperimentalStdlibApi::class)
 @Suppress("DataClassPrivateConstructor")
@@ -20,15 +18,9 @@ internal data class RawPecham private constructor(
 ) : Raw {
 
     fun id() = macAddress.hashCode()
-    fun pressure() = data
-        .copyOfRange(3, 5)
-        .let {
-            ByteBuffer.wrap(it)
-                .order(ByteOrder.BIG_ENDIAN)
-                .getShort()
-        }
-        .div(10f)
-        .psi
+    fun pressure() = (data[3].toUInt() shl 8 and 0xFF00u or data[4].toUInt() and 255u) // Found into the SYTPMS app
+        .toFloat()
+        .kpa
 
     fun battery() = data[1].toUShort() // Returns 27 for 2.7 volts
 
