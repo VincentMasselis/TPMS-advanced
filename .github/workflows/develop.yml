@@ -32,34 +32,34 @@ jobs:
           --scan
 
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           junit_files: "**/build/test-results/**/*.xml"
 
       - name: Lint reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Lint-reports
           path: "**/build/reports/lint-*.html"
 
       - name: Detekt reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Detekt-reports
           path: "**/build/reports/detekt/*.html"
 
       - name: Paparazzi failures screens
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Paparazzi-failures
           path: "**/build/paparazzi/failures/*.png"
 
       - name: APKs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: APKs
@@ -85,14 +85,14 @@ jobs:
             copyScreenshot
 
       - name: Instrumented tests reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Instrumented-reports
           path: "**/build/reports/androidTests/**/*.html"
 
       - name: Screenshots report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Screenshots-reports
