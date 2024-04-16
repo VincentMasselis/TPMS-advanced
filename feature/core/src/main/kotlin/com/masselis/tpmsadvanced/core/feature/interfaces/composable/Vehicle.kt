@@ -356,9 +356,8 @@ private fun Motorcycle(
             TyreStat(
                 location = this,
                 modifier = Modifier.constrainAs(frontStats) {
-                    top.linkTo(tyreFront.top)
-                    bottom.linkTo(tyreFront.bottom)
-                    start.linkTo(tyreFront.end, 8.dp)
+                    centerHorizontallyTo(tyreFront)
+                    bottom.linkTo(carConst.top, 8.dp)
                 }
             )
             BindSensorButton(
@@ -385,9 +384,8 @@ private fun Motorcycle(
             TyreStat(
                 location = this,
                 modifier = Modifier.constrainAs(rearStats) {
-                    top.linkTo(tyreRear.top)
-                    bottom.linkTo(tyreRear.bottom)
-                    start.linkTo(tyreRear.end, 8.dp)
+                    centerHorizontallyTo(tyreRear)
+                    top.linkTo(carConst.bottom, 8.dp)
                 }
             )
             BindSensorButton(
