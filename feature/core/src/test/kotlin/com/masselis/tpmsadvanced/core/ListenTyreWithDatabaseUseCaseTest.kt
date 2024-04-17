@@ -52,7 +52,7 @@ internal class ListenTyreWithDatabaseUseCaseTest {
         location = Location.Wheel(FRONT_LEFT)
         tyreDatabase = mockk {
             coEvery { insert(any(), any()) } returns Unit
-            every { latestByTyreLocationByVehicle(any(), any()) } returns
+            every { latestByTyreLocationByVehicle(any<Location.Wheel>(), any()) } returns
                     mockkQueryOneOrNull(null as Tyre.Located?)
         }
         listenTyreUseCase = mockk {
