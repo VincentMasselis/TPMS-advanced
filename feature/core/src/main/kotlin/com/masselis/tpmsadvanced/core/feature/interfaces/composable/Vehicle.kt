@@ -312,7 +312,7 @@ private fun Motorcycle(
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
-            carConst,
+            vehicleImage,
             tyreBox,
             tyreFront,
             frontStats,
@@ -327,7 +327,7 @@ private fun Motorcycle(
             contentDescription = "Image of your motorcycle",
             modifier = Modifier
                 .aspectRatio(208f / 462f)
-                .constrainAs(carConst) {
+                .constrainAs(vehicleImage) {
                     centerTo(parent)
                     height = Dimension.percent(.7f)
                 }
@@ -357,7 +357,7 @@ private fun Motorcycle(
                 location = this,
                 modifier = Modifier.constrainAs(frontStats) {
                     centerHorizontallyTo(tyreFront)
-                    bottom.linkTo(carConst.top, 8.dp)
+                    bottom.linkTo(vehicleImage.top, 8.dp)
                 }
             )
             BindSensorButton(
@@ -385,7 +385,7 @@ private fun Motorcycle(
                 location = this,
                 modifier = Modifier.constrainAs(rearStats) {
                     centerHorizontallyTo(tyreRear)
-                    top.linkTo(carConst.bottom, 8.dp)
+                    top.linkTo(vehicleImage.bottom, 8.dp)
                 }
             )
             BindSensorButton(
