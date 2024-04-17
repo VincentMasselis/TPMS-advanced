@@ -96,6 +96,7 @@ val clearTestOutputFilesFolder by tasks.creating(ClearTestOutputFilesFolder::cla
 }
 
 val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
+    dependsOn("connectedDemoDebugAndroidTest")
     adbExecutable = android.adbExecutable
     destination = layout.buildDirectory.dir("test_outputfiles")
 }
@@ -125,5 +126,4 @@ tasks.withType<UpdatePlayStoreScreenshots> {
 
 tasks.matching { it.name == "connectedDemoDebugAndroidTest" }.configureEach {
     dependsOn(clearTestOutputFilesFolder)
-    downloadTestOutputFiles.dependsOn(this)
 }
