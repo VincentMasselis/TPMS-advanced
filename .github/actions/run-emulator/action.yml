@@ -9,16 +9,18 @@ runs:
   steps:
     - name: Starts emulator
       shell: bash
+      env:
+        ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: "170"
       run: |
         #!/usr/bin/env bash
 
-        brew install intel-haxm android-commandlinetools android-platform-tools
+        brew install android-commandlinetools android-platform-tools
         
         # Install AVD files
-        echo "y" | sdkmanager --install 'system-images;android-27;default;x86_64'
+        echo "y" | sdkmanager --install 'system-images;android-27;default;arm64-v8a'
 
         # Create emulator
-        echo "no" | avdmanager create avd -n android_emulator -d 19 --package 'system-images;android-27;default;x86_64'
+        echo "no" | avdmanager create avd -n android_emulator -d 19 --package 'system-images;android-27;default;arm64-v8a'
         
         # list emulator
         echo "Available emulator"
@@ -49,9 +51,13 @@ runs:
         echo "Starting emulator"
 
         # Start emulator in background
-        nohup $ANDROID_HOME/emulator/emulator -avd android_emulator -no-snapshot -no-audio -gpu host -no-boot-anim -qemu -m 2048 > /dev/null 2>&1 &
+        $ANDROID_HOME/emulator/emulator -avd android_emulator -no-snapshot -no-audio -gpu host -no-boot-anim -qemu -m 2048
 
         echo "Emulator starting"
+        
+        adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
+        
+        echo "Emulator started !"
 
     - name: Run script
       shell: bash

@@ -29,10 +29,10 @@ public abstract class WaitForDeviceToBeReadyOnCiMachine : DefaultTask() {
 
     @TaskAction
     internal fun process() {
-        if (System.getenv("CI") == "true") {
+        /*if (System.getenv("CI") == "true") {
             workerExecutor.noIsolation().submit(WaitForDeviceWorker::class) {
                 adbExecutable = this@WaitForDeviceToBeReadyOnCiMachine.adbExecutable
             }
-        }
+        }*/
     }
 }
