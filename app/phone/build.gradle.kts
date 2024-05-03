@@ -1,5 +1,6 @@
 @file:Suppress("LocalVariableName", "UnstableApiUsage")
 
+import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
 import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
 import com.masselis.tpmsadvanced.playstore.task.UpdatePlayStoreScreenshots
@@ -89,7 +90,8 @@ dependencies {
 }
 
 val clearTestOutputFilesFolder by tasks.creating(ClearTestOutputFilesFolder::class) {
-    dependsOn(":waitForDevice")
+    if (rootProject.plugins.hasPlugin(EmulatorPlugin::class))
+        dependsOn(":waitForEmulator")
     adbExecutable = android.adbExecutable
 }
 

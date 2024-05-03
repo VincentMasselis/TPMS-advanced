@@ -1,3 +1,5 @@
+import com.masselis.tpmsadvanced.emulator.EmulatorExtension
+import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.gitflow.GitflowPlugin
 import com.masselis.tpmsadvanced.github.GithubExtension
@@ -36,6 +38,13 @@ if (isDecrypted) {
         githubToken = GITHUB_TOKEN
         currentReleaseTag = the<GitflowExtension>().currentReleaseTag
         lastReleaseCommitSha = the<GitflowExtension>().lastReleaseCommitSha
+    }
+}
+
+if (System.getenv("CI") == "true") {
+    apply<EmulatorPlugin>()
+    configure<EmulatorExtension> {
+        emulatorPackage = "system-images;android-27;default;x86_64"
     }
 }
 
