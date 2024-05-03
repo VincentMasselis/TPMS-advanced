@@ -1,4 +1,7 @@
 [versions]
+# This version is only applied to the application sources, gradles sources, even the Kotlin one and
+# the `buildSrc` sources, uses kotlin embedded in the gradle framework
+kotlin = "1.9.23"
 sdk-min = "27"
 sdk-compile = "34"
 sdk-target = "34"
@@ -7,24 +10,25 @@ coroutine = "1.8.0"
 lifecycle = "2.7.0"
 testServices = "1.4.2"
 sqlDelight = "2.0.2"
-# Check the compatiblity of the compose compiler with the latest kotlin version here https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
-composeCompiler = "1.5.10"
+# Check the compatiblity of the compose compiler with the latest kotlin version here
+# https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
+composeCompiler = "1.5.13"
 dagger = "2.51.1"
 mockk = "1.13.10"
-ksp = "1.0.17"
+ksp = "1.0.20"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.34.0"
-android-gradle-plugin = "com.android.tools.build:gradle:8.3.2"
+android-gradle-plugin = "com.android.tools.build:gradle:8.4.0"
 androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
-androidx-camera2-core = "androidx.camera:camera-camera2:1.3.2"
-androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.3.2"
-androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.4.0-alpha04"
-androidx-compose-bom = "androidx.compose:compose-bom:2024.04.00"
+androidx-camera2-core = "androidx.camera:camera-camera2:1.3.3"
+androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.3.3"
+androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.4.0-alpha05"
+androidx-compose-bom = "androidx.compose:compose-bom:2024.05.00"
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-compose-junit = { module = "androidx.compose.ui:ui-test-junit4" }
-androidx-core = "androidx.core:core-ktx:1.12.0"
+androidx-core = "androidx.core:core-ktx:1.13.1"
 androidx-savedstate = "androidx.savedstate:savedstate-ktx:1.2.1"
 androidx-startup = "androidx.startup:startup-runtime:1.1.1"
 androidx-test-junit = "androidx.test.ext:junit:1.1.5"
@@ -32,19 +36,20 @@ androidx-test-core = "androidx.test:core-ktx:1.5.0"
 androidx-test-expresso = "androidx.test.espresso:espresso-core:3.5.1"
 androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-rules = "androidx.test:rules:1.5.0"
-androidx-activity = "androidx.activity:activity-ktx:1.8.2"
-androidx-fragment = "androidx.fragment:fragment-ktx:1.6.2"
+androidx-activity = "androidx.activity:activity-ktx:1.9.0"
+androidx-fragment = "androidx.fragment:fragment-ktx:1.7.0"
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-compose-activity = "androidx.activity:activity-compose:1.8.2"
+compose-activity = "androidx.activity:activity-compose:1.9.0"
 compose-constraintlayout = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-compose-detekt = "io.nlopez.compose.rules:detekt:0.3.15"
+compose-detekt = "io.nlopez.compose.rules:detekt:0.3.20"
 compose-navigation = "androidx.navigation:navigation-compose:2.7.7"
 dagger-lib = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6"
 google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20211125-1.32.1"
+# 33.0.0 causes a "GradleCompatible" exception where some gms/firebase libs are used but differents version are used in the same time
 google-firebase-bom = "com.google.firebase:firebase-bom:32.8.1"
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0"
@@ -66,7 +71,7 @@ lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
 material3 = "androidx.compose.material3:material3:1.2.1"
-material = "com.google.android.material:material:1.11.0"
+material = "com.google.android.material:material:1.12.0"
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
 paparazzi-gradle-plugin = "app.cash.paparazzi:paparazzi-gradle-plugin:1.3.2"
@@ -82,6 +87,7 @@ test-services = { module = "androidx.test.services:test-services", version.ref =
 turbine = "app.cash.turbine:turbine:1.0.0"
 
 [plugins]
+# 3.0.0 causes a circular dependency gradle exception
 crashlytics = "com.google.firebase.crashlytics:2.9.9"
 google-services = "com.google.gms.google-services:4.4.1"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
