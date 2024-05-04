@@ -1,5 +1,6 @@
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.tasks.DeviceProviderInstrumentTestTask
+import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import org.gradle.api.JavaVersion.VERSION_17
 
 plugins {
@@ -53,13 +54,10 @@ the<BaseExtension>().apply android@{
         )
     }
 
-    val waitForDevice = rootProject
-        .tasks
-        .maybeCreate<WaitForDeviceToBeReadyOnCiMachine>("waitForDevice")
-        .apply { adbExecutable = this@android.adbExecutable }
-    tasks.withType<DeviceProviderInstrumentTestTask>().all {
-        dependsOn(waitForDevice)
-    }
+    if (rootProject.plugins.hasPlugin(EmulatorPlugin::class))
+        tasks.withType<DeviceProviderInstrumentTestTask>().all {
+            dependsOn(":waitForEmulator")
+        }
 }
 
 // Does the same than `android.kotlinOptions {}`

@@ -29,6 +29,8 @@ jobs:
           ./gradlew
           build
           verifyPaparazzi
+          connectedDemoDebugAndroidTest
+          copyScreenshot
           --scan
 
       - name: Publish Unit Test Results
@@ -58,32 +60,6 @@ jobs:
           name: Paparazzi-failures
           path: "**/build/paparazzi/failures/*.png"
 
-      - name: APKs
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: APKs
-          path: "**/build/outputs/apk/**/*.apk"
-
-  instrumented_test_n_screenshots:
-    name: Run instrumented tests and take screenshots
-    runs-on: macos-latest
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: ./.github/actions/setup
-
-      - name: Run androidTest + take screenshots
-        uses: ./.github/actions/run-emulator
-        with:
-          script: >
-            ./gradlew
-            connectedDemoDebugAndroidTest
-            copyScreenshot
-
       - name: Instrumented tests reports
         uses: actions/upload-artifact@v4
         if: always()
@@ -97,3 +73,17 @@ jobs:
         with:
           name: Screenshots-reports
           path: "**/graphics/phone-screenshots/*.png"
+
+      - name: APKs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: APKs
+          path: "**/build/outputs/apk/**/*.apk"
+
+      - name: Emulator logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Emulator-logs
+          path: "build/emulator/*.txt"
