@@ -29,7 +29,7 @@ internal class ForegroundServiceUseCase @Inject constructor(
             .flowOn(IO)
             .distinctUntilChanged()
             .onEach { isMonitorRequired ->
-                if (checkForPermissionUseCase.isPermissionGrant() && isMonitorRequired)
+                if (checkForPermissionUseCase.isGrant() && isMonitorRequired)
                     appContext.startService(serviceIntent)
                 else
                     appContext.stopService(serviceIntent)

@@ -85,8 +85,8 @@ internal fun AutomaticBackgroundSettings(
                             .apply { addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
                             .also { activity.startActivity(it) }
 
-                    viewModel.isPermissionGrant().not() ->
-                        launcher.launch(viewModel.requiredPermission())
+                    viewModel.missingPermission() != null ->
+                        launcher.launch(viewModel.missingPermission()!!)
 
                     checked ->
                         viewModel.monitor()
