@@ -34,14 +34,14 @@ android {
         // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
         // each test invocation. This command ensures that the app's state is completely cleared
         // between tests.
-        testInstrumentationRunnerArguments += listOf(
+        testInstrumentationRunnerArguments += mapOf(
             "useTestStorageService" to "true",
             "clearPackageData" to "true"
         )
     }
     testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
-    signingConfigs {
-        if (isDecrypted) create("release") {
+    if (isDecrypted) {
+        signingConfigs.create("release") {
             val APP_KEY_ALIAS: String by rootProject.extra
             val APP_KEY_STORE_PWD: String by rootProject.extra
             val APP_KEYSTORE_LOCATION: String by rootProject.extra
@@ -105,9 +105,8 @@ val copyScreenshot by tasks.creating(Copy::class) {
     group = "publishing"
     description =
         "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
-    val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
     from(downloadTestOutputFiles.destination)
-    into(path)
+    into("$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots")
     eachFile {
         name = when {
             name.startsWith("light_main") -> "1.png"
