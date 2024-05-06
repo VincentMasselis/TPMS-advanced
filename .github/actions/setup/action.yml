@@ -10,7 +10,12 @@ runs:
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
         
-        # sudo apt-get install libpulse0 libxcb-xinerama0
+        # Free some space on the current runner to allow installation of bigger emulators
+        # Copy/paster from https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf "/usr/local/share/boost"
+        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4

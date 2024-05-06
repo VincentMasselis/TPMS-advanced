@@ -52,6 +52,7 @@ internal abstract class CreateEmulator : DefaultTask() {
                 "${sdkPath.get().asFile}/cmdline-tools/latest/bin/avdmanager",
                 "create", "avd",
                 "-n", emulatorName.get(),
+                // Points to id: 19 or "pixel_2_xl", run `avdmanager list device` to discover more definitions
                 "-d", "19",
                 "--package", emulatorPackage.get()
             )

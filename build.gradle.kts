@@ -44,7 +44,7 @@ if (isDecrypted) {
 if (System.getenv("CI") == "true") {
     apply<EmulatorPlugin>()
     configure<EmulatorExtension> {
-        emulatorPackage = "system-images;android-27;default;x86_64"
+        emulatorPackage = "system-images;android-34;aosp_atd;x86_64"
     }
 }
 
