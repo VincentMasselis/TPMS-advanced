@@ -16,6 +16,7 @@ composeCompiler = "1.5.13"
 dagger = "2.51.1"
 mockk = "1.13.10"
 ksp = "1.0.20"
+garunner-emulator = "system-images;android-34;aosp_atd;x86_64"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.34.0"
