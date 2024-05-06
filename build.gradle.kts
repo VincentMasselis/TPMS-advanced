@@ -23,11 +23,10 @@ try {
 
 apply<GitflowPlugin>()
 configure<GitflowExtension> {
-    val currentVersion = StricSemanticVersion("1.3.1")
-    version = currentVersion
+    version = libs.versions.app.map { StricSemanticVersion(it) }
     developBranch = "develop"
-    releaseBranch = "release/${currentVersion}"
-    hotfixBranch = "hotfix/${currentVersion}"
+    releaseBranch = version.map { "release/${it}" }
+    hotfixBranch = version.map { "hotfix/${it}" }
     mainBranch = "main"
 }
 
@@ -42,6 +41,10 @@ if (isDecrypted) {
 }
 
 if (System.getenv("CI") == "true") {
+    // Why working with a custom emulator gradle plugin while gradle-managed devices exist into the
+    // AGP ? Because gradle-managed emulators are bound to the lifecycle of the gradle task which
+    // executes the tests. Because of this, its impossible to fetch screenshots in the end of the
+    // tests since the emulator is stopped and deleted once the tests are done.
     apply<EmulatorPlugin>()
     configure<EmulatorExtension> {
         emulatorPackage = libs.versions.garunner.emulator.get()
