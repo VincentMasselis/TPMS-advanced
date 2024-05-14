@@ -12,7 +12,6 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.from
-import org.jetbrains.kotlin.gradle.utils.provider
 import java.lang.Thread.sleep
 import java.time.Duration
 import javax.inject.Inject

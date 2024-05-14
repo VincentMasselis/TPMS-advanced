@@ -1,13 +1,8 @@
 package com.masselis.tpmsadvanced.emulator.task
 
-import com.masselis.tpmsadvanced.gitflow.valuesource.CurrentBranch
-import org.gradle.kotlin.dsl.from
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction

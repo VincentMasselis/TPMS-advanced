@@ -1,14 +1,10 @@
 package com.masselis.tpmsadvanced.gitflow.task
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.of
 import org.gradle.process.ExecOperations
-import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 internal abstract class CreateBranch : DefaultTask() {

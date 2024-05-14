@@ -3,7 +3,6 @@ package com.masselis.tpmsadvanced.playstore
 import com.google.api.services.androidpublisher.AndroidPublisher.Edits
 import com.google.api.services.androidpublisher.model.AppEdit
 import com.google.api.services.androidpublisher.model.Track
-import com.masselis.tpmsadvanced.playstore.editsLock
 import kotlin.concurrent.withLock
 
 internal fun <T> Edits.withEdit(

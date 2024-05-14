@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.core.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.ProvidableCompositionLocal

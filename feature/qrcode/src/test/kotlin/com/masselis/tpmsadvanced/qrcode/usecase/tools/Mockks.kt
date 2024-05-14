@@ -6,7 +6,6 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import io.mockk.mockk
 import io.mockk.spyk
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlin.reflect.KVisibility
 import kotlin.reflect.KVisibility.PRIVATE
 import kotlin.reflect.jvm.isAccessible
 

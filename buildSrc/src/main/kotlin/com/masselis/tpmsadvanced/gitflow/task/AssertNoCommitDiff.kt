@@ -1,16 +1,15 @@
 package com.masselis.tpmsadvanced.gitflow.task
 
+import com.masselis.tpmsadvanced.gitflow.valuesource.CommitList
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import com.masselis.tpmsadvanced.gitflow.valuesource.CommitList
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.from
 import org.gradle.process.ExecOperations
-import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 internal abstract class AssertNoCommitDiff : DefaultTask() {

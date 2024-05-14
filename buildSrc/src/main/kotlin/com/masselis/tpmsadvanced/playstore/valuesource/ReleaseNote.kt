@@ -5,8 +5,6 @@ import com.masselis.tpmsadvanced.playstore.valuesource.ReleaseNote.Parameters
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.process.ExecOperations
-import javax.inject.Inject
 
 internal abstract class ReleaseNote : ValueSource<String, Parameters> {
 

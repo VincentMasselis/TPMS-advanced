@@ -1,20 +1,17 @@
 package com.masselis.tpmsadvanced.emulator.task
 
-import com.masselis.tpmsadvanced.gitflow.valuesource.CurrentBranch
-import org.gradle.kotlin.dsl.from
+import com.masselis.tpmsadvanced.emulator.valuesource.AvdList
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.from
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
-import com.masselis.tpmsadvanced.emulator.valuesource.AvdList
-import org.gradle.kotlin.dsl.assign
 
 internal abstract class CreateEmulator : DefaultTask() {
 
