@@ -4,12 +4,12 @@ import CommitSha
 import SemanticVersion
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.masselis.tpmsadvanced.gitflow.task.AssertBranchVersionIsUnique
 import com.masselis.tpmsadvanced.gitflow.task.AssertCurrentBranch
-import com.masselis.tpmsadvanced.gitflow.task.AssertNewBranchVersion
-import com.masselis.tpmsadvanced.gitflow.task.AssertNewVersionTag
-import com.masselis.tpmsadvanced.gitflow.task.AssertNewVersionTagAndBranch
-import com.masselis.tpmsadvanced.gitflow.task.AssertNoCommitDiff
 import com.masselis.tpmsadvanced.gitflow.task.AssertNearestParent
+import com.masselis.tpmsadvanced.gitflow.task.AssertNoCommitDiff
+import com.masselis.tpmsadvanced.gitflow.task.AssertTagVersionIsUnique
+import com.masselis.tpmsadvanced.gitflow.task.AssertVersionIsUniqueFromTagsAndBranches
 import com.masselis.tpmsadvanced.gitflow.task.CreateBranch
 import com.masselis.tpmsadvanced.gitflow.task.TagCommit
 import com.masselis.tpmsadvanced.gitflow.valuesource.CommitCountBetweenBranch
@@ -25,21 +25,21 @@ import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.the
 
 public class GitflowPlugin : Plugin<Project> {
-    override fun apply(project: Project) {
-        val currentBranch = project.providers.from(CurrentBranch::class)
+    override fun apply(project: Project): Unit = with(project) {
+        val currentBranch = providers.from(CurrentBranch::class)
 
-        val currentReleaseTag = project.objects.property<SemanticVersion>()
-        val lastReleaseCommitSha = project.objects.property<String>()
-        val ext = project.extensions.create<GitflowExtension>(
+        val currentReleaseTag = objects.property<SemanticVersion>()
+        val lastReleaseCommitSha = objects.property<String>()
+        val ext = extensions.create<GitflowExtension>(
             "gitflow",
             currentReleaseTag,
             lastReleaseCommitSha
         )
-        val releaseBuildCount = project.providers.from(CommitCountBetweenBranch::class) {
+        val releaseBuildCount = providers.from(CommitCountBetweenBranch::class) {
             fromBranch = ext.developBranch
             toBranch = ext.releaseBranch
         }
-        val versionCode = project.providers.from(VersionCode::class) {
+        val versionCode = providers.from(VersionCode::class) {
             version = ext.version
             this.currentBranch = currentBranch
             releaseBranch = ext.releaseBranch
@@ -48,12 +48,12 @@ public class GitflowPlugin : Plugin<Project> {
         }
         currentReleaseTag.set(versionCode.flatMap {
             if (currentBranch.get() == ext.releaseBranch.get())
-                project.provider { SemanticVersion("${ext.version.get()}+vc$it") }
+                provider { SemanticVersion("${ext.version.get()}+vc$it") }
             else
                 ext.version.map { SemanticVersion(it) }
         })
 
-        lastReleaseCommitSha.set(project.providers.from(CommitSha::class) {
+        lastReleaseCommitSha.set(providers.from(CommitSha::class) {
             argument = currentBranch.flatMap { currentBranch ->
                 when (currentBranch) {
                     // We're working on main, latest release was the previous commit on main
@@ -67,11 +67,11 @@ public class GitflowPlugin : Plugin<Project> {
                         else ext.releaseBranch.map { "$it^1" }
                     }
 
-                    else -> project.providers.provider { throw GradleException("Cannot compute the latest release commit because the current branch is not a releasable branch. Current branch \"$currentBranch\"") }
+                    else -> providers.provider { throw GradleException("Cannot compute the latest release commit because the current branch is not a releasable branch. Current branch \"$currentBranch\"") }
                 }
             }
         })
-        project.subprojects {
+        subprojects {
             plugins.all {
                 if (this is AppPlugin) the<BaseAppModuleExtension>().apply {
                     defaultConfig.versionCode = versionCode.get()
@@ -81,99 +81,112 @@ public class GitflowPlugin : Plugin<Project> {
         }
 
         // Pre branch creation
-        val assertNewReleaseAndHotfixBranchVersion =
-            project.tasks.create<AssertNewVersionTagAndBranch>("assertNewReleaseAndHotfixBranchVersion") {
+        val assertVersionIsUnique =
+            tasks.create<AssertVersionIsUniqueFromTagsAndBranches>("assertVersionIsUnique") {
                 version = ext.version
+                ignoredBranches = emptySet()
             }
         val assertCurrentBranchIsDevelop =
-            project.tasks.create<AssertCurrentBranch>("assertCurrentBranchIsDevelop") {
+            tasks.create<AssertCurrentBranch>("assertCurrentBranchIsDevelop") {
                 expectedBranch = ext.developBranch
             }
         val assertCurrentBranchIsRelease =
-            project.tasks.create<AssertCurrentBranch>("assertCurrentBranchIsRelease") {
+            tasks.create<AssertCurrentBranch>("assertCurrentBranchIsRelease") {
                 expectedBranch = ext.releaseBranch
             }
         val assertCurrentBranchIsMain =
-            project.tasks.create<AssertCurrentBranch>("assertCurrentBranchIsMain") {
+            tasks.create<AssertCurrentBranch>("assertCurrentBranchIsMain") {
                 expectedBranch = ext.mainBranch
             }
         val assertCurrentBranchIsHotfix =
-            project.tasks.create<AssertCurrentBranch>("assertCurrentBranchIsHotfix") {
+            tasks.create<AssertCurrentBranch>("assertCurrentBranchIsHotfix") {
                 expectedBranch = ext.hotfixBranch
             }
         val assertDevelopIsUpToDateWithMain =
-            project.tasks.create<AssertNoCommitDiff>("assertDevelopIsUpToDateWithMain") {
+            tasks.create<AssertNoCommitDiff>("assertDevelopIsUpToDateWithMain") {
                 fromBranch = ext.mainBranch
-                this.toBranch = ext.developBranch
-            }
-        val assertHotfixIsUpToDateWithMain =
-            project.tasks.create<AssertNoCommitDiff>("assertHotfixIsUpToDateWithMain") {
-                fromBranch = ext.mainBranch
-                this.toBranch = ext.hotfixBranch
+                toBranch = ext.developBranch
             }
 
         // Helpers
-        project.tasks.create<CreateBranch>("createRelease") {
+        tasks.create<CreateBranch>("createRelease") {
             dependsOn(
-                assertNewReleaseAndHotfixBranchVersion,
+                // Search for version saved into hotfix/*, release/* and tags to ensure the current
+                // version is unique
+                assertVersionIsUnique,
+                // "createRelease" can be called only if the current branch comes from develop
                 assertCurrentBranchIsDevelop,
+                // The current release branch depends on develop which must be up-to-date when
+                // creating the branch
                 assertDevelopIsUpToDateWithMain,
             )
             branch = ext.releaseBranch
         }
-        project.tasks.create<CreateBranch>("createHotfix") {
+        tasks.create<CreateBranch>("createHotfix") {
             dependsOn(
-                assertNewReleaseAndHotfixBranchVersion,
+                // Search for version saved into hotfix/*, release/* and tags to ensure the current
+                // version is unique
+                assertVersionIsUnique,
+                // "createHotfix" can be called only if the current branch comes from main
                 assertCurrentBranchIsMain,
-                assertHotfixIsUpToDateWithMain,
             )
             branch = ext.hotfixBranch
         }
 
         // Post branch creation
         val assertReleaseSourceIsDevelop =
-            project.tasks.create<AssertNearestParent>("assertReleaseSourceIsDevelop") {
+            tasks.create<AssertNearestParent>("assertReleaseSourceIsDevelop") {
                 dependsOn(assertCurrentBranchIsRelease)
                 parentBranch = ext.developBranch
                 this.currentBranch = ext.releaseBranch
             }
         val assertHotfixSourceIsMain =
-            project.tasks.create<AssertNearestParent>("assertHotfixSourceIsMain") {
+            tasks.create<AssertNearestParent>("assertHotfixSourceIsMain") {
                 dependsOn(assertCurrentBranchIsHotfix)
                 parentBranch = ext.mainBranch
                 this.currentBranch = ext.hotfixBranch
             }
-        val assertHotfixBranchVersionIsNew =
-            project.tasks.create<AssertNewBranchVersion>("assertHotfixBranchVersionIsNew") {
-                versionedBranch = ext.hotfixBranch
-            }
-        val assertReleaseBranchVersionIsNew =
-            project.tasks.create<AssertNewBranchVersion>("assertReleaseBranchVersionIsNew") {
+        val assertReleaseBranchVersionIsUnique =
+            tasks.create<AssertBranchVersionIsUnique>("assertReleaseBranchVersionIsUnique") {
                 versionedBranch = ext.releaseBranch
             }
-        val assertReleaseIsUpToDateWithMain =
-            project.tasks.create<AssertNoCommitDiff>("assertReleaseIsUpToDateWithMain") {
-                fromBranch = ext.mainBranch
-                this.toBranch = ext.releaseBranch
+        val assertHotfixBranchVersionIsUnique =
+            tasks.create<AssertBranchVersionIsUnique>("assertHotfixBranchVersionIsUnique") {
+                versionedBranch = ext.hotfixBranch
             }
-        project.tasks.create("assertReleaseBranchIsValid") {
+        val assertReleaseIsUpToDateWithMain =
+            tasks.create<AssertNoCommitDiff>("assertReleaseIsUpToDateWithMain") {
+                fromBranch = ext.mainBranch
+                toBranch = ext.releaseBranch
+            }
+        val assertHotfixIsUpToDateWithMain =
+            tasks.create<AssertNoCommitDiff>("assertHotfixIsUpToDateWithMain") {
+                fromBranch = ext.mainBranch
+                toBranch = ext.hotfixBranch
+            }
+
+        tasks.create("assertReleaseBranchIsValid") {
             dependsOn(
+                // Ensure release branch comes from develop
                 assertReleaseSourceIsDevelop,
-                assertReleaseBranchVersionIsNew,
+                // Ensure the version used into the branch name was not created elsewhere as tag
+                // pushed on main or as a hotfix/* branch
+                assertReleaseBranchVersionIsUnique,
+                // Ensure release is up-to-date with main
                 assertReleaseIsUpToDateWithMain,
             )
         }
-        project.tasks.create("assertHotfixBranchIsValid") {
+        tasks.create("assertHotfixBranchIsValid") {
             dependsOn(
                 assertHotfixSourceIsMain,
-                assertHotfixBranchVersionIsNew,
+                assertHotfixBranchVersionIsUnique,
                 assertHotfixIsUpToDateWithMain,
             )
         }
-        project.tasks.create<AssertNewVersionTag>("assertMainCommitNewVersion") {
+        tasks.create<AssertTagVersionIsUnique>("assertVersionWasNotPushInProductionYet") {
             version = ext.version
         }
-        project.tasks.create<TagCommit>("tagCommit") {
+        tasks.create<TagCommit>("tagCommit") {
             tag = currentReleaseTag
         }
     }

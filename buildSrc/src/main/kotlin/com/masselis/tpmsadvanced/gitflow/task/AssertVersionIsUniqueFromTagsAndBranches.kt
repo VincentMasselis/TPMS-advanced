@@ -7,6 +7,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.assign
@@ -14,7 +15,7 @@ import org.gradle.kotlin.dsl.from
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
-internal abstract class AssertNewVersionTagAndBranch : DefaultTask() {
+internal abstract class AssertVersionIsUniqueFromTagsAndBranches : DefaultTask() {
 
     @get:Inject
     protected abstract val execOperations: ExecOperations
@@ -24,6 +25,9 @@ internal abstract class AssertNewVersionTagAndBranch : DefaultTask() {
 
     @get:Input
     abstract val version: Property<StricSemanticVersion>
+
+    @get:Input
+    abstract val ignoredBranches: SetProperty<String>
 
     private val tagList
         get() = providerFactory.from(GitTagList::class) {
@@ -36,17 +40,17 @@ internal abstract class AssertNewVersionTagAndBranch : DefaultTask() {
         }
 
     init {
-        group = "verification"
-        description = "Checks the current version was not created elsewhere"
+        group = "gitflow"
+        description = "Checks the version was not created as tag or branch"
     }
 
     @TaskAction
     internal fun process() {
         if (tagList.get().isNotEmpty())
-            throw GradleException("Cannot create a new version for \"${version.get()}\", a tag already exists")
+            throw GradleException("Cannot create a new version \"${version.get()}\", a tag with this name already exists")
 
-        val branchesList = branchesList.get()
+        val branchesList = branchesList.get().subtract(ignoredBranches.get())
         if (branchesList.isNotEmpty())
-            throw GradleException("Cannot create a new version for \"${version.get()}\", a branch named \"${branchesList.joinToString()}\" already exists")
+            throw GradleException("Cannot work with the version \"${version.get()}\", a branch named \"${branchesList.joinToString()}\" already exists")
     }
 }

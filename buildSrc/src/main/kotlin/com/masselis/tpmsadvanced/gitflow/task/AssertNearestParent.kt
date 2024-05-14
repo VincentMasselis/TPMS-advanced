@@ -21,7 +21,7 @@ internal abstract class AssertNearestParent : DefaultTask() {
     abstract val parentBranch: Property<String>
 
     init {
-        group = "verification"
+        group = "gitflow"
         description = "Check the current branch's source is \"parentBranch\""
     }
 

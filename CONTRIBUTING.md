@@ -34,7 +34,7 @@ To publish into the production track, you have to push a commit on the `main` br
 could comme from a `hotfix/*` branch or a `release/*` branch. Push this release to github to run the
 tasks:
 
-- `assertMainCommitNewVersion`: Ensure the version to upload is a new version
+- `assertVersionWasNotPushInProductionYet`: Ensure the version to upload is a new version
 - `createGithubRelease`: Create a github release with release notes and attached apks
 - `publishToPlayStoreProductionNormalRelease`: Sends the aabs to the play store into the production
   track with the corresponding release note

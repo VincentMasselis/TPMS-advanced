@@ -32,5 +32,6 @@ internal abstract class GitBranchList : ValueSource<List<String>, Parameters> {
         .use { it.toString() }
         .trimIndent()
         .split('\n')
+        .map { it.substringAfter("*").trimIndent() }
         .filter { it.isNotBlank() }
 }

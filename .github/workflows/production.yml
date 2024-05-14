@@ -29,7 +29,7 @@ jobs:
       - name: Promotes the github release, promotes from the beta channel to production, updates the screenshots
         run: >
           ./gradlew
-          assertMainCommitNewVersion
+          assertVersionWasNotPushInProductionYet
           createGithubRelease
           publishToPlayStoreProductionNormalRelease
           updatePlayStoreScreenshotsNormalRelease

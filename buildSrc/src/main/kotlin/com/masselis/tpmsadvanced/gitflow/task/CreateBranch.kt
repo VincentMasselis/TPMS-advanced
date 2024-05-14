@@ -16,6 +16,7 @@ internal abstract class CreateBranch : DefaultTask() {
     abstract val branch: Property<String>
 
     init {
+        group = "gitflow"
         description = "Creates a new branch and switch to this branch automatically"
     }
 

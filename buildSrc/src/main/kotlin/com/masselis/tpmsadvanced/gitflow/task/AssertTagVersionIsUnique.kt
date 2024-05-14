@@ -13,7 +13,7 @@ import org.gradle.kotlin.dsl.from
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
-internal abstract class AssertNewVersionTag : DefaultTask() {
+internal abstract class AssertTagVersionIsUnique : DefaultTask() {
 
     @get:Inject
     protected abstract val execOperations: ExecOperations
@@ -30,13 +30,13 @@ internal abstract class AssertNewVersionTag : DefaultTask() {
         }
 
     init {
-        group = "verification"
-        description = "Checks the current version doesn't exists on main"
+        group = "gitflow"
+        description = "Checks the version doesn't have any tag pushed"
     }
 
     @TaskAction
     internal fun process() {
         if (tagList.get().isNotEmpty())
-            throw GradleException("Cannot create a new version for \"${version.get()}\", a tag with the same name already exists")
+            throw GradleException("Cannot work with the version \"${version.get()}\", a tag with the same name already exists")
     }
 }

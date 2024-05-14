@@ -28,7 +28,8 @@ internal abstract class CommitCountBetweenBranch : ValueSource<Int, Parameters> 
                     "git",
                     "rev-list",
                     "--count",
-                    "${parameters.toBranch.get()} ^${parameters.fromBranch.get()}",
+                    parameters.toBranch.get(),
+                    "^${parameters.fromBranch.get()}",
                 )
                 standardOutput = stdout
                 errorOutput = errout

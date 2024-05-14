@@ -33,7 +33,7 @@ internal abstract class AssertNoCommitDiff : DefaultTask() {
         }
 
     init {
-        group = "verification"
+        group = "gitflow"
         description = "Check toBranch is up-to-date with fromBranch"
     }
 
