@@ -9,6 +9,7 @@ plugins {
 }
 
 // `android {}` is unavailable since I only use the plugin com.android.base
+@Suppress("UnstableApiUsage")
 the<BaseExtension>().apply android@{
     compileSdkVersion(libs.versions.sdk.compile.map { it.toInt() }.get())
     defaultConfig {
@@ -54,6 +55,11 @@ the<BaseExtension>().apply android@{
         )
     }
 
+    testOptions {
+        emulatorControl {
+            enable = true
+        }
+    }
     if (rootProject.plugins.hasPlugin(EmulatorPlugin::class))
         tasks.withType<DeviceProviderInstrumentTestTask>().all {
             dependsOn(":waitForEmulator")
