@@ -1,9 +1,9 @@
 package com.masselis.tpmsadvanced.core.feature.usecase
 
-import com.masselis.tpmsadvanced.core.feature.ioc.InternalTyreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.AxleQualifier
-import com.masselis.tpmsadvanced.core.feature.ioc.WheelLocationQualifier
+import com.masselis.tpmsadvanced.core.feature.ioc.InternalTyreComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.SideQualifier
+import com.masselis.tpmsadvanced.core.feature.ioc.WheelLocationQualifier
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
@@ -29,9 +29,7 @@ internal class FindTyreComponentUseCase @Inject internal constructor(
     @SideQualifier(LEFT) private val left: Lazy<InternalTyreComponent>,
     @SideQualifier(RIGHT) private val right: Lazy<InternalTyreComponent>,
 ) : (Vehicle.Kind.Location) -> InternalTyreComponent {
-
-    @Suppress("MaxLineLength")
-    fun find(location: Vehicle.Kind.Location): InternalTyreComponent {
+    override fun invoke(location: Vehicle.Kind.Location): InternalTyreComponent {
         assert(vehicle.kind.locations.contains(location)) {
             "Cannot get a TyreComponent for the filled location $location according to the vehicle kind ${vehicle.kind}"
         }
@@ -54,7 +52,4 @@ internal class FindTyreComponentUseCase @Inject internal constructor(
             }
         }.get()
     }
-
-    override fun invoke(p1: Vehicle.Kind.Location): InternalTyreComponent = find(p1)
-
 }

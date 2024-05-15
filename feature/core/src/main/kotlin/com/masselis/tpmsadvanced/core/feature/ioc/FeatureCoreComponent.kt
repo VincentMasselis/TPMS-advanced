@@ -1,8 +1,8 @@
 package com.masselis.tpmsadvanced.core.feature.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.CurrentVehicleDropdownViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.PreconditionsViewModel
+import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.CurrentVehicleDropdownViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
 import com.masselis.tpmsadvanced.core.feature.usecase.VehicleComponentCacheUseCase
@@ -28,7 +28,7 @@ public interface FeatureCoreComponent {
 @FeatureCoreComponent.Scope
 @Component(
     modules = [
-        VehicleComponentModule::class
+        VehicleSubcomponentModule::class
     ],
     dependencies = [
         CoreCommonComponent::class,

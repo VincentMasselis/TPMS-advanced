@@ -18,7 +18,7 @@ import dagger.Provides
         InternalTyreComponent::class
     ]
 )
-internal object TyreSubComponentModule {
+internal object TyreSubcomponentModule {
     @Provides
     fun internalFindTyre(useCase: FindTyreComponentUseCase): (Location) -> InternalTyreComponent =
         useCase

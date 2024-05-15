@@ -24,19 +24,19 @@ public interface VehicleComponent {
 
     public val TyreComponent: (@JvmSuppressWildcards Vehicle.Kind.Location) -> @JvmSuppressWildcards TyreComponent
 
-    public companion object : (Vehicle) -> VehicleComponent by InternalComponent
-        .vehicleComponentCacheUseCase
+    public companion object : (Vehicle) -> VehicleComponent by InternalVehicleComponent
 }
 
 @Suppress("PropertyName", "FunctionName")
 @VehicleComponent.Scope
 @Subcomponent(
-    modules = [VehicleModule::class, TyreSubComponentModule::class]
+    modules = [VehicleModule::class, TyreSubcomponentModule::class]
 )
 internal interface InternalVehicleComponent : VehicleComponent {
+
     @Subcomponent.Factory
-    interface Factory : (Vehicle) -> InternalVehicleComponent {
-        override fun invoke(@BindsInstance @Named("base") vehicle: Vehicle): InternalVehicleComponent
+    interface Factory {
+        fun build(@BindsInstance @Named("base") vehicle: Vehicle): InternalVehicleComponent
     }
 
     @Suppress("VariableNaming", "MaxLineLength")
@@ -46,4 +46,7 @@ internal interface InternalVehicleComponent : VehicleComponent {
     val ClearBoundSensorsViewModel: ClearBoundSensorsViewModelImpl.Factory
     fun VehicleSettingsViewModel(): VehicleSettingsViewModelImpl
     fun DeleteVehicleViewModel(): DeleteVehicleViewModelImpl
+
+    companion object : (Vehicle) -> InternalVehicleComponent by InternalComponent
+        .vehicleComponentCacheUseCase
 }

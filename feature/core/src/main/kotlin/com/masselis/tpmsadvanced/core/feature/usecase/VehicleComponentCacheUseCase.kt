@@ -20,7 +20,7 @@ import javax.inject.Inject
 @FeatureCoreComponent.Scope
 internal class VehicleComponentCacheUseCase @Inject internal constructor(
     vehicleDatabase: VehicleDatabase,
-    @Suppress("MaxLineLength") private val vehicleComponentFactory: (@JvmSuppressWildcards Vehicle) -> @JvmSuppressWildcards InternalVehicleComponent,
+    private val vehicleComponentFactory: InternalVehicleComponent.Factory,
 ) : (Vehicle) -> InternalVehicleComponent {
     private val cache = ConcurrentHashMap<UUID, InternalVehicleComponent>()
 
@@ -38,8 +38,7 @@ internal class VehicleComponentCacheUseCase @Inject internal constructor(
             .launchIn(GlobalScope + Default)
     }
 
-    override fun invoke(vehicle: Vehicle): InternalVehicleComponent =
-        cache.computeIfAbsent(vehicle.uuid) {
-            vehicleComponentFactory(vehicle)
-        }
+    override fun invoke(vehicle: Vehicle) = cache.computeIfAbsent(vehicle.uuid) {
+        vehicleComponentFactory.build(vehicle)
+    }
 }
