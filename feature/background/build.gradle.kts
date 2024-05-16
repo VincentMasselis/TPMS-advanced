@@ -19,4 +19,6 @@ dependencies {
     implementation(project(":feature:core"))
 
     debugImplementation(project(":core:debug-ui"))
+
+    testImplementation(project(":core:test"))
 }

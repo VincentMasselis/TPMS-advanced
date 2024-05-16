@@ -46,7 +46,7 @@ internal class ManualBackgroundViewModel @AssistedInject constructor(
 
     init {
         vehiclesToMonitorUseCase
-            .expectedIgnoredAndMonitored()
+            .ignoredAndMonitored()
             .map { (_, monitored) ->
                 monitored
                     .map { it.uuid }
