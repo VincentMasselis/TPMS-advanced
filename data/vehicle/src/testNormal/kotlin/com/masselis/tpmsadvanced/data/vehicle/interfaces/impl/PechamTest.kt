@@ -1,7 +1,5 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
-import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
@@ -33,6 +31,9 @@ internal class PechamTest {
         // D8:51:00:00:AE:49 3D R.R.
         // Tyre(timestamp=1.70168790933E9, location=REAR_RIGHT, id=0, pressure=Pressure(kpa=100.667), temperature=Temperature(celsius=20.0), battery=28, isAlarm=false)
         "0303A5270308425208FF401C1400921A7F",
+
+        // Unlocated(timestamp=1.71585143556E9, rssi=-60, sensorId=-341438080, pressure=Pressure(kpa=212.0), temperature=Temperature(celsius=20.0), battery=29, isAlarm=false)
+        "0303A5270308425208FF241D1401D4BFEC"
     )
 
     // byteArrayEleven= 0308425208FF101B0F026A
