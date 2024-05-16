@@ -23,7 +23,8 @@ internal abstract class GitBranchList : ValueSource<List<String>, Parameters> {
                 commandLine(
                     "git",
                     "branch",
-                    "-l",
+                    "-r",
+                    "--list",
                     parameters.inputFilter.get(),
                 )
                 standardOutput = it

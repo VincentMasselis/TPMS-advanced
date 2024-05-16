@@ -27,7 +27,7 @@ internal abstract class AssertCurrentBranch : DefaultTask() {
 
     init {
         group = "gitflow"
-        description = "Check the current branch is \"currentBranch\""
+        description = "Check the current branch is \"expectedBranch\""
     }
 
     @TaskAction

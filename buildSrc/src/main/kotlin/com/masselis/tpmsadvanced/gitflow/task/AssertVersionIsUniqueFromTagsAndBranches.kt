@@ -35,9 +35,7 @@ internal abstract class AssertVersionIsUniqueFromTagsAndBranches : DefaultTask()
         }
 
     private val branchesList
-        get() = providerFactory.from(GitBranchList::class) {
-            inputFilter = version.map { "*/$it" }
-        }
+        get() = providerFactory.from(GitBranchList::class) { inputFilter = version.map { "*/$it" } }
 
     init {
         group = "gitflow"

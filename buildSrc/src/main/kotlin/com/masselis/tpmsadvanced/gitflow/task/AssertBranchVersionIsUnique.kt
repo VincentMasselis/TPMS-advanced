@@ -21,8 +21,8 @@ internal abstract class AssertBranchVersionIsUnique : DefaultTask() {
             version = versionedBranch.map { branchName ->
                 branchName.split('/')
                     .also {
-                        if (it.size != 2)
-                            throw GradleException("Cannot verify the branch version because the branch uses an unsupported format, branch name: \"${versionedBranch.get()}\", supported format:\"branch_name/strict_semantic_version\"")
+                        if (it.size != 3)
+                            throw GradleException("Cannot verify the branch version because the branch uses an unsupported format, branch name: \"${versionedBranch.get()}\", supported format:\"origin/branch_name/strict_semantic_version\"")
                     }
                     .last()
                     .let { StricSemanticVersion(it) }

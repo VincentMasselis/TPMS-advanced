@@ -26,8 +26,6 @@ import org.gradle.kotlin.dsl.the
 
 public class GitflowPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = with(project) {
-        val currentBranch = providers.from(CurrentBranch::class)
-
         val currentReleaseTag = objects.property<SemanticVersion>()
         val lastReleaseCommitSha = objects.property<String>()
         val ext = extensions.create<GitflowExtension>(
@@ -35,6 +33,8 @@ public class GitflowPlugin : Plugin<Project> {
             currentReleaseTag,
             lastReleaseCommitSha
         )
+
+        val currentBranch = providers.from(CurrentBranch::class)
         val releaseBuildCount = providers.from(CommitCountBetweenBranch::class) {
             fromBranch = ext.developBranch
             toBranch = ext.releaseBranch

@@ -1,7 +1,6 @@
 import com.masselis.tpmsadvanced.emulator.EmulatorExtension
 import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import com.masselis.tpmsadvanced.gitflow.GitflowExtension
-import com.masselis.tpmsadvanced.gitflow.GitflowPlugin
 import com.masselis.tpmsadvanced.github.GithubExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
 
@@ -9,6 +8,15 @@ plugins {
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.crashlytics) apply false
     alias(libs.plugins.sqldelight) apply false
+    gitflow
+}
+
+gitflow {
+    version = libs.versions.app.map { StricSemanticVersion(it) }
+    developBranch = "origin/develop"
+    releaseBranch = version.map { "origin/release/${it}" }
+    hotfixBranch = version.map { "origin/hotfix/${it}" }
+    mainBranch = "origin/main"
 }
 
 var isDecrypted by extra(false)
@@ -18,16 +26,6 @@ try {
     println("Project secrets decrypted")
 } catch (_: Exception) {
     println("Project secrets encrypted")
-}
-
-
-apply<GitflowPlugin>()
-configure<GitflowExtension> {
-    version = libs.versions.app.map { StricSemanticVersion(it) }
-    developBranch = "develop"
-    releaseBranch = version.map { "release/${it}" }
-    hotfixBranch = version.map { "hotfix/${it}" }
-    mainBranch = "main"
 }
 
 if (isDecrypted) {
@@ -40,7 +38,7 @@ if (isDecrypted) {
     }
 }
 
-if (System.getenv("CI") == "true") {
+if (isCI) {
     // Why working with a custom emulator gradle plugin while gradle-managed devices exist into the
     // AGP ? Because gradle-managed emulators are bound to the lifecycle of the gradle task which
     // executes the tests. Because of this, its impossible to fetch screenshots in the end of the
