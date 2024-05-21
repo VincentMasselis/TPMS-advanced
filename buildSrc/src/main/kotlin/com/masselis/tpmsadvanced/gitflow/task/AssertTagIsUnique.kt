@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.gitflow.task
 
-import StricSemanticVersion
 import com.masselis.tpmsadvanced.gitflow.valuesource.GitTagList
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -13,7 +12,7 @@ import org.gradle.kotlin.dsl.from
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
-internal abstract class AssertTagVersionIsUnique : DefaultTask() {
+internal abstract class AssertTagIsUnique : DefaultTask() {
 
     @get:Inject
     protected abstract val execOperations: ExecOperations
@@ -21,22 +20,26 @@ internal abstract class AssertTagVersionIsUnique : DefaultTask() {
     @get:Inject
     protected abstract val providerFactory: ProviderFactory
 
+    /**
+     * Could be `1.3.2` to search the exact value or `1.3.2*` to search for `1.3.2` with a suffix
+     */
     @get:Input
-    abstract val version: Property<StricSemanticVersion>
+    abstract val tagFilter: Property<String>
 
     private val tagList
         get() = providerFactory.from(GitTagList::class) {
-            inputFilter = version.map { "$it" }
+            inputFilter = tagFilter
         }
 
     init {
         group = "gitflow"
-        description = "Checks the version doesn't have any tag pushed"
+        description = "Checks this tag was not created yet"
     }
 
     @TaskAction
     internal fun process() {
-        if (tagList.get().isNotEmpty())
-            throw GradleException("Cannot work with the version \"${version.get()}\", a tag with the same name already exists")
+        val tagList = tagList.get()
+        if (tagList.isNotEmpty())
+            throw GradleException("A tag named \"${tagList.joinToString()}\" already exists")
     }
 }

@@ -15,14 +15,14 @@ public class GithubPlugin : Plugin<Project> {
         val ext = project.extensions.create<GithubExtension>("github")
 
         val upsertGithubPreRelease = project.tasks.create<CreateRelease>("createGithubPreRelease") {
-            dependsOn("tagCommit")
+            dependsOn("tagCommitWithCurrentVersion")
             githubToken = ext.githubToken
             tagName = ext.currentReleaseTag
             lastReleaseCommitSha = ext.lastReleaseCommitSha
             preRelease = true
         }
         val upsertGithubRelease = project.tasks.create<CreateRelease>("createGithubRelease") {
-            dependsOn("tagCommit")
+            dependsOn("tagCommitWithCurrentVersion")
             githubToken = ext.githubToken
             tagName = ext.currentReleaseTag
             lastReleaseCommitSha = ext.lastReleaseCommitSha
