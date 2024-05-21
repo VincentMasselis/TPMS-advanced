@@ -10,7 +10,7 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
 import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.Settings
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.Settings
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 import com.masselis.tpmsadvanced.interfaces.composable.SettingsTag
 

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.masselis.tpmsadvanced.qrcode"
+    namespace = "com.masselis.tpmsadvanced.feature.qrcode"
 }
 
 dependencies {
-    implementation(project(":feature:core"))
+    implementation(project(":feature:main"))
 
     implementation(project(":data:vehicle"))
     implementation(project(":data:unit"))

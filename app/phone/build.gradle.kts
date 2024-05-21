@@ -76,7 +76,7 @@ dependencies {
     implementation(project(":data:vehicle"))
 
     implementation(project(":feature:background"))
-    implementation(project(":feature:core"))
+    implementation(project(":feature:main"))
     implementation(project(":feature:unlocated"))
     implementation(project(":feature:qrcode"))
     implementation(project(":feature:shortcut"))

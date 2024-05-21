@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.interfaces.ioc
 
-import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import dagger.Component

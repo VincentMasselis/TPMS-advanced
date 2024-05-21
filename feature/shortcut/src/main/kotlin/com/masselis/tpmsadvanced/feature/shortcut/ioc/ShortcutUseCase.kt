@@ -6,7 +6,7 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.core.feature.usecase.VehicleListUseCase
+import com.masselis.tpmsadvanced.feature.main.usecase.VehicleListUseCase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
