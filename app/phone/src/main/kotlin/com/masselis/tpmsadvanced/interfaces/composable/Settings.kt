@@ -38,7 +38,7 @@ internal fun Settings(
     Separator()
     Box(Modifier.fillMaxWidth()) {
         Text(
-            "Version code: ${BuildConfig.VERSION_CODE}",
+            "Version name: ${BuildConfig.VERSION_NAME}",
             Modifier.align(Alignment.TopEnd),
             color = Color.Gray
         )
