@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -44,10 +43,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicle
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.CurrentVehicleDropdown
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.LocalVehicleComponent
-import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicle
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdown
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
@@ -58,8 +57,8 @@ import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent.Companion.Vehi
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.SpotlightEvent
-import com.masselis.tpmsadvanced.qrcode.interfaces.QrCodeScan
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorList
+import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QrCodeScan
+import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorList
 import java.util.UUID
 
 @Composable

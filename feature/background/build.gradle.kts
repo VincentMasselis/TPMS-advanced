@@ -16,7 +16,7 @@ dependencies {
     implementation(project(":data:unit"))
     implementation(project(":data:app"))
 
-    implementation(project(":feature:core"))
+    implementation(project(":feature:main"))
 
     debugImplementation(project(":core:debug-ui"))
 }

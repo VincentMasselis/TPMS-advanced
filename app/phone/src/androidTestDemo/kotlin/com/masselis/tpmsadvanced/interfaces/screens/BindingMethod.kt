@@ -12,7 +12,7 @@ import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.interfaces.composable.ChooseBindingMethodTags
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorsList
+import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorsList
 
 context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)

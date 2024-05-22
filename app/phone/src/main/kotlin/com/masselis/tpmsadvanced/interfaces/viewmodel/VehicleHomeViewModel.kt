@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.feature.usecase.NoveltyUseCase
+import com.masselis.tpmsadvanced.feature.main.usecase.NoveltyUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.ReceiveChannel

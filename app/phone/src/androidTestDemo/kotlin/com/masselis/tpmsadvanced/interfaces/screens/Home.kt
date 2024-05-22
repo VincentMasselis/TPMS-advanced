@@ -8,8 +8,8 @@ import androidx.compose.ui.test.performClick
 import com.masselis.tpmsadvanced.core.androidtest.EnterComposable
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
 import com.masselis.tpmsadvanced.core.androidtest.process
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.BindSensorButton
-import com.masselis.tpmsadvanced.core.feature.interfaces.composable.DropdownMenu
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorButton
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DropdownMenu
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 

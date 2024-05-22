@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.feature.shortcut.usecase
 
-import com.masselis.tpmsadvanced.core.feature.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.feature.shortcut.ioc.ShortcutUseCase
 import dagger.Component
 

@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.masselis.tpmsadvanced.unlocated"
+    namespace = "com.masselis.tpmsadvanced.feature.unlocated"
 }
 
 dependencies {
-    implementation(project(":feature:core"))
+    implementation(project(":feature:main"))
 
     implementation(project(":data:vehicle"))
     implementation(project(":data:unit"))
