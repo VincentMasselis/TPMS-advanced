@@ -24,12 +24,6 @@ kotlinDslPluginOptions {
     }
 }
 
-repositories {
-    gradlePluginPortal()
-    google()
-    mavenCentral()
-}
-
 dependencies {
     implementation(libs.android.gradle.plugin)
     implementation(kotlin("gradle-plugin", libs.versions.kotlin.get()))
