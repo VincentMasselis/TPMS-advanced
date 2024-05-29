@@ -1,18 +1,15 @@
 import org.gradle.api.initialization.resolve.RepositoriesMode.FAIL_ON_PROJECT_REPOS
 
 pluginManagement {
+    includeBuild("gradle-included-build")
     repositories {
         gradlePluginPortal()
         google()
-        mavenCentral()
     }
 }
 
 plugins {
-    // From https://docs.gradle.org/current/userguide/platforms.html: "You cannot use a plugin
-    // declared in a version catalog in your settings file or settings plugin (because catalogs are
-    // defined in settings themselves, it would be a chicken and egg problem)."
-    id("com.gradle.enterprise") version "3.13.3"
+    id("settings-plugins")
 }
 
 @Suppress("UnstableApiUsage")
@@ -22,13 +19,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven(url = "https://jitpack.io")
-    }
-}
-
-gradleEnterprise {
-    buildScan {
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
     }
 }
 
