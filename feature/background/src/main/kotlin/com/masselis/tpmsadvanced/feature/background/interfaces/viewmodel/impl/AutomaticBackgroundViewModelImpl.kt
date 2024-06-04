@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.impl
 
-import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 
 internal class AutomaticBackgroundViewModelImpl @AssistedInject constructor(
     private val database: VehicleDatabase,
@@ -44,12 +42,10 @@ internal class AutomaticBackgroundViewModelImpl @AssistedInject constructor(
             .launchIn(viewModelScope)
     }
 
-    override fun requiredPermission() = checkForPermissionUseCase.requiredPermission
-
-    override fun isPermissionGrant() = checkForPermissionUseCase.isPermissionGrant()
+    override fun missingPermission(): String? = checkForPermissionUseCase.missingPermission()
 
     override fun monitor() {
-        assert(checkForPermissionUseCase.isPermissionGrant())
+        assert(checkForPermissionUseCase.isGrant())
         viewModelScope.launch {
             database.updateIsBackgroundMonitor(true, vehicle.uuid)
         }

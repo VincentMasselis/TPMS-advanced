@@ -1,6 +1,6 @@
 plugins {
-    id("android-lib")
-    id("dagger")
+    `android-lib`
+    dagger
 }
 
 android {

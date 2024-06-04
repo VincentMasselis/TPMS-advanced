@@ -1,16 +1,15 @@
 @file:Suppress("LocalVariableName", "UnstableApiUsage")
 
-import com.masselis.tpmsadvanced.github.GithubExtension
-import com.masselis.tpmsadvanced.github.GithubPlugin
+import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
 import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
-import com.masselis.tpmsadvanced.playstore.UpdatePlayStoreScreenshots
+import com.masselis.tpmsadvanced.playstore.task.UpdatePlayStoreScreenshots
 
 plugins {
-    id("android-app")
-    id("compose")
-    id("dagger")
-    id("paparazzi")
+    `android-app`
+    compose
+    dagger
+    paparazzi
 }
 
 val isDecrypted: Boolean by rootProject.extra
@@ -23,35 +22,26 @@ if (isDecrypted) {
     configure<PlayStoreExtension> {
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
     }
-    apply<GithubPlugin>()
-    configure<GithubExtension> {
-        val GITHUB_TOKEN: String by rootProject.extra
-        githubToken = GITHUB_TOKEN
-    }
 }
 
-val tpmsAdvancedVersionCode: Int by rootProject.extra
 android {
     defaultConfig {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
-
-        versionCode = tpmsAdvancedVersionCode
-        versionName = "1.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
         // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
         // each test invocation. This command ensures that the app's state is completely cleared
         // between tests.
-        testInstrumentationRunnerArguments += listOf(
+        testInstrumentationRunnerArguments += mapOf(
             "useTestStorageService" to "true",
             "clearPackageData" to "true"
         )
     }
     testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
-    signingConfigs {
-        if (isDecrypted) create("release") {
+    if (isDecrypted) {
+        signingConfigs.create("release") {
             val APP_KEY_ALIAS: String by rootProject.extra
             val APP_KEY_STORE_PWD: String by rootProject.extra
             val APP_KEYSTORE_LOCATION: String by rootProject.extra
@@ -100,11 +90,13 @@ dependencies {
 }
 
 val clearTestOutputFilesFolder by tasks.creating(ClearTestOutputFilesFolder::class) {
-    dependsOn(":waitForDevice")
+    if (rootProject.plugins.hasPlugin(EmulatorPlugin::class))
+        dependsOn(":waitForEmulator")
     adbExecutable = android.adbExecutable
 }
 
 val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
+    dependsOn("connectedDemoDebugAndroidTest")
     adbExecutable = android.adbExecutable
     destination = layout.buildDirectory.dir("test_outputfiles")
 }
@@ -114,9 +106,8 @@ val copyScreenshot by tasks.creating(Copy::class) {
     group = "publishing"
     description =
         "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
-    val path = "$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots"
     from(downloadTestOutputFiles.destination)
-    into(path)
+    into("$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots")
     eachFile {
         name = when {
             name.startsWith("light_main") -> "1.png"
@@ -135,5 +126,4 @@ tasks.withType<UpdatePlayStoreScreenshots> {
 
 tasks.matching { it.name == "connectedDemoDebugAndroidTest" }.configureEach {
     dependsOn(clearTestOutputFilesFolder)
-    downloadTestOutputFiles.dependsOn(this)
 }

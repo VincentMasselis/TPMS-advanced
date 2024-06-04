@@ -7,8 +7,6 @@ plugins {
     `kotlin-dsl`
 }
 
-println("Embedded Kotlin version: $embeddedKotlinVersion")
-
 // Replaces the default configuration applied by KotlinDslCompilerPlugins.kt
 kotlinDslPluginOptions {
     tasks.withType<KotlinCompile>().configureEach {
@@ -34,10 +32,7 @@ repositories {
 
 dependencies {
     implementation(libs.android.gradle.plugin)
-    // Contains the plugin "org.jetbrains.kotlin.android"
-    implementation(embeddedKotlin("gradle-plugin"))
-    // Uncomment the code below to uses a different version of kotlin between "buildSrc" and the main project
-    //implementation(kotlin("gradle-plugin", "2.0.0"))
+    implementation(kotlin("gradle-plugin", libs.versions.kotlin.get()))
     implementation(libs.detekt.gradle.plugin)
     implementation(libs.google.oauth2.http)
     implementation(libs.google.android.publisher)
@@ -45,7 +40,19 @@ dependencies {
     implementation(
         libs.ksp.gradle.plugin.get()
             .copy()
-            .apply { version { prefer("$embeddedKotlinVersion-${libs.versions.ksp.get()}") } }
+            .apply { version { prefer("${libs.versions.kotlin.get()}-${libs.versions.ksp.get()}") } }
     )
     implementation(libs.paparazzi.gradle.plugin)
+
+    // https://github.com/gradle/gradle/issues/15383
+    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
+}
+
+gradlePlugin {
+    plugins {
+        create("GitflowPlugin") {
+            id = "gitflow"
+            implementationClass = "com.masselis.tpmsadvanced.gitflow.GitflowPlugin"
+        }
+    }
 }

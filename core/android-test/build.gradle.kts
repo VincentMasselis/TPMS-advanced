@@ -1,5 +1,5 @@
 plugins {
-    id("android-lib")
+    `android-lib`
 }
 
 android {
@@ -10,7 +10,8 @@ dependencies {
     api(project(":core:common"))
     api(libs.androidx.test.junit)
     api(libs.androidx.test.core)
-    api(libs.androidx.test.expresso)
+    api(libs.androidx.test.espresso.core)
+    api(libs.androidx.test.espresso.device)
     api(libs.androidx.test.runner)
     api(libs.androidx.test.rules)
     api(libs.kotlinx.coroutines.test)

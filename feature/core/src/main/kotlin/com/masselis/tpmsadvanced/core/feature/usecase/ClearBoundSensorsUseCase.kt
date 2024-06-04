@@ -4,7 +4,6 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 

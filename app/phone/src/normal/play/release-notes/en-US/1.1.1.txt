@@ -1,0 +1,1 @@
+- Fixed crash if the bluetooth scan fails

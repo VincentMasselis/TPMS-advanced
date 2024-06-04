@@ -31,8 +31,6 @@ import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.core.feature.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 internal fun BindSensorButton(

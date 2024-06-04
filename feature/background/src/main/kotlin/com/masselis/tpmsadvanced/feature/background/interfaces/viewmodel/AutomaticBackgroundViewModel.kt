@@ -14,8 +14,7 @@ internal interface AutomaticBackgroundViewModel {
     }
 
     val stateFlow: StateFlow<State>
-    fun requiredPermission(): String?
-    fun isPermissionGrant(): Boolean
+    fun missingPermission(): String?
     fun monitor()
     fun disable()
 }

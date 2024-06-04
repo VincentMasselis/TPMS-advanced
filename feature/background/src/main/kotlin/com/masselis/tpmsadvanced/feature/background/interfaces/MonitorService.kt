@@ -35,7 +35,7 @@ internal class MonitorService : Service() {
         super.onCreate()
         scope = CoroutineScope(Dispatchers.Default)
         vehiclesToMonitorUseCase
-            .realtimeIgnoredAndMonitored()
+            .appVisibilityIgnoredAndMonitored()
             .onEach { (ignored, monitored) ->
                 mutex.withLock {
                     // Removes entries from `monitoring`

@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.qrcode.interfaces
 
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.mlkit.vision.MlKitAnalyzer
 import androidx.camera.view.CameraController
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -20,18 +21,20 @@ import javax.inject.Inject
 @Suppress("OPT_IN_USAGE")
 internal class CameraAnalyser @Inject constructor() {
 
-    private val scanner = BarcodeScannerOptions.Builder()
+    private val scanner = BarcodeScannerOptions
+        .Builder()
         .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
         .build()
         .let { BarcodeScanning.getClient(it) }
     private val executor = Executors.newCachedThreadPool()
+
     fun findQrCode(controller: CameraController) =
         callbackFlow<List<Barcode>> {
             controller.setImageAnalysisAnalyzer(
                 executor,
                 MlKitAnalyzer(
                     listOf(scanner),
-                    CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED,
+                    ImageAnalysis.COORDINATE_SYSTEM_VIEW_REFERENCED,
                     executor
                 ) {
                     it.getValue(scanner)?.also { barcodes -> launch { send(barcodes) } }

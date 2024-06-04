@@ -1,7 +1,7 @@
 plugins {
-    id("android-lib")
-    id("compose")
-    id("dagger")
+    `android-lib`
+    compose
+    dagger
 }
 
 android {
@@ -19,4 +19,6 @@ dependencies {
     implementation(project(":feature:core"))
 
     debugImplementation(project(":core:debug-ui"))
+
+    testImplementation(project(":core:test"))
 }

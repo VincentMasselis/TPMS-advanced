@@ -46,7 +46,7 @@ internal class ManualBackgroundViewModel @AssistedInject constructor(
 
     init {
         vehiclesToMonitorUseCase
-            .expectedIgnoredAndMonitored()
+            .ignoredAndMonitored()
             .map { (_, monitored) ->
                 monitored
                     .map { it.uuid }
@@ -60,9 +60,7 @@ internal class ManualBackgroundViewModel @AssistedInject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun requiredPermission() = checkForPermissionUseCase.requiredPermission
-
-    fun isPermissionGrant() = checkForPermissionUseCase.isPermissionGrant()
+    fun missingPermission() = checkForPermissionUseCase.missingPermission()
 
     fun monitor() = viewModelScope.launch {
         vehiclesToMonitorUseCase.enableManual(vehicle.uuid)

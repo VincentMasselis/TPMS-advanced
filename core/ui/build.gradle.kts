@@ -1,6 +1,6 @@
 plugins {
-    id("android-lib")
-    id("compose")
+    `android-lib`
+    compose
 }
 
 android {

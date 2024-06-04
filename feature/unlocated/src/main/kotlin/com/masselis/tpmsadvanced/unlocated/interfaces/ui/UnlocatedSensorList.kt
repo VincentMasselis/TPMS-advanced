@@ -18,9 +18,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -301,7 +301,7 @@ private fun LazyListScope.currentVehicleItems(
             roundedTop = sensor.id == roundedTopId,
             roundedBottom = sensor.id == roundedBottomId
         )
-        if (sensor.id != roundedBottomId) Divider(thickness = Hairline)
+        if (sensor.id != roundedBottomId) HorizontalDivider(thickness = Hairline)
     }
 
     // Unbound tyres
@@ -321,7 +321,7 @@ private fun LazyListScope.currentVehicleItems(
             onBind = { setTyreToBind(tyre) },
             modifier = Modifier.fillParentMaxWidth()
         )
-        if (tyre.sensorId != roundedBottomId) Divider(thickness = Hairline)
+        if (tyre.sensorId != roundedBottomId) HorizontalDivider(thickness = Hairline)
     }
 }
 
@@ -335,7 +335,7 @@ private fun LazyListScope.placeholder(
             roundedBottom = -1 == roundedBottomId,
             modifier = Modifier.fillParentMaxWidth()
         )
-        if (-1 != roundedBottomId) Divider(thickness = Hairline)
+        if (-1 != roundedBottomId) HorizontalDivider(thickness = Hairline)
     }
 }
 
@@ -407,7 +407,7 @@ private fun LazyListScope.otherVehicleItems(
             onBind = { setTyreToBind(tyre) },
             modifier = Modifier.fillParentMaxWidth()
         )
-        if (index.plus(1) < boundTyresToOtherVehicle.size) Divider(thickness = Hairline)
+        if (index.plus(1) < boundTyresToOtherVehicle.size) HorizontalDivider(thickness = Hairline)
     }
     item { Spacer(Modifier.height(4.dp)) }
 }

@@ -19,7 +19,6 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.R
 import com.masselis.tpmsadvanced.core.feature.interfaces.composable.ClearBoundSensorsButtonTags.root
-import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.ClearBoundSensorsViewModel.State
 import com.masselis.tpmsadvanced.core.feature.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
 import com.masselis.tpmsadvanced.core.feature.ioc.InternalVehicleComponent

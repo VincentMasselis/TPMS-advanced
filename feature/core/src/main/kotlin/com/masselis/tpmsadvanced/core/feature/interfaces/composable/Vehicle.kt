@@ -312,7 +312,7 @@ private fun Motorcycle(
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
-            askHelp,
+            vehicleImage,
             tyreBox,
             tyreFront,
             frontStats,
@@ -321,18 +321,24 @@ private fun Motorcycle(
             rearStats,
             rearBinding,
         ) = createRefs()
-        BackgroundImageAskHelp(
-            Modifier.constrainAs(askHelp) {
-                end.linkTo(parent.end, 8.dp)
-                bottom.linkTo(parent.bottom, 4.dp)
-            }
+        Image(
+            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_motorcycle_top_view),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+            contentDescription = "Image of your motorcycle",
+            modifier = Modifier
+                .aspectRatio(208f / 462f)
+                .constrainAs(vehicleImage) {
+                    centerTo(parent)
+                    height = Dimension.percent(.7f)
+                }
         )
         Box(
             Modifier
                 .aspectRatio(235f / 462f)
                 .constrainAs(tyreBox) {
-                    centerTo(parent)
-                    height = Dimension.percent(.55f)
+                    centerHorizontallyTo(parent)
+                    centerVerticallyTo(parent, 0.4f)
+                    height = Dimension.percent(.65f)
                 }
         )
         with(Location.Axle(FRONT)) {
@@ -350,9 +356,8 @@ private fun Motorcycle(
             TyreStat(
                 location = this,
                 modifier = Modifier.constrainAs(frontStats) {
-                    top.linkTo(tyreFront.top)
-                    bottom.linkTo(tyreFront.bottom)
-                    start.linkTo(tyreFront.end, 8.dp)
+                    centerHorizontallyTo(tyreFront)
+                    bottom.linkTo(vehicleImage.top, 8.dp)
                 }
             )
             BindSensorButton(
@@ -379,9 +384,8 @@ private fun Motorcycle(
             TyreStat(
                 location = this,
                 modifier = Modifier.constrainAs(rearStats) {
-                    top.linkTo(tyreRear.top)
-                    bottom.linkTo(tyreRear.bottom)
-                    start.linkTo(tyreRear.end, 8.dp)
+                    centerHorizontallyTo(tyreRear)
+                    top.linkTo(vehicleImage.bottom, 8.dp)
                 }
             )
             BindSensorButton(

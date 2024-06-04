@@ -1,43 +1,42 @@
 package com.masselis.tpmsadvanced.github
 
-import com.android.build.api.artifact.SingleArtifact
-import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.android.build.api.variant.impl.VariantOutputImpl
-import com.android.build.gradle.internal.scope.getOutputPath
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.masselis.tpmsadvanced.github.task.CreateRelease
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.registerIfAbsent
-import java.io.File
 import org.gradle.kotlin.dsl.the
 
-@Suppress("UnstableApiUsage")
 public class GithubPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val ext = project.extensions.create<GithubExtension>("github")
 
-        project.the<ApplicationAndroidComponentsExtension>().apply {
-            onVariants { variant ->
-                if (variant.isMinifyEnabled.not())
-                    return@onVariants
-
-                val variantName = variant.name.capitalized()
-                val versionCodeTag = "vc${variant.outputs.single().versionCode.get()}"
-
-                val tagCommit = project.tasks.create<TagCommit>("tagCommit$variantName") {
-                    tag = versionCodeTag
-                }
-                project.tasks.create<CreateGithubRelease>("createGithubRelease$variantName") {
-                    dependsOn(tagCommit)
-                    githubToken = ext.githubToken
-                    tagName = versionCodeTag
-                }
-                project.tasks.create<PromoteGithubRelease>("promoteGithubRelease$variantName") {
-                    githubToken = ext.githubToken
-                    tagName = versionCodeTag
+        val upsertGithubPreRelease = project.tasks.create<CreateRelease>("createGithubPreRelease") {
+            dependsOn("tagCommitWithCurrentVersion")
+            githubToken = ext.githubToken
+            tagName = ext.currentReleaseTag
+            lastReleaseCommitSha = ext.lastReleaseCommitSha
+            preRelease = true
+        }
+        val upsertGithubRelease = project.tasks.create<CreateRelease>("createGithubRelease") {
+            dependsOn("tagCommitWithCurrentVersion")
+            githubToken = ext.githubToken
+            tagName = ext.currentReleaseTag
+            lastReleaseCommitSha = ext.lastReleaseCommitSha
+            preRelease = false
+        }
+        project.subprojects {
+            plugins.all {
+                if (this is AppPlugin) the<BaseAppModuleExtension>().applicationVariants.all {
+                    upsertGithubPreRelease.dependsOn("${this@subprojects.path}:assemble${name.capitalized()}")
+                    upsertGithubRelease.dependsOn("${this@subprojects.path}:assemble${name.capitalized()}")
+                    outputs.all {
+                        upsertGithubPreRelease.assets.from(outputFile)
+                        upsertGithubRelease.assets.from(outputFile)
+                    }
                 }
             }
         }

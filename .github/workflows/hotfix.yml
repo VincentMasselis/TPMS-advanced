@@ -1,0 +1,30 @@
+name: Hotfix
+
+on:
+  push:
+    branches:
+      - hotfix/*
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build everything, test and report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Build everything and run unit tests
+        run: >
+          ./gradlew
+          assertHotfixBranchIsValid
+          build
+          verifyPaparazzi
+

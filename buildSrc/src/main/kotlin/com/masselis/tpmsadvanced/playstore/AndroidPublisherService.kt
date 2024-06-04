@@ -9,7 +9,6 @@ import com.google.api.services.androidpublisher.AndroidPublisherScopes.ANDROIDPU
 import com.google.auth.http.HttpCredentialsAdapter
 import com.google.auth.oauth2.GoogleCredentials
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import java.util.concurrent.locks.Lock

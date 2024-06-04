@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.feature.background.usecase
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.annotation.SuppressLint
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.core.content.ContextCompat.checkSelfPermission
@@ -20,18 +21,21 @@ internal class CheckForPermissionUseCase @Inject constructor(
     database: VehicleDatabase,
 ) {
 
-    val requiredPermission =
-        if (SDK_INT >= TIRAMISU) POST_NOTIFICATIONS
-        else null
-
     init {
         GlobalScope.launch(IO) {
-            if (isPermissionGrant().not())
+            if (isGrant().not())
                 database.updateEveryIsBackgroundMonitorToFalse()
         }
     }
 
-    fun isPermissionGrant() = requiredPermission
-        ?.let { checkSelfPermission(appContext, it) == PERMISSION_GRANTED }
-        ?: true
+    @SuppressLint("NewApi")
+    fun missingPermission() =
+        if (isGrant().not()) POST_NOTIFICATIONS
+        else null
+
+    fun isGrant(): Boolean {
+        if (SDK_INT < TIRAMISU) return true
+
+        return checkSelfPermission(appContext, POST_NOTIFICATIONS) == PERMISSION_GRANTED
+    }
 }

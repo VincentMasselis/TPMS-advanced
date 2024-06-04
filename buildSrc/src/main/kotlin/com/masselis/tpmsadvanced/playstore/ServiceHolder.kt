@@ -5,6 +5,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import java.util.concurrent.locks.Lock
 
+@Suppress("UnstableApiUsage")
 internal interface ServiceHolder {
     @get:ServiceReference("android-publisher-service")
     val androidPublisherService: Property<AndroidPublisherService>
