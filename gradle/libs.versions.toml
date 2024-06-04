@@ -2,7 +2,7 @@
 app = "1.3.2"
 # This version is only applied to the application sources, gradles sources, even the Kotlin one and
 # the `buildSrc` sources, uses kotlin embedded in the gradle framework
-kotlin = "1.9.24"
+kotlin = "2.0.0"
 sdk-min = "27"
 sdk-compile = "34"
 sdk-target = "34"
@@ -11,12 +11,9 @@ coroutine = "1.8.1"
 lifecycle = "2.7.0"
 testServices = "1.4.2"
 sqlDelight = "2.0.2"
-# Check the compatiblity of the compose compiler with the latest kotlin version here
-# https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
-composeCompiler = "1.5.14"
 dagger = "2.51.1"
 mockk = "1.13.10"
-ksp = "1.0.20"
+ksp = "1.0.21"
 garunner-emulator = "system-images;android-34;aosp_atd;x86_64"
 
 [libraries]
@@ -41,6 +38,7 @@ androidx-test-runner = "androidx.test:runner:1.5.2"
 androidx-test-rules = "androidx.test:rules:1.5.0"
 androidx-activity = "androidx.activity:activity-ktx:1.9.0"
 androidx-fragment = "androidx.fragment:fragment-ktx:1.7.0"
+compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }

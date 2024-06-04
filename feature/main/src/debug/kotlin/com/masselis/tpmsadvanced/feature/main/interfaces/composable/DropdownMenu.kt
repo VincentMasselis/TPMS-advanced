@@ -13,14 +13,14 @@ import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class DropdownMenu(
+public class DropdownMenu private constructor(
     private val containerTag: String,
-) : EnterExitComposable<DropdownMenu> by onEnterAndOnExit(
-    { waitUntilExactlyOneExists(hasTestTag(dropdownEntryAddVehicle)) },
-    { waitUntilDoesNotExist(hasTestTag(dropdownEntryAddVehicle)) }
-) {
+    composeTestRule: ComposeTestRule,
+) : ComposeTestRule by composeTestRule, EnterExitComposable<DropdownMenu> by onEnterAndOnExit({
+    composeTestRule.waitUntilExactlyOneExists(hasTestTag(dropdownEntryAddVehicle))
+},
+    { composeTestRule.waitUntilDoesNotExist(hasTestTag(dropdownEntryAddVehicle)) }) {
 
     private val addVehicleNode
         get() = onNodeWithTag(dropdownEntryAddVehicle)
@@ -53,5 +53,11 @@ public class DropdownMenu(
     public fun close(): ExitToken<DropdownMenu> {
         carListDropdownMenu.performClick()
         return exitToken
+    }
+
+    public companion object {
+        context(ComposeTestRule)
+        public operator fun invoke(containerTag: String): DropdownMenu =
+            DropdownMenu(containerTag, this@ComposeTestRule)
     }
 }

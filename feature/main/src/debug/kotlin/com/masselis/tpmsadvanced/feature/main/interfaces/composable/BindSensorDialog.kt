@@ -9,12 +9,15 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class BindSensorDialog : EnterExitComposable<BindSensorDialog> by onEnterAndOnExit(
-    { waitUntilExactlyOneExists(hasTestTag(BindSensorTags.Dialog.root)) },
-    { waitUntilDoesNotExist(hasTestTag(BindSensorTags.Dialog.root)) },
-) {
+public class BindSensorDialog private constructor(
+    composeTestRule: ComposeTestRule
+) :
+    ComposeTestRule by composeTestRule,
+    EnterExitComposable<BindSensorDialog> by onEnterAndOnExit(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(BindSensorTags.Dialog.root)) },
+        { composeTestRule.waitUntilDoesNotExist(hasTestTag(BindSensorTags.Dialog.root)) },
+    ) {
 
     private val addToFavoritesButtonNode
         get() = onNodeWithTag(BindSensorTags.Dialog.addToFavoritesButton)
@@ -29,5 +32,10 @@ public class BindSensorDialog : EnterExitComposable<BindSensorDialog> by onEnter
     public fun cancel(): ExitToken<BindSensorDialog> {
         cancelButtonNode.performClick()
         return exitToken
+    }
+
+    public companion object {
+        context(ComposeTestRule)
+        public operator fun invoke(): BindSensorDialog = BindSensorDialog(this@ComposeTestRule)
     }
 }

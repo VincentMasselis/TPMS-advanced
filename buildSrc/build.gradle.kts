@@ -27,6 +27,7 @@ kotlinDslPluginOptions {
 dependencies {
     implementation(libs.android.gradle.plugin)
     implementation(kotlin("gradle-plugin", libs.versions.kotlin.get()))
+    implementation(libs.compose.gradle.plugin)
     implementation(libs.detekt.gradle.plugin)
     implementation(libs.google.oauth2.http)
     implementation(libs.google.android.publisher)

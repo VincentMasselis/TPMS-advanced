@@ -14,11 +14,12 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class BindDialog : EnterExitComposable<BindDialog> by onEnterAndOnExit(
-    { waitUntilExactlyOneExists(hasTestTag(BindDialogTags.root)) },
-    { waitUntilDoesNotExist(hasTestTag(BindDialogTags.root)) },
+public class BindDialog private constructor(
+    composeTestRule: ComposeTestRule
+) : ComposeTestRule by composeTestRule, EnterExitComposable<BindDialog> by onEnterAndOnExit(
+    { composeTestRule.waitUntilExactlyOneExists(hasTestTag(BindDialogTags.root)) },
+    { composeTestRule.waitUntilDoesNotExist(hasTestTag(BindDialogTags.root)) },
 ) {
     private val cancelButtonNode
         get() = onNodeWithTag(BindDialogTags.cancelButton)
@@ -27,8 +28,9 @@ public class BindDialog : EnterExitComposable<BindDialog> by onEnterAndOnExit(
         get() = onNodeWithTag(BindDialogTags.bindButton)
 
     private fun locationNode(location: Vehicle.Kind.Location) =
-        onAllNodesWithTag(VehicleTyresTags.tyreLocation(location))
-            .filterToOne(hasAnyAncestor(hasTestTag(BindDialogTags.root)))
+        onAllNodesWithTag(VehicleTyresTags.tyreLocation(location)).filterToOne(
+                hasAnyAncestor(hasTestTag(BindDialogTags.root))
+            )
 
     public fun assertBindButtonIsNotEnabled() {
         bindButtonNode.assertIsNotEnabled()
@@ -46,5 +48,10 @@ public class BindDialog : EnterExitComposable<BindDialog> by onEnterAndOnExit(
     public fun tapBindButton(): ExitToken<BindDialog> {
         bindButtonNode.performClick()
         return exitToken
+    }
+
+    public companion object {
+        context(ComposeTestRule)
+        public operator fun invoke(): BindDialog = BindDialog(this@ComposeTestRule)
     }
 }
