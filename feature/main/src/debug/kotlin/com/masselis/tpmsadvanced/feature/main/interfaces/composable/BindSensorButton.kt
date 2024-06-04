@@ -14,13 +14,15 @@ import com.masselis.tpmsadvanced.core.androidtest.onEnter
 import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class BindSensorButton(
+public class BindSensorButton private constructor(
     private val location: Vehicle.Kind.Location,
-) : EnterComposable<BindSensorButton> by onEnter(
-    { waitUntilExactlyOneExists(hasTestTag(BindSensorTags.Button.tag(location))) }
-) {
+    composeTestRule: ComposeTestRule,
+) :
+    ComposeTestRule by composeTestRule,
+    EnterComposable<BindSensorButton> by onEnter(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(BindSensorTags.Button.tag(location))) }
+    ) {
 
     private val bindSensorDialog = BindSensorDialog()
 
@@ -43,5 +45,11 @@ public class BindSensorButton(
         button.performClick()
         bindSensorDialog.process(instructions)
         waitForIdle()
+    }
+
+    public companion object {
+        context (ComposeTestRule)
+        public operator fun invoke(location: Vehicle.Kind.Location): BindSensorButton =
+            BindSensorButton(location, this@ComposeTestRule)
     }
 }

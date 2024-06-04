@@ -15,12 +15,15 @@ import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
-context(ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class UnlocatedSensorsList : EnterExitComposable<UnlocatedSensorsList> by onEnterAndOnExit(
-    { waitUntilExactlyOneExists(hasTestTag(UnlocatedSensorListTags.root)) },
-    { waitUntilDoesNotExist(hasTestTag(UnlocatedSensorListTags.root)) },
-) {
+public class UnlocatedSensorsList private constructor(
+    composeTestRule: ComposeTestRule
+) :
+    ComposeTestRule by composeTestRule,
+    EnterExitComposable<UnlocatedSensorsList> by onEnterAndOnExit(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(UnlocatedSensorListTags.root)) },
+        { composeTestRule.waitUntilDoesNotExist(hasTestTag(UnlocatedSensorListTags.root)) },
+    ) {
     private val sensorUnpluggedButtonNode
         get() = onNodeWithTag(UnlocatedSensorListTags.sensorUnpluggedButton)
 
@@ -43,14 +46,22 @@ public class UnlocatedSensorsList : EnterExitComposable<UnlocatedSensorsList> by
 
     public fun assertAllLocationBound(vararg locations: Pair<Int, Vehicle.Kind.Location>) {
         locations.forEach { (sensorId, location) ->
-            onAllNodesWithTag(VehicleTyresTags.tyreLocation(location))
-                .filterToOne(hasAnyAncestor(hasTestTag(UnlocatedSensorListTags.boundCell(sensorId))))
-                .assertExists()
+            onAllNodesWithTag(VehicleTyresTags.tyreLocation(location)).filterToOne(
+                hasAnyAncestor(
+                    hasTestTag(UnlocatedSensorListTags.boundCell(sensorId))
+                )
+            ).assertExists()
         }
     }
 
     public fun tapGoBack(): ExitToken<UnlocatedSensorsList> {
         goBackButtonNode.performClick()
         return exitToken
+    }
+
+    public companion object {
+        context(ComposeTestRule)
+        public operator fun invoke(): UnlocatedSensorsList =
+            UnlocatedSensorsList(this@ComposeTestRule)
     }
 }

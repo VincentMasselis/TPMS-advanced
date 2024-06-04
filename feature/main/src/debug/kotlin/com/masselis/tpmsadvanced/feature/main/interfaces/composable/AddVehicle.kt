@@ -11,12 +11,16 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class AddVehicle : EnterExitComposable<AddVehicle> by onEnterAndOnExit(
-    { waitUntilExactlyOneExists(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.root)) },
-    { waitUntilDoesNotExist(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.root)) }
-) {
+public class AddVehicle private constructor(
+    composeTestRule: ComposeTestRule
+) :
+    ComposeTestRule by composeTestRule,
+    EnterExitComposable<AddVehicle> by onEnterAndOnExit(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.root)) },
+        { composeTestRule.waitUntilDoesNotExist(hasTestTag(CurrentVehicleDropdownTags.AddVehicle.root)) }
+    ) {
+
     private val textFieldNode
         get() = onNodeWithTag(CurrentVehicleDropdownTags.AddVehicle.textField)
     private val addButtonNode
@@ -41,5 +45,10 @@ public class AddVehicle : EnterExitComposable<AddVehicle> by onEnterAndOnExit(
     public fun cancel(): ExitToken<AddVehicle> {
         cancelButtonNode.performClick()
         return exitToken
+    }
+
+    public companion object {
+        context(ComposeTestRule)
+        public operator fun invoke(): AddVehicle = AddVehicle(this@ComposeTestRule)
     }
 }

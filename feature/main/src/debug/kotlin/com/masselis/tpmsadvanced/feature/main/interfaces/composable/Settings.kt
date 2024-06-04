@@ -17,15 +17,17 @@ import com.masselis.tpmsadvanced.core.androidtest.check
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
 public class Settings(
     private val backButtonTag: String,
     private val containerTag: String,
-) : EnterExitComposable<Settings> by onEnterAndOnExit(
-    { waitUntilExactlyOneExists(hasTestTag(containerTag)) },
-    { waitUntilDoesNotExist(hasTestTag(containerTag)) }
-) {
+    composeTestRule: ComposeTestRule,
+) :
+    ComposeTestRule by composeTestRule,
+    EnterExitComposable<Settings> by onEnterAndOnExit(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(containerTag)) },
+        { composeTestRule.waitUntilDoesNotExist(hasTestTag(containerTag)) }
+    ) {
     private val backButton
         get() = onNodeWithTag(backButtonTag)
 
@@ -67,5 +69,11 @@ public class Settings(
     public fun leave(): ExitToken<Settings> {
         backButton.performClick()
         return exitToken
+    }
+
+    public companion object {
+        context(ComposeTestRule)
+        public operator fun invoke(backButtonTag: String, containerTag: String): Settings =
+            Settings(backButtonTag, containerTag, this@ComposeTestRule)
     }
 }

@@ -8,18 +8,21 @@ import androidx.compose.ui.test.performClick
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
-import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
+import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.Settings
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 import com.masselis.tpmsadvanced.interfaces.composable.SettingsTag
 
-context(ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-internal class OverflowMenu : EnterExitComposable<OverflowMenu> by onEnterAndOnExit(
-    { waitUntilExactlyOneExists(hasTestTag(HomeTags.Overflow.root)) },
-    { waitUntilDoesNotExist(hasTestTag(HomeTags.Overflow.root)) }
-) {
+internal class OverflowMenu private constructor(
+    composeTestRule: ComposeTestRule
+) :
+    ComposeTestRule by composeTestRule,
+    EnterExitComposable<OverflowMenu> by onEnterAndOnExit(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(HomeTags.Overflow.root)) },
+        { composeTestRule.waitUntilDoesNotExist(hasTestTag(HomeTags.Overflow.root)) }
+    ) {
 
     private val settingsNode
         get() = onNodeWithTag(HomeTags.Overflow.settings)
@@ -40,5 +43,10 @@ internal class OverflowMenu : EnterExitComposable<OverflowMenu> by onEnterAndOnE
         bindingMethodNode.performClick()
         bindingMethodTest.process(instructions)
         return exitToken
+    }
+
+    companion object {
+        context(ComposeTestRule)
+        operator fun invoke(): OverflowMenu = OverflowMenu(this@ComposeTestRule)
     }
 }

@@ -9,12 +9,16 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-public class DeleteVehicleDialog : EnterExitComposable<DeleteVehicleDialog> by onEnterAndOnExit(
-    { waitUntilExactlyOneExists(hasTestTag(DeleteVehicleButtonTags.Dialog.root)) },
-    { waitUntilDoesNotExist(hasTestTag(DeleteVehicleButtonTags.Dialog.root)) },
-) {
+public class DeleteVehicleDialog private constructor(
+    composeTestRule: ComposeTestRule
+) :
+    ComposeTestRule by composeTestRule,
+    EnterExitComposable<DeleteVehicleDialog> by onEnterAndOnExit(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(DeleteVehicleButtonTags.Dialog.root)) },
+        { composeTestRule.waitUntilDoesNotExist(hasTestTag(DeleteVehicleButtonTags.Dialog.root)) },
+    ) {
+
     private val deleteButton
         get() = onNodeWithTag(DeleteVehicleButtonTags.Dialog.delete)
     private val cancelButton
@@ -28,5 +32,11 @@ public class DeleteVehicleDialog : EnterExitComposable<DeleteVehicleDialog> by o
     public fun cancel(): ExitToken<DeleteVehicleDialog> {
         cancelButton.performClick()
         return exitToken
+    }
+
+    public companion object {
+        context(ComposeTestRule)
+        public operator fun invoke(): DeleteVehicleDialog =
+            DeleteVehicleDialog(this@ComposeTestRule)
     }
 }
