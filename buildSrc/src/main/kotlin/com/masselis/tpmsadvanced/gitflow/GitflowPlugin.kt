@@ -21,10 +21,10 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.from
 import org.gradle.kotlin.dsl.property
-import org.gradle.kotlin.dsl.the
 
 public class GitflowPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = with(project) {
@@ -75,7 +75,7 @@ public class GitflowPlugin : Plugin<Project> {
         })
         subprojects {
             plugins.all {
-                if (this is LibraryPlugin) the<BaseExtension>().apply {
+                if (this is LibraryPlugin) configure<BaseExtension> {
                     afterEvaluate {
                         if (buildFeatures.buildConfig == true) productFlavors.all {
                             buildConfigField(
@@ -91,7 +91,7 @@ public class GitflowPlugin : Plugin<Project> {
                         }
                     }
                 }
-                if (this is AppPlugin) the<BaseAppModuleExtension>().apply {
+                if (this is AppPlugin) configure<BaseAppModuleExtension> {
                     defaultConfig.versionCode = versionCode.get()
                     defaultConfig.versionName = currentReleaseTag.get().toString()
                 }

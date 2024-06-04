@@ -10,7 +10,7 @@ plugins {
 
 // `android {}` is unavailable since I only use the plugin com.android.base
 @Suppress("UnstableApiUsage")
-the<BaseExtension>().apply android@{
+configure<BaseExtension> android@{
     compileSdkVersion(libs.versions.sdk.compile.map { it.toInt() }.get())
     defaultConfig {
         minSdk = libs.versions.sdk.min.map { it.toInt() }.get()
@@ -18,6 +18,15 @@ the<BaseExtension>().apply android@{
         buildToolsVersion(libs.versions.build.tool.get())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // `useTestStorageService` enables the ability to store files when capturing screenshots.
+        // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
+        // each test invocation. This command ensures that the app's state is completely cleared
+        // between tests.
+        testInstrumentationRunnerArguments += mapOf(
+            "useTestStorageService" to "true",
+            "clearPackageData" to "true"
+        )
+        testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
     compileOptions {
         // Using sdk 34 allow the usage of Java 17 compatibility

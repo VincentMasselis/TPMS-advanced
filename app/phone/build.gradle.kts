@@ -30,18 +30,7 @@ android {
     defaultConfig {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // `useTestStorageService` enables the ability to store files when capturing screenshots.
-        // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
-        // each test invocation. This command ensures that the app's state is completely cleared
-        // between tests.
-        testInstrumentationRunnerArguments += mapOf(
-            "useTestStorageService" to "true",
-            "clearPackageData" to "true"
-        )
     }
-    testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
     if (isDecrypted) {
         signingConfigs.create("release") {
             val APP_KEY_ALIAS: String by rootProject.extra

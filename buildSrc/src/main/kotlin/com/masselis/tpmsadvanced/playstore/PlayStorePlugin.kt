@@ -14,10 +14,10 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.from
 import org.gradle.kotlin.dsl.registerIfAbsent
-import org.gradle.kotlin.dsl.the
 
 @Suppress("UnstableApiUsage")
 public class PlayStorePlugin : Plugin<Project> {
@@ -29,7 +29,7 @@ public class PlayStorePlugin : Plugin<Project> {
             parameters.serviceAccountCredentials = ext.serviceAccountCredentials
         }
 
-        the<ApplicationAndroidComponentsExtension>().apply {
+        configure<ApplicationAndroidComponentsExtension> {
             onVariants { variant ->
                 if (variant.isMinifyEnabled.not())
                     return@onVariants
