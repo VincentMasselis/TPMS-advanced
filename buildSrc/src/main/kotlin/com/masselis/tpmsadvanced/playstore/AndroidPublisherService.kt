@@ -13,7 +13,6 @@ import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 internal abstract class AndroidPublisherService : BuildService<AndroidPublisherService.Params> {
@@ -33,24 +32,24 @@ internal abstract class AndroidPublisherService : BuildService<AndroidPublisherS
                                 .serviceAccountCredentials
                                 .get()
                                 .asFile
-                                .inputStream(),
-                            { transport }
-                        )
+                                .inputStream()
+                        ) { transport }
                         .createScoped(listOf(ANDROIDPUBLISHER))
-                ).withHttpTimeout(2.minutes)
+                ).wrap {
+                    val timeout = 2.minutes.inWholeMilliseconds.toInt()
+                    setConnectTimeout(timeout)
+                    setReadTimeout(timeout)
+                    setWriteTimeout(timeout)
+                }
             )
             .setApplicationName("TPMS Advanced publisher")
             .build()
     }
 
-    private fun HttpRequestInitializer.withHttpTimeout(timeout: Duration) =
-        object : HttpRequestInitializer {
-            override fun initialize(request: HttpRequest) {
-                this@withHttpTimeout.initialize(request)
-                request.setConnectTimeout(timeout.inWholeMilliseconds.toInt())
-                request.setReadTimeout(timeout.inWholeMilliseconds.toInt())
-                request.setWriteTimeout(timeout.inWholeMilliseconds.toInt())
-            }
+    private fun HttpRequestInitializer.wrap(block: HttpRequest.() -> Unit) =
+        HttpRequestInitializer { request ->
+            initialize(request)
+            request.block()
         }
 
     internal interface Params : BuildServiceParameters {
