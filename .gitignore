@@ -32,3 +32,4 @@ buildSrc/build/**
 .idea/migrations.xml
 .idea/deploymentTargetSelector.xml
 *.salive
+.idea/other.xml

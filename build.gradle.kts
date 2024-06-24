@@ -6,9 +6,11 @@ import com.masselis.tpmsadvanced.github.GithubExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
 
 plugins {
+    // Theses plugin are not applied using the `plugins {}`, theses are applied using the old method
+    // `apply(plugin)` which requires the lines below
+    // See -> https://docs.gradle.org/current/userguide/plugins.html#sec:subprojects_plugins_dsl
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.crashlytics) apply false
-    alias(libs.plugins.sqldelight) apply false
 }
 
 var isDecrypted by extra(false)
