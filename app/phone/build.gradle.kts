@@ -1,5 +1,7 @@
 @file:Suppress("LocalVariableName", "UnstableApiUsage")
 
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
+import com.google.gms.googleservices.GoogleServicesPlugin
 import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
@@ -11,14 +13,15 @@ plugins {
     compose
     dagger
     paparazzi
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.crashlytics) apply false
 }
 
 val isDecrypted: Boolean by rootProject.extra
 if (isDecrypted) {
     // Needs the google-services.json file to work
-    apply(plugin = libs.plugins.google.services.get().pluginId)
-    apply(plugin = libs.plugins.crashlytics.get().pluginId)
-
+    apply<GoogleServicesPlugin>()
+    apply<CrashlyticsPlugin>()
     apply<PlayStorePlugin>()
     configure<PlayStoreExtension> {
         version = rootProject.the<GitflowExtension>().version

@@ -5,12 +5,6 @@ import com.masselis.tpmsadvanced.gitflow.GitflowPlugin
 import com.masselis.tpmsadvanced.github.GithubExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
 
-plugins {
-    alias(libs.plugins.google.services) apply false
-    alias(libs.plugins.crashlytics) apply false
-    alias(libs.plugins.sqldelight) apply false
-}
-
 var isDecrypted by extra(false)
 try {
     apply(from = "secrets/keys.gradle")
