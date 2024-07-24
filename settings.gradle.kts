@@ -12,7 +12,7 @@ plugins {
     // From https://docs.gradle.org/current/userguide/platforms.html: "You cannot use a plugin
     // declared in a version catalog in your settings file or settings plugin (because catalogs are
     // defined in settings themselves, it would be a chicken and egg problem)."
-    id("com.gradle.enterprise") version "3.13.3"
+    id("com.gradle.enterprise") version "3.17.6"
 }
 
 @Suppress("UnstableApiUsage")
