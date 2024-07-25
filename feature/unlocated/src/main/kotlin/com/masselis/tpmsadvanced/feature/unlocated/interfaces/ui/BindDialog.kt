@@ -21,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
@@ -31,9 +30,10 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.BindDialogTags.bindButton
-import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.BindDialogTags.root
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.BindDialogTags.cancelButton
+import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.BindDialogTags.root
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModel
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModel.State
 import com.masselis.tpmsadvanced.feature.unlocated.ioc.FeatureUnlocatedBinding.Companion.BindDialogViewModel
@@ -47,7 +47,7 @@ import java.util.UUID
 internal fun BindDialog(
     vehicleUuid: UUID,
     tyre: Tyre,
-    onBound: () -> Unit,
+    onBind: () -> Unit,
     onDismissRequest: () -> Unit,
     viewModel: BindDialogViewModel = viewModel(key = "BindSensorViewModel_${vehicleUuid}_${tyre}") {
         BindDialogViewModel(vehicleUuid, tyre, createSavedStateHandle())
@@ -119,7 +119,7 @@ internal fun BindDialog(
                 enabled = selectedLocation != null,
                 onClick = {
                     viewModel.bind(selectedLocation!!)
-                    onBound()
+                    onBind()
                 },
                 modifier = Modifier.testTag(bindButton)
             ) {
@@ -142,7 +142,7 @@ private fun BindDialogCarPreview() {
                 setOf(Location.Wheel(FRONT_LEFT))
             )
         ),
-        onBound = {},
+        onBind = {},
         onDismissRequest = {},
     )
 }
@@ -159,7 +159,7 @@ private fun BindDialogTrailerPreview() {
                 setOf(Location.Side(LEFT))
             )
         ),
-        onBound = {},
+        onBind = {},
         onDismissRequest = {},
     )
 }
@@ -176,7 +176,7 @@ private fun BindDialogMotorcyclePreview() {
                 setOf(Location.Axle(FRONT))
             )
         ),
-        onBound = {},
+        onBind = {},
         onDismissRequest = {},
     )
 }
@@ -193,7 +193,7 @@ private fun BindDialogTadpolePreview() {
                 setOf(Location.Wheel(FRONT_LEFT))
             )
         ),
-        onBound = {},
+        onBind = {},
         onDismissRequest = {},
     )
 }
@@ -210,7 +210,7 @@ private fun BindDialogDeltaPreview() {
                 setOf(Location.Axle(FRONT))
             )
         ),
-        onBound = {},
+        onBind = {},
         onDismissRequest = {},
     )
 }
@@ -229,7 +229,7 @@ private fun BindDialogAlreadyBoundPreview() {
                 Location.Wheel(FRONT_LEFT)
             )
         ),
-        onBound = {},
+        onBind = {},
         onDismissRequest = {},
     )
 }

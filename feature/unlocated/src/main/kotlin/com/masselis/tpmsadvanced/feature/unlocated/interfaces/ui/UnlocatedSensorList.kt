@@ -252,7 +252,7 @@ private fun Searching(
         BindDialog(
             vehicleUuid = vehicleUUID,
             tyre = tyreToBind,
-            onBound = { setTyreToBind(null) },
+            onBind = { setTyreToBind(null) },
             onDismissRequest = { setTyreToBind(null) },
         )
 }
