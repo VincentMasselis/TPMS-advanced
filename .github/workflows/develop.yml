@@ -91,3 +91,10 @@ jobs:
         with:
           name: Emulator-logs
           path: "build/emulator/*.txt"
+
+      - name: Configuration cache reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Configuration-cache-report
+          path: "build/reports/configuration-cache/*/*/configuration-cache-report.html"
