@@ -88,6 +88,6 @@ test-services = { module = "androidx.test.services:test-services", version.ref =
 turbine = "app.cash.turbine:turbine:1.1.0"
 
 [plugins]
-crashlytics = "com.google.firebase.crashlytics:3.0.1"
+crashlytics = "com.google.firebase.crashlytics:3.0.2"
 google-services = "com.google.gms.google-services:4.4.2"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
