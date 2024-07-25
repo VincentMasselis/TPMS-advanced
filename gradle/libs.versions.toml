@@ -82,7 +82,7 @@ sqldelight-coroutines-ext = { module = "app.cash.sqldelight:async-extensions", v
 sqldelight-coroutines-jvm = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqlDelight" }
 sqldelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqlDelight" }
 sqldelight-dialect338 = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqlDelight" }
-sqldelight-requery = "com.github.requery:sqlite-android:3.42.0"
+sqldelight-requery = "com.github.requery:sqlite-android:3.43.0"
 test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "testServices" }
 test-services = { module = "androidx.test.services:test-services", version.ref = "testServices" }
 turbine = "app.cash.turbine:turbine:1.1.0"
