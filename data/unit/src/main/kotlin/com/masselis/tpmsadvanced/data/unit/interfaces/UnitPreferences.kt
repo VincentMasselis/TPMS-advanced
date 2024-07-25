@@ -3,14 +3,14 @@ package com.masselis.tpmsadvanced.data.unit.interfaces
 import android.content.Context
 import androidx.core.content.edit
 import com.masselis.tpmsadvanced.core.common.observableStateFlow
-import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.util.*
+import org.koin.core.annotation.Single
+import java.util.Locale
 import javax.inject.Inject
 
-@DataUnitComponent.Scope
+@Single
 public class UnitPreferences @Inject internal constructor(
     context: Context
 ) {

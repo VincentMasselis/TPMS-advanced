@@ -6,9 +6,9 @@ import com.google.firebase.initialize
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 
-@Module
+@Module(createdAtStart = true)
 @ComponentScan("com.masselis.tpmsadvanced.core.common")
-internal object FirebaseModule {
+internal object LocalModule {
 
     init {
         Firebase.initialize(appContext)

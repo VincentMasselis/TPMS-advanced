@@ -1,19 +1,24 @@
 package com.masselis.tpmsadvanced.core.common
 
 import android.content.Context
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Module
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import org.koin.core.component.get
 import org.koin.ksp.generated.module
 
-public interface CoreCommonComponent {
+@Module
+public interface CoreCommonComponent : () -> CoreCommonComponent {
 
-    public val context: Context
+    @Factory
+    public fun context(): Context
 
     public companion object :
         CoreCommonComponent,
-        KoinComponent by koinApplicationComponent(appDeclaration = {
-            modules(FirebaseModule.module)
+        KoinComponent by koinApplicationComponent({
+            modules(LocalModule.module)
         }) {
-        override val context: Context by inject()
+        override fun invoke(): CoreCommonComponent = this
+        override fun context(): Context = get()
     }
 }
