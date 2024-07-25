@@ -8,12 +8,13 @@ import org.koin.core.component.get
 import org.koin.ksp.generated.module
 
 @Module
-public interface CoreCommonComponent : () -> CoreCommonComponent {
+public interface CoreCommonComponent {
 
     @Factory
     public fun context(): Context
 
     public companion object :
+            () -> CoreCommonComponent,
         CoreCommonComponent,
         KoinComponent by koinApplicationComponent({
             modules(LocalModule.module)
