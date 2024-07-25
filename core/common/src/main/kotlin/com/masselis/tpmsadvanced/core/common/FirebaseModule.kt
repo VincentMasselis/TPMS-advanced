@@ -1,27 +1,19 @@
 package com.masselis.tpmsadvanced.core.common
 
 import com.google.firebase.Firebase
-import com.google.firebase.FirebaseApp
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.crashlytics
 import com.google.firebase.initialize
-import dagger.Module
-import dagger.Provides
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 
 @Module
+@ComponentScan("com.masselis.tpmsadvanced.core.common")
 internal object FirebaseModule {
 
-    private val firebaseApp = Firebase.initialize(appContext)
-    private val crashlytics = firebaseApp?.let { Firebase.crashlytics }
-
     init {
-        firebaseApp?.setDataCollectionDefaultEnabled(BuildConfig.DEBUG.not() as Boolean?)
-        crashlytics?.setCrashlyticsCollectionEnabled(BuildConfig.DEBUG.not())
+        Firebase.initialize(appContext)
+            ?.apply { setDataCollectionDefaultEnabled(BuildConfig.DEBUG.not() as Boolean?) }
+            ?.let { Firebase.crashlytics }
+            ?.apply { setCrashlyticsCollectionEnabled(BuildConfig.DEBUG.not()) }
     }
-
-    @Provides
-    fun firebaseApp(): FirebaseApp? = firebaseApp
-
-    @Provides
-    fun crashlytics(): FirebaseCrashlytics? = crashlytics
 }

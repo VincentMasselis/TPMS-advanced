@@ -3,10 +3,14 @@ package com.masselis.tpmsadvanced.core.common
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.startup.Initializer
+import org.koin.core.annotation.Single
 
 @SuppressLint("StaticFieldLeak")
 private lateinit var privateContext: Context
 public val appContext: Context get() = privateContext
+
+@Single
+public fun appContext(): Context = appContext
 
 @Suppress("unused")
 public class AppContextInitializer : Initializer<Context> {
