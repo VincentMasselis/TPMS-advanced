@@ -17,7 +17,7 @@ public interface CoreCommonComponent {
             () -> CoreCommonComponent,
         CoreCommonComponent,
         KoinComponent by koinApplicationComponent({
-            modules(LocalModule.module)
+            modules(InternalModule.module)
         }) {
         override fun invoke(): CoreCommonComponent = this
         override fun context(): Context = get()

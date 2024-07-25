@@ -8,7 +8,7 @@ import org.koin.core.annotation.Module
 
 @Module(createdAtStart = true)
 @ComponentScan("com.masselis.tpmsadvanced.core.common")
-internal object LocalModule {
+internal object InternalModule {
 
     init {
         Firebase.initialize(appContext)

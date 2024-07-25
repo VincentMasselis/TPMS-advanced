@@ -5,4 +5,4 @@ import org.koin.core.annotation.Module
 
 @Module
 @ComponentScan("com.masselis.tpmsadvanced.data.unit")
-internal object LocalModule
+internal object InternalModule

@@ -20,7 +20,7 @@ public interface DataUnitComponent {
         DataUnitComponent,
         KoinComponent by koinApplicationComponent({
             modules(
-                LocalModule.module,
+                InternalModule.module,
                 CoreCommonComponent.module,
             )
         }) {
