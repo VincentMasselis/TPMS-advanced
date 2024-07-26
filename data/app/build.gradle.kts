@@ -1,6 +1,6 @@
 plugins {
     `android-lib`
-    dagger
+    koin
 }
 
 android {

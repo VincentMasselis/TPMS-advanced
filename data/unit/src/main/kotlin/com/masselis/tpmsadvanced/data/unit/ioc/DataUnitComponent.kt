@@ -3,28 +3,24 @@ package com.masselis.tpmsadvanced.data.unit.ioc
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.core.common.koinApplicationComponent
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
-import org.koin.core.annotation.Factory
-import org.koin.core.annotation.Module
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.ksp.generated.module
+import org.koin.core.module.Module
 
-@Module
+
 public interface DataUnitComponent {
 
-    @Factory
     public fun unitPreferences(): UnitPreferences
 
     public companion object :
-            () -> DataUnitComponent,
         DataUnitComponent,
         KoinComponent by koinApplicationComponent({
             modules(
-                InternalModule.module,
+                InternalModule,
                 CoreCommonComponent.module,
             )
         }) {
-        override fun invoke(): DataUnitComponent = this
         override fun unitPreferences(): UnitPreferences = get()
+        public val module: Module = InternalModule
     }
 }

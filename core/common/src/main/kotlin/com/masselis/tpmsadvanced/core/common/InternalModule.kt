@@ -3,11 +3,10 @@ package com.masselis.tpmsadvanced.core.common
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 import com.google.firebase.initialize
-import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 
 @Module(createdAtStart = true)
-@ComponentScan("com.masselis.tpmsadvanced.core.common")
 internal object InternalModule {
 
     init {
@@ -16,4 +15,7 @@ internal object InternalModule {
             ?.let { Firebase.crashlytics }
             ?.apply { setCrashlyticsCollectionEnabled(BuildConfig.DEBUG.not()) }
     }
+
+    @Single
+    fun appContext() = appContext
 }

@@ -1,22 +1,18 @@
 package com.masselis.tpmsadvanced.data.app.ioc
 
-import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
+import com.masselis.tpmsadvanced.core.common.koinApplicationComponent
 import com.masselis.tpmsadvanced.data.app.interfaces.AppPreferences
-import dagger.Component
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.module.Module
 
-@DataAppComponent.Scope
-@Component(
-    dependencies = [CoreCommonComponent::class]
-)
 public interface DataAppComponent {
 
-    public val appPreferences: AppPreferences
+    public fun appPreferences(): AppPreferences
 
-    @javax.inject.Scope
-    public annotation class Scope
-
-    public companion object : DataAppComponent by DaggerDataAppComponent
-        .builder()
-        .coreCommonComponent(CoreCommonComponent)
-        .build()
+    public companion object : DataAppComponent,
+        KoinComponent by koinApplicationComponent({ modules(InternalModule) }) {
+        override fun appPreferences(): AppPreferences = get()
+        public val module: Module = InternalModule
+    }
 }

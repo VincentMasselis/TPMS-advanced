@@ -1,8 +1,8 @@
 package com.masselis.tpmsadvanced.data.unit.ioc
 
-import org.koin.core.annotation.ComponentScan
-import org.koin.core.annotation.Module
+import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
+import org.koin.dsl.module
 
-@Module
-@ComponentScan("com.masselis.tpmsadvanced.data.unit")
-internal object InternalModule
+internal val InternalModule = module {
+    single { UnitPreferences(get()) }
+}
