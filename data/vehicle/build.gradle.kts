@@ -3,7 +3,7 @@
 plugins {
     `android-lib`
     alias(libs.plugins.sqldelight)
-    dagger
+    koin
 }
 
 android {

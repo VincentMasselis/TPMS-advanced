@@ -10,15 +10,12 @@ import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import dagger.Reusable
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import java.util.UUID
-import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
-@Reusable
-public class VehicleDatabase @Inject internal constructor(database: Database) {
+public class VehicleDatabase internal constructor(database: Database) {
 
     private val queries = database.vehicleQueries
 

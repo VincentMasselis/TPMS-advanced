@@ -10,10 +10,10 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
+import org.koin.core.annotation.Single
 
-@DataVehicleComponent.Scope
-internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner {
+@Single
+internal class BluetoothLeScannerImpl constructor() : BluetoothLeScanner {
 
     private val frontLeft = listOf(
         Tyre.SensorLocated(

@@ -8,9 +8,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import java.util.UUID
-import javax.inject.Inject
 
-public class TyreDatabase @Inject internal constructor(
+public class TyreDatabase internal constructor(
     database: Database
 ) {
     private val queries = database.tyreQueries
