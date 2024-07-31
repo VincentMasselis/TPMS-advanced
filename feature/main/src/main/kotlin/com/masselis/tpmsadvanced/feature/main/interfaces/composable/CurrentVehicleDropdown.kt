@@ -44,6 +44,7 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.cancelButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.kindRadio
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.textField
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.currentVehicleTest
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel
@@ -86,7 +87,7 @@ private fun CurrentVehicleDropdown(
             verticalAlignment = Alignment.Bottom,
             modifier = Modifier.menuAnchor()
         ) {
-            Text(text = vehicles.current.name)
+            Text(text = vehicles.current.name, Modifier.testTag(currentVehicleTest))
             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
         }
         VehicleListDropdownMenu(
@@ -246,6 +247,7 @@ private class MockCurrentVehicleDropdownViewModel(state: State) : CurrentVehicle
 
 @Suppress("ConstPropertyName")
 internal object CurrentVehicleDropdownTags {
+    const val currentVehicleTest = "dropdown_current_vehicle_test"
     fun dropdownEntry(vehicleName: String) = "dropdown_entry_$vehicleName"
     const val dropdownEntryAddVehicle = "dropdown_item_add_vehicle"
 

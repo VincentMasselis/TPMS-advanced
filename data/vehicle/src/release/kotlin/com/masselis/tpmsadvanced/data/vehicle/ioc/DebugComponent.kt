@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.data.vehicle.ioc
 import dagger.Subcomponent
 
 @Subcomponent
-internal interface DebugComponent {
+public interface DebugComponent {
     @Subcomponent.Factory
-    interface Factory : () -> DebugComponent
+    public interface Factory : () -> DebugComponent
 }

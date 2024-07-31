@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -10,6 +11,7 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.currentVehicleTest
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 
@@ -43,6 +45,10 @@ public class DropdownMenu private constructor(
 
     public fun assertVehicleDoesNotExists(vehicleName: String) {
         entry(vehicleName).assertDoesNotExist()
+    }
+
+    public fun assertCurrentVehicle(vehicleName: String) {
+        onNodeWithTag(currentVehicleTest).assertTextEquals(vehicleName)
     }
 
     public fun select(vehicleName: String): ExitToken<DropdownMenu> {
