@@ -6,20 +6,49 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryOwner
+import com.masselis.tpmsadvanced.core.ui.SaveableThreadSafety.NONE
+import com.masselis.tpmsadvanced.core.ui.SaveableThreadSafety.SYNCHRONIZED
 import com.masselis.tpmsadvanced.core.ui.StateSaver.State.Ready
 import com.masselis.tpmsadvanced.core.ui.StateSaver.State.Uninitialized
 import com.masselis.tpmsadvanced.core.ui.StateSaver.SupportedTypes.Companion.get
 import com.masselis.tpmsadvanced.core.ui.StateSaver.SupportedTypes.Companion.typeForValue
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.Condition
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-public fun <T : Any?> saveable(default: () -> T): ReadWriteProperty<SavedStateRegistryOwner, T> =
-    StateSaver(default)
+public fun <T : Any?> saveable(
+    threadSafety: SaveableThreadSafety = SYNCHRONIZED,
+    default: () -> T
+): ReadWriteProperty<SavedStateRegistryOwner, T> = StateSaver(threadSafety, default)
+
+public fun <T : Any?> saveable(
+    threadSafety: SaveableThreadSafety = SYNCHRONIZED,
+    default: T
+): ReadWriteProperty<SavedStateRegistryOwner, T> = StateSaver(threadSafety, DefaultValue(default))
+
+@JvmInline
+private value class DefaultValue<T>(val value: T) : () -> T {
+    override fun invoke(): T = value
+}
+
+public enum class SaveableThreadSafety {
+    SYNCHRONIZED,
+    NONE;
+}
 
 private class StateSaver<T : Any?>(
+    threadSafety: SaveableThreadSafety,
     private val default: () -> T,
 ) : ReadWriteProperty<SavedStateRegistryOwner, T>, SavedStateRegistry.SavedStateProvider {
 
+    private val lock: Lock = when (threadSafety) {
+        SYNCHRONIZED -> ReentrantLock()
+        NONE -> DummyLock()
+    }
     private var state: State = Uninitialized
 
     private sealed interface State {
@@ -30,9 +59,12 @@ private class StateSaver<T : Any?>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun getValue(thisRef: SavedStateRegistryOwner, property: KProperty<*>): T {
+    override fun getValue(
+        thisRef: SavedStateRegistryOwner,
+        property: KProperty<*>
+    ): T = lock.withLock {
         registry.register(thisRef, property)
-        return when (val state = state) {
+        when (val state = state) {
 
             is Ready -> state.value as T
 
@@ -52,11 +84,12 @@ private class StateSaver<T : Any?>(
         thisRef: SavedStateRegistryOwner,
         property: KProperty<*>,
         value: T
-    ) {
+    ) = lock.withLock {
         registry.register(thisRef, property)
         state = Ready(value)
     }
 
+    @Suppress("MaxLineLength")
     override fun saveState(): Bundle = when (val state = state) {
 
         Uninitialized -> error("saveState() cannot be called with the state set to \"Uninitialized\" because each time \"registry.register()\" is called, the state is updated to \"Ready\" right after")
@@ -94,6 +127,7 @@ private class StateSaver<T : Any?>(
         @Suppress("DEPRECATION")
         @SuppressLint("ObsoleteSdkInt")
         companion object {
+            @Suppress("CyclomaticComplexMethod", "MagicNumber")
             fun typeForValue(value: Any?): SupportedTypes = when (value) {
                 null -> Null
                 is kotlin.Boolean -> Boolean
@@ -138,6 +172,7 @@ private class StateSaver<T : Any?>(
 
                 is java.io.Serializable -> Serializable
 
+
                 else -> when {
                     SDK_INT >= 18 && value is android.os.IBinder -> IBinder
                     SDK_INT >= 21 && value is android.util.Size -> Size
@@ -149,6 +184,7 @@ private class StateSaver<T : Any?>(
                 }
             }
 
+            @Suppress("CyclomaticComplexMethod", "MagicNumber")
             fun android.os.Bundle.get(type: SupportedTypes, key: String): Any? = when (type) {
                 Null -> getString(key)
 
@@ -192,3 +228,14 @@ private class StateSaver<T : Any?>(
         private const val VALUE_KEY = "VALUE_KEY"
     }
 }
+
+@Suppress("EmptyFunctionBlock")
+private class DummyLock : Lock {
+    override fun lock() {}
+    override fun lockInterruptibly() {}
+    override fun tryLock(): Boolean = true
+    override fun tryLock(time: Long, unit: TimeUnit?): Boolean = true
+    override fun unlock() {}
+    override fun newCondition(): Condition = error("Not used by \"SavedState\"")
+}
+
