@@ -4,18 +4,13 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.test.assertEquals
+import kotlin.test.assertContentEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -94,31 +89,27 @@ internal class SavedStateTest {
             }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @Test
     fun checkThreadSafety(): Unit = test().use { scenario ->
         scenario.onActivity {
-            it.concurrentThread
-                .withIndex()
-                .onEach { (index, value) ->
-                    when (index) {
-                        // Default value is not computing at the beginning
-                        0 -> assertEquals(0, value)
-                        // Default value is currently computing, this value must not be higher than
-                        // 1 because 2 means the default value lambdas is called twice
-                        1 -> assertEquals(1, value)
-                        // Default value is computed, the lambda should not be used anymore
-                        2 -> assertEquals(0, value)
-                        else -> error("Unknown index $index with value $value")
-                    }
-                }
-                .launchIn(GlobalScope)
             runBlocking {
                 awaitAll(
                     async(IO) { it.heavyDefaultThreadSafe },
                     async(IO) { it.heavyDefaultThreadSafe }
                 )
             }
+            assertContentEquals(
+                listOf(
+                    // Default value lambda is not computing at the beginning
+                    0,
+                    // Default value lambda is currently computing, this value must not be higher
+                    // than 1 because 2 means the lambda is called twice
+                    1,
+                    // Default value is computed, the lambda should not be used anymore
+                    0
+                ),
+                it.concurrentThreadCount,
+            )
         }
     }
 }
