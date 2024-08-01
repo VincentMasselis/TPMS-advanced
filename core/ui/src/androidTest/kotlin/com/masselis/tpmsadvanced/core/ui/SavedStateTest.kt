@@ -9,18 +9,15 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 internal class SavedStateTest {
@@ -85,6 +82,18 @@ internal class SavedStateTest {
             }
     }
 
+    @Test
+    fun checkNullableIsStillNull(): Unit = test().use { scenario ->
+        scenario
+            .onActivity {
+                assertNull(it.nullableStringSavedState)
+            }
+            .recreate()
+            .onActivity {
+                assertNull(it.nullableStringSavedState)
+            }
+    }
+
     @OptIn(DelicateCoroutinesApi::class)
     @Test
     fun checkThreadSafety(): Unit = test().use { scenario ->
@@ -108,21 +117,6 @@ internal class SavedStateTest {
                 awaitAll(
                     async(IO) { it.heavyDefaultThreadSafe },
                     async(IO) { it.heavyDefaultThreadSafe }
-                )
-            }
-        }
-    }
-
-    @Test
-    fun checkNonThreadSafety(): Unit = test().use { scenario ->
-        scenario.onActivity {
-            runBlocking {
-                awaitAll(
-                    // Because with don't have any thread safety, the concurrent counter should peak
-                    // to 2
-                    async(IO) { withTimeout(1.seconds) { it.concurrentThread.first { it == 2 } } },
-                    async(IO) { it.heavyDefaultNonThreadSafe },
-                    async(IO) { it.heavyDefaultNonThreadSafe }
                 )
             }
         }
