@@ -38,7 +38,17 @@ dependencies {
             .apply { version { prefer("${libs.versions.kotlin.get()}-${libs.versions.ksp.get()}") } }
     )
     implementation(libs.paparazzi.gradle.plugin)
+    implementation(libs.jadx)
 
     // https://github.com/gradle/gradle/issues/15383
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
+}
+
+gradlePlugin {
+    plugins {
+        register("ObfuscationAnalyserPlugin") {
+            id = "com.masselis.tpmsadvanced.obfuscation"
+            implementationClass = "com.masselis.tpmsadvanced.analyse.ApkAnalysePlugin"
+        }
+    }
 }
