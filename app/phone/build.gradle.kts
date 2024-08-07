@@ -2,6 +2,7 @@
 
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
 import com.google.gms.googleservices.GoogleServicesPlugin
+import com.masselis.tpmsadvanced.analyse.Fraction.Companion.fraction
 import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
@@ -13,7 +14,8 @@ plugins {
     compose
     dagger
     paparazzi
-    com.masselis.tpmsadvanced.obfuscation
+    com.masselis.tpmsadvanced.obfuscation.assertions.app
+    com.masselis.tpmsadvanced.obfuscation.assertions.watcher
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.crashlytics) apply false
 }
@@ -56,9 +58,19 @@ android {
             )
         }
     }
+
     buildFeatures {
         buildConfig = true
     }
+}
+obfuscationAssertionsDefault {
+    setVariant("normalDebug", "normalRelease")
+}
+
+obfuscationAssertions {
+    // The whole app is obfuscated, every source of TPMSAdvanced is watched
+    watchPackageAndSubPackages("com.masselis.tpmsadvanced")
+    minimalObfuscationPercentage = 0.98f.fraction
 }
 
 dependencies {

@@ -46,9 +46,13 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        register("ObfuscationAnalyserPlugin") {
-            id = "com.masselis.tpmsadvanced.obfuscation"
-            implementationClass = "com.masselis.tpmsadvanced.analyse.ApkAnalysePlugin"
+        register("ApkAnalysePlugin") {
+            id = "com.masselis.tpmsadvanced.obfuscation.assertions.app"
+            implementationClass = "com.masselis.tpmsadvanced.analyse.AppPlugin"
+        }
+        register("ApkAnalyseModulePlugin") {
+            id = "com.masselis.tpmsadvanced.obfuscation.assertions.watcher"
+            implementationClass = "com.masselis.tpmsadvanced.analyse.WatcherPlugin"
         }
     }
 }
