@@ -35,6 +35,7 @@ jobs:
           verifyPaparazzi
           connectedDemoDebugAndroidTest
           copyScreenshot
+          compareApk
           --scan
 
       - name: Publish Unit Test Results
