@@ -31,13 +31,12 @@ public class AppPlugin : Plugin<Project> {
         configure<ApplicationAndroidComponentsExtension> {
             onVariants { it.createService(project) }
         }
-        val computeClearDecompiled = tasks
-            .create<ComputeDecompiled>("computeClearDecompiled") {
-                dependsOn(ext.clear.assembleTaskName())
-                service = ext.clear.findService(gradle, project.path)
-            }
-        val computeObfuscatedDecompiled = tasks
-            .create<ComputeDecompiled>("computeObfuscatedDecompiled") {
+        val computeClearDecompiled = tasks.create<ComputeDecompiled>("computeClearDecompiled") {
+            dependsOn(ext.clear.assembleTaskName())
+            service = ext.clear.findService(gradle, project.path)
+        }
+        val computeObfuscatedDecompiled =
+            tasks.create<ComputeDecompiled>("computeObfuscatedDecompiled") {
                 dependsOn(ext.obfuscated.assembleTaskName())
                 service = ext.obfuscated.findService(gradle, project.path)
             }
@@ -48,7 +47,14 @@ public class AppPlugin : Plugin<Project> {
             clear = ext.clear.findService(gradle, project.path)
             obfuscated = ext.obfuscated.findService(gradle, project.path)
             defaultObfuscationPercentage = ext.defaultMinimalObfuscationPercentage
-            this.modules = modulesContent
+            modules = modulesContent
+        }
+        tasks.create<ReportModules>("reportKeptClasses") {
+            dependsOn(computeClearDecompiled, computeObfuscatedDecompiled)
+            clear = ext.clear.findService(gradle, project.path)
+            obfuscated = ext.obfuscated.findService(gradle, project.path)
+            modules = modulesContent
+            outputFile = layout.buildDirectory.file("outputs/obfuscation/kept_classes.json")
         }
     }
 

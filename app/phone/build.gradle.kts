@@ -68,7 +68,7 @@ obfuscationAssertionsDefault {
 }
 
 obfuscationAssertions {
-    // The whole app is obfuscated, every source of TPMSAdvanced is watched
+    // The whole app is obfuscated, every source for TPMSAdvanced is watched
     watchPackageAndSubPackages("com.masselis.tpmsadvanced")
     minimalObfuscationPercentage = 0.98f.fraction
 }

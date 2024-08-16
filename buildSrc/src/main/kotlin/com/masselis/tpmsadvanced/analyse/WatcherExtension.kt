@@ -51,5 +51,5 @@ public abstract class WatcherExtension(
         val projectPath: String,
         val packageWatchList: Set<Regex>,
         val minimalObfuscationPercentage: Fraction?
-    )
+    ) : java.io.Serializable
 }
