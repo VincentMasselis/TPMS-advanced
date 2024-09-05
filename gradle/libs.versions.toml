@@ -53,7 +53,7 @@ google-android-publisher = "com.google.apis:google-api-services-androidpublisher
 # 33.0.0 causes a "GradleCompatible" exception where some gms/firebase libs are used but differents version are used in the same time
 google-firebase-bom = "com.google.firebase:firebase-bom:33.1.2"
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
-google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0"
+google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1"
 google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.24.0"
 junit = "junit:junit:4.13.2"
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin" }
