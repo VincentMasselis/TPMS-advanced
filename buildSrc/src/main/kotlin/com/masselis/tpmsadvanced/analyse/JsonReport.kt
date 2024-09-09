@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class JsonReport(
+    val globalObfuscationRate: Fraction,
     val modules: List<Module>,
 ) {
     @Serializable

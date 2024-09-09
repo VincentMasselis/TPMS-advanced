@@ -35,7 +35,7 @@ jobs:
           verifyPaparazzi
           connectedDemoDebugAndroidTest
           copyScreenshot
-          compareApk
+          assertObfuscationMeetsRequirements
           --scan
 
       - name: Publish Unit Test Results

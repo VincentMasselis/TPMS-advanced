@@ -13,7 +13,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
-internal abstract class ReportModules : DefaultTask() {
+internal abstract class ReportObfuscation : DefaultTask() {
 
     @get:Internal
     abstract val clear: Property<DecompilerService>
@@ -22,7 +22,7 @@ internal abstract class ReportModules : DefaultTask() {
     abstract val obfuscated: Property<DecompilerService>
 
     @get:Input
-    abstract val modules: SetProperty<WatcherExtension.Content>
+    abstract val modulesExtension: SetProperty<LibraryExtension.Data>
 
     @get:OutputFile
     abstract val outputFile: RegularFileProperty
@@ -36,28 +36,30 @@ internal abstract class ReportModules : DefaultTask() {
     fun process() {
         val clear = clear.map { it.decompiled }.get()
         val obfuscated = obfuscated.map { it.decompiled }.get()
-        modules
-            .get()
+        val appClearClasses = mutableListOf<String>()
+        val appKeptClasses = mutableListOf<String>()
+        modulesExtension.get()
             .map { module ->
                 val clearClasses = clear.filterByPackage(module.packageWatchList)
+                    .also(appClearClasses::addAll)
                 val obfuscatedClasses = obfuscated.filterByPackage(module.packageWatchList)
                 val keptClasses = clearClasses.intersect(obfuscatedClasses)
-                if (keptClasses.isEmpty()) {
-                    println("Congrats ! Every class in \"${module.projectPath}\" is obfuscated !")
-                } else {
-                    StringBuilder()
-                        .append("List of class kept in the final APK for the module \"${module.projectPath}\":\n  ּ  ")
-                        .append(keptClasses.joinToString(limit = 1000, separator = "\n  ּ  "))
-                        .also(::println)
-                }
+                    .also(appKeptClasses::addAll)
                 JsonReport.Module(
                     module.projectPath,
-                    (1 - (keptClasses.count().div(clearClasses.count().toFloat()))).fraction,
+                    if (clearClasses.isEmpty()) 1f.fraction
+                    else (1 - (keptClasses.count().div(clearClasses.count().toFloat()))).fraction,
                     module.packageWatchList,
                     keptClasses
                 )
             }
-            .let(::JsonReport)
+            .let { modules ->
+                JsonReport(
+                    if (appClearClasses.isEmpty()) 1f.fraction
+                    else (1 - (appKeptClasses.count().div(appClearClasses.count().toFloat()))).fraction,
+                    modules,
+                )
+            }
             .also { report ->
                 outputFile
                     .get()

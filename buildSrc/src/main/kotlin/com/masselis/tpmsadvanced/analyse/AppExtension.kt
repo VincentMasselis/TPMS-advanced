@@ -18,7 +18,7 @@ public interface AppExtension {
      *
      * ```kotlin
      * // build.gradle.kts
-     * appObfuscationAssertions {
+     * obfuscationAnalyser {
      *     setVariant("prodDebug", "prodRelease")
      * }
      * ```
@@ -35,7 +35,7 @@ public interface AppExtension {
      *
      * ```kotlin
      * // build.gradle.kts
-     * appObfuscationAssertions {
+     * obfuscationAnalyser {
      *     androidComponents {
      *         setVariant(
      *             selector().withBuildType("debug"),
@@ -77,8 +77,11 @@ public interface AppExtension {
     public val obfuscated: Property<ApplicationVariant>
 
     /**
-     * Default minimal obfuscation percentage accepted by the plugin. This value is not ignored if
-     * [WatcherExtension] holds a non-null value.
+     * Default minimal obfuscation percentage accepted by the plugin for each module. This value is
+     * ignored if [LibraryExtension.minimalObfuscationPercentage] holds a value.
      */
-    public val defaultMinimalObfuscationPercentage: Property<Fraction>
+    public val defaultMinimalModuleObfuscationPercentage: Property<Fraction>
+
+    /** Default minimal obfuscation percentage accepted for the whole app */
+    public val minimalAppObfuscationPercentage: Property<Fraction>
 }

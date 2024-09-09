@@ -15,7 +15,6 @@ plugins {
     dagger
     paparazzi
     com.masselis.tpmsadvanced.obfuscation.assertions.app
-    com.masselis.tpmsadvanced.obfuscation.assertions.watcher
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.crashlytics) apply false
 }
@@ -58,19 +57,14 @@ android {
             )
         }
     }
-
     buildFeatures {
         buildConfig = true
     }
 }
-obfuscationAssertionsDefault {
-    setVariant("normalDebug", "normalRelease")
-}
 
-obfuscationAssertions {
-    // The whole app is obfuscated, every source for TPMSAdvanced is watched
-    watchPackageAndSubPackages("com.masselis.tpmsadvanced")
-    minimalObfuscationPercentage = 0.98f.fraction
+obfuscationAnalyser {
+    setVariant("normalDebug", "normalRelease")
+    minimalAppObfuscationPercentage = 0.99f.fraction
 }
 
 dependencies {

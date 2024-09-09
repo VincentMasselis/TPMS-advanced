@@ -66,7 +66,7 @@ gradlePlugin {
         }
         register("ApkAnalyseModulePlugin") {
             id = "com.masselis.tpmsadvanced.obfuscation.assertions.watcher"
-            implementationClass = "com.masselis.tpmsadvanced.analyse.WatcherPlugin"
+            implementationClass = "com.masselis.tpmsadvanced.analyse.LibraryPlugin"
         }
     }
 }

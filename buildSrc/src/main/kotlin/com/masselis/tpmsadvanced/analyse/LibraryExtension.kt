@@ -1,19 +1,22 @@
 package com.masselis.tpmsadvanced.analyse
 
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
+import java.io.Serializable
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-public abstract class WatcherExtension(
-    private val projectPath: String
-) {
+@Suppress("MemberVisibilityCanBePrivate")
+public abstract class LibraryExtension internal constructor(
+    public val projectPath: String,
+) : Serializable {
     /**
      * Set which contains every watched package when the obfuscated apk is compiled. Use
      * [packageWatchList] when your package hierarchy is uncommon and requires your to use a regex.
      * If your module holds code in a single package consider using [watchPackageAndSubPackages]
      * instead for a seamless grade configuration.
+     *
+     * By default, [packageWatchList] contains every package from your module's sources.
      */
     public abstract val packageWatchList: SetProperty<Regex>
 
@@ -34,7 +37,7 @@ public abstract class WatcherExtension(
         set(value) = minimalObfuscationPercentageOpt.set(Optional.ofNullable(value))
 
     /**
-     * Watch for the current package and sub-packages, for instance is [packages] is set to
+     * Watch for the current package and sub-packages, for instance if [packages] is set to
      * `my.package`, the package `my.package` will be watched along with any subpackage like
      * `my.package.sub` or `my.package.sub.inner`
      */
@@ -43,13 +46,24 @@ public abstract class WatcherExtension(
             packageWatchList.add("^${`package`.replace(".", "\\.")}.*$".toRegex())
         }
 
-    @Suppress("LeakingThis")
-    internal val content: Provider<Content> = packageWatchList
-        .zip(minimalObfuscationPercentageOpt) { l, r -> Content(projectPath, l, r.getOrNull()) }
+    /**
+     * Watch for the filled package without checking sub-packages. For instance if [packages] is set
+     * to `my.package`, only `my.package` will be watched, `my.package.sub` will be ignored.
+     */
+    public fun watchPackage(vararg packages: String): Unit = packages
+        .forEach { `package` ->
+            packageWatchList.add("^${`package`.replace(".", "\\.")}$".toRegex())
+        }
 
-    internal data class Content(
+    internal data class Data(
         val projectPath: String,
         val packageWatchList: Set<Regex>,
         val minimalObfuscationPercentage: Fraction?
-    ) : java.io.Serializable
+    ) : Serializable {
+        constructor(ext: LibraryExtension) : this(
+            ext.projectPath,
+            ext.packageWatchList.get(),
+            ext.minimalObfuscationPercentage
+        )
+    }
 }

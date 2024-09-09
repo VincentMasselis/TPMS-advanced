@@ -11,8 +11,8 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.SetProperty
 import org.gradle.configurationcache.extensions.capitalized
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
@@ -24,10 +24,12 @@ import org.gradle.kotlin.dsl.withType
 
 public class AppPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
-        val ext = extensions.create<AppExtension>("obfuscationAssertionsDefault")
-        ext.clear.convention(provider { throw GradleException("The gradle property \"obfuscationAssertionsDefault.clear\" is missing") })
-        ext.obfuscated.convention(provider { throw GradleException("The gradle property \"obfuscationAssertionsDefault.obfuscated\" is missing") })
-        ext.defaultMinimalObfuscationPercentage.convention(0.8f.fraction)
+        val ext = extensions.create<AppExtension>("obfuscationAnalyser")
+        ext.clear.convention(provider { throw GradleException("The gradle property \"obfuscationAnalyser.clear\" is missing") })
+        ext.obfuscated.convention(provider { throw GradleException("The gradle property \"obfuscationAnalyser.obfuscated\" is missing") })
+        ext.defaultMinimalModuleObfuscationPercentage.convention(0.8f.fraction)
+        ext.minimalAppObfuscationPercentage.convention(0.8f.fraction)
+
         configure<ApplicationAndroidComponentsExtension> {
             onVariants { it.createService(project) }
         }
@@ -40,20 +42,21 @@ public class AppPlugin : Plugin<Project> {
                 dependsOn(ext.obfuscated.assembleTaskName())
                 service = ext.obfuscated.findService(gradle, project.path)
             }
-        val modulesContent = objects.setProperty<WatcherExtension.Content>()
-        recursivelySearchForModulePlugin(modulesContent)
-        tasks.create<CompareDecompiled>("compareApk") {
+        val extensions = objects.setProperty<LibraryExtension>()
+        recursivelyApplyLibraryPlugin { extensions.add(the<LibraryExtension>()) }
+        tasks.create<CheckObfuscationPercentage>("assertObfuscationMeetsRequirements") {
             dependsOn(computeClearDecompiled, computeObfuscatedDecompiled)
             clear = ext.clear.findService(gradle, project.path)
             obfuscated = ext.obfuscated.findService(gradle, project.path)
-            defaultObfuscationPercentage = ext.defaultMinimalObfuscationPercentage
-            modules = modulesContent
+            defaultModuleObfuscationPercentage = ext.defaultMinimalModuleObfuscationPercentage
+            appObfuscationPercentage = ext.minimalAppObfuscationPercentage
+            modulesExtension = extensions.map { exts -> exts.map { LibraryExtension.Data(it) } }
         }
-        tasks.create<ReportModules>("reportKeptClasses") {
+        tasks.create<ReportObfuscation>("reportKeptClasses") {
             dependsOn(computeClearDecompiled, computeObfuscatedDecompiled)
             clear = ext.clear.findService(gradle, project.path)
             obfuscated = ext.obfuscated.findService(gradle, project.path)
-            modules = modulesContent
+            modulesExtension = extensions.map { exts -> exts.map { LibraryExtension.Data(it) } }
             outputFile = layout.buildDirectory.file("outputs/obfuscation/kept_classes.json")
         }
     }
@@ -99,20 +102,26 @@ public class AppPlugin : Plugin<Project> {
         "assemble${variant.name.capitalized()}"
     }
 
-    private fun Project.recursivelySearchForModulePlugin(modules: SetProperty<WatcherExtension.Content>) {
+    private fun Project.recursivelyApplyLibraryPlugin(onPluginApplied: Project.() -> Unit) {
         // Compilation fails without this line
         @Suppress("UNCHECKED_CAST") val properties = properties as MutableMap<String, Any?>
         if (properties.containsKey(MODULE_VISITED_KEY)) return
         properties[MODULE_VISITED_KEY] = Unit
 
-        plugins.matching { it is WatcherPlugin }.whenPluginAdded {
-            modules.add(the<WatcherExtension>().content)
-        }
+        plugins.apply(LibraryPlugin::class)
+        onPluginApplied(this)
+
         configurations.configureEach {
-            if (name.endsWith("implementation", true) || name.endsWith("api", true))
-                dependencies.withType<ProjectDependency>().whenObjectAdded {
-                    dependencyProject.recursivelySearchForModulePlugin(modules)
-                }
+            when {
+                name.startsWith("test") -> return@configureEach
+                name.startsWith("androidTest") -> return@configureEach
+                name.endsWith("implementation", true) -> {}
+                name.endsWith("api", true) -> {}
+                else -> return@configureEach
+            }
+            dependencies.withType<ProjectDependency>().whenObjectAdded {
+                dependencyProject.recursivelyApplyLibraryPlugin(onPluginApplied)
+            }
         }
     }
 
