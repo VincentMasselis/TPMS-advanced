@@ -2,6 +2,7 @@
 
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
 import com.google.gms.googleservices.GoogleServicesPlugin
+import com.masselis.tpmsadvanced.analyse.Fraction.Companion.fraction
 import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
@@ -13,6 +14,7 @@ plugins {
     compose
     dagger
     paparazzi
+    com.masselis.tpmsadvanced.obfuscation.assertions.app
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.crashlytics) apply false
 }
@@ -58,6 +60,11 @@ android {
     buildFeatures {
         buildConfig = true
     }
+}
+
+obfuscationAnalyser {
+    setVariant("normalDebug", "normalRelease")
+    minimalAppObfuscationPercentage = 0.99f.fraction
 }
 
 dependencies {

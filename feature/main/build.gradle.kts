@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.masselis.tpmsadvanced.feature.main"
-    buildFeatures   {
+    buildFeatures {
         buildConfig = true
     }
 }
