@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.analyse
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class JsonReport(
+public data class ModuleReport(
     val globalObfuscationRate: Fraction,
     val modules: List<Module>,
 ) {

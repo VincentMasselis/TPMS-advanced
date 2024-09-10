@@ -33,6 +33,9 @@ public class AppPlugin : Plugin<Project> {
         configure<ApplicationAndroidComponentsExtension> {
             onVariants { it.createService(project) }
         }
+        val extensions = objects.setProperty<LibraryExtension>()
+        recursivelyApplyLibraryPlugin { extensions.add(the<LibraryExtension>()) }
+
         val computeClearDecompiled = tasks.create<ComputeDecompiled>("computeClearDecompiled") {
             dependsOn(ext.clear.assembleTaskName())
             service = ext.clear.findService(gradle, project.path)
@@ -42,22 +45,21 @@ public class AppPlugin : Plugin<Project> {
                 dependsOn(ext.obfuscated.assembleTaskName())
                 service = ext.obfuscated.findService(gradle, project.path)
             }
-        val extensions = objects.setProperty<LibraryExtension>()
-        recursivelyApplyLibraryPlugin { extensions.add(the<LibraryExtension>()) }
-        tasks.create<CheckObfuscationPercentage>("assertObfuscationMeetsRequirements") {
+        val moduleObfuscationReport =
+            layout.buildDirectory.file("outputs/obfuscation/kept_classes.json")
+        val reportKeptClasses = tasks.create<ReportObfuscation>("reportKeptClasses") {
             dependsOn(computeClearDecompiled, computeObfuscatedDecompiled)
             clear = ext.clear.findService(gradle, project.path)
             obfuscated = ext.obfuscated.findService(gradle, project.path)
+            modulesExtension = extensions.map { exts -> exts.map { LibraryExtension.Data(it) } }
+            moduleReportFile = moduleObfuscationReport
+        }
+        tasks.create<CheckObfuscationPercentage>("assertObfuscationMeetsRequirements") {
+            dependsOn(reportKeptClasses)
+            modulesExtension = extensions.map { exts -> exts.map { LibraryExtension.Data(it) } }
             defaultModuleObfuscationPercentage = ext.defaultMinimalModuleObfuscationPercentage
             appObfuscationPercentage = ext.minimalAppObfuscationPercentage
-            modulesExtension = extensions.map { exts -> exts.map { LibraryExtension.Data(it) } }
-        }
-        tasks.create<ReportObfuscation>("reportKeptClasses") {
-            dependsOn(computeClearDecompiled, computeObfuscatedDecompiled)
-            clear = ext.clear.findService(gradle, project.path)
-            obfuscated = ext.obfuscated.findService(gradle, project.path)
-            modulesExtension = extensions.map { exts -> exts.map { LibraryExtension.Data(it) } }
-            outputFile = layout.buildDirectory.file("outputs/obfuscation/kept_classes.json")
+            moduleReportFile = moduleObfuscationReport
         }
     }
 

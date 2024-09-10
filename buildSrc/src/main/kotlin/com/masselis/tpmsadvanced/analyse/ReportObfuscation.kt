@@ -25,7 +25,7 @@ internal abstract class ReportObfuscation : DefaultTask() {
     abstract val modulesExtension: SetProperty<LibraryExtension.Data>
 
     @get:OutputFile
-    abstract val outputFile: RegularFileProperty
+    abstract val moduleReportFile: RegularFileProperty
 
     init {
         group = "verification"
@@ -45,7 +45,7 @@ internal abstract class ReportObfuscation : DefaultTask() {
                 val obfuscatedClasses = obfuscated.filterByPackage(module.packageWatchList)
                 val keptClasses = clearClasses.intersect(obfuscatedClasses)
                     .also(appKeptClasses::addAll)
-                JsonReport.Module(
+                ModuleReport.Module(
                     module.projectPath,
                     if (clearClasses.isEmpty()) 1f.fraction
                     else (1 - (keptClasses.count().div(clearClasses.count().toFloat()))).fraction,
@@ -54,21 +54,21 @@ internal abstract class ReportObfuscation : DefaultTask() {
                 )
             }
             .let { modules ->
-                JsonReport(
+                ModuleReport(
                     if (appClearClasses.isEmpty()) 1f.fraction
                     else (1 - (appKeptClasses.count().div(appClearClasses.count().toFloat()))).fraction,
                     modules,
                 )
             }
             .also { report ->
-                outputFile
+                moduleReportFile
                     .get()
                     .asFile
                     .apply { if (exists().not()) createNewFile() }
                     .outputStream()
                     .use { json.encodeToStream(report, it) }
             }
-            .also { println("Complete report saved here: ${outputFile.get()}") }
+            .also { println("Complete report saved here: ${moduleReportFile.get()}") }
     }
 
     companion object {

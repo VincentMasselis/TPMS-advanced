@@ -1,21 +1,21 @@
 package com.masselis.tpmsadvanced.analyse
 
-import com.masselis.tpmsadvanced.analyse.Fraction.Companion.fraction
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 
+@Suppress("OPT_IN_USAGE")
 internal abstract class CheckObfuscationPercentage : DefaultTask() {
 
-    @get:Internal
-    abstract val clear: Property<DecompilerService>
-
-    @get:Internal
-    abstract val obfuscated: Property<DecompilerService>
+    @get:Input
+    abstract val modulesExtension: SetProperty<LibraryExtension.Data>
 
     @get:Input
     abstract val defaultModuleObfuscationPercentage: Property<Fraction>
@@ -23,8 +23,8 @@ internal abstract class CheckObfuscationPercentage : DefaultTask() {
     @get:Input
     abstract val appObfuscationPercentage: Property<Fraction>
 
-    @get:Input
-    abstract val modulesExtension: SetProperty<LibraryExtension.Data>
+    @get:InputFile
+    abstract val moduleReportFile: RegularFileProperty
 
     init {
         group = "verification"
@@ -32,40 +32,33 @@ internal abstract class CheckObfuscationPercentage : DefaultTask() {
 
     @TaskAction
     fun process() {
-        val clear = clear.map { it.decompiled }.get()
-        val obfuscated = obfuscated.map { it.decompiled }.get()
-        val appClearClasses = mutableListOf<String>()
-        val appKeptClasses = mutableListOf<String>()
-        modulesExtension.get().forEach { module ->
-            val clearClasses = clear.filterByPackage(module.packageWatchList)
-                .also(appClearClasses::addAll)
-            val obfuscatedClasses = obfuscated.filterByPackage(module.packageWatchList)
-            val keptClasses = clearClasses.intersect(obfuscatedClasses)
-                .also(appKeptClasses::addAll)
-            val percentObfuscated =
-                1 - (keptClasses.count().div(clearClasses.count().toFloat()))
-            val expectedPercentage = module.minimalObfuscationPercentage
-                ?: defaultModuleObfuscationPercentage.get()
-            if (percentObfuscated < expectedPercentage.float)
-                throw GradleException(
-                    "Module \"${module.projectPath}\" obfuscation is not sufficient. Expecting at" +
-                            " least ${expectedPercentage.asPercent()}% but only" +
-                            " ${percentObfuscated.fraction.asPercent()}% of classes are" +
-                            " obfuscated. Sample of classes kept by R8:" +
-                            " ${keptClasses.joinToString(limit = 50)}"
-                )
-        }
-        if (appClearClasses.isNotEmpty()) {
-            val percentObfuscated =
-                (1 - (appKeptClasses.count().div(appClearClasses.count().toFloat())))
-            if (percentObfuscated < appObfuscationPercentage.get().float)
-                throw GradleException(
-                    "App obfuscation is not sufficient. Expecting at" +
-                            " least ${appObfuscationPercentage.get().asPercent()}% but only" +
-                            " ${percentObfuscated.fraction.asPercent()}% of classes are" +
-                            " obfuscated. Sample of classes kept by R8:" +
-                            " ${appKeptClasses.joinToString(limit = 50)}"
-                )
-        }
+        moduleReportFile
+            .get()
+            .asFile
+            .inputStream()
+            .use { Json.decodeFromStream<ModuleReport>(it) }
+            .also { reports ->
+                modulesExtension.get().forEach { ext ->
+                    val report = reports.modules.first { it.path == ext.projectPath }
+                    val expectedPercentage = ext.minimalObfuscationPercentage
+                        ?: defaultModuleObfuscationPercentage.get()
+                    if (report.obfuscationRate.float < expectedPercentage.float)
+                        throw GradleException(
+                            "Module \"${report.path}\" obfuscation is not sufficient. Expecting at" +
+                                    " least ${expectedPercentage.asPercent()}% but only" +
+                                    " ${report.obfuscationRate.asPercent()}% of classes are" +
+                                    " obfuscated. Sample of classes kept by R8:" +
+                                    " ${report.keptClasses.joinToString(limit = 50)}"
+                        )
+                }
+                if (reports.globalObfuscationRate.float < appObfuscationPercentage.get().float)
+                    throw GradleException(
+                        "App obfuscation is not sufficient. Expecting at" +
+                                " least ${appObfuscationPercentage.get().asPercent()}% but only" +
+                                " ${reports.globalObfuscationRate.asPercent()}% of classes are" +
+                                " obfuscated. Sample of classes kept by R8:" +
+                                " ${reports.modules.flatMap { it.keptClasses }.joinToString(limit = 50)}"
+                    )
+            }
     }
 }
