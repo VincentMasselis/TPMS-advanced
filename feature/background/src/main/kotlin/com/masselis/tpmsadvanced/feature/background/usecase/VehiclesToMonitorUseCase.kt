@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -52,7 +53,7 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
         manuals.value = (manuals.value - vehicleUuid).toSortedSet()
     }
 
-    public fun expectedIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
+    public fun ignoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
         vehicleDatabase
             .selectAll()
             .asFlow()
@@ -67,7 +68,12 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
                     }
             },
         manuals.flatMapLatest { manuals ->
-            combine(manuals.map { vehicleDatabase.selectByUuid(it).asFlow() }) { it }
+            // By default, if `combine()` is called with an empty array, combine acts like
+            // `emptyFlow()` but at least one value must be emit otherwise
+            // `expectedIgnoredAndMonitored()` will never return any value. As consequence, instead
+            // of a `emptyFlow()` like behavior, `flowOf(emptyArray())` is used.
+            if (manuals.isEmpty()) flowOf(emptyArray())
+            else combine(manuals.map { vehicleDatabase.selectByUuid(it).asFlow() }) { it }
         },
     ) { (automaticIgnored, automaticMonitored), manuals ->
         Pair(
@@ -79,10 +85,10 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
     }.flowOn(Default)
 
     @Suppress("NAME_SHADOWING")
-    public fun realtimeIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
+    public fun appVisibilityIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
         currentVehicleUseCase.map { it.vehicle },
         isAppVisibleFlow,
-        expectedIgnoredAndMonitored(),
+        ignoredAndMonitored(),
     ) { current, isAppVisible, (ignored, monitored) ->
         val current = current.takeIf { isAppVisible }
         Pair(

@@ -1,17 +1,18 @@
 package com.masselis.tpmsadvanced.gitflow.task
 
-import com.masselis.tpmsadvanced.gitflow.valuesource.CurrentBranch
+import com.masselis.tpmsadvanced.gitflow.valuesource.GitBranchList
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.from
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
-internal abstract class AssertCurrentBranch : DefaultTask() {
+internal abstract class AssertBranchIsUnique : DefaultTask() {
 
     @get:Inject
     protected abstract val execOperations: ExecOperations
@@ -20,19 +21,22 @@ internal abstract class AssertCurrentBranch : DefaultTask() {
     protected abstract val providerFactory: ProviderFactory
 
     @get:Input
-    abstract val expectedBranch: Property<String>
+    abstract val branchFilter: Property<String>
 
-    private val realCurrentBranch
-        get() = providerFactory.from(CurrentBranch::class)
+    private val branchesList
+        get() = providerFactory.from(GitBranchList::class) {
+            inputFilter = this@AssertBranchIsUnique.branchFilter
+        }
 
     init {
         group = "gitflow"
-        description = "Check the current branch is \"expectedBranch\""
+        description = "Checks the branch was not created yet"
     }
 
     @TaskAction
     internal fun process() {
-        if (realCurrentBranch.get() != expectedBranch.get())
-            throw GradleException("Current branch is \"${realCurrentBranch.get()}\" but \"${expectedBranch.get()}\" was expected")
+        val branchesList = branchesList.get()
+        if (branchesList.isNotEmpty())
+            throw GradleException("A branch named \"${branchesList.joinToString()}\" already exists")
     }
 }

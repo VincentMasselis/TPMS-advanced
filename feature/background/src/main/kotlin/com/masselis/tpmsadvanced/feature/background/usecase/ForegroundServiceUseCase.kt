@@ -24,7 +24,7 @@ internal class ForegroundServiceUseCase @Inject constructor(
 ) {
 
     init {
-        vehiclesToMonitorUseCase.realtimeIgnoredAndMonitored()
+        vehiclesToMonitorUseCase.appVisibilityIgnoredAndMonitored()
             .map { (_, monitored) -> monitored.isNotEmpty() }
             .flowOn(IO)
             .distinctUntilChanged()

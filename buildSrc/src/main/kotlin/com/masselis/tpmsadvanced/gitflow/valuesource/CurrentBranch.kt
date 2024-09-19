@@ -18,12 +18,12 @@ internal abstract class CurrentBranch : ValueSource<String, ValueSourceParameter
                     "git",
                     "rev-parse",
                     "--abbrev-ref",
-                    "HEAD"
+                    "--symbolic-full-name",
+                    "@{u}"
                 )
                 standardOutput = it
             }
         }
         .use { it.toString() }
         .trimIndent()
-
 }
