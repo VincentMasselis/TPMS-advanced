@@ -18,6 +18,6 @@ dependencies {
     // latest sqlite engine used to replace the old one.
     // Requery used as implementation to force using SQLiteOpenHelperUseCase instead of using
     // directly RequerySQLiteOpenHelperFactory
-    implementation(libs.sqldelight.requery)
+    implementation(libs.requery)
     implementation(libs.relinker)
 }
