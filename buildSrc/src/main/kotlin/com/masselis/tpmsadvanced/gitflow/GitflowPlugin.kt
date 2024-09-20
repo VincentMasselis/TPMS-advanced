@@ -8,6 +8,7 @@ import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.masselis.tpmsadvanced.gitflow.task.AssertBranchIsUnique
 import com.masselis.tpmsadvanced.gitflow.task.AssertCurrentBranch
+import com.masselis.tpmsadvanced.gitflow.task.AssertGitDiffIsEmpty
 import com.masselis.tpmsadvanced.gitflow.task.AssertNearestParent
 import com.masselis.tpmsadvanced.gitflow.task.AssertNoCommitDiff
 import com.masselis.tpmsadvanced.gitflow.task.AssertTagIsUnique
@@ -97,6 +98,8 @@ public class GitflowPlugin : Plugin<Project> {
             }
         }
 
+        val assertGitDiffIsEmpty = tasks.create<AssertGitDiffIsEmpty>("assertGitDiffIsEmpty")
+
         // A release branch must:
         // - Start from develop
         // - No tag with the same version exists and no branch hotfix with the same version exists too
@@ -123,6 +126,7 @@ public class GitflowPlugin : Plugin<Project> {
         tasks.create<CreateBranch>("createRelease") {
             dependsOn(
                 assertCurrentBranchIsDevelop,
+                assertGitDiffIsEmpty,
                 assertProductionTagWasNotCreatedYet, assertHotfixBranchWasNotCreatedYet,
                 assertDevelopIsUpToDateWithMain,
             )
@@ -160,6 +164,7 @@ public class GitflowPlugin : Plugin<Project> {
         tasks.create<CreateBranch>("createHotfix") {
             dependsOn(
                 assertCurrentBranchIsMain,
+                assertGitDiffIsEmpty,
                 assertProductionTagWasNotCreatedYet,
             )
             branch = ext.releaseBranch
