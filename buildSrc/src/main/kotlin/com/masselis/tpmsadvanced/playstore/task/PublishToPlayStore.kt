@@ -10,7 +10,6 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.getValue
@@ -34,7 +33,7 @@ internal abstract class PublishToPlayStore : DefaultTask(), ServiceHolder {
     @get:InputFile
     abstract val releaseBundle: RegularFileProperty
 
-    @get:InputDirectory
+    @get:Input
     abstract val releaseNotes: Property<String>
 
 
