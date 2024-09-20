@@ -15,6 +15,7 @@ dagger = "2.52"
 mockk = "1.13.12"
 ksp = "1.0.25"
 garunner-emulator = "system-images;android-34;aosp_atd;x86_64"
+serialization-kotlin1 = "1.6.3"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.34.0"
@@ -64,7 +65,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutine" }
 kotlinx-coroutines-playservices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutine" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "coroutine" }
-kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2"
+kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
 lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "lifecycle" }
 lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
@@ -92,3 +93,4 @@ turbine = "app.cash.turbine:turbine:1.1.0"
 crashlytics = "com.google.firebase.crashlytics:3.0.2"
 google-services = "com.google.gms.google-services:4.4.2"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
