@@ -132,7 +132,8 @@ internal class ServiceNotifier @Inject constructor(
                                 state.atmosphere.temperature.string(unitPreferences.temperature.value)
                             } !!!"
 
-                            ScanFailure -> "The Android system reported an issue during the bluetooth scan, TPMS Advanced must be restarted"
+                            ScanFailure -> "The Android system reported an issue during the" +
+                                    " bluetooth scan, TPMS Advanced must be restarted"
                         }
                     )
                     .apply {
