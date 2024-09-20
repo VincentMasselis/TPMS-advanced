@@ -1,6 +1,6 @@
+
 import com.masselis.tpmsadvanced.emulator.EmulatorExtension
 import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
-import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.github.GithubExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
 
@@ -30,8 +30,8 @@ if (isDecrypted) {
     configure<GithubExtension> {
         val GITHUB_TOKEN: String by extra
         githubToken = GITHUB_TOKEN
-        currentReleaseTag = the<GitflowExtension>().currentReleaseTag
-        lastReleaseCommitSha = the<GitflowExtension>().lastReleaseCommitSha
+        currentReleaseTag = gitflow.currentReleaseTag
+        lastReleaseCommitSha = gitflow.lastReleaseCommitSha
     }
 }
 

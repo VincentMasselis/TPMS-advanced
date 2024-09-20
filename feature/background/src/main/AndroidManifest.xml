@@ -22,6 +22,7 @@
         </provider>
 
         <receiver android:name="com.masselis.tpmsadvanced.feature.background.interfaces.DisableMonitorBroadcastReceiver" />
+        <receiver android:name="com.masselis.tpmsadvanced.feature.background.interfaces.RestartAppBroadcastReceiver" />
 
         <service
             android:name="com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService"

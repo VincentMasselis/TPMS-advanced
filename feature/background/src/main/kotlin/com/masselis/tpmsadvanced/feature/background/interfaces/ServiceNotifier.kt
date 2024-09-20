@@ -21,23 +21,27 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.R
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.NoAlert
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.PressureAlert
+import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.ScanFailure
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.TemperatureAlert
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
 import com.masselis.tpmsadvanced.feature.main.ioc.TyreComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
@@ -93,6 +97,7 @@ internal class ServiceNotifier @Inject constructor(
                         ?: NoAlert
                 }
             }
+            .catch { if (it is BluetoothLeScanner.ScanFailed) emit(ScanFailure) else throw it }
             .distinctUntilChanged()
             .map { state ->
                 NotificationCompat
@@ -100,19 +105,19 @@ internal class ServiceNotifier @Inject constructor(
                         appContext,
                         when (state) {
                             NoAlert -> channelNameWhenOk
-                            is PressureAlert, is TemperatureAlert -> channelNameForAlerts
+                            is PressureAlert, is TemperatureAlert, ScanFailure -> channelNameForAlerts
                         }
                     )
                     .setSmallIcon(
                         when (state) {
                             NoAlert -> R.drawable.car_tire
-                            is PressureAlert, is TemperatureAlert -> R.drawable.car_tire_alert
+                            is PressureAlert, is TemperatureAlert, ScanFailure -> R.drawable.car_tire_alert
                         }
                     )
                     .setPriority(
                         when (state) {
                             NoAlert -> PRIORITY_LOW
-                            is PressureAlert, is TemperatureAlert -> PRIORITY_MAX
+                            is PressureAlert, is TemperatureAlert, ScanFailure -> PRIORITY_MAX
                         }
                     )
                     .setSubText(vehicle.name)
@@ -126,29 +131,59 @@ internal class ServiceNotifier @Inject constructor(
                             is TemperatureAlert -> "⚠️ A tyre reached the temperature of ${
                                 state.atmosphere.temperature.string(unitPreferences.temperature.value)
                             } !!!"
+
+                            ScanFailure -> "The Android system reported an issue during the bluetooth scan, TPMS Advanced must be restarted"
                         }
                     )
-                    .setContentIntent(
-                        TaskStackBuilder.create(appContext)
-                            .addNextIntentWithParentStack(
+                    .apply {
+                        when (state) {
+                            NoAlert, is PressureAlert, is TemperatureAlert ->
                                 Intent(
                                     Intent.ACTION_VIEW,
                                     "tpmsadvanced://vehicle/${vehicle.uuid}".toUri(),
-                                )
-                            )
-                            .getPendingIntent(vehicle.uuid.hashCode(), FLAG_IMMUTABLE)
-                    )
+                                ).let {
+                                    TaskStackBuilder
+                                        .create(appContext)
+                                        .addNextIntentWithParentStack(it)
+                                        .getPendingIntent(
+                                            vehicle.uuid.hashCode(),
+                                            FLAG_IMMUTABLE
+                                        )
+                                }.also(::setContentIntent)
+
+                            ScanFailure -> {
+                                // Nothing to do, the intent does nothing when clicked
+                            }
+                        }
+
+                    }
                     .addAction(
-                        NotificationCompat.Action.Builder(
-                            null,
-                            "Stop",
-                            getBroadcast(
-                                appContext,
-                                vehicle.uuid.hashCode(),
-                                DisableMonitorBroadcastReceiver.intent(vehicle.uuid),
-                                FLAG_IMMUTABLE
-                            )
-                        ).build()
+                        when (state) {
+                            NoAlert, is PressureAlert, is TemperatureAlert ->
+                                NotificationCompat.Action.Builder(
+                                    null,
+                                    "Stop",
+                                    getBroadcast(
+                                        appContext,
+                                        vehicle.uuid.hashCode(),
+                                        DisableMonitorBroadcastReceiver.intent(vehicle.uuid),
+                                        FLAG_IMMUTABLE
+                                    )
+                                ).build()
+
+                            ScanFailure ->
+                                NotificationCompat.Action.Builder(
+                                    null,
+                                    "Restart app",
+                                    getBroadcast(
+                                        appContext,
+                                        vehicle.uuid.hashCode(),
+                                        RestartAppBroadcastReceiver.intent(),
+                                        FLAG_IMMUTABLE
+                                    )
+                                ).build()
+                        }
+
                     )
                     .setAutoCancel(false)
                     .build()
@@ -167,11 +202,14 @@ internal class ServiceNotifier @Inject constructor(
                     }
                     ?: notificationManager.notify(vehicle.uuid.hashCode(), it)
             }
-            .onCompletion { _ ->
+            .launchIn(scope)
+
+        callbackFlow<Nothing> {
+            awaitClose {
                 foregroundService?.also { stopForeground(it, STOP_FOREGROUND_REMOVE) }
                     ?: notificationManager.cancel(vehicle.uuid.hashCode())
             }
-            .launchIn(scope)
+        }.launchIn(scope)
     }
 
     sealed interface State {
@@ -182,6 +220,8 @@ internal class ServiceNotifier @Inject constructor(
 
         @JvmInline
         value class TemperatureAlert(val atmosphere: TyreAtmosphere) : State
+
+        data object ScanFailure : State
     }
 
     internal companion object {

@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
 import androidx.core.util.size
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
 import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
@@ -69,7 +71,9 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             }
 
             override fun onScanFailed(errorCode: Int) {
-                close(BluetoothLeScanner.ScanFailed(errorCode))
+                val exc = BluetoothLeScanner.ScanFailed(errorCode)
+                Firebase.crashlytics.recordException(exc)
+                close(exc)
             }
         }
 
