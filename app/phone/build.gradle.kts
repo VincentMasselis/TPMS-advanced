@@ -17,8 +17,8 @@ plugins {
     alias(libs.plugins.crashlytics) apply false
 }
 
-val isDecrypted: Boolean by rootProject.extra
-if (isDecrypted) {
+val keys = rootProject.extra.getOrNull<Keys>("keys")
+if (keys != null) {
     // Needs the google-services.json file to work
     apply<GoogleServicesPlugin>()
     apply<CrashlyticsPlugin>()
@@ -34,15 +34,12 @@ android {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
     }
-    if (isDecrypted) {
+    if (keys != null) {
         signingConfigs.create("release") {
-            val APP_KEY_ALIAS: String by rootProject.extra
-            val APP_KEY_STORE_PWD: String by rootProject.extra
-            val APP_KEYSTORE_LOCATION: String by rootProject.extra
-            keyAlias = APP_KEY_ALIAS
-            keyPassword = APP_KEY_STORE_PWD
-            storeFile = file(APP_KEYSTORE_LOCATION)
-            storePassword = APP_KEY_STORE_PWD
+            keyAlias = keys.appKeyAlias
+            keyPassword = keys.appKeyStorePwd
+            storeFile = file("../../secrets/app-keystore")
+            storePassword = keys.appKeyStorePwd
         }
     }
     buildTypes {
