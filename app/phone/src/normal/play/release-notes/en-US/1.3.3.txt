@@ -1,0 +1,2 @@
+- Fixed crash when monitoring in background
+- Fixed a few crashes when the app starts
