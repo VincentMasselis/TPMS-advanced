@@ -130,7 +130,11 @@ public class GitflowPlugin : Plugin<Project> {
                 assertProductionTagWasNotCreatedYet, assertHotfixBranchWasNotCreatedYet,
                 assertDevelopIsUpToDateWithMain,
             )
-            branch = ext.releaseBranch
+            branch = ext.releaseBranch.map {
+                // Ignores the <remote> part of the branch name
+                // More info: https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches
+                it.substringAfter('/')
+            }
         }
         // Release branch post-creation checks
         val assertCurrentBranchIsRelease =
@@ -167,7 +171,11 @@ public class GitflowPlugin : Plugin<Project> {
                 assertGitDiffIsEmpty,
                 assertProductionTagWasNotCreatedYet,
             )
-            branch = ext.releaseBranch
+            branch = ext.releaseBranch.map {
+                // Ignores the <remote> part of the branch name
+                // More info: https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches
+                it.substringAfter('/')
+            }
         }
         // Hotfix branch post-creation checks
         val assertCurrentBranchIsHotfix =
