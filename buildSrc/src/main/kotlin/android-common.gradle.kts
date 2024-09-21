@@ -17,6 +17,12 @@ configure<BaseExtension> android@{
         targetSdk = libs.versions.sdk.target.map { it.toInt() }.get()
         buildToolsVersion(libs.versions.build.tool.get())
 
+        ndk {
+            // Removes the abi "riscv64" to avoid issues when uploading to the play store
+            // https://github.com/VincentMasselis/TPMS-advanced/actions/runs/10966842365/job/30455519697
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // `useTestStorageService` enables the ability to store files when capturing screenshots.
         // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
