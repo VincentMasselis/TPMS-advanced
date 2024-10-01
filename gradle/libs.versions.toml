@@ -52,7 +52,7 @@ dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = 
 detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6"
 google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20240821-2.0.0"
 # 33.0.0 causes a "GradleCompatible" exception where some gms/firebase libs are used but differents version are used in the same time
-google-firebase-bom = "com.google.firebase:firebase-bom:33.2.0"
+google-firebase-bom = "com.google.firebase:firebase-bom:33.3.0"
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1"
 google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.24.1"
