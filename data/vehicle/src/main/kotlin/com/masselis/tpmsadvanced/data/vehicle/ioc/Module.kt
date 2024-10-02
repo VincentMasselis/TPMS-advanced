@@ -7,6 +7,7 @@ import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.masselis.tpmsadvanced.core.common.appContext
+import com.masselis.tpmsadvanced.core.database.SQLiteOpenHelperUseCase
 import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.Tyre
@@ -19,7 +20,6 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import dagger.Provides
-import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import java.util.UUID
 
 @dagger.Module
@@ -94,11 +94,14 @@ internal object Module {
 
     @DataVehicleComponent.Scope
     @Provides
-    fun driver(locationAdapter: ColumnAdapter<Location, Long>): SqlDriver = AndroidSqliteDriver(
+    fun driver(
+        useCase: SQLiteOpenHelperUseCase,
+        locationAdapter: ColumnAdapter<Location, Long>
+    ): SqlDriver = AndroidSqliteDriver(
         schema = Database.Schema,
         context = appContext,
         name = "car.db",
-        factory = RequerySQLiteOpenHelperFactory(),
+        factory = useCase.factory,
         callback = object : AndroidSqliteDriver.Callback(
             Database.Schema,
             Database.afterVersion3(locationAdapter),

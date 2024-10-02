@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name="com.masselis.tpmsadvanced.core.ui.SavedStateActivity"
+            android:theme="@style/Theme.AppCompat" />
+    </application>
+</manifest>

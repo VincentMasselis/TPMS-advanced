@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.masselis.tpmsadvanced.core.feature.unit"
+    namespace = "com.masselis.tpmsadvanced.feature.unit"
 }
 
 dependencies {

@@ -25,6 +25,8 @@ the [Play Store](https://play.google.com/store/apps/details?id=com.masselis.tpms
 
 ## What's next ?
 
+* Battery alerts
+* Last time update
 * Android Auto support
 * Temperature history
 * Automatic startup in background when connected to the car's radio in bluetooth

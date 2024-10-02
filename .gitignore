@@ -31,3 +31,5 @@ buildSrc/build/**
 .idea/vcs.xml
 .idea/migrations.xml
 .idea/deploymentTargetSelector.xml
+*.salive
+.idea/other.xml

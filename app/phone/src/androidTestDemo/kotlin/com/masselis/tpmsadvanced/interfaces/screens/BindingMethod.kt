@@ -10,16 +10,19 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
+import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorsList
 import com.masselis.tpmsadvanced.interfaces.composable.ChooseBindingMethodTags
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
-import com.masselis.tpmsadvanced.unlocated.interfaces.ui.UnlocatedSensorsList
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
-internal class BindingMethod : EnterExitComposable<BindingMethod> by onEnterAndOnExit(
-    { waitUntilExactlyOneExists(hasTestTag(ChooseBindingMethodTags.root)) },
-    { waitUntilDoesNotExist(hasTestTag(ChooseBindingMethodTags.root)) }
-) {
+internal class BindingMethod private constructor(
+    composeTestRule: ComposeTestRule
+) :
+    ComposeTestRule by composeTestRule,
+    EnterExitComposable<BindingMethod> by onEnterAndOnExit(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(ChooseBindingMethodTags.root)) },
+        { composeTestRule.waitUntilDoesNotExist(hasTestTag(ChooseBindingMethodTags.root)) }
+    ) {
     private val backButtonNode
         get() = onNodeWithTag(HomeTags.backButton)
 
@@ -57,5 +60,10 @@ internal class BindingMethod : EnterExitComposable<BindingMethod> by onEnterAndO
         goNextButtonNode.performClick()
         unlocatedSensorsListTest.process(instructions)
         return exitToken
+    }
+
+    companion object {
+        context(ComposeTestRule)
+        operator fun invoke(): BindingMethod = BindingMethod(this@ComposeTestRule)
     }
 }

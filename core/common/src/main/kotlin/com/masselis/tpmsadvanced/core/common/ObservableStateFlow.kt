@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.core.common
 
+import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 
 public fun <T> observableStateFlow(
@@ -7,6 +8,8 @@ public fun <T> observableStateFlow(
     onValue: (oldValue: T, newValue: T) -> Unit
 ): MutableStateFlow<T> = ObservableStateFlow(initialValue, onValue)
 
+@Suppress("UnnecessaryOptInAnnotation")
+@OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 private class ObservableStateFlow<T> private constructor(
     private val stateFlow: MutableStateFlow<T>,
     private val onValue: (oldValue: T, newValue: T) -> Unit

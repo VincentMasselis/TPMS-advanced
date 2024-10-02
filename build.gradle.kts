@@ -1,13 +1,12 @@
 import com.masselis.tpmsadvanced.emulator.EmulatorExtension
 import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
-import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.github.GithubExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 
 plugins {
-    alias(libs.plugins.google.services) apply false
-    alias(libs.plugins.crashlytics) apply false
-    alias(libs.plugins.sqldelight) apply false
     gitflow
 }
 
@@ -19,22 +18,26 @@ gitflow {
     mainBranch = "origin/main"
 }
 
-var isDecrypted by extra(false)
-try {
-    apply(from = "secrets/keys.gradle")
-    isDecrypted = true
-    println("Project secrets decrypted")
-} catch (_: Exception) {
+val keys = try {
+    file("secrets/keys.json")
+        .inputStream()
+        .use {
+            @Suppress("OPT_IN_USAGE")
+            Json.decodeFromStream<Keys>(it)
+        }
+        .also { println("Project secrets decrypted") }
+        .also { extra.set("keys", it) }
+} catch (_: SerializationException) {
     println("Project secrets encrypted")
+    null
 }
 
-if (isDecrypted) {
+if (keys != null) {
     apply<GithubPlugin>()
     configure<GithubExtension> {
-        val GITHUB_TOKEN: String by extra
-        githubToken = GITHUB_TOKEN
-        currentReleaseTag = the<GitflowExtension>().currentReleaseTag
-        lastReleaseCommitSha = the<GitflowExtension>().lastReleaseCommitSha
+        githubToken = keys.githubToken
+        currentReleaseTag = gitflow.currentReleaseTag
+        lastReleaseCommitSha = gitflow.lastReleaseCommitSha
     }
 }
 

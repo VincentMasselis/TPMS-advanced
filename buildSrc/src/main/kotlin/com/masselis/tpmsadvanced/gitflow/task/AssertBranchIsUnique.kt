@@ -9,13 +9,9 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.from
-import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
 internal abstract class AssertBranchIsUnique : DefaultTask() {
-
-    @get:Inject
-    protected abstract val execOperations: ExecOperations
 
     @get:Inject
     protected abstract val providerFactory: ProviderFactory

@@ -1,6 +1,9 @@
 @file:Suppress("LocalVariableName", "UnstableApiUsage")
 
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
+import com.google.gms.googleservices.GoogleServicesPlugin
 import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
+import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
 import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
 import com.masselis.tpmsadvanced.playstore.task.UpdatePlayStoreScreenshots
@@ -10,16 +13,18 @@ plugins {
     compose
     dagger
     paparazzi
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.crashlytics) apply false
 }
 
-val isDecrypted: Boolean by rootProject.extra
-if (isDecrypted) {
+val keys = rootProject.extra.getOrNull<Keys>("keys")
+if (keys != null) {
     // Needs the google-services.json file to work
-    apply(plugin = libs.plugins.google.services.get().pluginId)
-    apply(plugin = libs.plugins.crashlytics.get().pluginId)
-
+    apply<GoogleServicesPlugin>()
+    apply<CrashlyticsPlugin>()
     apply<PlayStorePlugin>()
     configure<PlayStoreExtension> {
+        version = rootProject.the<GitflowExtension>().version
         serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
     }
 }
@@ -28,27 +33,13 @@ android {
     defaultConfig {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // `useTestStorageService` enables the ability to store files when capturing screenshots.
-        // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
-        // each test invocation. This command ensures that the app's state is completely cleared
-        // between tests.
-        testInstrumentationRunnerArguments += mapOf(
-            "useTestStorageService" to "true",
-            "clearPackageData" to "true"
-        )
     }
-    testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
-    if (isDecrypted) {
+    if (keys != null) {
         signingConfigs.create("release") {
-            val APP_KEY_ALIAS: String by rootProject.extra
-            val APP_KEY_STORE_PWD: String by rootProject.extra
-            val APP_KEYSTORE_LOCATION: String by rootProject.extra
-            keyAlias = APP_KEY_ALIAS
-            keyPassword = APP_KEY_STORE_PWD
-            storeFile = file(APP_KEYSTORE_LOCATION)
-            storePassword = APP_KEY_STORE_PWD
+            keyAlias = keys.appKeyAlias
+            keyPassword = keys.appKeyStorePwd
+            storeFile = file("../../secrets/app-keystore")
+            storePassword = keys.appKeyStorePwd
         }
     }
     buildTypes {
@@ -76,7 +67,7 @@ dependencies {
     implementation(project(":data:vehicle"))
 
     implementation(project(":feature:background"))
-    implementation(project(":feature:core"))
+    implementation(project(":feature:main"))
     implementation(project(":feature:unlocated"))
     implementation(project(":feature:qrcode"))
     implementation(project(":feature:shortcut"))

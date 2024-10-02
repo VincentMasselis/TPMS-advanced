@@ -5,6 +5,9 @@ plugins {
 
 android {
     namespace = "com.masselis.tpmsadvanced.data.app"
+    buildFeatures   {
+        buildConfig = true
+    }
 }
 
 dependencies {

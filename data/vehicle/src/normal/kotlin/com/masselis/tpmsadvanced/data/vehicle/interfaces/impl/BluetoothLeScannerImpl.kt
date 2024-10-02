@@ -20,9 +20,10 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
 import androidx.core.util.size
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
 import com.masselis.tpmsadvanced.core.common.materializeCompletion
-import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
@@ -70,7 +71,9 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             }
 
             override fun onScanFailed(errorCode: Int) {
-                close(BluetoothLeScanner.ScanFailed(errorCode))
+                val exc = BluetoothLeScanner.ScanFailed(errorCode)
+                Firebase.crashlytics.recordException(exc)
+                close(exc)
             }
         }
 
@@ -141,9 +144,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
         in Int.MIN_VALUE..28 -> listOf(ACCESS_COARSE_LOCATION)
         in 29..30 -> listOf(ACCESS_FINE_LOCATION)
         in 31..Int.MAX_VALUE -> listOf(BLUETOOTH_CONNECT, BLUETOOTH_SCAN)
-        else ->
-            @Suppress("ThrowingExceptionsWithoutMessageOrCause")
-            throw IllegalArgumentException()
+        else -> error("Unreachable condition")
     }.filter { checkSelfPermission(context, it) != PERMISSION_GRANTED }
 
     override val isBluetoothRequired = true

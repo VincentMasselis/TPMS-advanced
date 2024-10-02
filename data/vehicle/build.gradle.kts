@@ -8,13 +8,6 @@ plugins {
 
 android {
     namespace = "com.masselis.tpmsadvanced.data.vehicle"
-    defaultConfig {
-        // The following argument makes the Android Test Orchestrator run its
-        // "pm clear" command after each test invocation. This command ensures
-        // that the app's state is completely cleared between tests.
-        testInstrumentationRunnerArguments += "clearPackageData" to "true"
-    }
-    testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
 }
 
 dependencies {
@@ -25,6 +18,7 @@ dependencies {
     testImplementation(project(":core:test"))
 
     androidTestImplementation(project(":core:android-test"))
+    androidTestImplementation(libs.requery)
     androidTestUtil(libs.test.orchestrator)
 }
 

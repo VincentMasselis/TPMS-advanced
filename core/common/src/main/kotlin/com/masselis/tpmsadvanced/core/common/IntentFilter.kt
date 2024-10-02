@@ -4,19 +4,22 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 
 @Suppress("MaxLineLength")
-public fun IntentFilter.asFlow(): Flow<Intent> = callbackFlow {
+public fun IntentFilter.asFlow(
+    @ContextCompat.RegisterReceiverFlags flags: Int = ContextCompat.RECEIVER_NOT_EXPORTED
+): Flow<Intent> = callbackFlow {
     val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
             launch { send(intent) }
         }
     }
-    appContext.registerReceiver(receiver, this@asFlow)
+    ContextCompat.registerReceiver(appContext, receiver, this@asFlow, flags)
     awaitClose {
         try {
             appContext.unregisterReceiver(receiver)

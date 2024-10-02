@@ -3,9 +3,12 @@ package com.masselis.tpmsadvanced.gitflow
 import CommitSha
 import SemanticVersion
 import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.masselis.tpmsadvanced.gitflow.task.AssertBranchIsUnique
 import com.masselis.tpmsadvanced.gitflow.task.AssertCurrentBranch
+import com.masselis.tpmsadvanced.gitflow.task.AssertGitDiffIsEmpty
 import com.masselis.tpmsadvanced.gitflow.task.AssertNearestParent
 import com.masselis.tpmsadvanced.gitflow.task.AssertNoCommitDiff
 import com.masselis.tpmsadvanced.gitflow.task.AssertTagIsUnique
@@ -18,10 +21,10 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.from
 import org.gradle.kotlin.dsl.property
-import org.gradle.kotlin.dsl.the
 
 public class GitflowPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = with(project) {
@@ -72,12 +75,30 @@ public class GitflowPlugin : Plugin<Project> {
         })
         subprojects {
             plugins.all {
-                if (this is AppPlugin) the<BaseAppModuleExtension>().apply {
+                if (this is LibraryPlugin) configure<BaseExtension> {
+                    afterEvaluate {
+                        if (buildFeatures.buildConfig == true) productFlavors.all {
+                            buildConfigField(
+                                "int",
+                                "VERSION_CODE",
+                                versionCode.get().toString()
+                            )
+                            buildConfigField(
+                                "String",
+                                "VERSION_NAME",
+                                "\"${currentReleaseTag.get()}\""
+                            )
+                        }
+                    }
+                }
+                if (this is AppPlugin) configure<BaseAppModuleExtension> {
                     defaultConfig.versionCode = versionCode.get()
                     defaultConfig.versionName = currentReleaseTag.get().toString()
                 }
             }
         }
+
+        val assertGitDiffIsEmpty = tasks.create<AssertGitDiffIsEmpty>("assertGitDiffIsEmpty")
 
         // A release branch must:
         // - Start from develop
@@ -105,10 +126,15 @@ public class GitflowPlugin : Plugin<Project> {
         tasks.create<CreateBranch>("createRelease") {
             dependsOn(
                 assertCurrentBranchIsDevelop,
+                assertGitDiffIsEmpty,
                 assertProductionTagWasNotCreatedYet, assertHotfixBranchWasNotCreatedYet,
                 assertDevelopIsUpToDateWithMain,
             )
-            branch = ext.releaseBranch
+            branch = ext.releaseBranch.map {
+                // Ignores the <remote> part of the branch name
+                // More info: https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches
+                it.substringAfter('/')
+            }
         }
         // Release branch post-creation checks
         val assertCurrentBranchIsRelease =
@@ -142,9 +168,14 @@ public class GitflowPlugin : Plugin<Project> {
         tasks.create<CreateBranch>("createHotfix") {
             dependsOn(
                 assertCurrentBranchIsMain,
+                assertGitDiffIsEmpty,
                 assertProductionTagWasNotCreatedYet,
             )
-            branch = ext.releaseBranch
+            branch = ext.releaseBranch.map {
+                // Ignores the <remote> part of the branch name
+                // More info: https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches
+                it.substringAfter('/')
+            }
         }
         // Hotfix branch post-creation checks
         val assertCurrentBranchIsHotfix =

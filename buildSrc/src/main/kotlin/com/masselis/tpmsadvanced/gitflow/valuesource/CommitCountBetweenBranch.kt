@@ -21,7 +21,7 @@ internal abstract class CommitCountBetweenBranch : ValueSource<Int, Parameters> 
 
     private val logger = Logging.getLogger(CommitCountBetweenBranch::class.java)
 
-    override fun obtain(): Int = ByteArrayOutputStream()
+    override fun obtain(): Int? = ByteArrayOutputStream()
         .use { stdout ->
             val errout = ByteArrayOutputStream()
             execOperations.exec {
@@ -37,12 +37,12 @@ internal abstract class CommitCountBetweenBranch : ValueSource<Int, Parameters> 
                 isIgnoreExitValue = true
             }.also { execResult ->
                 if (execResult.exitValue != -1) {
-                    errout.use { it.toString() }.also(logger::error)
+                    errout.use { it.toString() }.also(logger::warn)
                     execResult.rethrowFailure()
                 }
             }
             stdout.toString()
         }
         .trimIndent()
-        .toInt()
+        .toIntOrNull()
 }

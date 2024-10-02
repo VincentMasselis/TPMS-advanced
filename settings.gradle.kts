@@ -12,7 +12,7 @@ plugins {
     // From https://docs.gradle.org/current/userguide/platforms.html: "You cannot use a plugin
     // declared in a version catalog in your settings file or settings plugin (because catalogs are
     // defined in settings themselves, it would be a chicken and egg problem)."
-    id("com.gradle.enterprise") version "3.13.3"
+    id("com.gradle.develocity") version "3.18"
 }
 
 @Suppress("UnstableApiUsage")
@@ -25,10 +25,10 @@ dependencyResolutionManagement {
     }
 }
 
-gradleEnterprise {
+develocity {
     buildScan {
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
+        termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+        termsOfUseAgree = "yes"
     }
 }
 
@@ -42,7 +42,7 @@ include(":core:database")
 include(":data:unit")
 include(":data:app")
 include(":data:vehicle")
-include(":feature:core")
+include(":feature:main")
 include(":feature:unlocated")
 include(":feature:qrcode")
 include(":feature:background")

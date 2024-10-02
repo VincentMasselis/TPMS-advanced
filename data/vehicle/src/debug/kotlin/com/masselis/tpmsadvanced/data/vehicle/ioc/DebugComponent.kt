@@ -8,13 +8,13 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import dagger.Subcomponent
 
 @Subcomponent
-internal interface DebugComponent {
+public interface DebugComponent {
     @Subcomponent.Factory
-    interface Factory : () -> DebugComponent
+    public interface Factory : () -> DebugComponent
 
-    val driver: SqlDriver
-    val database: Database
-    val locationAdapter: ColumnAdapter<Vehicle.Kind.Location, Long>
+    public val driver: SqlDriver
+    public val database: Database
+    public val locationAdapter: ColumnAdapter<Vehicle.Kind.Location, Long>
 
-    companion object : DebugComponent by DebugComponent()
+    public companion object : DebugComponent by DebugComponent()
 }

@@ -12,6 +12,10 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  checks: write
+  pull-requests: write
+
 jobs:
   build:
     name: Build everything, test and report
@@ -21,6 +25,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Uses the latest commit from the branch when running a pull request instead of compiling a merge commit
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: ./.github/actions/setup
 
@@ -87,3 +93,10 @@ jobs:
         with:
           name: Emulator-logs
           path: "build/emulator/*.txt"
+
+      - name: Configuration cache reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Configuration-cache-report
+          path: "build/reports/configuration-cache/*/*/configuration-cache-report.html"

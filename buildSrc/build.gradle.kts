@@ -1,10 +1,13 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.gradle.api.internal.artifacts.dependencies.DefaultMinimalDependency
+import org.gradle.api.internal.artifacts.dependencies.DefaultMutableVersionConstraint
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.Companion.DEFAULT
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `kotlin-dsl`
+    alias(libs.plugins.serialization) version embeddedKotlinVersion
 }
 
 // Replaces the default configuration applied by KotlinDslCompilerPlugins.kt
@@ -24,19 +27,22 @@ kotlinDslPluginOptions {
     }
 }
 
-repositories {
-    gradlePluginPortal()
-    google()
-    mavenCentral()
-}
-
 dependencies {
     implementation(libs.android.gradle.plugin)
     implementation(kotlin("gradle-plugin", libs.versions.kotlin.get()))
+    implementation(libs.compose.gradle.plugin)
     implementation(libs.detekt.gradle.plugin)
     implementation(libs.google.oauth2.http)
     implementation(libs.google.android.publisher)
-    implementation(libs.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.json.map {
+        DefaultMinimalDependency(
+            it.module,
+            if (embeddedKotlinVersion >= "2")
+                DefaultMutableVersionConstraint(it.versionConstraint)
+            else
+                DefaultMutableVersionConstraint(libs.versions.serialization.kotlin1.get())
+        )
+    })
     implementation(
         libs.ksp.gradle.plugin.get()
             .copy()
