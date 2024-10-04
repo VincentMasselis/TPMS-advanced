@@ -1,0 +1,1 @@
+- Fixed crashes reading a QR code which contains location or id duplicates
