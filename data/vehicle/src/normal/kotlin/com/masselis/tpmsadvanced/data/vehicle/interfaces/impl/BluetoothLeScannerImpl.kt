@@ -57,7 +57,6 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
 
     private val bluetoothAdapter get() = context.getSystemService<BluetoothManager>()?.adapter
 
-    @OptIn(ExperimentalStdlibApi::class)
     @SuppressLint("InlinedApi")
     @RequiresPermission("android.permission.BLUETOOTH_SCAN")
     private fun scan(mode: Int) = callbackFlow {
