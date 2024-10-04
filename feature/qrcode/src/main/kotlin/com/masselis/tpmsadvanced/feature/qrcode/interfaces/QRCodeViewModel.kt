@@ -60,6 +60,7 @@ internal class QRCodeViewModel @AssistedInject constructor(
     }
 
     sealed class Event {
+        data object LeaveBecauseCameraUnavailable : Event()
         data object Leave : Event()
     }
 
@@ -85,6 +86,9 @@ internal class QRCodeViewModel @AssistedInject constructor(
                         }
                         .catch { exc ->
                             when (exc) {
+                                is CameraAnalyser.CameraUnavailable ->
+                                    channel.send(Event.LeaveBecauseCameraUnavailable)
+
                                 is QrCodeSensors.DuplicateWheelLocation -> exc
                                     .wheels
                                     .duplicates()

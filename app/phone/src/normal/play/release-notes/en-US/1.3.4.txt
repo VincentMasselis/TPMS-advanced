@@ -1,3 +1,4 @@
 - Fixed crashes reading a QR code which contains location or id duplicates
 - Fixed random crash when app is in background
 - Fixed crash if the bluetooth settings screen doesn't exist
+- Fixed crash if the device doesn't have any camera

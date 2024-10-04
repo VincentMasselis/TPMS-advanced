@@ -71,7 +71,7 @@ internal fun Tyre(
     Tyre(state, snackbarHostState, modifier)
 }
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "CyclomaticComplexMethod", "MaxLineLength")
 @Composable
 private fun Tyre(
     state: State,
@@ -142,7 +142,7 @@ private fun Tyre(
                 disableBluetooth = {
                     try {
                         context.startActivity(Intent().apply { action = ACTION_BLUETOOTH_SETTINGS })
-                    } catch (exc: ActivityNotFoundException) {
+                    } catch (_: ActivityNotFoundException) {
                         scope.launch {
                             snackbarHostState.showSnackbar("No bluetooth settings screen were found on your device, please disable bluetooth by yourself")
                         }

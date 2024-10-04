@@ -138,7 +138,10 @@ internal fun VehicleHome(
                         )
                     }
                     composable("${Path.QrCode(vehicleComponent.vehicle.uuid)}") {
-                        QrCodeScan(modifier = modifier)
+                        QrCodeScan(
+                            snackbarHostState = snackbarHostState,
+                            modifier = modifier
+                        )
                     }
                     composable("${Path.Unlocated(vehicleComponent.vehicle.uuid)}") {
                         UnlocatedSensorList(
