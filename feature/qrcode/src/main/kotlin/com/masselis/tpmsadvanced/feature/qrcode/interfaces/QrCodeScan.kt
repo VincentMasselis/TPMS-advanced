@@ -27,9 +27,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.masselis.tpmsadvanced.feature.main.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.feature.qrcode.R
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel.State
@@ -95,6 +95,11 @@ private fun Preview(
             onDismissRequest = viewModel::scanAgain,
             onBind = viewModel::bindSensors
         )
+
+        is State.Error -> DuplicateAlert(
+            state = state,
+            onDismissRequest = viewModel::scanAgain
+        )
     }
 
     val navController = LocalHomeNavController.current
@@ -125,13 +130,13 @@ private fun BindingAlert(
 
                             is State.AskForBinding.Missing -> {
                                 append("\n\n⚠️ Filled QR Code doesn't contains sensors dedicated to ")
-                                state.localisations.forEachIndexed { index, location ->
+                                state.locations.forEachIndexed { index, location ->
                                     append("the ")
                                     appendLoc(location)
                                     append(
                                         when (index) {
-                                            state.localisations.size - 1 -> "."
-                                            state.localisations.size - 2 -> " and "
+                                            state.locations.size - 1 -> "."
+                                            state.locations.size - 2 -> " and "
                                             else -> ", "
                                         }
                                     )
@@ -153,6 +158,46 @@ private fun BindingAlert(
                 Text(text = "Cancel")
             }
         }
+    )
+}
+
+@Composable
+private fun DuplicateAlert(
+    state: State.Error,
+    onDismissRequest: () -> Unit,
+) {
+    AlertDialog(
+        text = {
+            Text(
+                text = StringBuilder("Detected inconsistency with the QR Code")
+                    .apply {
+                        when (state) {
+
+                            is State.Error.DuplicateWheelLocation -> {
+                                append("\n\n⚠️ Filled QR Code contains different sensors associated to the same wheel, ")
+                                if (state.wheels.size == 1) append("duplication:")
+                                else append("duplications:")
+                                state.wheels.forEach { location ->
+                                    append("\n   · ")
+                                    appendLoc(location)
+                                }
+                            }
+
+                            is State.Error.DuplicateId -> {
+                                append("\n\n⚠️ Filled QR Code contains the same sensor id multiple time")
+                            }
+
+                        }
+                    }
+                    .toString()
+            )
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = "OK")
+            }
+        },
     )
 }
 
