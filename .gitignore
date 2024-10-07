@@ -33,3 +33,5 @@ buildSrc/build/**
 .idea/deploymentTargetSelector.xml
 *.salive
 .idea/other.xml
+.idea/runConfigurations.xml
+.idea/jsonSchemas.xml
