@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -11,15 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.TyreComponent
-import com.masselis.tpmsadvanced.feature.main.usecase.FindTyreComponentUseCase
-import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
@@ -27,6 +19,15 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
+import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.TyreComponent
+import com.masselis.tpmsadvanced.feature.main.usecase.FindTyreComponentUseCase
+import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -44,6 +45,7 @@ internal fun PressureInfo(
             ) {
                 Tyre(
                     location = Location.Side(SensorLocation.Side.LEFT),
+                    snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
                     vehicleComponent = DemoVehicleComponent(),
                     viewModel = DemoTyreViewModel(State.Alerting),
@@ -78,6 +80,7 @@ internal fun TemperatureInfo(
             ) {
                 Tyre(
                     location = Location.Side(SensorLocation.Side.LEFT),
+                    snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
                     vehicleComponent = DemoVehicleComponent(),
                     viewModel = DemoTyreViewModel(state),
@@ -114,3 +117,5 @@ private class DemoVehicleComponent : InternalVehicleComponent {
     override fun DeleteVehicleViewModel(): DeleteVehicleViewModelImpl =
         error("Not implemented")
 }
+
+private val DemoSnackbarHostState = SnackbarHostState()

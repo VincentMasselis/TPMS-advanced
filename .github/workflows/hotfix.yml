@@ -21,10 +21,12 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - name: Build everything and run unit tests
+      - name: Analyse code, build and test everything
         run: >
           ./gradlew
           assertHotfixBranchIsValid
           build
           verifyPaparazzi
+          connectedDemoDebugAndroidTest
+          --scan
 

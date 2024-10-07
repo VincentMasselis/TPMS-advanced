@@ -20,16 +20,16 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
 import androidx.core.util.size
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
 import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
 import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner.Failure
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -57,7 +57,6 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
 
     private val bluetoothAdapter get() = context.getSystemService<BluetoothManager>()?.adapter
 
-    @OptIn(ExperimentalStdlibApi::class)
     @SuppressLint("InlinedApi")
     @RequiresPermission("android.permission.BLUETOOTH_SCAN")
     private fun scan(mode: Int) = callbackFlow {
@@ -71,9 +70,7 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
             }
 
             override fun onScanFailed(errorCode: Int) {
-                val exc = BluetoothLeScanner.ScanFailed(errorCode)
-                Firebase.crashlytics.recordException(exc)
-                close(exc)
+                close(Failure.Scan(errorCode))
             }
         }
 
@@ -82,7 +79,11 @@ internal class BluetoothLeScannerImpl @Inject internal constructor(
         // Delay elapsed, set lastStartScan to the current timestamp
         lastStartScan = System.currentTimeMillis().milliseconds
 
-        val leScanner = bluetoothAdapter!!.bluetoothLeScanner
+        val leScanner = bluetoothAdapter?.bluetoothLeScanner
+        if (leScanner == null) {
+            close(Failure.ScannerIsNull(bluetoothAdapter?.state))
+            awaitCancellation()
+        }
         leScanner.startScan(
             listOf(
                 ScanFilter

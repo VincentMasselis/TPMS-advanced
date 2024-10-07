@@ -8,7 +8,6 @@ import com.masselis.tpmsadvanced.core.ui.StateSaver.State.Ready
 import com.masselis.tpmsadvanced.core.ui.StateSaver.State.Saved
 import com.masselis.tpmsadvanced.core.ui.StateSaver.State.Uninitialized
 import com.masselis.tpmsadvanced.core.ui.StateSaver.State.Valuable
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -83,26 +82,25 @@ private class StateSaver<T : Any?>(
     @Suppress("MaxLineLength")
     override fun saveState(): Bundle = synchronized(lock) {
         when (val state = state) {
-            is Ready -> {
+            // saveState() could be called twice ! Because of this, `this.state` is allowed to be
+            // set twice to the state `Saved`
+            is Valuable -> {
                 this.state = Saved(state.value)
                 bundleOf(KEY to state.value)
             }
 
             Uninitialized -> error("saveState() cannot be called with the state set to \"Uninitialized\" because each time \"registry.register()\" is called, the state is updated to \"Ready\" right after")
-            is Saved -> error("saveState() cannot be called twice, state is already set to \"Saved\"")
         }
     }
 
     private val registry = object {
-        private val alreadyRegistered = AtomicBoolean(false)
         private fun key(property: KProperty<*>) = "saveable_" + property.name
 
+        // Not thread safe
         fun register(registry: SavedStateRegistryOwner, property: KProperty<*>) {
-            if (alreadyRegistered.compareAndSet(false, true))
-                registry.savedStateRegistry.registerSavedStateProvider(
-                    key(property),
-                    this@StateSaver
-                )
+            val key = key(property)
+            if (registry.savedStateRegistry.getSavedStateProvider(key) == null)
+                registry.savedStateRegistry.registerSavedStateProvider(key, this@StateSaver)
         }
 
         fun consume(registry: SavedStateRegistryOwner, property: KProperty<*>): Bundle? = registry

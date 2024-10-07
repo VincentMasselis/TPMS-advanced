@@ -30,19 +30,26 @@ internal class CameraAnalyser @Inject constructor() {
 
     fun findQrCode(controller: CameraController) =
         callbackFlow<List<Barcode>> {
-            controller.setImageAnalysisAnalyzer(
-                executor,
-                MlKitAnalyzer(
-                    listOf(scanner),
-                    ImageAnalysis.COORDINATE_SYSTEM_VIEW_REFERENCED,
-                    executor
-                ) {
-                    it.getValue(scanner)?.also { barcodes -> launch { send(barcodes) } }
-                }
-            )
+            try {
+                controller.setImageAnalysisAnalyzer(
+                    executor,
+                    MlKitAnalyzer(
+                        listOf(scanner),
+                        ImageAnalysis.COORDINATE_SYSTEM_VIEW_REFERENCED,
+                        executor
+                    ) {
+                        it.getValue(scanner)?.also { barcodes -> launch { send(barcodes) } }
+                    }
+                )
+                // Fired by `CameraSelector.select(LinkedHashSet<CameraInternal> cameras)`
+            } catch (exc: IllegalArgumentException) {
+                throw CameraUnavailable(exc)
+            }
             awaitClose { controller.clearImageAnalysisAnalyzer() }
         }.flowOn(Dispatchers.Main.immediate)
             .flatMapConcat { it.asFlow() }
             .filter { it.valueType == Barcode.TYPE_TEXT }
             .mapNotNull { it.rawValue }
+
+    class CameraUnavailable(source: IllegalArgumentException) : IllegalArgumentException(source)
 }
