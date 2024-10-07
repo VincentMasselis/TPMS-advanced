@@ -2,3 +2,4 @@
 - Fixed random crash when app is in background
 - Fixed crash if the bluetooth settings screen doesn't exist
 - Fixed crash if the device doesn't have any camera
+- Fixed crash when system's BLE scanner is not available
