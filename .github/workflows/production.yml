@@ -33,3 +33,4 @@ jobs:
           createGithubRelease
           publishToPlayStoreProductionNormalRelease
           updatePlayStoreScreenshotsNormalRelease
+          --stacktrace

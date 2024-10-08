@@ -38,6 +38,7 @@ jobs:
           connectedDemoDebugAndroidTest
           copyScreenshot
           --scan
+          --stacktrace
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
