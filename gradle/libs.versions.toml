@@ -87,7 +87,7 @@ sqldelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapte
 sqldelight-dialect338 = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqlDelight" }
 test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "testServices" }
 test-services = { module = "androidx.test.services:test-services", version.ref = "testServices" }
-turbine = "app.cash.turbine:turbine:1.1.0"
+turbine = "app.cash.turbine:turbine:1.2.0"
 
 [plugins]
 crashlytics = "com.google.firebase.crashlytics:3.0.2"
