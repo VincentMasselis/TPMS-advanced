@@ -31,7 +31,7 @@ if (keys != null) {
 
 android {
     defaultConfig {
-        applicationId = "com.masselis.tpmsadvanced"
+        applicationId = "us.berkovitz.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
     }
     if (keys != null) {
