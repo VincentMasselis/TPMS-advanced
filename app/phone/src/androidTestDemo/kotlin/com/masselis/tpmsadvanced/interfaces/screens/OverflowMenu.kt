@@ -12,7 +12,7 @@ import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.Settings
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
-import com.masselis.tpmsadvanced.interfaces.composable.SettingsTag
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.SettingsTag
 
 @OptIn(ExperimentalTestApi::class)
 internal class OverflowMenu private constructor(

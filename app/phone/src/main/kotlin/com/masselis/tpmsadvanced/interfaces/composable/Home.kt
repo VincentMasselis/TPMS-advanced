@@ -48,6 +48,7 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
 import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.Settings
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton

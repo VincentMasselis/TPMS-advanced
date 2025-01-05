@@ -17,6 +17,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TPMSAdvanced"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.android.automotive"
+            android:resource="@xml/automotive_app_desc" />
+
         <activity
             android:name=".interfaces.RootActivity"
             android:exported="true">

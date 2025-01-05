@@ -16,11 +16,19 @@ CREATE TABLE Tyre(
     battery INTEGER AS UShort NOT NULL,
     isAlarm INTEGER AS Boolean NOT NULL,
     vehicleId TEXT AS UUID NOT NULL,
-    FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE
+    FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE,
+    UNIQUE(location, vehicleId)
 );
 
 insert:
-INSERT INTO Tyre (id, timestamp, rssi, location, pressure, temperature, battery, isAlarm, vehicleId) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?);
+INSERT INTO Tyre (id, timestamp, rssi, location, pressure, temperature, battery, isAlarm, vehicleId) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT (location, vehicleId) DO
+UPDATE SET timestamp=excluded.timestamp, rssi=excluded.rssi, pressure=excluded.pressure,
+  temperature=excluded.temperature, battery=excluded.battery, isAlarm=excluded.isAlarm;
+
+selectListByVehicle:
+SELECT Tyre.id, Tyre.timestamp, Tyre.rssi, Tyre.location, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm
+FROM Tyre WHERE Tyre.vehicleId = ?;
 
 latestByTyreLocationByVehicle:
 SELECT Tyre.id, Tyre.timestamp, Tyre.rssi, Tyre.location, Tyre.pressure, Tyre.temperature, Tyre.battery, Tyre.isAlarm FROM Tyre

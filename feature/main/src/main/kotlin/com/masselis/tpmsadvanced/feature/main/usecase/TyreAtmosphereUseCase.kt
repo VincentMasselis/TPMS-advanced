@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.feature.main.usecase
 
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
+import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,4 +19,6 @@ public class TyreAtmosphereUseCase @Inject internal constructor(
                 record.temperature
             )
         }
+
+    public fun listenTyre(): Flow<Tyre.Located> = listenTyreUseCase.listen()
 }

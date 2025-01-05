@@ -30,6 +30,6 @@ internal abstract class VersionCode : ValueSource<Int, Parameters> {
                         parameters.releaseBranch.get() -> parameters.releaseBuildCount.get()
                         else -> 0
                     }
-                )
+                ).plus(13)
         }
 }
