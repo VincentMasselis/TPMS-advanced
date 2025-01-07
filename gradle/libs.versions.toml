@@ -18,7 +18,7 @@ garunner-emulator = "system-images;android-34;aosp_atd;x86_64"
 serialization-kotlin1 = "1.6.3"
 
 [libraries]
-accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.36.0"
+accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.37.0"
 android-gradle-plugin = "com.android.tools.build:gradle:8.7.3"
 androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
 androidx-camera2-core = "androidx.camera:camera-camera2:1.4.1"
