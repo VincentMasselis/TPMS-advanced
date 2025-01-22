@@ -94,15 +94,38 @@ public data class Vehicle(
             public value class Wheel(public val location: SensorLocation) : Location {
                 public fun toAxle(): Axle = Axle(location.axle)
                 public fun toSide(): Side = Side(location.side)
+
+                override fun toString(): String {
+                    return when (location) {
+                        FRONT_LEFT -> "Front Left"
+                        FRONT_RIGHT -> "Front Right"
+                        REAR_LEFT -> "Rear Left"
+                        REAR_RIGHT -> "Rear Right"
+                    }
+                }
             }
 
             @JvmInline
             @Parcelize
-            public value class Axle(public val axle: SensorLocation.Axle) : Location
+            public value class Axle(public val axle: SensorLocation.Axle) : Location {
+                override fun toString(): String {
+                    return when (axle) {
+                        FRONT -> "Front"
+                        REAR -> "Rear"
+                    }
+                }
+            }
 
             @JvmInline
             @Parcelize
-            public value class Side(public val side: SensorLocation.Side) : Location
+            public value class Side(public val side: SensorLocation.Side) : Location {
+                override fun toString(): String {
+                    return when (side) {
+                        LEFT -> "Left"
+                        RIGHT -> "Right"
+                    }
+                }
+            }
         }
     }
 }

@@ -1,5 +1,11 @@
 import org.gradle.api.initialization.resolve.RepositoriesMode.FAIL_ON_PROJECT_REPOS
 
+include(":core:ui-automotive")
+
+
+include(":app:automotive")
+
+
 pluginManagement {
     repositories {
         gradlePluginPortal()

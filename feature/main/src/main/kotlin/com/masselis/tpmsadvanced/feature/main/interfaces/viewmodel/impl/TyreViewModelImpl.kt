@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -116,7 +117,8 @@ internal class TyreViewModelImpl @AssistedInject constructor(
                 }
             }
             .catch {
-                Firebase.crashlytics.recordException(it)
+                Log.e("TyreViewModel", "error saving tyre", it)
+//                Firebase.crashlytics.recordException(it)
                 emit(State.DetectionIssue)
             }
             .onEach { mutableStateFlow.value = it }

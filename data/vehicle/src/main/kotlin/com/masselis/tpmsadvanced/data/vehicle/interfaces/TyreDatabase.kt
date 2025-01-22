@@ -1,5 +1,7 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
+import com.masselis.tpmsadvanced.core.database.QueryList
+import com.masselis.tpmsadvanced.core.database.QueryList.Companion.asList
 import com.masselis.tpmsadvanced.core.database.QueryOneOrNull
 import com.masselis.tpmsadvanced.core.database.QueryOneOrNull.Companion.asOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.Database
@@ -40,4 +42,10 @@ public class TyreDatabase @Inject internal constructor(
             Tyre.Located(timestamp, rssi, id, pressure, temperature, battery, isAlarm, location)
         }
         .asOneOrNull()
+
+    public fun selectListByVehicle(vehicleId: UUID): QueryList<Tyre.Located> = queries
+        .selectListByVehicle(vehicleId){ id, timestamp, rssi, location, pressure, temperature, battery, isAlarm ->
+            Tyre.Located(timestamp, rssi, id, pressure, temperature, battery, isAlarm, location)
+        }.asList()
+
 }

@@ -24,6 +24,8 @@ androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
 androidx-camera2-core = "androidx.camera:camera-camera2:1.4.1"
 androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.4.1"
 androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.5.0-alpha04"
+androidx-car-app-app = "androidx.car.app:app:1.7.0-beta03"
+androidx-car-app-appautomotive = "androidx.car.app:app-automotive:1.7.0-beta03"
 androidx-compose-bom = "androidx.compose:compose-bom:2024.12.01"
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
