@@ -17,10 +17,12 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 @OptIn(ExperimentalTestApi::class)
 public class BindDialog private constructor(
     composeTestRule: ComposeTestRule
-) : ComposeTestRule by composeTestRule, EnterExitComposable<BindDialog> by onEnterAndOnExit(
-    { composeTestRule.waitUntilExactlyOneExists(hasTestTag(BindDialogTags.root)) },
-    { composeTestRule.waitUntilDoesNotExist(hasTestTag(BindDialogTags.root)) },
-) {
+) : ComposeTestRule by composeTestRule,
+    EnterExitComposable<BindDialog> by onEnterAndOnExit(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(BindDialogTags.root)) },
+        { composeTestRule.waitUntilDoesNotExist(hasTestTag(BindDialogTags.root)) },
+    ) {
+
     private val cancelButtonNode
         get() = onNodeWithTag(BindDialogTags.cancelButton)
 
@@ -29,8 +31,8 @@ public class BindDialog private constructor(
 
     private fun locationNode(location: Vehicle.Kind.Location) =
         onAllNodesWithTag(VehicleTyresTags.tyreLocation(location)).filterToOne(
-                hasAnyAncestor(hasTestTag(BindDialogTags.root))
-            )
+            hasAnyAncestor(hasTestTag(BindDialogTags.root))
+        )
 
     public fun assertBindButtonIsNotEnabled() {
         bindButtonNode.assertIsNotEnabled()
@@ -51,7 +53,7 @@ public class BindDialog private constructor(
     }
 
     public companion object {
-        context(ComposeTestRule)
-        public operator fun invoke(): BindDialog = BindDialog(this@ComposeTestRule)
+        public operator fun ComposeTestRule.invoke(): BindDialog = BindDialog(this)
     }
 }
+

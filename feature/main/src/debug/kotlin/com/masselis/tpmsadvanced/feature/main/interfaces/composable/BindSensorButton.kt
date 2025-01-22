@@ -13,6 +13,7 @@ import com.masselis.tpmsadvanced.core.androidtest.isDisplayed
 import com.masselis.tpmsadvanced.core.androidtest.onEnter
 import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorDialog.Companion.invoke as BindSensorDialog
 
 @OptIn(ExperimentalTestApi::class)
 public class BindSensorButton private constructor(
@@ -48,8 +49,7 @@ public class BindSensorButton private constructor(
     }
 
     public companion object {
-        context (ComposeTestRule)
-        public operator fun invoke(location: Vehicle.Kind.Location): BindSensorButton =
-            BindSensorButton(location, this@ComposeTestRule)
+        public operator fun ComposeTestRule.invoke(location: Vehicle.Kind.Location): BindSensorButton =
+            BindSensorButton(location, this)
     }
 }

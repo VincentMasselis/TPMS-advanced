@@ -10,7 +10,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 
 @OptIn(ExperimentalStdlibApi::class)
-@Suppress("DataClassPrivateConstructor")
+@ConsistentCopyVisibility
 internal data class RawPecham private constructor(
     private val macAddress: String,
     private val rssi: Int,

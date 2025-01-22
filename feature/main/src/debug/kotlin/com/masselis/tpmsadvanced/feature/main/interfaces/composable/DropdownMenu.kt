@@ -14,6 +14,7 @@ import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.currentVehicleTest
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.AddVehicle.Companion.invoke as AddVehicle
 
 @OptIn(ExperimentalTestApi::class)
 public class DropdownMenu private constructor(
@@ -62,8 +63,7 @@ public class DropdownMenu private constructor(
     }
 
     public companion object {
-        context(ComposeTestRule)
-        public operator fun invoke(containerTag: String): DropdownMenu =
-            DropdownMenu(containerTag, this@ComposeTestRule)
+        public operator fun ComposeTestRule.invoke(containerTag: String): DropdownMenu =
+            DropdownMenu(containerTag, this)
     }
 }

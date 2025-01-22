@@ -13,6 +13,8 @@ import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.Settings
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 import com.masselis.tpmsadvanced.interfaces.composable.SettingsTag
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.Settings.Companion.invoke as Settings
+import com.masselis.tpmsadvanced.interfaces.screens.BindingMethod.Companion.invoke as BindingMethod
 
 @OptIn(ExperimentalTestApi::class)
 internal class OverflowMenu private constructor(
@@ -46,7 +48,6 @@ internal class OverflowMenu private constructor(
     }
 
     companion object {
-        context(ComposeTestRule)
-        operator fun invoke(): OverflowMenu = OverflowMenu(this@ComposeTestRule)
+        operator fun ComposeTestRule.invoke(): OverflowMenu = OverflowMenu(this@ComposeTestRule)
     }
 }

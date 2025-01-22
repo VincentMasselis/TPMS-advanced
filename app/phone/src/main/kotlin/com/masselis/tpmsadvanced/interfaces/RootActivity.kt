@@ -5,15 +5,15 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import com.masselis.tpmsadvanced.core.ui.LocalKeepScreenOnCounter
-import com.masselis.tpmsadvanced.core.ui.ScreenOnCounter
 import com.masselis.tpmsadvanced.core.ui.saveable
 import com.masselis.tpmsadvanced.interfaces.composable.Main
 import com.masselis.tpmsadvanced.interfaces.composable.TpmsAdvancedTheme
 import java.util.UUID
+import com.masselis.tpmsadvanced.core.ui.ScreenOnCounter.Activity.Companion.invoke as Activity
 
 internal class RootActivity : AppCompatActivity() {
 
-    private val counter = ScreenOnCounter.Activity()
+    private val counter = Activity()
 
     private var hasConsumedIntent by saveable { false }
 

@@ -4,8 +4,7 @@ package com.masselis.tpmsadvanced.core.androidtest
 public interface EnterExitComposable<T> {
 
     public fun interface Instructions<T : EnterExitComposable<T>> {
-        context (T)
-        public fun process(): ExitToken<T>
+        public fun T.process(): ExitToken<T>
     }
 
     public fun <T : EnterExitComposable<T>> process(self: T, instructions: Instructions<T>)
@@ -30,8 +29,8 @@ public fun <T> onEnterAndOnExit(
     ) {
         if (enters !== placeholder)
             enters()
-        with(self) {
-            assert(instructions.process() === exitToken)
+        with(instructions) {
+            assert(self.process() === exitToken)
         }
         if (exits !== placeholder)
             exits()

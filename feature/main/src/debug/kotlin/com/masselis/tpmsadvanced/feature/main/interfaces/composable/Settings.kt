@@ -16,6 +16,7 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructio
 import com.masselis.tpmsadvanced.core.androidtest.check
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DeleteVehicleDialog.Companion.invoke as DeleteVehicleDialog
 
 @OptIn(ExperimentalTestApi::class)
 public class Settings(
@@ -72,8 +73,9 @@ public class Settings(
     }
 
     public companion object {
-        context(ComposeTestRule)
-        public operator fun invoke(backButtonTag: String, containerTag: String): Settings =
-            Settings(backButtonTag, containerTag, this@ComposeTestRule)
+        public operator fun ComposeTestRule.invoke(
+            backButtonTag: String,
+            containerTag: String
+        ): Settings = Settings(backButtonTag, containerTag, this)
     }
 }

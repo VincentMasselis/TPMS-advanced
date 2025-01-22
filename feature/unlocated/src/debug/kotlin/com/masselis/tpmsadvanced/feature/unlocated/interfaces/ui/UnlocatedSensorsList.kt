@@ -14,6 +14,7 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructio
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.BindDialog.Companion.invoke as BindDialog
 
 @OptIn(ExperimentalTestApi::class)
 public class UnlocatedSensorsList private constructor(
@@ -60,8 +61,7 @@ public class UnlocatedSensorsList private constructor(
     }
 
     public companion object {
-        context(ComposeTestRule)
-        public operator fun invoke(): UnlocatedSensorsList =
-            UnlocatedSensorsList(this@ComposeTestRule)
+        public operator fun ComposeTestRule.invoke(): UnlocatedSensorsList =
+            UnlocatedSensorsList(this)
     }
 }

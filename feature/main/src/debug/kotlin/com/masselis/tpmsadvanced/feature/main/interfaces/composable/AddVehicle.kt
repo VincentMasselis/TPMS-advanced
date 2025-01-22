@@ -48,7 +48,6 @@ public class AddVehicle private constructor(
     }
 
     public companion object {
-        context(ComposeTestRule)
-        public operator fun invoke(): AddVehicle = AddVehicle(this@ComposeTestRule)
+        public operator fun ComposeTestRule.invoke(): AddVehicle = AddVehicle(this@ComposeTestRule)
     }
 }

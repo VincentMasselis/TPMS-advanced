@@ -15,15 +15,18 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DropdownMenu
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorButton.Companion.invoke as BindSensorButton
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DropdownMenu.Companion.invoke as DropdownMenu
+import com.masselis.tpmsadvanced.interfaces.screens.OverflowMenu.Companion.invoke as OverflowMenu
 
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
 internal class Home private constructor(
     composeTestRule: ComposeTestRule
-) : EnterComposable<Home> by onEnter(
-    { composeTestRule.waitUntilExactlyOneExists(hasTestTag(HomeTags.carListDropdownMenu)) }
-) {
+) : ComposeTestRule by composeTestRule,
+    EnterComposable<Home> by onEnter(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(HomeTags.carListDropdownMenu)) }
+    ) {
 
     private val carListDropdownMenu get() = onNodeWithTag(HomeTags.carListDropdownMenu)
     private val actionOverflowButton get() = onNodeWithTag(HomeTags.Actions.overflow)
