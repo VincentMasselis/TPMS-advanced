@@ -21,10 +21,9 @@ internal abstract class AvdList : ValueSource<List<String>, Parameters> {
         .also { stdout ->
             execOperations.exec {
                 commandLine(
-                    "${parameters.sdkPath.get().asFile}/cmdline-tools/latest/bin/avdmanager",
-                    "list", "avd",
+                    "${parameters.sdkPath.get().asFile}/emulator/emulator",
+                    "-list-avds",
                 )
-                args("-c")
                 standardOutput = stdout
             }
         }

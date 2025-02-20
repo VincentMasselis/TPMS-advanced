@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.emulator.task
 
+import com.masselis.tpmsadvanced.emulator.valuesource.AvdList
 import com.masselis.tpmsadvanced.emulator.valuesource.RunningEmulators
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
@@ -45,6 +46,12 @@ internal abstract class StartEmulator : DefaultTask() {
     internal fun process() {
         if (isEmulatorRunning())
             return
+
+        providerFactory.from(AvdList::class) { sdkPath = this@StartEmulator.sdkPath }
+            .get()
+            .joinToString(prefix = "\n  - ", separator = "\n  - ")
+            .let { "AVDs available:$it" }
+            .also(::println)
 
         ProcessBuilder(
             "${sdkPath.get().asFile}/emulator/emulator",
