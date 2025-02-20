@@ -1,9 +1,15 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.squareup.kotlinpoet.ClassName
 import org.gradle.api.internal.artifacts.dependencies.DefaultMinimalDependency
 import org.gradle.api.internal.artifacts.dependencies.DefaultMutableVersionConstraint
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.Companion.DEFAULT
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.javaType
+import kotlin.reflect.jvm.javaType
+import kotlin.reflect.jvm.jvmErasure
+import kotlin.reflect.typeOf
 
 plugins {
     `kotlin-dsl`
@@ -53,6 +59,22 @@ dependencies {
     // https://github.com/gradle/gradle/issues/15383
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }
+
+libs::class
+    .memberFunctions
+    .forEach { method ->
+        when {
+            method.returnType.jvmErasure == typeOf<Provider<Any?>>().jvmErasure && method.parameters.size == 1 -> {
+                (method.call(libs) as Provider<*>)
+                    .get()
+                    .also(::println)
+            }
+
+            else -> {
+                println(method)
+            }
+        }
+    }
 
 gradlePlugin {
     plugins {

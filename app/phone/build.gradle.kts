@@ -72,6 +72,7 @@ dependencies {
     implementation(project(":feature:qrcode"))
     implementation(project(":feature:shortcut"))
     implementation(project(":feature:unit"))
+    implementation(project(":feature:android-auto"))
 
     testImplementation(project(":core:test"))
 

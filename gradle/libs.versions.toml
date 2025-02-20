@@ -16,6 +16,7 @@ mockk = "1.13.14"
 ksp = "1.0.29"
 garunner-emulator = "system-images;android-34;aosp_atd;x86_64"
 serialization-kotlin1 = "1.6.3"
+car-app = "1.7.0-rc01"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.37.0"
@@ -24,6 +25,9 @@ androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
 androidx-camera2-core = "androidx.camera:camera-camera2:1.4.1"
 androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.4.1"
 androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.5.0-alpha04"
+androidx-car-app = { module = "androidx.car.app:app", version.ref = "car-app" }
+androidx-car-projected = { module = "androidx.car.app:app-projected", version.ref = "car-app" }
+androidx-car-automotive = { module = "androidx.car.app:app-automotive", version.ref = "car-app" }
 androidx-compose-bom = "androidx.compose:compose-bom:2024.12.01"
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }

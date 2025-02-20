@@ -11,3 +11,12 @@ dependencyResolutionManagement {
         }
     }
 }
+
+buildscript {
+    repositories {
+        maven { setUrl("https://plugins.gradle.org/m2/") }
+    }
+    dependencies {
+        classpath("com.squareup:kotlinpoet:2.0.0")
+    }
+}

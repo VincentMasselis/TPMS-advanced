@@ -1,1 +1,1 @@
-public val isCI: Boolean = System.getenv("CI") == "true"
+public val isCI: Boolean = true
