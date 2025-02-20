@@ -18,15 +18,13 @@ public inline fun <reified T : ViewModel> KClass<T>.key(content: Map<String, Str
     val canonicalName = requireNotNull(qualifiedName) {
         "Local and anonymous classes can not be ViewModels"
     }
-    return StringBuilder()
-        .append("com.masselis.tpmsadvanced.core.ui.key.class:$canonicalName")
-        .apply {
-            content.forEach { (key, value) ->
-                append(", ")
-                append("$key:$value")
-            }
+    return buildString {
+        append("com.masselis.tpmsadvanced.core.ui.key.class:$canonicalName")
+        content.forEach { (key, value) ->
+            append(", ")
+            append("$key:$value")
         }
-        .toString()
+    }
 }
 
 /** Similar to [androidxViewModel] but with the support of [keyed] */

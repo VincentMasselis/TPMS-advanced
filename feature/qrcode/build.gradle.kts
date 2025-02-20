@@ -18,7 +18,8 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
 
-    testImplementation(project(":core:test"))
+    androidTestImplementation(project(":core:android-test"))
+    androidTestUtil(libs.test.orchestrator)
 
     implementation(libs.google.mlkit.barecode)
     implementation(libs.androidx.camera2.core)
