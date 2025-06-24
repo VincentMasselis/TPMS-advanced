@@ -22,14 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.masselis.tpmsadvanced.feature.main.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.feature.qrcode.R
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel.State
