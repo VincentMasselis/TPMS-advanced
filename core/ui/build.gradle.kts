@@ -10,7 +10,7 @@ android {
 dependencies {
     api(project(":core:common"))
     api(libs.androidx.savedstate)
-    api(libs.lifecycle.livedata.ktx)
+    api(libs.lifecycle.runtime.ktx)
     api(libs.lifecycle.viewmodel.savedstate)
     api(libs.lifecycle.viewmodel.ktx)
     api(libs.lifecycle.viewmodel.compose)

@@ -22,7 +22,6 @@ public class AndroidCommonPlugin : Plugin<Project> {
             defaultConfig {
                 minSdk = libs.versions.sdk.min.map { it.toInt() }.get()
                 targetSdk = libs.versions.sdk.target.map { it.toInt() }.get()
-                buildToolsVersion(libs.versions.build.tool.get())
 
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 // `useTestStorageService` enables the ability to store files when capturing screenshots.
