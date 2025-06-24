@@ -19,7 +19,7 @@ serialization-kotlin1 = "1.6.3"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.37.3"
-android-gradle-plugin = "com.android.tools.build:gradle:8.7.3"
+android-gradle-plugin = "com.android.tools.build:gradle:8.10.1"
 androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
 androidx-camera2-core = "androidx.camera:camera-camera2:1.4.2"
 androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.4.2"
