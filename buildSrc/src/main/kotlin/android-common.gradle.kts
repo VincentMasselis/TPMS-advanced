@@ -1,6 +1,5 @@
+
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.internal.tasks.DeviceProviderInstrumentTestTask
-import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import org.gradle.api.JavaVersion.VERSION_17
 
 plugins {
@@ -69,10 +68,6 @@ configure<BaseExtension> android@{
             enable = true
         }
     }
-    if (rootProject.plugins.hasPlugin(EmulatorPlugin::class))
-        tasks.withType<DeviceProviderInstrumentTestTask>().all {
-            dependsOn(":waitForEmulator")
-        }
 }
 
 // Does the same than `android.kotlinOptions {}`

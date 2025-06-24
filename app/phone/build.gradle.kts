@@ -2,7 +2,6 @@
 
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
 import com.google.gms.googleservices.GoogleServicesPlugin
-import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
 import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
 import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
@@ -42,18 +41,41 @@ android {
             storePassword = keys.appKeyStorePwd
         }
     }
-    buildTypes {
-        getByName("release") {
-            signingConfig = signingConfigs.findByName("release") ?: signingConfigs["debug"]
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            )
+    buildTypes.getByName("release") {
+        signingConfig = signingConfigs.findByName("release") ?: signingConfigs["debug"]
+        isMinifyEnabled = true
+        isShrinkResources = true
+        proguardFiles(
+            getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        )
+    }
+    buildFeatures.buildConfig = true
+    val pixel2api34 by testOptions.managedDevices.localDevices.creating {
+        device = "Pixel 2"
+        apiLevel = 34
+        systemImageSource = "aosp-atd"
+    }
+    val copyScreenshot by tasks.creating(Copy::class) {
+        dependsOn("${pixel2api34.name}DemoDebugAndroidTest")
+        group = "publishing"
+        description =
+            "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
+        from(layout.buildDirectory.dir("outputs/managed_device_android_test_additional_output/debug/flavors/demo/${pixel2api34.name}"))
+        into("$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots")
+        eachFile {
+            name = when {
+                name.startsWith("light_main") -> "1.png"
+                name.startsWith("light_settings") -> "2.png"
+                name.startsWith("light_binding_method") -> "3.png"
+                name.startsWith("dark_main") -> "4.png"
+                name.startsWith("dark_settings") -> "5.png"
+                name.startsWith("dark_binding_method") -> "6.png"
+                else -> throw GradleException("File with name $name not recognized")
+            }
         }
     }
-    buildFeatures {
-        buildConfig = true
+    tasks.withType<UpdatePlayStoreScreenshots> {
+        dependsOn(copyScreenshot)
     }
 }
 
@@ -78,43 +100,4 @@ dependencies {
     androidTestUtil(libs.test.orchestrator)
     androidTestUtil(libs.test.services)
     androidTestImplementation(project(":core:android-test"))
-}
-
-val clearTestOutputFilesFolder by tasks.creating(ClearTestOutputFilesFolder::class) {
-    if (rootProject.plugins.hasPlugin(EmulatorPlugin::class))
-        dependsOn(":waitForEmulator")
-    adbExecutable = android.adbExecutable
-}
-
-val downloadTestOutputFiles by tasks.creating(DownloadTestOutputFiles::class) {
-    dependsOn("connectedDemoDebugAndroidTest")
-    adbExecutable = android.adbExecutable
-    destination = layout.buildDirectory.dir("test_outputfiles")
-}
-
-val copyScreenshot by tasks.creating(Copy::class) {
-    dependsOn(downloadTestOutputFiles)
-    group = "publishing"
-    description =
-        "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
-    from(downloadTestOutputFiles.destination)
-    into("$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots")
-    eachFile {
-        name = when {
-            name.startsWith("light_main") -> "1.png"
-            name.startsWith("light_settings") -> "2.png"
-            name.startsWith("light_binding_method") -> "3.png"
-            name.startsWith("dark_main") -> "4.png"
-            name.startsWith("dark_settings") -> "5.png"
-            name.startsWith("dark_binding_method") -> "6.png"
-            else -> throw GradleException("File with name $name not recognized")
-        }
-    }
-}
-tasks.withType<UpdatePlayStoreScreenshots> {
-    dependsOn(copyScreenshot)
-}
-
-tasks.matching { it.name == "connectedDemoDebugAndroidTest" }.configureEach {
-    dependsOn(clearTestOutputFilesFolder)
 }
