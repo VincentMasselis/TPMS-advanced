@@ -36,13 +36,13 @@ androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 androidx-test-espresso-device = "androidx.test.espresso:espresso-device:1.0.1"
 androidx-test-runner = "androidx.test:runner:1.6.2"
 androidx-test-rules = "androidx.test:rules:1.6.1"
-androidx-activity = "androidx.activity:activity-ktx:1.9.3"
+androidx-activity = "androidx.activity:activity-ktx:1.10.1"
 androidx-fragment = "androidx.fragment:fragment-ktx:1.8.8"
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-compose-activity = "androidx.activity:activity-compose:1.9.3"
+compose-activity = "androidx.activity:activity-compose:1.10.1"
 compose-constraintlayout = "androidx.constraintlayout:constraintlayout-compose:1.1.1"
 compose-detekt = "io.nlopez.compose.rules:detekt:0.4.22"
 compose-navigation = "androidx.navigation:navigation-compose:2.9.0"
