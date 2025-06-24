@@ -3,7 +3,6 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorButtonViewModel.State
@@ -34,9 +33,7 @@ internal class BindSensorButtonViewModelImpl @AssistedInject constructor(
     @AssistedFactory
     interface Factory : (SavedStateHandle) -> BindSensorButtonViewModelImpl
 
-    private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>("STATE") {
-        State.Empty
-    }
+    private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>("STATE", State.Empty)
     override val stateFlow = mutableStateFlow.asStateFlow()
 
     init {

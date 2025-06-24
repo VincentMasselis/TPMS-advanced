@@ -8,7 +8,6 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSen
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel.State.AlreadyCleared
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel.State.ClearingPossible
 import com.masselis.tpmsadvanced.feature.main.usecase.ClearBoundSensorsUseCase
-import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -26,9 +25,10 @@ internal class ClearBoundSensorsViewModelImpl @AssistedInject constructor(
     @AssistedFactory
     interface Factory : (SavedStateHandle) -> ClearBoundSensorsViewModelImpl
 
-    private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>("STATE") {
+    private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>(
+        "STATE",
         AlreadyCleared
-    }
+    )
     override val stateFlow = mutableStateFlow.asStateFlow()
 
     init {

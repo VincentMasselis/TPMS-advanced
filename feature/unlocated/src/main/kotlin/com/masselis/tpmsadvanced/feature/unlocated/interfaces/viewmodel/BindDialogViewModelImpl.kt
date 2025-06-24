@@ -3,7 +3,6 @@ package com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
@@ -43,14 +42,15 @@ internal class BindDialogViewModelImpl @AssistedInject constructor(
         val knownSensors = sensorDatabase.selectListByVehicleId(vehicleUuid)
         val boundVehicle = vehicleDatabase.selectBySensorId(tyre.sensorId)
         val boundVehicleLocation = sensorDatabase.selectById(tyre.sensorId)
-        stateFlow = savedStateHandle.getMutableStateFlow("STATE") {
+        stateFlow = savedStateHandle.getMutableStateFlow(
+            "STATE",
             computeState(
                 currentVehicle.execute(),
                 knownSensors.execute(),
                 boundVehicle.execute(),
                 boundVehicleLocation.execute()?.location
             )
-        }
+        )
         combine(
             currentVehicle.asChillFlow(),
             knownSensors.asChillFlow(),

@@ -7,14 +7,13 @@ import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.common.now
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
+import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
+import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
-import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
-import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
-import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
-import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -44,8 +43,10 @@ internal class TyreViewModelImpl @AssistedInject constructor(
     @AssistedFactory
     interface Factory : (SavedStateHandle) -> TyreViewModelImpl
 
-    private val mutableStateFlow = savedStateHandle
-        .getMutableStateFlow<State>("STATE") { State.NotDetected }
+    private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>(
+        "STATE",
+        State.NotDetected
+    )
     override val stateFlow = mutableStateFlow.asStateFlow()
 
     init {
@@ -61,13 +62,13 @@ internal class TyreViewModelImpl @AssistedInject constructor(
         ) { values ->
             @Suppress("MagicNumber")
             (Data(
-        values[0] as TyreAtmosphere,
-        values[1] as Temperature,
-        values[2] as Temperature,
-        values[3] as Temperature,
-        values[4] as Pressure,
-        values[5] as Pressure
-    ))
+                values[0] as TyreAtmosphere,
+                values[1] as Temperature,
+                values[2] as Temperature,
+                values[3] as Temperature,
+                values[4] as Pressure,
+                values[5] as Pressure
+            ))
         }
             .flatMapLatest { (atmosphere, highTemp, normalTemp, lowTemp, lowPressure, highPressure) ->
                 flow {
