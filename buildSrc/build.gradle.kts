@@ -48,7 +48,6 @@ dependencies {
             .copy()
             .apply { version { prefer("${libs.versions.kotlin.get()}-${libs.versions.ksp.get()}") } }
     )
-    implementation(libs.paparazzi.gradle.plugin)
 
     // https://github.com/gradle/gradle/issues/15383
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
@@ -59,6 +58,26 @@ gradlePlugin {
         create("GitflowPlugin") {
             id = "gitflow"
             implementationClass = "com.masselis.tpmsadvanced.gitflow.GitflowPlugin"
+        }
+        create("AndroidAppPlugin") {
+            id = "android-app"
+            implementationClass = "AndroidAppPlugin"
+        }
+        create("AndroidLibPlugin") {
+            id = "android-lib"
+            implementationClass = "AndroidLibPlugin"
+        }
+        create("ComposePlugin") {
+            id = "compose"
+            implementationClass = "ComposePlugin"
+        }
+        create("DetektPlugin") {
+            id = "detekt"
+            implementationClass = "DetektPlugin"
+        }
+        create("DaggerPlugin") {
+            id = "dagger"
+            implementationClass = "DaggerPlugin"
         }
     }
 }
