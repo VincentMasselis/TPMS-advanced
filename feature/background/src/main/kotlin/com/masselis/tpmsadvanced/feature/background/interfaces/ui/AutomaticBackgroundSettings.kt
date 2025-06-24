@@ -1,8 +1,8 @@
 package com.masselis.tpmsadvanced.feature.background.interfaces.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.provider.Settings
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.foundation.layout.Row
@@ -18,14 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel.State
 import com.masselis.tpmsadvanced.feature.background.ioc.InternalComponent.Companion.AutomaticBackgroundViewModel
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
 
 @Composable
 public fun AutomaticBackgroundSettings(
@@ -50,7 +49,7 @@ internal fun AutomaticBackgroundSettings(
         AutomaticBackgroundViewModel(component.vehicle)
     }
 ) {
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current
     var hasRefusedPermission by remember { mutableStateOf(false) }
     val launcher = rememberLauncherForActivityResult(RequestPermission()) { isGrant ->
         if (isGrant) viewModel.monitor()
@@ -79,11 +78,11 @@ internal fun AutomaticBackgroundSettings(
                     hasRefusedPermission ->
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                             .apply { addCategory(Intent.CATEGORY_DEFAULT) }
-                            .apply { data = "package:${activity.packageName}".toUri() }
+                            .apply { data = "package:${activity!!.packageName}".toUri() }
                             .apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
                             .apply { addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY) }
                             .apply { addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
-                            .also { activity.startActivity(it) }
+                            .also { activity!!.startActivity(it) }
 
                     viewModel.missingPermission() != null ->
                         launcher.launch(viewModel.missingPermission()!!)

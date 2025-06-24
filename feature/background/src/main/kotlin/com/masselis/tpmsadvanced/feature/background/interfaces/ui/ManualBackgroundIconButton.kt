@@ -1,8 +1,8 @@
 package com.masselis.tpmsadvanced.feature.background.interfaces.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.provider.Settings
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.animation.AnimatedVisibility
@@ -16,18 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.core.net.toUri
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.feature.background.R
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel.State
 import com.masselis.tpmsadvanced.feature.background.ioc.InternalComponent.Companion.ManualBackgroundViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
 
 @Composable
 public fun ManualBackgroundIconButton(
@@ -52,12 +51,12 @@ internal fun ManualBackgroundIconButton(
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current
     var hasRefusedPermission by remember { mutableStateOf(false) }
 
     fun monitor() {
         viewModel.monitor()
-        activity.finish()
+        activity!!.finish()
     }
 
     val launcher = rememberLauncherForActivityResult(RequestPermission()) { isGrant ->
@@ -75,11 +74,11 @@ internal fun ManualBackgroundIconButton(
                         hasRefusedPermission ->
                             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                                 .apply { addCategory(Intent.CATEGORY_DEFAULT) }
-                                .apply { data = "package:${activity.packageName}".toUri() }
+                                .apply { data = "package:${activity!!.packageName}".toUri() }
                                 .apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
                                 .apply { addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY) }
                                 .apply { addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
-                                .also { activity.startActivity(it) }
+                                .also { activity!!.startActivity(it) }
 
                         viewModel.missingPermission() != null ->
                             launcher.launch(viewModel.missingPermission()!!)
