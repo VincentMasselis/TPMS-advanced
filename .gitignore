@@ -35,3 +35,4 @@ buildSrc/build/**
 .idea/other.xml
 .idea/runConfigurations.xml
 .idea/jsonSchemas.xml
+.idea/AndroidProjectSystem.xml
