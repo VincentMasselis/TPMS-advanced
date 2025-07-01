@@ -76,7 +76,7 @@ mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
 placeholder = "io.github.fornewid:placeholder-material3:2.0.0"
 relinker = "com.getkeepsafe.relinker:relinker:1.4.5"
-requery = "com.github.requery:sqlite-android:3.45.0"
+requery = "com.github.requery:sqlite-android:3.49.0"
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 sqldelight-coroutines-ext = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqlDelight" }
 sqldelight-coroutines-jvm = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqlDelight" }
