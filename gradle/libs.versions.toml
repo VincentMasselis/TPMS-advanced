@@ -88,7 +88,7 @@ turbine = "app.cash.turbine:turbine:1.2.1"
 
 [plugins]
 crashlytics = "com.google.firebase.crashlytics:3.0.4"
-google-services = "com.google.gms.google-services:4.4.2"
+google-services = "com.google.gms.google-services:4.4.3"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 paparazzi = "app.cash.paparazzi:2.0.0-alpha02"
