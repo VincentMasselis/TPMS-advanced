@@ -55,7 +55,7 @@ android {
         apiLevel = 34
         systemImageSource = "aosp-atd"
     }
-    val copyScreenshot by tasks.creating(Copy::class) {
+    val copyScreenshot by tasks.registering(Copy::class) {
         dependsOn("${pixel2api34.name}DemoDebugAndroidTest")
         group = "publishing"
         description =

@@ -13,7 +13,6 @@ sqlDelight = "2.1.0"
 dagger = "2.56.2"
 mockk = "1.14.4"
 ksp = "2.0.2"
-serialization-kotlin1 = "1.6.3"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.37.3"

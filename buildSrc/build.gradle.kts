@@ -34,15 +34,7 @@ dependencies {
     implementation(libs.detekt.gradle.plugin)
     implementation(libs.google.oauth2.http)
     implementation(libs.google.android.publisher)
-    implementation(libs.kotlinx.serialization.json.map {
-        DefaultMinimalDependency(
-            it.module,
-            if (embeddedKotlinVersion >= "2")
-                DefaultMutableVersionConstraint(it.versionConstraint)
-            else
-                DefaultMutableVersionConstraint(libs.versions.serialization.kotlin1.get())
-        )
-    })
+    implementation(libs.kotlinx.serialization.json)
     implementation(
         libs.ksp.gradle.plugin.get()
             .copy()
