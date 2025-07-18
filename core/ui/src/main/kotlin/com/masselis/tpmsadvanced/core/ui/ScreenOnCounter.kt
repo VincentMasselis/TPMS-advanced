@@ -26,7 +26,8 @@ public interface ScreenOnCounter {
         }
 
         public companion object {
-            public operator fun android.app.Activity.invoke(): Activity = Activity(this)
+            context(activity: android.app.Activity)
+            public operator fun invoke(): Activity = Activity(activity)
         }
     }
 }

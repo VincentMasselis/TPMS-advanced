@@ -53,7 +53,8 @@ public class BindDialog private constructor(
     }
 
     public companion object {
-        public operator fun ComposeTestRule.invoke(): BindDialog = BindDialog(this)
+        context(rule: ComposeTestRule)
+        public operator fun invoke(): BindDialog = BindDialog(rule)
     }
 }
 

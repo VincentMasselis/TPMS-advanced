@@ -15,9 +15,6 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DropdownMenu
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
-import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorButton.Companion.invoke as BindSensorButton
-import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DropdownMenu.Companion.invoke as DropdownMenu
-import com.masselis.tpmsadvanced.interfaces.screens.OverflowMenu.Companion.invoke as OverflowMenu
 
 
 @OptIn(ExperimentalTestApi::class)

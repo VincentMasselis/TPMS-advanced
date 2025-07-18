@@ -14,6 +14,7 @@ plugins {
 kotlinDslPluginOptions {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
+
             // Uses the embedded kotlin api and language version instead of the default language
             // version from the KotlinDSL plugin
             apiVersion = DEFAULT
@@ -21,7 +22,7 @@ kotlinDslPluginOptions {
             freeCompilerArgs.addAll(
                 "-Xexplicit-api=strict",
                 "-opt-in=kotlin.RequiresOptIn",
-                "-Xcontext-receivers", // Builds as expected but the IDE is still showing an error,
+                "-Xcontext-parameters", // Builds as expected but the IDE is still showing an error,
             )
         }
     }

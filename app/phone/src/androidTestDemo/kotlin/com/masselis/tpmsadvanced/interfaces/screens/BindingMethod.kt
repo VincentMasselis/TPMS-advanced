@@ -13,7 +13,6 @@ import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorsList
 import com.masselis.tpmsadvanced.interfaces.composable.ChooseBindingMethodTags
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
-import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorsList.Companion.invoke as UnlocatedSensorsList
 
 @OptIn(ExperimentalTestApi::class)
 internal class BindingMethod private constructor(
@@ -64,6 +63,7 @@ internal class BindingMethod private constructor(
     }
 
     companion object {
-        operator fun ComposeTestRule.invoke(): BindingMethod = BindingMethod(this@ComposeTestRule)
+        context(rule: ComposeTestRule)
+        operator fun invoke(): BindingMethod = BindingMethod(rule)
     }
 }

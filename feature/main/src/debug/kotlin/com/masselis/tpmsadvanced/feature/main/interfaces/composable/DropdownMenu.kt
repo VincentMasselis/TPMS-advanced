@@ -14,16 +14,16 @@ import com.masselis.tpmsadvanced.core.androidtest.process
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.currentVehicleTest
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntry
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
-import com.masselis.tpmsadvanced.feature.main.interfaces.composable.AddVehicle.Companion.invoke as AddVehicle
 
 @OptIn(ExperimentalTestApi::class)
 public class DropdownMenu private constructor(
     private val containerTag: String,
     composeTestRule: ComposeTestRule,
-) : ComposeTestRule by composeTestRule, EnterExitComposable<DropdownMenu> by onEnterAndOnExit({
-    composeTestRule.waitUntilExactlyOneExists(hasTestTag(dropdownEntryAddVehicle))
-},
-    { composeTestRule.waitUntilDoesNotExist(hasTestTag(dropdownEntryAddVehicle)) }) {
+) : ComposeTestRule by composeTestRule,
+    EnterExitComposable<DropdownMenu> by onEnterAndOnExit(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(dropdownEntryAddVehicle)) },
+        { composeTestRule.waitUntilDoesNotExist(hasTestTag(dropdownEntryAddVehicle)) }
+    ) {
 
     private val addVehicleNode
         get() = onNodeWithTag(dropdownEntryAddVehicle)
@@ -63,7 +63,8 @@ public class DropdownMenu private constructor(
     }
 
     public companion object {
-        public operator fun ComposeTestRule.invoke(containerTag: String): DropdownMenu =
-            DropdownMenu(containerTag, this)
+        context(rule: ComposeTestRule)
+        public operator fun invoke(containerTag: String): DropdownMenu =
+            DropdownMenu(containerTag, rule)
     }
 }

@@ -35,7 +35,7 @@ public class DeleteVehicleDialog private constructor(
     }
 
     public companion object {
-        public operator fun ComposeTestRule.invoke(): DeleteVehicleDialog =
-            DeleteVehicleDialog(this)
+        context(rule: ComposeTestRule)
+        public operator fun invoke(): DeleteVehicleDialog = DeleteVehicleDialog(rule)
     }
 }

@@ -86,7 +86,7 @@ public class AndroidCommonPlugin : Plugin<Project> {
                 freeCompilerArgs.addAll(
                     "-Xexplicit-api=strict",
                     "-opt-in=kotlin.RequiresOptIn",
-                    "-Xcontext-receivers",
+                    "-Xcontext-parameters",
                 )
             }
         }
