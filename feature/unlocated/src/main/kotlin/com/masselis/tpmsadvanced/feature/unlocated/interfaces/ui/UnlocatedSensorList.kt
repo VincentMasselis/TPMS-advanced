@@ -176,7 +176,7 @@ private fun UnplugEverySensor(
 ) {
     Column(modifier) {
         Text(
-            text = "Before we start, ensure to unplug every sensor to bind from your tyres",
+            text = "Before starting, please unplug all sensors you intend to bind from your tyres.",
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
