@@ -1,8 +1,8 @@
 package com.masselis.tpmsadvanced.feature.unlocated.ioc
 
-import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
+import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitGraph
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainGraph
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModelImpl
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModelImpl
 import dagger.Component
@@ -11,9 +11,9 @@ import dagger.Component
 @FeatureUnlocatedBinding.Scope
 @Component(
     dependencies = [
-        DataUnitComponent::class,
+        DataUnitGraph::class,
         DataVehicleComponent::class,
-        FeatureCoreComponent::class,
+        FeatureMainGraph::class,
     ]
 )
 internal interface FeatureUnlocatedBinding {
@@ -25,8 +25,8 @@ internal interface FeatureUnlocatedBinding {
     val BindDialogViewModel: BindDialogViewModelImpl.Factory
 
     companion object : FeatureUnlocatedBinding by DaggerFeatureUnlocatedBinding.builder()
-        .dataUnitComponent(DataUnitComponent)
+        .dataUnitGraph(DataUnitGraph)
         .dataVehicleComponent(DataVehicleComponent)
-        .featureCoreComponent(FeatureCoreComponent)
+        .featureCoreComponent(FeatureMainGraph)
         .build()
 }

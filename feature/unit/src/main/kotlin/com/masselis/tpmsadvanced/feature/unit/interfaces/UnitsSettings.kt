@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.ui.EnumDropdown
-import com.masselis.tpmsadvanced.feature.unit.ioc.FeatureUnitComponent.Companion.UnitsViewModel
+import com.masselis.tpmsadvanced.feature.unit.ioc.FeatureUnitGraph.Companion.UnitsViewModel
 import java.util.Locale
 
 @Composable

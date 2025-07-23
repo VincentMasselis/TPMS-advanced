@@ -2,7 +2,7 @@
 
 package com.masselis.tpmsadvanced.data.vehicle.ioc
 
-import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
+import com.masselis.tpmsadvanced.core.common.CoreCommonGraph
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
@@ -25,7 +25,7 @@ public interface DataVehicleComponent {
 
 @DataVehicleComponent.Scope
 @Component(
-    dependencies = [CoreCommonComponent::class],
+    dependencies = [CoreCommonGraph::class],
     modules = [Module::class]
 )
 internal interface InternalComponent : DataVehicleComponent {
@@ -34,6 +34,6 @@ internal interface InternalComponent : DataVehicleComponent {
 
     companion object : InternalComponent by DaggerInternalComponent
         .builder()
-        .coreCommonComponent(CoreCommonComponent)
+        .coreCommonGraph(CoreCommonGraph)
         .build()
 }

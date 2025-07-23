@@ -1,12 +1,12 @@
 package com.masselis.tpmsadvanced.data.app.ioc
 
-import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
+import com.masselis.tpmsadvanced.core.common.CoreCommonGraph
 import com.masselis.tpmsadvanced.data.app.interfaces.AppPreferences
 import dagger.Component
 
 @DataAppComponent.Scope
 @Component(
-    dependencies = [CoreCommonComponent::class]
+    dependencies = [CoreCommonGraph::class]
 )
 public interface DataAppComponent {
 
@@ -17,6 +17,6 @@ public interface DataAppComponent {
 
     public companion object : DataAppComponent by DaggerDataAppComponent
         .builder()
-        .coreCommonComponent(CoreCommonComponent)
+        .coreCommonGraph(CoreCommonGraph)
         .build()
 }
