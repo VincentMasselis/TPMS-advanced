@@ -24,14 +24,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.feature.background.R
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel.State
-import com.masselis.tpmsadvanced.feature.background.ioc.InternalComponent.Companion.ManualBackgroundViewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent.Companion.ManualBackgroundViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleGraph
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleGraph
 
 @Composable
 public fun ManualBackgroundIconButton(
     modifier: Modifier = Modifier,
-    component: VehicleComponent = LocalVehicleComponent.current,
+    component: VehicleGraph = LocalVehicleGraph.current,
 ) {
     ManualBackgroundIconButton(
         modifier = modifier,
@@ -45,7 +45,7 @@ public fun ManualBackgroundIconButton(
 @Composable
 internal fun ManualBackgroundIconButton(
     modifier: Modifier = Modifier,
-    component: VehicleComponent = LocalVehicleComponent.current,
+    component: VehicleGraph = LocalVehicleGraph.current,
     viewModel: ManualBackgroundViewModel = viewModel(key = "ManualBackgroundViewModel_${component.vehicle.uuid}") {
         ManualBackgroundViewModel(component.vehicle, createSavedStateHandle())
     }

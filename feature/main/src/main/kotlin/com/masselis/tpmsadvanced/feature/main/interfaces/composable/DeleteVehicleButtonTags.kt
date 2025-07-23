@@ -29,17 +29,17 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DeleteVehicl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.Event
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleGraph
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleGraph
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 
 @Composable
 internal fun DeleteVehicleButton(
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.vehicle.uuid}") {
-        (vehicleComponent as InternalVehicleComponent).DeleteVehicleViewModel()
+    vehicleGraph: VehicleGraph = LocalVehicleGraph.current,
+    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleGraph.vehicle.uuid}") {
+        (vehicleGraph as InternalVehicleGraph).DeleteVehicleViewModel()
     }
 ) {
     val navController = LocalHomeNavController.current

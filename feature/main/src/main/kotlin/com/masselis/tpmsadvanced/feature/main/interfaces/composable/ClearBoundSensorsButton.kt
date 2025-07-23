@@ -21,17 +21,17 @@ import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.ClearBoundSensorsButtonTags.root
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel.State
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleGraph
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleGraph
 
 @Composable
 internal fun ClearBoundSensorsButton(
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
+    vehicleGraph: VehicleGraph = LocalVehicleGraph.current,
     viewModel: ClearBoundSensorsViewModelImpl = viewModel(
-        key = "ClearBoundSensorsButton_${vehicleComponent.vehicle.uuid}"
+        key = "ClearBoundSensorsButton_${vehicleGraph.vehicle.uuid}"
     ) {
-        (vehicleComponent as InternalVehicleComponent)
+        (vehicleGraph as InternalVehicleGraph)
             .ClearBoundSensorsViewModel(createSavedStateHandle())
     }
 ) {

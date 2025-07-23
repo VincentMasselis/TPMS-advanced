@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.masselis.tpmsadvanced.feature.main.R
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleGraph
 import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
@@ -49,14 +49,14 @@ public fun CurrentVehicle(
     modifier: Modifier = Modifier,
 ) {
     Vehicle(
-        component = LocalVehicleComponent.current,
+        component = LocalVehicleGraph.current,
         modifier = modifier
     )
 }
 
 @Composable
 public fun Vehicle(
-    component: VehicleComponent,
+    component: VehicleGraph,
     modifier: Modifier = Modifier,
 ) {
     KeepScreenOn()

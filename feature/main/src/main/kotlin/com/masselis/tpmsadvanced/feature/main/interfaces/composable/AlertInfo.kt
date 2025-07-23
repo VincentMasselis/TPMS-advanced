@@ -23,10 +23,8 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.TyreComponent
-import com.masselis.tpmsadvanced.feature.main.usecase.FindTyreComponentUseCase
-import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
+import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleGraph
+import com.masselis.tpmsadvanced.feature.main.usecase.FindTyreGraphUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -45,7 +43,7 @@ internal fun PressureInfo(
                 Tyre(
                     location = Location.Side(SensorLocation.Side.LEFT),
                     modifier = Modifier.height(150.dp),
-                    vehicleComponent = DemoVehicleComponent(),
+                    vehicleGraph = DemoVehicleGraph(),
                     viewModel = DemoTyreViewModel(State.Alerting),
                 )
                 Text(
@@ -80,7 +78,7 @@ internal fun TemperatureInfo(
                 Tyre(
                     location = Location.Side(SensorLocation.Side.LEFT),
                     modifier = Modifier.height(150.dp),
-                    vehicleComponent = DemoVehicleComponent(),
+                    vehicleGraph = DemoVehicleGraph(),
                     viewModel = demoTyreViewModel,
                 )
                 Text(text.format(temperature.string(unit)))
@@ -95,16 +93,12 @@ private class DemoTyreViewModel(state: State) : TyreViewModel {
     override val stateFlow: StateFlow<State> = MutableStateFlow(state)
 }
 
-private class DemoVehicleComponent : InternalVehicleComponent {
-    override val TyreComponent: (Location) -> TyreComponent
-        get() = error("Not implemented")
-    override val InternalTyreComponent: FindTyreComponentUseCase
+private class DemoVehicleGraph : InternalVehicleGraph {
+    override val internalTyreGraph: FindTyreGraphUseCase
         get() = error("Not implemented")
     override val vehicle: Vehicle
         get() = error("Not implemented")
     override val vehicleStateFlow: StateFlow<Vehicle>
-        get() = error("Not implemented")
-    override val vehicleRangesUseCase: VehicleRangesUseCase
         get() = error("Not implemented")
     override val ClearBoundSensorsViewModel: ClearBoundSensorsViewModelImpl.Factory
         get() = error("Not implemented")

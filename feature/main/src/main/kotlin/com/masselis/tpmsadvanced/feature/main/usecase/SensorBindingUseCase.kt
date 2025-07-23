@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.feature.main.usecase
 
-import com.masselis.tpmsadvanced.feature.main.ioc.TyreComponent
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
@@ -11,12 +10,9 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.plus
-import javax.inject.Inject
-import javax.inject.Named
 
-@TyreComponent.Scope
-internal class SensorBindingUseCase @Inject constructor(
-    @Named("base") private val currentVehicle: Vehicle,
+internal class SensorBindingUseCase(
+    private val currentVehicle: Vehicle,
     private val vehicleDatabase: VehicleDatabase,
     private val sensorDatabase: SensorDatabase,
     currentLocation: Location,

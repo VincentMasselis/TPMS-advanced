@@ -37,14 +37,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.core.common.Fraction
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.core.ui.restartApp
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.feature.main.R
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
+import com.masselis.tpmsadvanced.feature.main.ioc.InternalTyreGraph
+import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleGraph
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleGraph
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -56,10 +57,9 @@ private val evaluator = ArgbEvaluator()
 internal fun Tyre(
     location: Location,
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${vehicleComponent.vehicle.uuid}_${location}") {
-        (vehicleComponent as InternalVehicleComponent)
-            .InternalTyreComponent(location)
+    vehicleGraph: VehicleGraph = LocalVehicleGraph.current,
+    viewModel: TyreViewModel = viewModel(key = "TyreViewModel_${vehicleGraph.vehicle.uuid}_${location}") {
+        InternalTyreGraph.Factory(vehicleGraph as InternalVehicleGraph, location)
             .TyreViewModel(createSavedStateHandle())
     },
 ) {
@@ -225,6 +225,6 @@ internal fun AlertingPreview() {
 
 @Preview
 @Composable
-internal fun DetectionIssuePreview()    {
+internal fun DetectionIssuePreview() {
     Tyre(State.DetectionIssue)
 }

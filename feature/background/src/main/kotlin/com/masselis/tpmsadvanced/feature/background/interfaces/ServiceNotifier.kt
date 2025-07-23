@@ -30,7 +30,7 @@ import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.S
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.ScanFailure
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.TemperatureAlert
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.TyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.TyreGraph
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -54,7 +54,7 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class ServiceNotifier @Inject constructor(
     @Named("base") vehicle: Vehicle,
     scope: CoroutineScope,
-    tyreComponent: (@JvmSuppressWildcards Vehicle.Kind.Location) -> @JvmSuppressWildcards TyreComponent,
+    tyreGraph: (@JvmSuppressWildcards Vehicle.Kind.Location) -> @JvmSuppressWildcards TyreGraph,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
     foregroundService: Service?,
@@ -78,7 +78,7 @@ internal class ServiceNotifier @Inject constructor(
         vehicle
             .kind
             .locations
-            .map { tyreComponent(it) }
+            .map { tyreGraph(it) }
             .let { comps ->
                 combine(
                     combine(comps.map { it.tyreAtmosphereUseCase.listen() }) { it }

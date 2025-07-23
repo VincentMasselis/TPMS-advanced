@@ -18,7 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.PreconditionsViewModel
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalComponent.Companion.PreconditionsViewModel
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainGraph.Companion.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.ui.BluetoothState
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.rememberBluetoothState

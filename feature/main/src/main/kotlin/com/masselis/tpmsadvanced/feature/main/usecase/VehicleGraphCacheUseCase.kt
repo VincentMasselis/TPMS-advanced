@@ -1,9 +1,8 @@
 package com.masselis.tpmsadvanced.feature.main.usecase
 
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleGraph
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.GlobalScope
@@ -14,15 +13,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
 
 @OptIn(DelicateCoroutinesApi::class)
-@FeatureCoreComponent.Scope
-internal class VehicleComponentCacheUseCase @Inject internal constructor(
+internal class VehicleGraphCacheUseCase(
     vehicleDatabase: VehicleDatabase,
-    private val vehicleComponentFactory: InternalVehicleComponent.Factory,
-) : (Vehicle) -> InternalVehicleComponent {
-    private val cache = ConcurrentHashMap<UUID, InternalVehicleComponent>()
+    private val vehicleGraphFactory: (Vehicle) -> InternalVehicleGraph,
+) : (Vehicle) -> InternalVehicleGraph {
+
+    private val cache = ConcurrentHashMap<UUID, InternalVehicleGraph>()
 
     init {
         vehicleDatabase
@@ -39,6 +37,6 @@ internal class VehicleComponentCacheUseCase @Inject internal constructor(
     }
 
     override fun invoke(vehicle: Vehicle) = cache.computeIfAbsent(vehicle.uuid) {
-        vehicleComponentFactory.build(vehicle)
+        vehicleGraphFactory(vehicle)
     }
 }

@@ -23,12 +23,12 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel.State
-import com.masselis.tpmsadvanced.feature.background.ioc.InternalComponent.Companion.AutomaticBackgroundViewModel
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent.Companion.AutomaticBackgroundViewModel
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleGraph
 
 @Composable
 public fun AutomaticBackgroundSettings(
-    component: VehicleComponent,
+    component: VehicleGraph,
     modifier: Modifier = Modifier
 ) {
     AutomaticBackgroundSettings(
@@ -43,7 +43,7 @@ public fun AutomaticBackgroundSettings(
 @Suppress("CyclomaticComplexMethod")
 @Composable
 internal fun AutomaticBackgroundSettings(
-    component: VehicleComponent,
+    component: VehicleGraph,
     modifier: Modifier = Modifier,
     viewModel: AutomaticBackgroundViewModel = viewModel(key = "BackgroundViewModel_${component.vehicle.uuid}") {
         AutomaticBackgroundViewModel(component.vehicle)

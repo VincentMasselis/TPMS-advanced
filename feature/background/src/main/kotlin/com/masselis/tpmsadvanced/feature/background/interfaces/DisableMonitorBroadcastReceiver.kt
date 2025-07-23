@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.masselis.tpmsadvanced.core.common.appContext
-import com.masselis.tpmsadvanced.feature.background.ioc.InternalComponent
+import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
 import java.util.UUID
 import javax.inject.Inject
@@ -15,7 +15,7 @@ internal class DisableMonitorBroadcastReceiver internal constructor() : Broadcas
     internal lateinit var vehiclesToMonitorUseCase: VehiclesToMonitorUseCase
 
     init {
-        InternalComponent.inject(this)
+        FeatureBackgroundComponent.inject(this)
     }
 
     override fun onReceive(context: Context, intent: Intent): Unit = intent

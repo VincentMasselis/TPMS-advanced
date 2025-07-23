@@ -49,7 +49,7 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalComponent.Companion.CurrentVehicleDropdownViewModel
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainGraph.Companion.CurrentVehicleDropdownViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay

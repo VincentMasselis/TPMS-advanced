@@ -45,8 +45,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdown
-import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleGraph
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleGraph
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
@@ -68,21 +68,21 @@ internal fun Home(
         HomeViewModel(expectedVehicle)
     }
 ) {
-    val vehicleComponent by viewModel.vehicleComponentStateFlow.collectAsState()
+    val vehicleComponent by viewModel.vehicleGraphStateFlow.collectAsState()
     VehicleHome(
-        vehicleComponent = vehicleComponent
+        vehicleGraph = vehicleComponent
     )
 }
 
 @Suppress("LongMethod")
 @Composable
 internal fun VehicleHome(
-    vehicleComponent: VehicleComponent,
+    vehicleGraph: VehicleGraph,
     viewModel: VehicleHomeViewModel = viewModel { VehicleHomeViewModel() }
 ) {
     val navController = rememberNavController()
     CompositionLocalProvider(
-        LocalVehicleComponent provides vehicleComponent,
+        LocalVehicleGraph provides vehicleGraph,
         LocalHomeNavController provides navController
     ) {
         var offsetToFocus by remember { mutableStateOf<Offset?>(null) }
@@ -107,37 +107,37 @@ internal fun VehicleHome(
             content = { paddingValues ->
                 NavHost(
                     navController = navController,
-                    startDestination = "${Path.Home(vehicleComponent.vehicle.uuid)}"
+                    startDestination = "${Path.Home(vehicleGraph.vehicle.uuid)}"
                 ) {
                     val modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
-                    composable(route = "${Path.Home(vehicleComponent.vehicle.uuid)}") {
+                    composable(route = "${Path.Home(vehicleGraph.vehicle.uuid)}") {
                         CurrentVehicle(modifier = modifier)
                     }
-                    composable("${Path.Settings(vehicleComponent.vehicle.uuid)}") {
+                    composable("${Path.Settings(vehicleGraph.vehicle.uuid)}") {
                         Settings(modifier = modifier)
                     }
-                    composable("${Path.BindingMethod(vehicleComponent.vehicle.uuid)}") {
+                    composable("${Path.BindingMethod(vehicleGraph.vehicle.uuid)}") {
                         ChooseBindingMethod(
                             scanQrCode = {
-                                navController.navigate("${Path.QrCode(vehicleComponent.vehicle.uuid)}")
+                                navController.navigate("${Path.QrCode(vehicleGraph.vehicle.uuid)}")
                             },
                             searchUnlocatedSensors = {
-                                navController.navigate("${Path.Unlocated(vehicleComponent.vehicle.uuid)}")
+                                navController.navigate("${Path.Unlocated(vehicleGraph.vehicle.uuid)}")
                             },
                             modifier = modifier
                         )
                     }
-                    composable("${Path.QrCode(vehicleComponent.vehicle.uuid)}") {
+                    composable("${Path.QrCode(vehicleGraph.vehicle.uuid)}") {
                         QrCodeScan(modifier = modifier)
                     }
-                    composable("${Path.Unlocated(vehicleComponent.vehicle.uuid)}") {
+                    composable("${Path.Unlocated(vehicleGraph.vehicle.uuid)}") {
                         UnlocatedSensorList(
-                            vehicleUuid = vehicleComponent.vehicle.uuid,
+                            vehicleUuid = vehicleGraph.vehicle.uuid,
                             bindingFinished = {
                                 navController.popBackStack(
-                                    "${Path.Home(vehicleComponent.vehicle.uuid)}",
+                                    "${Path.Home(vehicleGraph.vehicle.uuid)}",
                                     false
                                 )
                             },

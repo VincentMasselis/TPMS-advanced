@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleGraph
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -27,5 +27,5 @@ internal class HomeViewModel @AssistedInject constructor(
         }
     }
 
-    val vehicleComponentStateFlow: StateFlow<VehicleComponent> = currentVehicleUseCase
+    val vehicleGraphStateFlow: StateFlow<VehicleGraph> = currentVehicleUseCase
 }

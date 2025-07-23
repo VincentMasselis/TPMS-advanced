@@ -2,8 +2,7 @@ package com.masselis.tpmsadvanced.feature.main.usecase
 
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.VehicleGraph
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -16,28 +15,25 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
 import java.util.UUID.randomUUID
-import javax.inject.Inject
 
 @Suppress("UnnecessaryOptInAnnotation")
 @OptIn(DelicateCoroutinesApi::class, ExperimentalForInheritanceCoroutinesApi::class)
-@FeatureCoreComponent.Scope
 public class CurrentVehicleUseCase private constructor(
     private val database: VehicleDatabase,
-    private val mutableStateFlow: MutableStateFlow<VehicleComponent>
-) : StateFlow<VehicleComponent> by mutableStateFlow.asStateFlow() {
+    private val mutableStateFlow: MutableStateFlow<VehicleGraph>
+) : StateFlow<VehicleGraph> by mutableStateFlow.asStateFlow() {
 
-    @Inject
     internal constructor(
         database: VehicleDatabase,
     ) : this(
         database,
         database.currentVehicle()
             .let { query ->
-                val mutableStateFlow = MutableStateFlow(VehicleComponent(query.execute()))
+                val mutableStateFlow = MutableStateFlow(VehicleGraph(query.execute()))
                 query
                     .asChillFlow()
                     .filter { it.uuid != mutableStateFlow.value.vehicle.uuid }
-                    .map(VehicleComponent)
+                    .map(VehicleGraph)
                     .onEach { mutableStateFlow.value = it }
                     .launchIn(GlobalScope)
                 mutableStateFlow

@@ -4,11 +4,9 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Named
 
-internal class ClearBoundSensorsUseCase @Inject constructor(
-    @Named("base") private val vehicle: Vehicle,
+internal class ClearBoundSensorsUseCase(
+    private val vehicle: Vehicle,
     private val sensorDatabase: SensorDatabase,
 ) {
 
