@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.feature.qrcode.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainComponent
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel
 import dagger.Component
 
@@ -12,7 +12,7 @@ import dagger.Component
     dependencies = [
         CoreCommonComponent::class,
         DataVehicleComponent::class,
-        FeatureCoreComponent::class
+        FeatureMainComponent::class
     ]
 )
 internal interface FeatureQrCodeComponent {
@@ -25,6 +25,6 @@ internal interface FeatureQrCodeComponent {
     companion object : FeatureQrCodeComponent by DaggerFeatureQrCodeComponent.builder()
         .coreCommonComponent(CoreCommonComponent)
         .dataVehicleComponent(DataVehicleComponent)
-        .featureCoreComponent(FeatureCoreComponent)
+        .featureMainComponent(FeatureMainComponent)
         .build()
 }

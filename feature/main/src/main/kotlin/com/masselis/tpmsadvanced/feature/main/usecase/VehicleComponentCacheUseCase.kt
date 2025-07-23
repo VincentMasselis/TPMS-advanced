@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.feature.main.usecase
 
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainComponent
 import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 @OptIn(DelicateCoroutinesApi::class)
-@FeatureCoreComponent.Scope
+@FeatureMainComponent.Scope
 internal class VehicleComponentCacheUseCase @Inject internal constructor(
     vehicleDatabase: VehicleDatabase,
     private val vehicleComponentFactory: InternalVehicleComponent.Factory,

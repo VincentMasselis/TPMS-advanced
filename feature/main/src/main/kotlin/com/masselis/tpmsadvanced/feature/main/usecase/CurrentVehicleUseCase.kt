@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.feature.main.usecase
 
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainComponent
 import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @Suppress("UnnecessaryOptInAnnotation")
 @OptIn(DelicateCoroutinesApi::class, ExperimentalForInheritanceCoroutinesApi::class)
-@FeatureCoreComponent.Scope
+@FeatureMainComponent.Scope
 public class CurrentVehicleUseCase private constructor(
     private val database: VehicleDatabase,
     private val mutableStateFlow: MutableStateFlow<VehicleComponent>

@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.interfaces.ioc
 
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainComponent
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import dagger.Component
@@ -9,7 +9,7 @@ import dagger.Component
 @AppPhoneComponent.Scope
 @Component(
     dependencies = [
-        FeatureCoreComponent::class
+        FeatureMainComponent::class
     ]
 )
 internal interface AppPhoneComponent {
@@ -21,6 +21,6 @@ internal interface AppPhoneComponent {
 
     companion object : AppPhoneComponent by DaggerAppPhoneComponent
         .builder()
-        .featureCoreComponent(FeatureCoreComponent)
+        .featureMainComponent(FeatureMainComponent)
         .build()
 }

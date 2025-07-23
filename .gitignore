@@ -36,3 +36,4 @@ buildSrc/build/**
 .idea/runConfigurations.xml
 .idea/jsonSchemas.xml
 .idea/AndroidProjectSystem.xml
+.kotlin/errors/*.log

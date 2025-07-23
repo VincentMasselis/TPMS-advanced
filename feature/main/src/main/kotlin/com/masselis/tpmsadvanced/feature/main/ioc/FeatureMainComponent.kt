@@ -12,7 +12,7 @@ import com.masselis.tpmsadvanced.feature.main.usecase.VehicleComponentCacheUseCa
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleListUseCase
 import dagger.Component
 
-public interface FeatureCoreComponent {
+public interface FeatureMainComponent {
 
     @javax.inject.Scope
     public annotation class Scope
@@ -21,11 +21,11 @@ public interface FeatureCoreComponent {
     public val noveltyUseCase: NoveltyUseCase
     public val vehicleListUseCase: VehicleListUseCase
 
-    public companion object : FeatureCoreComponent by InternalComponent
+    public companion object : FeatureMainComponent by InternalComponent
 }
 
-@Suppress("PropertyName")
-@FeatureCoreComponent.Scope
+@Suppress("PropertyName", "VariableNaming")
+@FeatureMainComponent.Scope
 @Component(
     modules = [
         VehicleSubcomponentModule::class
@@ -37,11 +37,10 @@ public interface FeatureCoreComponent {
         DataAppComponent::class,
     ]
 )
-internal interface InternalComponent : FeatureCoreComponent {
+internal interface InternalComponent : FeatureMainComponent {
 
     fun PreconditionsViewModel(): PreconditionsViewModel
 
-    @Suppress("VariableNaming")
     val CurrentVehicleDropdownViewModel: CurrentVehicleDropdownViewModelImpl.Factory
 
     val vehicleComponentCacheUseCase: VehicleComponentCacheUseCase

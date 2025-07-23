@@ -1,12 +1,12 @@
 package com.masselis.tpmsadvanced.feature.shortcut.usecase
 
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainComponent
 import com.masselis.tpmsadvanced.feature.shortcut.ioc.ShortcutUseCase
 import dagger.Component
 
 @Component(
     dependencies = [
-        FeatureCoreComponent::class
+        FeatureMainComponent::class
     ]
 )
 @FeatureShortcutComponent.Scope
@@ -19,7 +19,7 @@ internal interface FeatureShortcutComponent {
 
     companion object : FeatureShortcutComponent by DaggerFeatureShortcutComponent
         .builder()
-        .featureCoreComponent(FeatureCoreComponent)
+        .featureMainComponent(FeatureMainComponent)
         .build() {
         init {
             // Initialize it

@@ -1,14 +1,14 @@
 package com.masselis.tpmsadvanced.feature.background.ioc
 
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureCoreComponent
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.feature.background.interfaces.DisableMonitorBroadcastReceiver
 import com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService
-import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.impl.AutomaticBackgroundViewModelImpl
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel
+import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.impl.AutomaticBackgroundViewModelImpl
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
 import com.masselis.tpmsadvanced.feature.background.usecase.ForegroundServiceUseCase
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
+import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainComponent
 import dagger.Component
 
 public interface FeatureBackgroundComponent {
@@ -26,7 +26,7 @@ public interface FeatureBackgroundComponent {
 @Component(
     dependencies = [
         DataVehicleComponent::class,
-        FeatureCoreComponent::class
+        FeatureMainComponent::class
     ]
 )
 internal interface InternalComponent : FeatureBackgroundComponent {
@@ -43,7 +43,7 @@ internal interface InternalComponent : FeatureBackgroundComponent {
 
     companion object : InternalComponent by DaggerInternalComponent
         .builder()
-        .featureCoreComponent(FeatureCoreComponent)
+        .featureMainComponent(FeatureMainComponent)
         .dataVehicleComponent(DataVehicleComponent)
         .build() {
         init {
