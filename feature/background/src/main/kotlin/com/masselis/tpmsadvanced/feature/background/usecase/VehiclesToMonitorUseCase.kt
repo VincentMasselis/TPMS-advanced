@@ -1,10 +1,9 @@
 package com.masselis.tpmsadvanced.feature.background.usecase
 
-import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.core.ui.isAppVisibleFlow
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
+import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,12 +20,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
 import java.util.concurrent.locks.ReentrantLock
-import javax.inject.Inject
 import kotlin.concurrent.withLock
 
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
-@FeatureBackgroundComponent.Scope
-public class VehiclesToMonitorUseCase @Inject internal constructor(
+public class VehiclesToMonitorUseCase(
     private val currentVehicleUseCase: CurrentVehicleUseCase,
     private val vehicleDatabase: VehicleDatabase,
 ) {
@@ -85,17 +82,18 @@ public class VehiclesToMonitorUseCase @Inject internal constructor(
     }.flowOn(Default)
 
     @Suppress("NAME_SHADOWING")
-    public fun appVisibilityIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> = combine(
-        currentVehicleUseCase.map { it.vehicle },
-        isAppVisibleFlow,
-        ignoredAndMonitored(),
-    ) { current, isAppVisible, (ignored, monitored) ->
-        val current = current.takeIf { isAppVisible }
-        Pair(
-            // Adds to ignored list if the current is already displayed
-            (ignored + current).filterNotNull(),
-            // Do not monitor the vehicle if it is already displayed
-            monitored.filter { it.uuid != current?.uuid }
-        )
-    }.flowOn(Default)
+    public fun appVisibilityIgnoredAndMonitored(): Flow<Pair<List<Vehicle>, List<Vehicle>>> =
+        combine(
+            currentVehicleUseCase.map { it.vehicle },
+            isAppVisibleFlow,
+            ignoredAndMonitored(),
+        ) { current, isAppVisible, (ignored, monitored) ->
+            val current = current.takeIf { isAppVisible }
+            Pair(
+                // Adds to ignored list if the current is already displayed
+                (ignored + current).filterNotNull(),
+                // Do not monitor the vehicle if it is already displayed
+                monitored.filter { it.uuid != current?.uuid }
+            )
+        }.flowOn(Default)
 }

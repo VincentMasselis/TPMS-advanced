@@ -2,7 +2,6 @@ package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
-import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
@@ -10,10 +9,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
-@DataVehicleComponent.Scope
-internal class BluetoothLeScannerImpl @Inject constructor() : BluetoothLeScanner {
+internal class BluetoothLeScannerImpl : BluetoothLeScanner {
 
     private val frontLeft = listOf(
         Tyre.SensorLocated(

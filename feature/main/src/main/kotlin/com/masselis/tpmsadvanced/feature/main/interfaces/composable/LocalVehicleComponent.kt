@@ -3,8 +3,8 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.compositionLocalWithComputedDefaultOf
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 
 @Suppress("CompositionLocalAllowlist")
 public val LocalVehicleComponent: ProvidableCompositionLocal<VehicleComponent> =

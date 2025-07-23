@@ -11,9 +11,9 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModel.State
 import com.masselis.tpmsadvanced.feature.unlocated.usecase.BindSensorToVehicleUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 @Suppress("NAME_SHADOWING")
-internal class BindDialogViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class BindDialogViewModelImpl(
     private val bindSensorToVehicleUseCase: BindSensorToVehicleUseCase,
     sensorDatabase: SensorDatabase,
     vehicleDatabase: VehicleDatabase,

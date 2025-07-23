@@ -1,7 +1,7 @@
 plugins {
     `android-lib`
     compose
-    dagger
+    alias(libs.plugins.metro)
 }
 
 android {

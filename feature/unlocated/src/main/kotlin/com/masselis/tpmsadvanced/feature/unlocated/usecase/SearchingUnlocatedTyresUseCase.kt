@@ -7,9 +7,9 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -22,7 +22,8 @@ import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 @Suppress("OPT_IN_USAGE")
-internal class SearchingUnlocatedTyresUseCase @AssistedInject constructor(
+@AssistedInject
+internal class SearchingUnlocatedTyresUseCase(
     private val scanner: BluetoothLeScanner,
     private val sensorDatabase: SensorDatabase,
     private val vehicleDatabase: VehicleDatabase,

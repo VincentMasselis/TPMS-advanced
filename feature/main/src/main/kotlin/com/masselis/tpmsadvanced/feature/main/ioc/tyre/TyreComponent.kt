@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.feature.main.ioc
+package com.masselis.tpmsadvanced.feature.main.ioc.tyre
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
@@ -10,32 +10,30 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.BindSens
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.TyreStatsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.TyreViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreAtmosphereUseCase
-import dagger.BindsInstance
-import dagger.Subcomponent
-import javax.inject.Named
+import dev.zacsweers.metro.GraphExtension
+import dev.zacsweers.metro.Provides
 
 
 public sealed interface TyreComponent {
     @javax.inject.Scope
     public annotation class Scope
 
+    public val vehicle: Vehicle
     public val location: Location
     public val tyreAtmosphereUseCase: TyreAtmosphereUseCase
 }
 
-@Suppress("PropertyName", "VariableNaming")
-@TyreComponent.Scope
-@Subcomponent(
-    modules = [TyreModule::class]
+@Suppress("PropertyName", "VariableNaming", "unused")
+@GraphExtension(
+    TyreComponent::class,
+    bindingContainers = [Bindings::class]
 )
 internal interface InternalTyreComponent : TyreComponent {
-    @Subcomponent.Factory
-    interface Factory {
-        fun build(@BindsInstance location: Location): InternalTyreComponent
-    }
 
-    @get:Named("base")
-    val vehicle: Vehicle
+    @GraphExtension.Factory
+    interface Factory {
+        fun build(@Provides location: Location): InternalTyreComponent
+    }
 
     val TyreViewModel: TyreViewModelImpl.Factory
     val TyreStatViewModel: TyreStatsViewModelImpl.Factory

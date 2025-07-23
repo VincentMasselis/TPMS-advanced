@@ -4,9 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
+import com.masselis.tpmsadvanced.feature.background.ioc.vehicle.BackgroundVehicleComponent
 import com.masselis.tpmsadvanced.feature.background.ioc.InternalComponent
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -15,7 +16,6 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import javax.inject.Inject
 
 internal class MonitorService : Service() {
 
@@ -54,9 +54,9 @@ internal class MonitorService : Service() {
                         }
                         .mapIndexed { index, vehicle ->
                             if (index == 0 && hasForegroundService.not())
-                                BackgroundVehicleComponent(this, vehicle)
+                                BackgroundVehicleComponent.Factory(this, vehicle)
                             else
-                                BackgroundVehicleComponent(null, vehicle)
+                                BackgroundVehicleComponent.Factory(null, vehicle)
                         }
                         .forEach { monitoring.add(it) }
                 }

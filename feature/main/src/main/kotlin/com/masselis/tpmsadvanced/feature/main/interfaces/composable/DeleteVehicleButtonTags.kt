@@ -30,8 +30,8 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DeleteVehicl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.Event
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent.Companion.viewModel
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent.Companion.viewModel
 
 @Composable
 internal fun DeleteVehicleButton(

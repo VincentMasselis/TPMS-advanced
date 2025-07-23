@@ -42,8 +42,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalTyreComponent.Companion.viewModel
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.InternalTyreComponent.Companion.viewModel
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -56,7 +56,7 @@ internal fun Tyre(
     location: Location,
     modifier: Modifier = Modifier,
     vehicleComponent: InternalVehicleComponent = LocalInternalVehicleComponent.current,
-    viewModel: TyreViewModel = vehicleComponent.InternalTyreComponent(location).viewModel {
+    viewModel: TyreViewModel = vehicleComponent.TyreComponent(location).viewModel {
         it.TyreViewModel(createSavedStateHandle())
     },
 ) {

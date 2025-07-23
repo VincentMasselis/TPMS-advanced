@@ -1,15 +1,12 @@
 package com.masselis.tpmsadvanced.feature.main.usecase
 
-import com.masselis.tpmsadvanced.feature.main.BuildConfig.VERSION_CODE
 import com.masselis.tpmsadvanced.core.common.isRunningInstrumentedTest
-import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainComponent
 import com.masselis.tpmsadvanced.data.app.interfaces.AppPreferences
+import com.masselis.tpmsadvanced.feature.main.BuildConfig.VERSION_CODE
 import java.util.concurrent.locks.ReentrantLock
-import javax.inject.Inject
 import kotlin.concurrent.withLock
 
-@FeatureMainComponent.Scope
-public class NoveltyUseCase @Inject constructor(
+public class NoveltyUseCase internal constructor(
     private val appPreferences: AppPreferences
 ) {
 

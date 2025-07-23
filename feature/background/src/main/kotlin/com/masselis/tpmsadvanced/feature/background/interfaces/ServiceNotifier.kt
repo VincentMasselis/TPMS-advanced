@@ -29,8 +29,7 @@ import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.S
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.PressureAlert
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.ScanFailure
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.TemperatureAlert
-import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.TyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -44,17 +43,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import javax.inject.Inject
-import javax.inject.Named
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
 @SuppressLint("MissingPermission")
-@BackgroundVehicleComponent.Scope
-internal class ServiceNotifier @Inject constructor(
-    @Named("base") vehicle: Vehicle,
+internal class ServiceNotifier(
+    vehicle: Vehicle,
     scope: CoroutineScope,
-    tyreComponent: (@JvmSuppressWildcards Vehicle.Kind.Location) -> @JvmSuppressWildcards TyreComponent,
+    tyreComponent: (Vehicle.Kind.Location) -> TyreComponent,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
     foregroundService: Service?,

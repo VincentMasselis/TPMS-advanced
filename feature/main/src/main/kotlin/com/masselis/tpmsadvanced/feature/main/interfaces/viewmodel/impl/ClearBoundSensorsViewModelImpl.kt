@@ -8,16 +8,17 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSen
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel.State.AlreadyCleared
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel.State.ClearingPossible
 import com.masselis.tpmsadvanced.feature.main.usecase.ClearBoundSensorsUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-internal class ClearBoundSensorsViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class ClearBoundSensorsViewModelImpl(
     private val clearBoundSensorsUseCase: ClearBoundSensorsUseCase,
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel(), ClearBoundSensorsViewModel {

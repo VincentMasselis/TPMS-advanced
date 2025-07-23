@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.afterVersion3
-import com.masselis.tpmsadvanced.data.vehicle.ioc.DebugComponent
+import com.masselis.tpmsadvanced.data.vehicle.ioc.InternalComponent
 import io.requery.android.database.sqlite.SQLiteDatabase
 import io.requery.android.database.sqlite.SQLiteDatabase.OPEN_READWRITE
 import org.junit.Test
@@ -31,7 +31,7 @@ internal class MigrationFrom3Test {
             ),
             3,
             4,
-            Database.afterVersion3(DebugComponent.locationAdapter)
+            Database.afterVersion3(InternalComponent.locationAdapter)
         )
     }
 }

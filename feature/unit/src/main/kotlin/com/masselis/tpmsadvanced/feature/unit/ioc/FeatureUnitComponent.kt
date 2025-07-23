@@ -2,21 +2,22 @@ package com.masselis.tpmsadvanced.feature.unit.ioc
 
 import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import com.masselis.tpmsadvanced.feature.unit.interfaces.UnitsViewModel
-import dagger.Component
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Includes
+import dev.zacsweers.metro.createGraphFactory
 
-@FeatureUnitComponent.Scope
-@Component(
-    dependencies = [
-        DataUnitComponent::class
-    ]
+@DependencyGraph(
+    bindingContainers = [Bindings::class]
 )
 internal interface FeatureUnitComponent {
-    @javax.inject.Scope
-    annotation class Scope
+    @DependencyGraph.Factory
+    interface Factory {
+        fun build(@Includes dataUnitComponent: DataUnitComponent): FeatureUnitComponent
+    }
 
     fun UnitsViewModel(): UnitsViewModel
 
-    companion object : FeatureUnitComponent by DaggerFeatureUnitComponent.builder()
-        .dataUnitComponent(DataUnitComponent)
-        .build()
+    companion object : FeatureUnitComponent by createGraphFactory<Factory>().build(
+        DataUnitComponent
+    )
 }

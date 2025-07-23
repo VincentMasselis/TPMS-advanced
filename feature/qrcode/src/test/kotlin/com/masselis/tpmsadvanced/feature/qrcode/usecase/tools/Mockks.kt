@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.feature.qrcode.usecase.tools
 
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import io.mockk.mockk
