@@ -47,7 +47,7 @@ compose-navigation = "androidx.navigation:navigation-compose:2.9.3"
 dagger-lib = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
-google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20250602-2.0.0"
+google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20250724-2.0.0"
 # 33.0.0 causes a "GradleCompatible" exception where some gms/firebase libs are used but differents version are used in the same time
 google-firebase-bom = "com.google.firebase:firebase-bom:33.16.0"
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
