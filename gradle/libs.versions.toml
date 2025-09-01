@@ -10,7 +10,7 @@ coroutine = "1.10.2"
 lifecycle = "2.9.2"
 testServices = "1.6.0"
 sqlDelight = "2.1.0"
-dagger = "2.56.2"
+dagger = "2.57.1"
 mockk = "1.14.5"
 ksp = "2.0.2"
 
