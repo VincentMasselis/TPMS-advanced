@@ -32,3 +32,13 @@ sqldelight {
         }
     }
 }
+
+// Temporary fix until the metro migration is finished
+tasks
+    .matching { it.name.startsWith("ksp") && it.name.endsWith("Kotlin") }
+    .whenTaskAdded kspKotlin@{
+        val component = name.substringAfter("ksp").substringBefore("Kotlin")
+        tasks
+            .matching { it.name == "generate${component}DatabaseInterface" }
+            .whenTaskAdded { this@kspKotlin.dependsOn(this) }
+    }
