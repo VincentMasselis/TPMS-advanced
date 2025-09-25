@@ -21,7 +21,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DeleteVehicleButtonTags.Button.tag
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DeleteVehicleButtonTags.Dialog.cancel
@@ -30,17 +31,13 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.Event
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.State
 import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent.Companion.viewModel
 
 @Composable
 internal fun DeleteVehicleButton(
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.vehicle.uuid}") {
-        (vehicleComponent as InternalVehicleComponent).DeleteVehicleViewModel()
-    }
+    vehicleComponent: InternalVehicleComponent = LocalInternalVehicleComponent.current,
+    viewModel: DeleteVehicleViewModel = vehicleComponent.viewModel { it.DeleteVehicleViewModel() }
 ) {
     val navController = LocalHomeNavController.current
     val state by viewModel.stateFlow.collectAsState()

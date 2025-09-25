@@ -1,5 +1,9 @@
 package com.masselis.tpmsadvanced.feature.main.ioc
 
+import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.CreationExtras
+import com.masselis.tpmsadvanced.core.ui.viewModel
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
@@ -11,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Named
 
 @Suppress("PropertyName", "VariableNaming")
-public interface VehicleComponent {
+public sealed interface VehicleComponent {
 
     @javax.inject.Scope
     public annotation class Scope
@@ -47,6 +51,16 @@ internal interface InternalVehicleComponent : VehicleComponent {
     fun VehicleSettingsViewModel(): VehicleSettingsViewModelImpl
     fun DeleteVehicleViewModel(): DeleteVehicleViewModelImpl
 
+
     companion object : (Vehicle) -> InternalVehicleComponent by InternalComponent
-        .vehicleComponentCacheUseCase
+        .vehicleComponentCacheUseCase {
+
+        @Composable
+        inline fun <reified VM : ViewModel> InternalVehicleComponent.viewModel(
+            noinline initializer: CreationExtras.(InternalVehicleComponent) -> VM
+        ) = viewModel(
+            keyed = mapOf("vehicle_id" to vehicle.uuid.toString()),
+            initializer = initializer
+        )
+    }
 }
