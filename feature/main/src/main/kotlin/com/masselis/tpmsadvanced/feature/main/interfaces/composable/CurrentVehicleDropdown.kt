@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -21,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import com.masselis.tpmsadvanced.feature.main.R
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -133,7 +134,12 @@ private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
         }
         DropdownMenuItem(
             text = { Text(text = "Add a vehicle", Modifier.weight(1f)) },
-            trailingIcon = { Icon(Icons.Filled.AddCircle, contentDescription = "") },
+            trailingIcon = {
+                Icon(
+                    ImageVector.vectorResource(R.drawable.add_circle_24px),
+                    contentDescription = ""
+                )
+            },
             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
             onClick = { onAskNewVehicle(); onDismissRequest() },
             modifier = Modifier.testTag(dropdownEntryAddVehicle)
