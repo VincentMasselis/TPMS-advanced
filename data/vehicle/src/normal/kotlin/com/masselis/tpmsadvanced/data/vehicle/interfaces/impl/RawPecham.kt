@@ -2,8 +2,8 @@ package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
 import android.bluetooth.le.ScanRecord
 import android.bluetooth.le.ScanResult
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
