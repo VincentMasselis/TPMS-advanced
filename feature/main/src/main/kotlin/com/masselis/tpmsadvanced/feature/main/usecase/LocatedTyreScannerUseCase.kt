@@ -5,9 +5,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
-import javax.inject.Inject
 
-internal class LocatedTyreScannerUseCase @Inject constructor(
+internal class LocatedTyreScannerUseCase(
     private val source: BluetoothLeScanner,
     private val currentLocation: Location,
     private val sensorBindingUseCase: SensorBindingUseCase,

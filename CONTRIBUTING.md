@@ -5,7 +5,7 @@
 * Multi-module based on [this approach](https://developer.android.com/topic/modularization)
 * Clean Architecture (Entities, Use-Cases, Interfaces)
 * [Compose](https://developer.android.com/jetpack/compose)
-* IOC with [Dagger2](https://dagger.dev/)
+* IOC with [Metro](https://zacsweers.github.io/metro/latest/index.html)
 * Gradle with [Android Gradle Plugin](https://developer.android.com/studio/build)
 * Gradle KTS with custom plugins
 * Git-flow

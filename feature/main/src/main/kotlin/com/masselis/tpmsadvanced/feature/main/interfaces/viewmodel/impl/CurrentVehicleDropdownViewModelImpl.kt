@@ -8,9 +8,9 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel.State
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleListUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class CurrentVehicleDropdownViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class CurrentVehicleDropdownViewModelImpl(
     private val currentVehicleUseCase: CurrentVehicleUseCase,
     vehicleListUseCase: VehicleListUseCase,
     @Assisted savedStateHandle: SavedStateHandle,

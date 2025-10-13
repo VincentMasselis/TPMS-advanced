@@ -14,9 +14,9 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,7 +34,8 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class TyreViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class TyreViewModelImpl (
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: VehicleRangesUseCase,
     @Assisted savedStateHandle: SavedStateHandle,

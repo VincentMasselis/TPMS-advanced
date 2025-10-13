@@ -75,7 +75,7 @@ import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensor
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorListTags.sensorUnpluggedButton
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModel
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModel.State
-import com.masselis.tpmsadvanced.feature.unlocated.ioc.FeatureUnlocatedBinding.Companion.ListSensorViewModel
+import com.masselis.tpmsadvanced.feature.unlocated.ioc.FeatureUnlocatedComponent.Companion.ListSensorViewModel
 import io.github.fornewid.placeholder.foundation.PlaceholderHighlight
 import io.github.fornewid.placeholder.material3.placeholder
 import io.github.fornewid.placeholder.material3.shimmer

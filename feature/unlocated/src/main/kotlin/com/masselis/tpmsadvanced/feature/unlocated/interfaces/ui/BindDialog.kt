@@ -36,7 +36,7 @@ import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.BindDialogTags.
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.BindDialogTags.root
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModel
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModel.State
-import com.masselis.tpmsadvanced.feature.unlocated.ioc.FeatureUnlocatedBinding.Companion.BindDialogViewModel
+import com.masselis.tpmsadvanced.feature.unlocated.ioc.FeatureUnlocatedComponent.Companion.BindDialogViewModel
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

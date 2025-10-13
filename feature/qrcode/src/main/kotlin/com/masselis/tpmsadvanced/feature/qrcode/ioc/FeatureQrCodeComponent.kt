@@ -4,27 +4,30 @@ import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent
 import com.masselis.tpmsadvanced.feature.main.ioc.FeatureMainComponent
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel
-import dagger.Component
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Includes
+import dev.zacsweers.metro.createGraphFactory
 
-@Suppress("PropertyName")
-@FeatureQrCodeComponent.Scope
-@Component(
-    dependencies = [
-        CoreCommonComponent::class,
-        DataVehicleComponent::class,
-        FeatureMainComponent::class
-    ]
+@Suppress("PropertyName", "VariableNaming", "unused")
+@DependencyGraph(
+    bindingContainers = [Bindings::class]
 )
 internal interface FeatureQrCodeComponent {
-    @javax.inject.Scope
-    annotation class Scope
 
-    @Suppress("VariableNaming")
+    @DependencyGraph.Factory
+    interface Factory {
+        fun build(
+            @Includes coreCommonComponent: CoreCommonComponent,
+            @Includes dataVehicleComponent: DataVehicleComponent,
+            @Includes featureMainComponent: FeatureMainComponent,
+        ): FeatureQrCodeComponent
+    }
+
     val QrCodeViewModel: QRCodeViewModel.Factory
 
-    companion object : FeatureQrCodeComponent by DaggerFeatureQrCodeComponent.builder()
-        .coreCommonComponent(CoreCommonComponent)
-        .dataVehicleComponent(DataVehicleComponent)
-        .featureMainComponent(FeatureMainComponent)
-        .build()
+    companion object : FeatureQrCodeComponent by createGraphFactory<Factory>().build(
+        CoreCommonComponent,
+        DataVehicleComponent,
+        FeatureMainComponent
+    )
 }

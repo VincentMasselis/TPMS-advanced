@@ -7,9 +7,9 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.AutomaticBackgroundViewModel.State
 import com.masselis.tpmsadvanced.feature.background.usecase.CheckForPermissionUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +18,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-internal class AutomaticBackgroundViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class AutomaticBackgroundViewModelImpl(
     private val database: VehicleDatabase,
     private val checkForPermissionUseCase: CheckForPermissionUseCase,
     @Assisted private val vehicle: Vehicle

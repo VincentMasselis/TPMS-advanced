@@ -2,13 +2,13 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.Event
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.State
 import com.masselis.tpmsadvanced.feature.main.usecase.DeleteVehicleUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleCountStateFlowUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleStateFlowUseCase
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -18,9 +18,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-internal class DeleteVehicleViewModelImpl @Inject constructor(
+internal class DeleteVehicleViewModelImpl(
     private val deleteVehicleUseCase: DeleteVehicleUseCase,
     vehicleStateFlowUseCase: VehicleStateFlowUseCase,
     vehicleCountStateFlowUseCase: VehicleCountStateFlowUseCase,

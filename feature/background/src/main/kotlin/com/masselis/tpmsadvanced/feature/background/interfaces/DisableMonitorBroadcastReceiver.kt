@@ -6,8 +6,8 @@ import android.content.Intent
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.feature.background.ioc.InternalComponent
 import com.masselis.tpmsadvanced.feature.background.usecase.VehiclesToMonitorUseCase
+import dev.zacsweers.metro.Inject
 import java.util.UUID
-import javax.inject.Inject
 
 internal class DisableMonitorBroadcastReceiver internal constructor() : BroadcastReceiver() {
 

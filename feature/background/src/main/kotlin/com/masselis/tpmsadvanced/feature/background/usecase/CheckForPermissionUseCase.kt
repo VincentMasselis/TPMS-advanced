@@ -8,16 +8,13 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
-import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @OptIn(DelicateCoroutinesApi::class)
-@FeatureBackgroundComponent.Scope
-internal class CheckForPermissionUseCase @Inject constructor(
+internal class CheckForPermissionUseCase(
     database: VehicleDatabase,
 ) {
 

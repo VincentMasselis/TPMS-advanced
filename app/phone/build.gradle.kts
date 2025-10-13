@@ -10,7 +10,7 @@ import com.masselis.tpmsadvanced.playstore.task.UpdatePlayStoreScreenshots
 plugins {
     `android-app`
     compose
-    dagger
+    alias(libs.plugins.metro)
     alias(libs.plugins.paparazzi)
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.crashlytics) apply false

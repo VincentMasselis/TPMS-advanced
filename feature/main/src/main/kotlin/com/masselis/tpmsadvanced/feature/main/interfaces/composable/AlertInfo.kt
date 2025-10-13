@@ -23,8 +23,8 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.TyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.InternalTyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -96,9 +96,9 @@ private class DemoTyreViewModel(state: State) : TyreViewModel {
 }
 
 private class DemoVehicleComponent : InternalVehicleComponent {
-    override val TyreComponent: (Location) -> TyreComponent
+    override val TyreComponent: FindTyreComponentUseCase
         get() = error("Not implemented")
-    override val InternalTyreComponent: FindTyreComponentUseCase
+    override val tyreFactory: InternalTyreComponent.Factory
         get() = error("Not implemented")
     override val vehicle: Vehicle
         get() = error("Not implemented")

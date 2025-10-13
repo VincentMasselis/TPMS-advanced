@@ -1,4 +1,4 @@
-package com.masselis.tpmsadvanced.feature.main.ioc
+package com.masselis.tpmsadvanced.feature.main.ioc.vehicle
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
@@ -8,52 +8,50 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
+import com.masselis.tpmsadvanced.feature.main.ioc.InternalComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.InternalTyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreSubcomponentBindings
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
-import dagger.BindsInstance
-import dagger.Subcomponent
+import dev.zacsweers.metro.GraphExtension
+import dev.zacsweers.metro.Provides
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Named
 
 @Suppress("PropertyName", "VariableNaming")
 public sealed interface VehicleComponent {
 
-    @javax.inject.Scope
-    public annotation class Scope
-
-    @get:Named("base")
     public val vehicle: Vehicle
     public val vehicleStateFlow: StateFlow<Vehicle>
 
     public val vehicleRangesUseCase: VehicleRangesUseCase
 
-    public val TyreComponent: (@JvmSuppressWildcards Vehicle.Kind.Location) -> @JvmSuppressWildcards TyreComponent
+    public val TyreComponent: (Vehicle.Kind.Location) -> TyreComponent
 
     public companion object : (Vehicle) -> VehicleComponent by InternalVehicleComponent
 }
 
-@Suppress("PropertyName", "FunctionName")
-@VehicleComponent.Scope
-@Subcomponent(
-    modules = [VehicleModule::class, TyreSubcomponentModule::class]
+@Suppress("PropertyName", "FunctionName", "VariableNaming", "unused")
+@GraphExtension(
+    scope = VehicleComponent::class,
+    bindingContainers = [Bindings::class, TyreSubcomponentBindings::class]
 )
 internal interface InternalVehicleComponent : VehicleComponent {
 
-    @Subcomponent.Factory
+    @GraphExtension.Factory
     interface Factory {
-        fun build(@BindsInstance @Named("base") vehicle: Vehicle): InternalVehicleComponent
+        fun build(@Provides vehicle: Vehicle): InternalVehicleComponent
     }
 
-    @Suppress("VariableNaming", "MaxLineLength")
-    val InternalTyreComponent: (@JvmSuppressWildcards Vehicle.Kind.Location) -> @JvmSuppressWildcards InternalTyreComponent
+    override val TyreComponent: (Vehicle.Kind.Location) -> InternalTyreComponent
 
-    @Suppress("VariableNaming")
+    val tyreFactory: InternalTyreComponent.Factory
+
     val ClearBoundSensorsViewModel: ClearBoundSensorsViewModelImpl.Factory
     fun VehicleSettingsViewModel(): VehicleSettingsViewModelImpl
     fun DeleteVehicleViewModel(): DeleteVehicleViewModelImpl
 
-
     companion object : (Vehicle) -> InternalVehicleComponent by InternalComponent
-        .vehicleComponentCacheUseCase {
+        .VehicleComponentFactory {
 
         @Composable
         inline fun <reified VM : ViewModel> InternalVehicleComponent.viewModel(

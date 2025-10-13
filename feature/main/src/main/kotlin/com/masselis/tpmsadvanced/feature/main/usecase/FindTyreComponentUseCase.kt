@@ -1,9 +1,5 @@
 package com.masselis.tpmsadvanced.feature.main.usecase
 
-import com.masselis.tpmsadvanced.feature.main.ioc.AxleQualifier
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalTyreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.SideQualifier
-import com.masselis.tpmsadvanced.feature.main.ioc.WheelLocationQualifier
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
@@ -13,21 +9,19 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import dagger.Lazy
-import javax.inject.Inject
-import javax.inject.Named
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.InternalTyreComponent
 
 @Suppress("LongParameterList")
-internal class FindTyreComponentUseCase @Inject internal constructor(
-    @Named("base") private val vehicle: Vehicle,
-    @WheelLocationQualifier(FRONT_LEFT) private val frontLeft: Lazy<InternalTyreComponent>,
-    @WheelLocationQualifier(FRONT_RIGHT) private val frontRight: Lazy<InternalTyreComponent>,
-    @WheelLocationQualifier(REAR_LEFT) private val rearLeft: Lazy<InternalTyreComponent>,
-    @WheelLocationQualifier(REAR_RIGHT) private val rearRight: Lazy<InternalTyreComponent>,
-    @AxleQualifier(FRONT) private val front: Lazy<InternalTyreComponent>,
-    @AxleQualifier(REAR) private val rear: Lazy<InternalTyreComponent>,
-    @SideQualifier(LEFT) private val left: Lazy<InternalTyreComponent>,
-    @SideQualifier(RIGHT) private val right: Lazy<InternalTyreComponent>,
+internal class FindTyreComponentUseCase(
+    private val vehicle: Vehicle,
+    private val frontLeft: Lazy<InternalTyreComponent>,
+    private val frontRight: Lazy<InternalTyreComponent>,
+    private val rearLeft: Lazy<InternalTyreComponent>,
+    private val rearRight: Lazy<InternalTyreComponent>,
+    private val front: Lazy<InternalTyreComponent>,
+    private val rear: Lazy<InternalTyreComponent>,
+    private val left: Lazy<InternalTyreComponent>,
+    private val right: Lazy<InternalTyreComponent>,
 ) : (Vehicle.Kind.Location) -> InternalTyreComponent {
     override fun invoke(location: Vehicle.Kind.Location): InternalTyreComponent {
         assert(vehicle.kind.locations.contains(location)) {
@@ -50,6 +44,6 @@ internal class FindTyreComponentUseCase @Inject internal constructor(
                 LEFT -> left
                 RIGHT -> right
             }
-        }.get()
+        }.value
     }
 }

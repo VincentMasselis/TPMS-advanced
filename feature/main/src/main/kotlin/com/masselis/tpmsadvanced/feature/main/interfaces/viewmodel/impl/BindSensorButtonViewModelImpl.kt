@@ -9,9 +9,9 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorBut
 import com.masselis.tpmsadvanced.feature.main.usecase.SearchSensorToBindUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.SearchSensorToBindUseCase.Result
 import com.masselis.tpmsadvanced.feature.main.usecase.SensorBindingUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +24,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class BindSensorButtonViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class BindSensorButtonViewModelImpl(
     private val sensorBindingUseCase: SensorBindingUseCase,
     vehicleFlow: StateFlow<Vehicle>,
     searchSensorToBindUseCase: SearchSensorToBindUseCase,

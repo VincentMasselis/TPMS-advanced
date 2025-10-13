@@ -26,9 +26,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import javax.inject.Inject
 
-internal class QrCodeSensorUseCase @Inject constructor(
+internal class QrCodeSensorUseCase(
     private val cameraAnalyser: CameraAnalyser,
     private val currentVehicleUseCase: CurrentVehicleUseCase
 ) {

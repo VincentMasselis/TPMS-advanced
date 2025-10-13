@@ -3,7 +3,7 @@
 plugins {
     `android-lib`
     alias(libs.plugins.sqldelight)
-    dagger
+    alias(libs.plugins.metro)
 }
 
 android {

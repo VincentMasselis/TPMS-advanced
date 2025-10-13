@@ -68,9 +68,5 @@ gradlePlugin {
             id = "detekt"
             implementationClass = "DetektPlugin"
         }
-        create("DaggerPlugin") {
-            id = "dagger"
-            implementationClass = "DaggerPlugin"
-        }
     }
 }

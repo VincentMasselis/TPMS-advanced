@@ -1,6 +1,6 @@
 plugins {
     `android-lib`
-    dagger
+    alias(libs.plugins.metro)
 }
 
 android {
@@ -8,6 +8,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:common"))
+
     api(libs.sqldelight.android.driver)
     api(libs.sqldelight.coroutines.ext)
     api(libs.sqldelight.coroutines.jvm)

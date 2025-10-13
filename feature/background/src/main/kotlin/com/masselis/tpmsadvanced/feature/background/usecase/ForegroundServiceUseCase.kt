@@ -3,7 +3,6 @@ package com.masselis.tpmsadvanced.feature.background.usecase
 import android.content.Intent
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService
-import com.masselis.tpmsadvanced.feature.background.ioc.FeatureBackgroundComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -14,11 +13,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
-import javax.inject.Inject
 
 @OptIn(DelicateCoroutinesApi::class)
-@FeatureBackgroundComponent.Scope
-internal class ForegroundServiceUseCase @Inject constructor(
+internal class ForegroundServiceUseCase(
     vehiclesToMonitorUseCase: VehiclesToMonitorUseCase,
     checkForPermissionUseCase: CheckForPermissionUseCase,
 ) {

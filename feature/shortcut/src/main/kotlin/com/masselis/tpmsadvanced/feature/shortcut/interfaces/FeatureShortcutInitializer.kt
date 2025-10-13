@@ -3,7 +3,7 @@ package com.masselis.tpmsadvanced.feature.shortcut.interfaces
 import android.content.Context
 import androidx.startup.Initializer
 import com.masselis.tpmsadvanced.core.common.AppContextInitializer
-import com.masselis.tpmsadvanced.feature.shortcut.usecase.FeatureShortcutComponent
+import com.masselis.tpmsadvanced.feature.shortcut.ioc.FeatureShortcutComponent
 
 public class FeatureShortcutInitializer : Initializer<Unit> {
     override fun create(context: Context) {

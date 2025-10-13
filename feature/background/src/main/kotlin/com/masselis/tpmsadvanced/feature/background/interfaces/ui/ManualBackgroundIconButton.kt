@@ -26,7 +26,7 @@ import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualB
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.ManualBackgroundViewModel.State
 import com.masselis.tpmsadvanced.feature.background.ioc.InternalComponent.Companion.ManualBackgroundViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 
 @Composable
 public fun ManualBackgroundIconButton(

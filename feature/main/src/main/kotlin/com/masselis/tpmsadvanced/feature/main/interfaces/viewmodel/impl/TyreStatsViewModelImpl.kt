@@ -13,9 +13,9 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsView
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel.State
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -26,7 +26,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlin.Float.Companion.NEGATIVE_INFINITY
 import kotlin.Float.Companion.POSITIVE_INFINITY
 
-internal class TyreStatsViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class TyreStatsViewModelImpl(
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
