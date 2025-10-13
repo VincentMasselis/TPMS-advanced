@@ -15,9 +15,6 @@ import dev.zacsweers.metro.Provides
 
 
 public sealed interface TyreComponent {
-    @javax.inject.Scope
-    public annotation class Scope
-
     public val vehicle: Vehicle
     public val location: Location
     public val tyreAtmosphereUseCase: TyreAtmosphereUseCase
