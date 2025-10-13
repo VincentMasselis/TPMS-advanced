@@ -26,7 +26,8 @@
 
         <service
             android:name="com.masselis.tpmsadvanced.feature.background.interfaces.MonitorService"
-            android:foregroundServiceType="connectedDevice" />
+            android:foregroundServiceType="connectedDevice"
+            android:permission="android.permission.BLUETOOTH_SCAN" />
 
     </application>
 </manifest>
