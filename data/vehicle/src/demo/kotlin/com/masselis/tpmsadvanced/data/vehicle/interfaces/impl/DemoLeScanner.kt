@@ -10,7 +10,7 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-internal class BluetoothLeScannerImpl : BluetoothLeScanner {
+internal class DemoLeScanner : BluetoothLeScanner {
 
     private val frontLeft = listOf(
         Tyre.SensorLocated(
