@@ -26,7 +26,6 @@ public data class Vehicle(
     public val lowTemp: Temperature,
     public val normalTemp: Temperature,
     public val highTemp: Temperature,
-    public val isBackgroundMonitor: Boolean,
 ) : Parcelable {
 
     /**

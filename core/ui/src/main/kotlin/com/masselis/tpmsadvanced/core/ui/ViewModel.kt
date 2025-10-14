@@ -32,7 +32,7 @@ public inline fun <reified T : ViewModel> KClass<T>.key(content: Map<String, Str
 /** Similar to [androidxViewModel] but with the support of [keyed] */
 @Composable
 public inline fun <reified VM : ViewModel> viewModel(
-    keyed: Map<String, String>,
+    keyed: Keyed,
     viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     },
@@ -45,10 +45,11 @@ public inline fun <reified VM : ViewModel> viewModel(
  */
 @Composable
 public inline fun <HOST, reified VM : ViewModel> HOST.viewModel(
-    keyed: Map<String, String>,
+    keyed: Keyed,
     viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     },
     noinline initializer: CreationExtras.(HOST) -> VM
 ): VM = androidxViewModel(viewModelStoreOwner, VM::class.key(keyed)) { initializer(this@viewModel) }
 
+public typealias Keyed = Map<String, String>

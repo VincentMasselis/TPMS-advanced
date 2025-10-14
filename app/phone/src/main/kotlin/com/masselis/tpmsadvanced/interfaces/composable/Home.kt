@@ -45,7 +45,7 @@ import androidx.navigation.compose.rememberNavController
 import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
-import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
+import com.masselis.tpmsadvanced.feature.background.interfaces.ui.BackgroundIconButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdown
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
@@ -226,7 +226,7 @@ private fun TopAppBar(
             var showMenu by remember { mutableStateOf(false) }
             when (currentPath) {
                 is Path.Home -> {
-                    ManualBackgroundIconButton(
+                    BackgroundIconButton(
                         modifier = manualBackgroundButtonModifier
                             .testTag(HomeTags.Actions.manualBackground)
                     )

@@ -38,11 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.ui.restartApp
+import com.masselis.tpmsadvanced.core.ui.viewModel
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.InternalTyreComponent.Companion.viewModel
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.keyed
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -56,9 +57,9 @@ internal fun Tyre(
     location: Location,
     modifier: Modifier = Modifier,
     vehicleComponent: InternalVehicleComponent = LocalInternalVehicleComponent.current,
-    viewModel: TyreViewModel = vehicleComponent.TyreComponent(location).viewModel {
-        it.TyreViewModel(createSavedStateHandle())
-    },
+    viewModel: TyreViewModel = vehicleComponent
+        .TyreComponent(location)
+        .let { viewModel(it.keyed()) { it.TyreViewModel(createSavedStateHandle()) } },
 ) {
     val state by viewModel.stateFlow.collectAsState()
     Tyre(state, modifier)
