@@ -1,9 +1,6 @@
 package com.masselis.tpmsadvanced.feature.main.ioc.tyre
 
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.masselis.tpmsadvanced.core.ui.viewModel
+import com.masselis.tpmsadvanced.core.ui.Keyed
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.BindSensorButtonViewModelImpl
@@ -18,6 +15,13 @@ public sealed interface TyreComponent {
     public val vehicle: Vehicle
     public val location: Location
     public val tyreAtmosphereUseCase: TyreAtmosphereUseCase
+
+    public companion object {
+        public fun TyreComponent.keyed(): Keyed = mapOf(
+            "vehicle_id" to vehicle.uuid.toString(),
+            "location" to "$location"
+        )
+    }
 }
 
 @Suppress("PropertyName", "VariableNaming", "unused")
@@ -35,17 +39,4 @@ internal interface InternalTyreComponent : TyreComponent {
     val TyreViewModel: TyreViewModelImpl.Factory
     val TyreStatViewModel: TyreStatsViewModelImpl.Factory
     val BindSensorButtonViewModel: BindSensorButtonViewModelImpl.Factory
-
-    companion object {
-        @Composable
-        inline fun <reified VM : ViewModel> InternalTyreComponent.viewModel(
-            noinline initializer: CreationExtras.(InternalTyreComponent) -> VM
-        ) = viewModel(
-            keyed = mapOf(
-                "vehicle_id" to vehicle.uuid.toString(),
-                "location" to "$location"
-            ),
-            initializer = initializer
-        )
-    }
 }

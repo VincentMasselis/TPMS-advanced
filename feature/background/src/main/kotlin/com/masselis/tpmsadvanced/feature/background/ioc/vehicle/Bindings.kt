@@ -15,14 +15,14 @@ import kotlinx.coroutines.CoroutineScope
 @BindingContainer
 internal object Bindings {
     @Provides
-    @SingleIn(BackgroundVehicleComponent::class)
+    @SingleIn(ServiceComponent::class)
     private fun serviceNotifier(
         vehicle: Vehicle,
         scope: CoroutineScope,
         tyreComponent: (Vehicle.Kind.Location) -> TyreComponent,
         vehicleRangesUseCase: VehicleRangesUseCase,
         unitPreferences: UnitPreferences,
-        foregroundService: Service?,
+        foregroundService: Service,
     ): ServiceNotifier = ServiceNotifier(
         vehicle,
         scope,

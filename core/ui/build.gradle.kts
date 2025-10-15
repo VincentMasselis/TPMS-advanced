@@ -15,6 +15,7 @@ dependencies {
     api(libs.lifecycle.viewmodel.ktx)
     api(libs.lifecycle.viewmodel.compose)
     api(libs.lifecycle.process)
+    api(libs.lifecycle.service)
 
 
     api(libs.compose.ui)

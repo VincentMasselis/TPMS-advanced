@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.ui.Separator
+import com.masselis.tpmsadvanced.core.ui.viewModel
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
@@ -20,19 +21,19 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent.Companion.viewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Companion.key
 
 @Composable
 public fun VehicleSettings(
     modifier: Modifier = Modifier,
     backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
+    component: VehicleComponent = LocalVehicleComponent.current,
 ) {
     VehicleSettings(
         modifier,
         backgroundSettings,
-        vehicleComponent as InternalVehicleComponent,
+        component as InternalVehicleComponent,
     )
 }
 
@@ -40,8 +41,8 @@ public fun VehicleSettings(
 internal fun VehicleSettings(
     modifier: Modifier = Modifier,
     backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
-    vehicleComponent: InternalVehicleComponent = LocalInternalVehicleComponent.current,
-    viewModel: VehicleSettingsViewModel = vehicleComponent.viewModel { it.VehicleSettingsViewModel() },
+    component: InternalVehicleComponent = LocalInternalVehicleComponent.current,
+    viewModel: VehicleSettingsViewModel = component.viewModel(component.key()) { it.VehicleSettingsViewModel() },
 ) {
     val component = LocalVehicleComponent.current
     val highTemp by viewModel.highTemp.collectAsState()

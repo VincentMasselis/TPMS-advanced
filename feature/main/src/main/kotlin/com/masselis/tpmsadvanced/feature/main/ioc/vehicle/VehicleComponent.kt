@@ -1,9 +1,6 @@
 package com.masselis.tpmsadvanced.feature.main.ioc.vehicle
 
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.masselis.tpmsadvanced.core.ui.viewModel
+import com.masselis.tpmsadvanced.core.ui.Keyed
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
@@ -27,7 +24,9 @@ public sealed interface VehicleComponent {
 
     public val TyreComponent: (Vehicle.Kind.Location) -> TyreComponent
 
-    public companion object : (Vehicle) -> VehicleComponent by InternalVehicleComponent
+    public companion object : (Vehicle) -> VehicleComponent by InternalVehicleComponent {
+        public fun VehicleComponent.key(): Keyed = mapOf("vehicle_id" to vehicle.uuid.toString())
+    }
 }
 
 @Suppress("PropertyName", "FunctionName", "VariableNaming", "unused")
@@ -50,15 +49,6 @@ internal interface InternalVehicleComponent : VehicleComponent {
     fun VehicleSettingsViewModel(): VehicleSettingsViewModelImpl
     fun DeleteVehicleViewModel(): DeleteVehicleViewModelImpl
 
-    companion object : (Vehicle) -> InternalVehicleComponent by InternalComponent
-        .VehicleComponentFactory {
-
-        @Composable
-        inline fun <reified VM : ViewModel> InternalVehicleComponent.viewModel(
-            noinline initializer: CreationExtras.(InternalVehicleComponent) -> VM
-        ) = viewModel(
-            keyed = mapOf("vehicle_id" to vehicle.uuid.toString()),
-            initializer = initializer
-        )
-    }
+    companion object :
+            (Vehicle) -> InternalVehicleComponent by InternalComponent.VehicleComponentFactory
 }

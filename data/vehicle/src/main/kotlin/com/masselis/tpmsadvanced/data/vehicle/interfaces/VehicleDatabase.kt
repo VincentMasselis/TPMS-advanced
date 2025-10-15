@@ -84,28 +84,6 @@ public class VehicleDatabase internal constructor(database: Database) {
         queries.delete(uuid)
     }
 
-    public fun selectIsBackgroundMonitor(uuid: UUID): QueryOne<Boolean> = queries
-        .selectIsBackgroundMonitor(uuid)
-        .asOne()
-
-    public suspend fun updateIsBackgroundMonitor(
-        isBackgroundMonitor: Boolean,
-        uuid: UUID
-    ): Unit = withContext(IO) {
-        queries.updateIsBackgroundMonitor(isBackgroundMonitor, uuid)
-    }
-
-    public suspend fun updateIsBackgroundMonitorList(
-        isBackgroundMonitor: Boolean,
-        uuids: List<UUID>
-    ): Unit = withContext(IO) {
-        queries.updateIsBackgroundMonitorList(isBackgroundMonitor, uuids)
-    }
-
-    public suspend fun updateEveryIsBackgroundMonitorToFalse(): Unit = withContext(IO) {
-        queries.updateEveryIsBackgroundMonitorToFalse()
-    }
-
     public fun currentVehicle(): QueryOne<Vehicle> = queries.currentFavourite(mapper).asOne()
 
     public fun count(): QueryOne<Long> = queries.count().asOne()
@@ -134,9 +112,8 @@ public class VehicleDatabase internal constructor(database: Database) {
             Temperature,
             Vehicle.Kind,
             Boolean,
-            Boolean,
         ) -> Vehicle =
-            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _, isBackgroundMonitor ->
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _ ->
                 Vehicle(
                     uuid,
                     kind,
@@ -146,7 +123,6 @@ public class VehicleDatabase internal constructor(database: Database) {
                     lowTemp,
                     normalTemp,
                     highTemp,
-                    isBackgroundMonitor,
                 )
             }
     }

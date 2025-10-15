@@ -29,16 +29,31 @@ sqldelight {
             dialect(libs.sqldelight.dialect338)
             verifyMigrations = true
             schemaOutputDirectory = file("src/main/sqldelight")
+
+            val migrations = schemaOutputDirectory
+                .dir("migrations")
+                .get()
+                .asFileTree
+                .matching { include("*.sqm") }
+                .files
+                .sortedBy { it.nameWithoutExtension }
+                .map { it.nameWithoutExtension }
+            val snapshots = schemaOutputDirectory
+                .get()
+                .asFileTree
+                .matching { include("*.db") }
+                .files
+                .sortedBy { it.nameWithoutExtension }
+                .map { it.nameWithoutExtension }
+            // Check that all migrations have a corresponding snapshot
+            for (migration in migrations) {
+                if (snapshots.none { it == migration })
+                    throw GradleException("A base snapshot named \"$migration.db\" is missing to run migration \"$migration.sqm\"")
+            }
+            // Check a snapshot exists after the latest migration
+            if (snapshots.last() == migrations.last()) {
+                throw GradleException("The latest migration exists but no snapshot is available, run \"generateNormalDebugDatabaseSchema\"")
+            }
         }
     }
 }
-
-// Temporary fix until the metro migration is finished
-tasks
-    .matching { it.name.startsWith("ksp") && it.name.endsWith("Kotlin") }
-    .whenTaskAdded kspKotlin@{
-        val component = name.substringAfter("ksp").substringBefore("Kotlin")
-        tasks
-            .matching { it.name == "generate${component}DatabaseInterface" }
-            .whenTaskAdded { this@kspKotlin.dependsOn(this) }
-    }

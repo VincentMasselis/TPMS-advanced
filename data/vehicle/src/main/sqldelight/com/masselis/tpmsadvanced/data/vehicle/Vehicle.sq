@@ -1,6 +1,6 @@
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind;
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure;
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature;
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind;
 import java.util.UUID;
 import kotlin.Boolean;
 
@@ -14,8 +14,7 @@ CREATE TABLE Vehicle(
     normalTemp REAL AS Temperature NOT NULL DEFAULT 45,
     highTemp REAL AS Temperature NOT NULL DEFAULT 90,
     kind TEXT AS Kind NOT NULL DEFAULT "CAR",
-    isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0,
-    isBackgroundMonitor INTEGER AS Boolean NOT NULL DEFAULT 0
+    isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 -- This succession of triggers ensure there is always exactly 1 car with isFavourite set to 1
@@ -64,7 +63,7 @@ CREATE TRIGGER IF NOT EXISTS no_update_when_deleting
     ON Vehicle
     WHEN old.isDeleting = 1
 BEGIN
-    SELECT RAISE(FAIL, "Cannot update a vehicule which is currently deleting");
+    SELECT RAISE(FAIL, 'Cannot update a vehicule which is currently deleting');
 END;
 
 -- This statement is put in the end because SQLDelight executes the triggers before the statements
@@ -109,18 +108,6 @@ UPDATE Vehicle SET isDeleting = ? WHERE uuid = ?;
 
 deleteIsDeleting:
 DELETE FROM Vehicle WHERE isDeleting = 1;
-
-selectIsBackgroundMonitor:
-SELECT isBackgroundMonitor FROM Vehicle WHERE uuid = ?;
-
-updateIsBackgroundMonitor:
-UPDATE Vehicle SET isBackgroundMonitor = ? WHERE uuid = ?;
-
-updateIsBackgroundMonitorList:
-UPDATE Vehicle SET isBackgroundMonitor = ? WHERE uuid IN ?;
-
-updateEveryIsBackgroundMonitorToFalse:
-UPDATE Vehicle SET isBackgroundMonitor = 0 WHERE isBackgroundMonitor = 1;
 
 delete:
 DELETE FROM Vehicle WHERE uuid = ?;

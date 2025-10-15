@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_MAX
+import androidx.core.app.ServiceCompat
 import androidx.core.app.ServiceCompat.STOP_FOREGROUND_REMOVE
 import androidx.core.app.ServiceCompat.stopForeground
 import androidx.core.app.TaskStackBuilder
@@ -53,7 +54,7 @@ internal class ServiceNotifier(
     tyreComponent: (Vehicle.Kind.Location) -> TyreComponent,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
-    foregroundService: Service?,
+    service: Service,
 ) {
     private val notificationManager = NotificationManagerCompat.from(appContext)
 
@@ -163,7 +164,7 @@ internal class ServiceNotifier(
                                     getBroadcast(
                                         appContext,
                                         vehicle.uuid.hashCode(),
-                                        DisableMonitorBroadcastReceiver.intent(vehicle.uuid),
+                                        DisableMonitorBroadcastReceiver.intent(),
                                         FLAG_IMMUTABLE
                                     )
                                 ).build()
@@ -186,25 +187,19 @@ internal class ServiceNotifier(
                     .build()
             }
             .onEach {
-                foregroundService
-                    ?.apply {
-                        if (SDK_INT >= Q)
-                            startForeground(
-                                vehicle.uuid.hashCode(),
-                                it,
-                                FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
-                            )
-                        else
-                            startForeground(vehicle.uuid.hashCode(), it)
-                    }
-                    ?: notificationManager.notify(vehicle.uuid.hashCode(), it)
+                ServiceCompat.startForeground(
+                    service,
+                    vehicle.uuid.hashCode(),
+                    it,
+                    // https://developer.android.com/about/versions/14/changes/fgs-types-required#connected-device
+                    if (SDK_INT >= Q) FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE else 0
+                )
             }
             .launchIn(scope)
 
         callbackFlow<Nothing> {
             awaitClose {
-                foregroundService?.also { stopForeground(it, STOP_FOREGROUND_REMOVE) }
-                    ?: notificationManager.cancel(vehicle.uuid.hashCode())
+                service.also { stopForeground(it, STOP_FOREGROUND_REMOVE) }
             }
         }.launchIn(scope)
     }
@@ -221,6 +216,7 @@ internal class ServiceNotifier(
         data object ScanFailure : State
     }
 
+    @Suppress("ConstPropertyName")
     internal companion object {
         private const val channelNameWhenOk = "MONITOR_SERVICE_WHEN_OK"
         private const val channelNameForAlerts = "MONITOR_SERVICE_FOR_ALERT"
