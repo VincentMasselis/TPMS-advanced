@@ -16,7 +16,7 @@ import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 
 @OptIn(ExperimentalTestApi::class)
 internal class BindingMethod private constructor(
-    composeTestRule: ComposeTestRule
+    private val composeTestRule: ComposeTestRule
 ) :
     ComposeTestRule by composeTestRule,
     EnterExitComposable<BindingMethod> by onEnterAndOnExit(
@@ -63,7 +63,7 @@ internal class BindingMethod private constructor(
     }
 
     companion object {
-        context(ComposeTestRule)
-        operator fun invoke(): BindingMethod = BindingMethod(this@ComposeTestRule)
+        context(rule: ComposeTestRule)
+        operator fun invoke(): BindingMethod = BindingMethod(rule)
     }
 }

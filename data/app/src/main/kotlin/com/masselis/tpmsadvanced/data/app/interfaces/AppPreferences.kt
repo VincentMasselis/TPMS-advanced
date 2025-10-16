@@ -7,11 +7,8 @@ import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.core.content.edit
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.app.BuildConfig.VERSION_CODE
-import com.masselis.tpmsadvanced.data.app.ioc.DataAppComponent
-import javax.inject.Inject
 
-@DataAppComponent.Scope
-public class AppPreferences @Inject internal constructor(
+public class AppPreferences internal constructor(
     context: Context
 ) {
     private val sharedPreferences = context.getSharedPreferences(

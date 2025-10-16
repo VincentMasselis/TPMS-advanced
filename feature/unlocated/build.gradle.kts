@@ -1,8 +1,8 @@
 plugins {
     `android-lib`
     compose
-    dagger
-    paparazzi
+    alias(libs.plugins.metro)
+    alias(libs.plugins.paparazzi)
 }
 
 android {

@@ -21,7 +21,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
+import com.masselis.tpmsadvanced.core.ui.viewModel
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DeleteVehicleButtonTags.Button.tag
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DeleteVehicleButtonTags.Dialog.cancel
@@ -29,18 +31,14 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DeleteVehicl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.Event
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Companion.key
 
 @Composable
 internal fun DeleteVehicleButton(
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: DeleteVehicleViewModel = viewModel(key = "DeleteVehicleViewModel_${vehicleComponent.vehicle.uuid}") {
-        (vehicleComponent as InternalVehicleComponent).DeleteVehicleViewModel()
-    }
+    component: InternalVehicleComponent = LocalInternalVehicleComponent.current,
+    viewModel: DeleteVehicleViewModel = component.viewModel(component.key()) { it.DeleteVehicleViewModel() }
 ) {
     val navController = LocalHomeNavController.current
     val state by viewModel.stateFlow.collectAsState()
@@ -58,12 +56,10 @@ internal fun DeleteVehicleButton(
             Text(text = "Delete \"${state.vehicle.name}\"")
         }
     }
-    if (showDeleteDialog)
-        DeleteVehicleDialog(
-            vehicle = state.vehicle,
-            onDismissRequest = { showDeleteDialog = false },
-            onDelete = { viewModel.delete(); showDeleteDialog = false; }
-        )
+    if (showDeleteDialog) DeleteVehicleDialog(
+        vehicle = state.vehicle,
+        onDismissRequest = { showDeleteDialog = false },
+        onDelete = { viewModel.delete(); showDeleteDialog = false; })
     LaunchedEffect(viewModel) {
         for (event in viewModel.eventChannel) {
             when (event) {
@@ -83,23 +79,19 @@ private fun DeleteVehicleDialog(
     AlertDialog(
         text = {
             Text("Do you really want to delete the car \"${vehicle.name}\" ?\nThis action cannot be undone !")
-        },
-        onDismissRequest = onDismissRequest,
-        dismissButton = {
+        }, onDismissRequest = onDismissRequest, dismissButton = {
             TextButton(
                 onClick = onDismissRequest,
                 content = { Text("Cancel") },
                 modifier = Modifier.testTag(cancel)
             )
-        },
-        confirmButton = {
+        }, confirmButton = {
             TextButton(
                 onClick = onDelete,
                 content = { Text("Delete \"${vehicle.name}\"") },
                 modifier = Modifier.testTag(delete)
             )
-        },
-        modifier = modifier.testTag(DeleteVehicleButtonTags.Dialog.root)
+        }, modifier = modifier.testTag(DeleteVehicleButtonTags.Dialog.root)
     )
 }
 

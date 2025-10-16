@@ -20,30 +20,26 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.masselis.tpmsadvanced.core.ui.viewModel
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorTags.Button.tag
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorTags.Dialog.addToFavoritesButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorTags.Dialog.cancelButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorButtonViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.keyed
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
 
 @Composable
 internal fun BindSensorButton(
     location: Location,
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: BindSensorButtonViewModel = viewModel(
-        key = "BindSensorButtonViewModel_${vehicleComponent.vehicle.uuid}_${location}"
-    ) {
-        (vehicleComponent as InternalVehicleComponent)
-            .InternalTyreComponent(location)
-            .BindSensorButtonViewModel(createSavedStateHandle())
-    }
+    vehicleComponent: InternalVehicleComponent = LocalInternalVehicleComponent.current,
+    viewModel: BindSensorButtonViewModel = vehicleComponent
+        .TyreComponent(location)
+        .let { viewModel(it.keyed()) { it.BindSensorButtonViewModel(createSavedStateHandle()) } }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     BindSensorButton(location, state, viewModel::bind, modifier)

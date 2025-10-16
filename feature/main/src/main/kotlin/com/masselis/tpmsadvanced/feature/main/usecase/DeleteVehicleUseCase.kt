@@ -9,12 +9,10 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
-import javax.inject.Named
 import kotlin.time.Duration.Companion.seconds
 
-internal class DeleteVehicleUseCase @Inject constructor(
-    @Named("base") private val vehicle: Vehicle,
+internal class DeleteVehicleUseCase(
+    private val vehicle: Vehicle,
     private val currentVehicleUseCase: CurrentVehicleUseCase,
     private val database: VehicleDatabase,
     private val scope: CoroutineScope,

@@ -5,9 +5,8 @@ import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
 
-internal class VehicleSettingsViewModelImpl @Inject constructor(
+internal class VehicleSettingsViewModelImpl(
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
 ) : ViewModel(), VehicleSettingsViewModel {

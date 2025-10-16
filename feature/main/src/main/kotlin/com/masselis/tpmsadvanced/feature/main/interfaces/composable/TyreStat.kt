@@ -17,11 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.core.ui.viewModel
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
@@ -30,6 +26,10 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel.State
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.keyed
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -38,14 +38,10 @@ import kotlin.time.Duration.Companion.milliseconds
 internal fun TyreStat(
     location: Location,
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: TyreStatsViewModel = viewModel(
-        key = "TyreStatsViewModel_${vehicleComponent.vehicle.uuid}_${location}"
-    ) {
-        (vehicleComponent as InternalVehicleComponent)
-            .InternalTyreComponent(location)
-            .TyreStatViewModel(createSavedStateHandle())
-    }
+    vehicleComponent: InternalVehicleComponent = LocalInternalVehicleComponent.current,
+    viewModel: TyreStatsViewModel = vehicleComponent
+        .TyreComponent(location)
+        .let { viewModel(it.keyed()) { it.TyreStatViewModel(createSavedStateHandle()) } },
 ) {
     val state by viewModel.stateFlow.collectAsState()
     TyreStat(location, state, modifier)
@@ -138,11 +134,11 @@ internal fun TyreStatNormalPreview() {
     TyreStat(
         location = Location.Wheel(SensorLocation.REAR_RIGHT),
         state =
-        State.Normal(
-            2f.bar,
-            PressureUnit.BAR, 30f.celsius,
-            TemperatureUnit.CELSIUS
-        ),
+            State.Normal(
+                2f.bar,
+                PressureUnit.BAR, 30f.celsius,
+                TemperatureUnit.CELSIUS
+            ),
     )
 }
 

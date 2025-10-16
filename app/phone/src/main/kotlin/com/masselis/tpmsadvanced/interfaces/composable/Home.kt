@@ -6,9 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -30,10 +27,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,13 +44,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
-import com.masselis.tpmsadvanced.feature.background.interfaces.ui.ManualBackgroundIconButton
+import com.masselis.tpmsadvanced.feature.background.interfaces.ui.BackgroundIconButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdown
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QrCodeScan
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorList
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
@@ -223,7 +223,7 @@ private fun TopAppBar(
                         onClick = { navController.popBackStack() },
                         content = {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                imageVector = ImageVector.vectorResource(R.drawable.arrow_back_24px),
                                 contentDescription = "Go back"
                             )
                         },
@@ -238,7 +238,7 @@ private fun TopAppBar(
             var showMenu by remember { mutableStateOf(false) }
             when (currentPath) {
                 is Path.Home -> {
-                    ManualBackgroundIconButton(
+                    BackgroundIconButton(
                         modifier = manualBackgroundButtonModifier
                             .testTag(HomeTags.Actions.manualBackground)
                     )
@@ -247,7 +247,7 @@ private fun TopAppBar(
                         Modifier.testTag(HomeTags.Actions.overflow)
                     ) {
                         Icon(
-                            Icons.Default.MoreVert,
+                            ImageVector.vectorResource(R.drawable.more_vert_24px),
                             contentDescription = "Show more options",
                         )
                     }

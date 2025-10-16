@@ -46,7 +46,7 @@ internal class OverflowMenu private constructor(
     }
 
     companion object {
-        context(ComposeTestRule)
-        operator fun invoke(): OverflowMenu = OverflowMenu(this@ComposeTestRule)
+        context(rule: ComposeTestRule)
+        operator fun invoke(): OverflowMenu = OverflowMenu(rule)
     }
 }

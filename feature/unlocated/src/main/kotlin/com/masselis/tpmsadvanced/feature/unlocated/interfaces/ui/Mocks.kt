@@ -46,7 +46,6 @@ internal fun mockVehicle(
     lowTemp: Temperature = 15f.celsius,
     normalTemp: Temperature = 25f.celsius,
     highTemp: Temperature = 45f.celsius,
-    isBackgroundMonitor: Boolean = false,
 ) = Vehicle(
-    uuid, kind, name, lowPressure, highPressure, lowTemp, normalTemp, highTemp, isBackgroundMonitor
+    uuid, kind, name, lowPressure, highPressure, lowTemp, normalTemp, highTemp
 )

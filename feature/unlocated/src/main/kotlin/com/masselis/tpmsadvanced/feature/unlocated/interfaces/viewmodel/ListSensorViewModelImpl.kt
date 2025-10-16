@@ -2,8 +2,8 @@ package com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModel.State
@@ -11,9 +11,9 @@ import com.masselis.tpmsadvanced.feature.unlocated.usecase.BindSensorToVehicleUs
 import com.masselis.tpmsadvanced.feature.unlocated.usecase.BoundSensorUseCase
 import com.masselis.tpmsadvanced.feature.unlocated.usecase.SearchingUnlocatedTyresUseCase
 import com.masselis.tpmsadvanced.feature.unlocated.usecase.VehicleBindingStatusUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +28,8 @@ import java.util.UUID
 
 @Suppress("LongParameterList")
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class ListSensorViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class ListSensorViewModelImpl(
     private val vehicleBindingStatusUseCase: VehicleBindingStatusUseCase,
     private val currentVehicleUseCase: CurrentVehicleUseCase,
     private val unitPreferences: UnitPreferences,

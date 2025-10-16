@@ -3,15 +3,12 @@ package com.masselis.tpmsadvanced.data.unit.interfaces
 import android.content.Context
 import androidx.core.content.edit
 import com.masselis.tpmsadvanced.core.common.observableStateFlow
-import com.masselis.tpmsadvanced.data.unit.ioc.DataUnitComponent
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.util.*
-import javax.inject.Inject
+import java.util.Locale
 
-@DataUnitComponent.Scope
-public class UnitPreferences @Inject internal constructor(
+public class UnitPreferences internal constructor(
     context: Context
 ) {
 
@@ -26,9 +23,9 @@ public class UnitPreferences @Inject internal constructor(
             ?.let { name -> PressureUnit.entries.first { it.name == name } }
             ?: when (Locale.getDefault().isO3Country) {
                 @Suppress("MaxLineLength")
-                "ARG", "BRA", "USA", "CHL", "MEX", "GBR", "IND", "HKG", "CAN", "AUS", "NZL", "IRL", "BHS", "PER" -> PressureUnit.PSI
-                "FRA" -> PressureUnit.BAR
-                else -> PressureUnit.KILO_PASCAL
+                "USA", "GBR", "CAN", "AUS" -> PressureUnit.PSI
+
+                else -> PressureUnit.BAR
             }
     ) { _, newValue ->
         sharedPreferences.edit { putString("PRESSURE", newValue.name) }

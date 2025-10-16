@@ -23,5 +23,5 @@ CREATE TRIGGER IF NOT EXISTS no_update_when_deleting
     ON Vehicle
     WHEN old.isDeleting = 1
 BEGIN
-    SELECT RAISE(FAIL, "Cannot update a vehicule which is currently deleting");
+    SELECT RAISE(FAIL, 'Cannot update a vehicule which is currently deleting');
 END;

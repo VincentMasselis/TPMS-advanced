@@ -2,12 +2,13 @@ package com.masselis.tpmsadvanced.feature.unlocated.usecase
 
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import java.util.UUID
 
-internal class BoundSensorUseCase @AssistedInject constructor(
+@AssistedInject
+internal class BoundSensorUseCase(
     private val sensorDatabase: SensorDatabase,
     private val vehicleDatabase: VehicleDatabase,
     @Assisted private val vehicleUuid: UUID,

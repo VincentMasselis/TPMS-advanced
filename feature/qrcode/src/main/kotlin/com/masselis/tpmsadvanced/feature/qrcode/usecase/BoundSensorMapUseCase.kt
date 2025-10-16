@@ -16,9 +16,8 @@ import com.masselis.tpmsadvanced.feature.qrcode.model.QrCodeSensors
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import javax.inject.Inject
 
-internal class BoundSensorMapUseCase @Inject constructor(
+internal class BoundSensorMapUseCase(
     private val sensorDatabase: SensorDatabase,
     private val currentVehicleUseCase: CurrentVehicleUseCase,
 ) {

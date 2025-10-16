@@ -2,21 +2,27 @@ package com.masselis.tpmsadvanced.data.app.ioc
 
 import com.masselis.tpmsadvanced.core.common.CoreCommonComponent
 import com.masselis.tpmsadvanced.data.app.interfaces.AppPreferences
-import dagger.Component
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Includes
+import dev.zacsweers.metro.createGraphFactory
 
-@DataAppComponent.Scope
-@Component(
-    dependencies = [CoreCommonComponent::class]
-)
 public interface DataAppComponent {
-
     public val appPreferences: AppPreferences
 
-    @javax.inject.Scope
-    public annotation class Scope
+    public companion object : DataAppComponent by InternalComponent
+}
 
-    public companion object : DataAppComponent by DaggerDataAppComponent
-        .builder()
-        .coreCommonComponent(CoreCommonComponent)
-        .build()
+@DependencyGraph(
+    AppScope::class,
+    bindingContainers = [Bindings::class]
+)
+internal interface InternalComponent : DataAppComponent {
+
+    @DependencyGraph.Factory
+    interface Factory {
+        fun build(@Includes coreCommonComponent: CoreCommonComponent): InternalComponent
+    }
+
+    companion object : InternalComponent by createGraphFactory<Factory>().build(CoreCommonComponent)
 }

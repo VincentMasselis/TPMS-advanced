@@ -34,3 +34,4 @@ jobs:
           verifyPaparazzi
           createGithubPreRelease
           publishToPlayStoreBetaNormalRelease
+          --stacktrace

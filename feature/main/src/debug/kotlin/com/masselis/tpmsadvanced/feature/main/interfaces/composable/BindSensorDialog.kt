@@ -35,7 +35,7 @@ public class BindSensorDialog private constructor(
     }
 
     public companion object {
-        context(ComposeTestRule)
-        public operator fun invoke(): BindSensorDialog = BindSensorDialog(this@ComposeTestRule)
+        context(rule: ComposeTestRule)
+        public operator fun invoke(): BindSensorDialog = BindSensorDialog(rule)
     }
 }

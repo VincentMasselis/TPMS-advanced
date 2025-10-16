@@ -3,20 +3,19 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel.State
-import com.masselis.tpmsadvanced.feature.main.usecase.TyreAtmosphereUseCase
-import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
-import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel.State
+import com.masselis.tpmsadvanced.feature.main.usecase.TyreAtmosphereUseCase
+import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -27,7 +26,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlin.Float.Companion.NEGATIVE_INFINITY
 import kotlin.Float.Companion.POSITIVE_INFINITY
 
-internal class TyreStatsViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class TyreStatsViewModelImpl(
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
@@ -37,8 +37,10 @@ internal class TyreStatsViewModelImpl @AssistedInject constructor(
     @AssistedFactory
     interface Factory : (SavedStateHandle) -> TyreStatsViewModelImpl
 
-    private val mutableStateFlow = savedStateHandle
-        .getMutableStateFlow<State>("STATE") { State.NotDetected }
+    private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>(
+        "STATE",
+        State.NotDetected
+    )
     override val stateFlow = mutableStateFlow.asStateFlow()
 
     init {

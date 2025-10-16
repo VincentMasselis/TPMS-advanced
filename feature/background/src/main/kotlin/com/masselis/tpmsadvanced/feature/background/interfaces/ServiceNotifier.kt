@@ -15,12 +15,13 @@ import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_MAX
+import androidx.core.app.ServiceCompat
 import androidx.core.app.ServiceCompat.STOP_FOREGROUND_REMOVE
 import androidx.core.app.ServiceCompat.stopForeground
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
@@ -30,8 +31,7 @@ import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.S
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.PressureAlert
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.ScanFailure
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.TemperatureAlert
-import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.TyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -45,20 +45,17 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import javax.inject.Inject
-import javax.inject.Named
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
 @SuppressLint("MissingPermission")
-@BackgroundVehicleComponent.Scope
-internal class ServiceNotifier @Inject constructor(
-    @Named("base") vehicle: Vehicle,
+internal class ServiceNotifier(
+    vehicle: Vehicle,
     scope: CoroutineScope,
-    tyreComponent: (@JvmSuppressWildcards Vehicle.Kind.Location) -> @JvmSuppressWildcards TyreComponent,
+    tyreComponent: (Vehicle.Kind.Location) -> TyreComponent,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
-    foregroundService: Service?,
+    service: Service,
 ) {
     private val notificationManager = NotificationManagerCompat.from(appContext)
 
@@ -168,7 +165,7 @@ internal class ServiceNotifier @Inject constructor(
                                     getBroadcast(
                                         appContext,
                                         vehicle.uuid.hashCode(),
-                                        DisableMonitorBroadcastReceiver.intent(vehicle.uuid),
+                                        DisableMonitorBroadcastReceiver.intent(),
                                         FLAG_IMMUTABLE
                                     )
                                 ).build()
@@ -191,25 +188,19 @@ internal class ServiceNotifier @Inject constructor(
                     .build()
             }
             .onEach {
-                foregroundService
-                    ?.apply {
-                        if (SDK_INT >= Q)
-                            startForeground(
-                                vehicle.uuid.hashCode(),
-                                it,
-                                FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
-                            )
-                        else
-                            startForeground(vehicle.uuid.hashCode(), it)
-                    }
-                    ?: notificationManager.notify(vehicle.uuid.hashCode(), it)
+                ServiceCompat.startForeground(
+                    service,
+                    vehicle.uuid.hashCode(),
+                    it,
+                    // https://developer.android.com/about/versions/14/changes/fgs-types-required#connected-device
+                    if (SDK_INT >= Q) FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE else 0
+                )
             }
             .launchIn(scope)
 
         callbackFlow<Nothing> {
             awaitClose {
-                foregroundService?.also { stopForeground(it, STOP_FOREGROUND_REMOVE) }
-                    ?: notificationManager.cancel(vehicle.uuid.hashCode())
+                service.also { stopForeground(it, STOP_FOREGROUND_REMOVE) }
             }
         }.launchIn(scope)
     }
@@ -226,6 +217,7 @@ internal class ServiceNotifier @Inject constructor(
         data object ScanFailure : State
     }
 
+    @Suppress("ConstPropertyName")
     internal companion object {
         private const val channelNameWhenOk = "MONITOR_SERVICE_WHEN_OK"
         private const val channelNameForAlerts = "MONITOR_SERVICE_FOR_ALERT"

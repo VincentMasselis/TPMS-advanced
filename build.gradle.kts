@@ -1,5 +1,4 @@
-import com.masselis.tpmsadvanced.emulator.EmulatorExtension
-import com.masselis.tpmsadvanced.emulator.EmulatorPlugin
+
 import com.masselis.tpmsadvanced.github.GithubExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
 import kotlinx.serialization.SerializationException
@@ -41,18 +40,7 @@ if (keys != null) {
     }
 }
 
-if (isCI) {
-    // Why working with a custom emulator gradle plugin while gradle-managed devices exist into the
-    // AGP ? Because gradle-managed emulators are bound to the lifecycle of the gradle task which
-    // executes the tests. Because of this, its impossible to fetch screenshots in the end of the
-    // tests since the emulator is stopped and deleted once the tests are done.
-    apply<EmulatorPlugin>()
-    configure<EmulatorExtension> {
-        emulatorPackage = libs.versions.garunner.emulator.get()
-    }
-}
-
-task<Delete>("clean") {
+tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
 

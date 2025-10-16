@@ -8,7 +8,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.masselis.tpmsadvanced.core.database.QueryOne.Companion.asOne
-import com.masselis.tpmsadvanced.data.vehicle.ioc.DebugComponent.Companion.database
+import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent.Companion.database
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
 import com.masselis.tpmsadvanced.interfaces.screens.Home.Companion.home
 import org.junit.Rule
