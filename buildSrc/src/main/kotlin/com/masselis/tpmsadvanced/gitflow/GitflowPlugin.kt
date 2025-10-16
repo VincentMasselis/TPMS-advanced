@@ -172,7 +172,7 @@ public class GitflowPlugin : Plugin<Project> {
                 assertGitDiffIsEmpty,
                 assertProductionTagWasNotCreatedYet,
             )
-            branch = ext.releaseBranch.map {
+            branch = ext.hotfixBranch.map {
                 // Ignores the <remote> part of the branch name
                 // More info: https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches
                 it.substringAfter('/')

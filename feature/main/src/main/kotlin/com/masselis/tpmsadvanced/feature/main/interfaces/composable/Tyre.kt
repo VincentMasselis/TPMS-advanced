@@ -3,6 +3,7 @@
 package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
 import android.animation.ArgbEvaluator
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.provider.Settings.ACTION_BLUETOOTH_SETTINGS
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,6 +58,7 @@ private val evaluator = ArgbEvaluator()
 @Composable
 internal fun Tyre(
     location: Location,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     vehicleComponent: InternalVehicleComponent = LocalInternalVehicleComponent.current,
     viewModel: TyreViewModel = vehicleComponent
@@ -62,13 +66,14 @@ internal fun Tyre(
         .let { viewModel(it.keyed()) { it.TyreViewModel(createSavedStateHandle()) } },
 ) {
     val state by viewModel.stateFlow.collectAsState()
-    Tyre(state, modifier)
+    Tyre(state, snackbarHostState, modifier)
 }
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "CyclomaticComplexMethod", "MaxLineLength")
 @Composable
 private fun Tyre(
     state: State,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     var isVisible by remember { mutableStateOf(true) }
@@ -130,9 +135,16 @@ private fun Tyre(
     ) {
         if (state is State.DetectionIssue) {
             val context = LocalContext.current
+            val scope = rememberCoroutineScope()
             AlertButton(
                 disableBluetooth = {
-                    context.startActivity(Intent().apply { action = ACTION_BLUETOOTH_SETTINGS })
+                    try {
+                        context.startActivity(Intent().apply { action = ACTION_BLUETOOTH_SETTINGS })
+                    } catch (_: ActivityNotFoundException) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("No bluetooth settings screen were found on your device, please disable bluetooth by yourself")
+                        }
+                    }
                 },
                 restartApp = context::restartApp,
                 modifier = Modifier
@@ -165,8 +177,12 @@ private fun AlertButton(
             text = { Text("TPMS Advanced is unable to find your sensor, try to disable bluetooth or restart the app") },
             confirmButton = {
                 Row {
-                    TextButton(onClick = disableBluetooth) { Text("Disable Bluetooth") }
-                    TextButton(onClick = restartApp) { Text("Restart the app") }
+                    TextButton(onClick = { disableBluetooth(); showDialog = false }) {
+                        Text("Disable Bluetooth")
+                    }
+                    TextButton(onClick = restartApp) {
+                        Text("Restart the app")
+                    }
                 }
             },
             onDismissRequest = { showDialog = false },
@@ -176,53 +192,53 @@ private fun AlertButton(
 @Preview
 @Composable
 internal fun NotDetectedPreview() {
-    Tyre(State.NotDetected)
+    Tyre(State.NotDetected, SnackbarHostState())
 }
 
 @Preview
 @Composable
 internal fun BlueToGreenPreview() {
-    Tyre(State.Normal.BlueToGreen(Fraction(0f)))
+    Tyre(State.Normal.BlueToGreen(Fraction(0f)), SnackbarHostState())
 }
 
 @Preview
 @Composable
 internal fun BlueToGreen2Preview() {
-    Tyre(State.Normal.BlueToGreen(Fraction(0.5f)))
+    Tyre(State.Normal.BlueToGreen(Fraction(0.5f)), SnackbarHostState())
 }
 
 @Preview
 @Composable
 internal fun BlueToGreen3Preview() {
-    Tyre(State.Normal.BlueToGreen(Fraction(1f)))
+    Tyre(State.Normal.BlueToGreen(Fraction(1f)), SnackbarHostState())
 }
 
 @Preview
 @Composable
 internal fun GreenToRedPreview() {
-    Tyre(State.Normal.GreenToRed(Fraction(0f)))
+    Tyre(State.Normal.GreenToRed(Fraction(0f)), SnackbarHostState())
 }
 
 @Preview
 @Composable
 internal fun GreenToRed2Preview() {
-    Tyre(State.Normal.GreenToRed(Fraction(0.5f)))
+    Tyre(State.Normal.GreenToRed(Fraction(0.5f)), SnackbarHostState())
 }
 
 @Preview
 @Composable
 internal fun GreenToRed3Preview() {
-    Tyre(State.Normal.GreenToRed(Fraction(1f)))
+    Tyre(State.Normal.GreenToRed(Fraction(1f)), SnackbarHostState())
 }
 
 @Preview
 @Composable
 internal fun AlertingPreview() {
-    Tyre(State.Alerting)
+    Tyre(State.Alerting, SnackbarHostState())
 }
 
 @Preview
 @Composable
 internal fun DetectionIssuePreview() {
-    Tyre(State.DetectionIssue)
+    Tyre(State.DetectionIssue, SnackbarHostState())
 }

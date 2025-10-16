@@ -13,6 +13,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -87,6 +89,7 @@ internal fun VehicleHome(
     ) {
         var offsetToFocus by remember { mutableStateOf<Offset?>(null) }
         var showManualMonitoringSpotlight by remember { mutableStateOf(false) }
+        val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -113,10 +116,15 @@ internal fun VehicleHome(
                         .padding(paddingValues)
                         .fillMaxSize()
                     composable(route = "${Path.Home(vehicleComponent.vehicle.uuid)}") {
-                        CurrentVehicle(modifier = modifier)
+                        CurrentVehicle(
+                            snackbarHostState = snackbarHostState,
+                            modifier = modifier
+                        )
                     }
                     composable("${Path.Settings(vehicleComponent.vehicle.uuid)}") {
-                        Settings(modifier = modifier)
+                        Settings(
+                            modifier = modifier
+                        )
                     }
                     composable("${Path.BindingMethod(vehicleComponent.vehicle.uuid)}") {
                         ChooseBindingMethod(
@@ -130,7 +138,10 @@ internal fun VehicleHome(
                         )
                     }
                     composable("${Path.QrCode(vehicleComponent.vehicle.uuid)}") {
-                        QrCodeScan(modifier = modifier)
+                        QrCodeScan(
+                            snackbarHostState = snackbarHostState,
+                            modifier = modifier
+                        )
                     }
                     composable("${Path.Unlocated(vehicleComponent.vehicle.uuid)}") {
                         UnlocatedSensorList(
@@ -145,7 +156,8 @@ internal fun VehicleHome(
                         )
                     }
                 }
-            }
+            },
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
         )
         if (offsetToFocus != null)
             AnimatedVisibility(

@@ -33,6 +33,11 @@ public class AndroidCommonPlugin : Plugin<Project> {
                     "clearPackageData" to "true"
                 )
                 testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
+                ndk {
+                    // Removes the abi "riscv64" to avoid issues when uploading to the play store
+                    // https://github.com/VincentMasselis/TPMS-advanced/actions/runs/10966842365/job/30455519697
+                    abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+                }
             }
             compileOptions {
                 // Using sdk 34 allow the usage of Java 17 compatibility

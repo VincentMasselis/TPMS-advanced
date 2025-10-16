@@ -1,5 +1,5 @@
 [versions]
-app = "1.3.3"
+app = "1.3.4"
 # This version is only applied to the application sources, gradles sources, even the Kotlin one and
 # the `buildSrc` sources, uses kotlin embedded in the gradle framework
 kotlin = "2.2.20"

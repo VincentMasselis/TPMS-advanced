@@ -20,9 +20,10 @@ import androidx.core.app.ServiceCompat.STOP_FOREGROUND_REMOVE
 import androidx.core.app.ServiceCompat.stopForeground
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
-import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.R
@@ -94,7 +95,7 @@ internal class ServiceNotifier(
                         ?: NoAlert
                 }
             }
-            .catch { if (it is BluetoothLeScanner.ScanFailed) emit(ScanFailure) else throw it }
+            .catch { Firebase.crashlytics.recordException(it); emit(ScanFailure) }
             .distinctUntilChanged()
             .map { state ->
                 NotificationCompat

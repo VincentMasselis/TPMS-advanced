@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import com.masselis.tpmsadvanced.feature.qrcode.ioc.FeatureQrCodeComponent.Compa
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 public fun QrCodeScan(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     val permissionState = rememberMultiplePermissionsState(listOf(CAMERA))
@@ -51,6 +53,7 @@ public fun QrCodeScan(
         )
 
         else -> Preview(
+            snackbarHostState = snackbarHostState,
             modifier = modifier
         )
     }
@@ -59,6 +62,7 @@ public fun QrCodeScan(
 @Suppress("NAME_SHADOWING")
 @Composable
 private fun Preview(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     cameraSelector: CameraSelector = DEFAULT_BACK_CAMERA,
 ) {
@@ -86,6 +90,7 @@ private fun Preview(
     }
 
     val viewModel = remember(controller) { QrCodeViewModel(controller) }
+    val navController = LocalHomeNavController.current
     val state by viewModel.stateFlow.collectAsState()
     when (val state = state) {
         State.Scanning -> {}
@@ -95,13 +100,22 @@ private fun Preview(
             onDismissRequest = viewModel::scanAgain,
             onBind = viewModel::bindSensors
         )
+
+        is State.Error -> DuplicateAlert(
+            state = state,
+            onDismissRequest = viewModel::scanAgain
+        )
     }
 
-    val navController = LocalHomeNavController.current
     LaunchedEffect(viewModel) {
         for (event in viewModel.eventChannel) {
             when (event) {
                 Event.Leave -> navController.popBackStack()
+
+                Event.LeaveBecauseCameraUnavailable -> {
+                    snackbarHostState.showSnackbar("Your device should to have a camera to continue")
+                    navController.popBackStack()
+                }
             }
         }
     }
@@ -125,13 +139,13 @@ private fun BindingAlert(
 
                             is State.AskForBinding.Missing -> {
                                 append("\n\n⚠️ Filled QR Code doesn't contains sensors dedicated to ")
-                                state.localisations.forEachIndexed { index, location ->
+                                state.locations.forEachIndexed { index, location ->
                                     append("the ")
                                     appendLoc(location)
                                     append(
                                         when (index) {
-                                            state.localisations.size - 1 -> "."
-                                            state.localisations.size - 2 -> " and "
+                                            state.locations.size - 1 -> "."
+                                            state.locations.size - 2 -> " and "
                                             else -> ", "
                                         }
                                     )
@@ -153,6 +167,46 @@ private fun BindingAlert(
                 Text(text = "Cancel")
             }
         }
+    )
+}
+
+@Suppress("MaxLineLength")
+@Composable
+private fun DuplicateAlert(
+    state: State.Error,
+    onDismissRequest: () -> Unit,
+) {
+    AlertDialog(
+        text = {
+            Text(
+                text = StringBuilder("Detected inconsistency with the QR Code")
+                    .apply {
+                        when (state) {
+
+                            is State.Error.DuplicateWheelLocation -> {
+                                append("\n\n⚠️ Filled QR Code contains different sensors associated to the same wheel, ")
+                                if (state.wheels.size == 1) append("duplication:")
+                                else append("duplications:")
+                                state.wheels.forEach { location ->
+                                    append("\n   · ")
+                                    appendLoc(location)
+                                }
+                            }
+
+                            is State.Error.DuplicateId -> {
+                                append("\n\n⚠️ Filled QR Code contains the same sensor id multiple time")
+                            }
+                        }
+                    }
+                    .toString()
+            )
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = "OK")
+            }
+        },
     )
 }
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,6 +45,7 @@ internal fun PressureInfo(
             ) {
                 Tyre(
                     location = Location.Side(SensorLocation.Side.LEFT),
+                    snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
                     vehicleComponent = DemoVehicleComponent(),
                     viewModel = DemoTyreViewModel(State.Alerting),
@@ -79,6 +81,7 @@ internal fun TemperatureInfo(
                 val demoTyreViewModel = remember(state) { DemoTyreViewModel(state) }
                 Tyre(
                     location = Location.Side(SensorLocation.Side.LEFT),
+                    snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
                     vehicleComponent = DemoVehicleComponent(),
                     viewModel = demoTyreViewModel,
@@ -115,3 +118,5 @@ private class DemoVehicleComponent : InternalVehicleComponent {
     override fun DeleteVehicleViewModel(): DeleteVehicleViewModelImpl =
         error("Not implemented")
 }
+
+private val DemoSnackbarHostState = SnackbarHostState()

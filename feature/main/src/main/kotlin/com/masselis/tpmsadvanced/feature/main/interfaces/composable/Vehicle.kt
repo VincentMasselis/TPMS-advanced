@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -46,10 +47,12 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 
 @Composable
 public fun CurrentVehicle(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     Vehicle(
         component = LocalVehicleComponent.current,
+        snackbarHostState = snackbarHostState,
         modifier = modifier
     )
 }
@@ -57,20 +60,22 @@ public fun CurrentVehicle(
 @Composable
 public fun Vehicle(
     component: VehicleComponent,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     KeepScreenOn()
     when (component.vehicle.kind) {
-        Kind.CAR -> Car(modifier)
-        Kind.SINGLE_AXLE_TRAILER -> SingleAxleTrailer(modifier)
-        Kind.MOTORCYCLE -> Motorcycle(modifier)
-        Kind.TADPOLE_THREE_WHEELER -> TadpoleThreadWheeler(modifier)
-        Kind.DELTA_THREE_WHEELER -> DeltaThreeWheeler(modifier)
+        Kind.CAR -> Car(snackbarHostState, modifier)
+        Kind.SINGLE_AXLE_TRAILER -> SingleAxleTrailer(snackbarHostState, modifier)
+        Kind.MOTORCYCLE -> Motorcycle(snackbarHostState, modifier)
+        Kind.TADPOLE_THREE_WHEELER -> TadpoleThreadWheeler(snackbarHostState, modifier)
+        Kind.DELTA_THREE_WHEELER -> DeltaThreeWheeler(snackbarHostState, modifier)
     }
 }
 
 @Composable
 private fun Car(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     ConstraintLayout(modifier = modifier) {
@@ -111,6 +116,7 @@ private fun Car(
         with(Location.Wheel(FRONT_LEFT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(frontLeft) {
                     top.linkTo(tyreBox.top)
                     start.linkTo(tyreBox.start)
@@ -138,6 +144,7 @@ private fun Car(
         with(Location.Wheel(FRONT_RIGHT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(frontRight) {
                     top.linkTo(tyreBox.top)
                     end.linkTo(tyreBox.end)
@@ -163,6 +170,7 @@ private fun Car(
         with(Location.Wheel(REAR_LEFT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(rearLeft) {
                     bottom.linkTo(tyreBox.bottom)
                     start.linkTo(tyreBox.start)
@@ -189,6 +197,7 @@ private fun Car(
         with(Location.Wheel(REAR_RIGHT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(rearRight) {
                     bottom.linkTo(tyreBox.bottom)
                     end.linkTo(tyreBox.end)
@@ -216,6 +225,7 @@ private fun Car(
 
 @Composable
 private fun SingleAxleTrailer(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     ConstraintLayout(modifier = modifier) {
@@ -246,6 +256,7 @@ private fun SingleAxleTrailer(
         with(Location.Side(LEFT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreLeft) {
                         start.linkTo(tyreBox.start)
@@ -276,6 +287,7 @@ private fun SingleAxleTrailer(
         with(Location.Side(RIGHT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreRight) {
                         end.linkTo(tyreBox.end)
@@ -308,6 +320,7 @@ private fun SingleAxleTrailer(
 
 @Composable
 private fun Motorcycle(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     ConstraintLayout(modifier = modifier) {
@@ -344,6 +357,7 @@ private fun Motorcycle(
         with(Location.Axle(FRONT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreFront) {
                         start.linkTo(tyreBox.start)
@@ -372,6 +386,7 @@ private fun Motorcycle(
         with(Location.Axle(REAR)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreRear) {
                         start.linkTo(tyreBox.start)
@@ -403,7 +418,8 @@ private fun Motorcycle(
 
 @Composable
 private fun TadpoleThreadWheeler(
-    modifier: Modifier = Modifier
+    snackbarHostState: SnackbarHostState,
+    modifier: Modifier = Modifier,
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
@@ -436,6 +452,7 @@ private fun TadpoleThreadWheeler(
         with(Location.Wheel(FRONT_LEFT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(frontLeft) {
                     top.linkTo(tyreBox.top)
                     start.linkTo(tyreBox.start)
@@ -463,6 +480,7 @@ private fun TadpoleThreadWheeler(
         with(Location.Wheel(FRONT_RIGHT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(frontRight) {
                     top.linkTo(tyreBox.top)
                     end.linkTo(tyreBox.end)
@@ -488,6 +506,7 @@ private fun TadpoleThreadWheeler(
         with(Location.Axle(REAR)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreRear) {
                         start.linkTo(tyreBox.start)
@@ -520,7 +539,8 @@ private fun TadpoleThreadWheeler(
 
 @Composable
 private fun DeltaThreeWheeler(
-    modifier: Modifier = Modifier
+    snackbarHostState: SnackbarHostState,
+    modifier: Modifier = Modifier,
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
@@ -553,6 +573,7 @@ private fun DeltaThreeWheeler(
         with(Location.Axle(FRONT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreFront) {
                         start.linkTo(tyreBox.start)
@@ -582,6 +603,7 @@ private fun DeltaThreeWheeler(
         with(Location.Wheel(REAR_LEFT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(rearLeft) {
                     bottom.linkTo(tyreBox.bottom)
                     start.linkTo(tyreBox.start)
@@ -608,6 +630,7 @@ private fun DeltaThreeWheeler(
         with(Location.Wheel(REAR_RIGHT)) {
             Tyre(
                 location = this,
+                snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(rearRight) {
                     bottom.linkTo(tyreBox.bottom)
                     end.linkTo(tyreBox.end)
