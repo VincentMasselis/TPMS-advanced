@@ -33,6 +33,7 @@ public class AndroidCommonPlugin : Plugin<Project> {
                     "clearPackageData" to "true"
                 )
                 testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
+                ndkVersion = libs.versions.ndk.get()
                 ndk {
                     // Removes the abi "riscv64" to avoid issues when uploading to the play store
                     // https://github.com/VincentMasselis/TPMS-advanced/actions/runs/10966842365/job/30455519697
