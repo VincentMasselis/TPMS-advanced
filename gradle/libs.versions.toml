@@ -43,7 +43,7 @@ compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-activity = "androidx.activity:activity-compose:1.11.0"
 compose-constraintlayout = "androidx.constraintlayout:constraintlayout-compose:1.1.1"
 compose-detekt = "io.nlopez.compose.rules:detekt:0.4.27"
-compose-navigation = "androidx.navigation:navigation-compose:2.9.3"
+compose-navigation = "androidx.navigation:navigation-compose:2.9.5"
 detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
 google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20250904-2.0.0"
 # 33.0.0 causes a "GradleCompatible" exception where some gms/firebase libs are used but differents version are used in the same time
