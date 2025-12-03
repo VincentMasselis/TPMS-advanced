@@ -10,15 +10,12 @@ import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import dagger.Reusable
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import java.util.UUID
-import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
-@Reusable
-public class VehicleDatabase @Inject internal constructor(database: Database) {
+public class VehicleDatabase internal constructor(database: Database) {
 
     private val queries = database.vehicleQueries
 
@@ -87,28 +84,6 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
         queries.delete(uuid)
     }
 
-    public fun selectIsBackgroundMonitor(uuid: UUID): QueryOne<Boolean> = queries
-        .selectIsBackgroundMonitor(uuid)
-        .asOne()
-
-    public suspend fun updateIsBackgroundMonitor(
-        isBackgroundMonitor: Boolean,
-        uuid: UUID
-    ): Unit = withContext(IO) {
-        queries.updateIsBackgroundMonitor(isBackgroundMonitor, uuid)
-    }
-
-    public suspend fun updateIsBackgroundMonitorList(
-        isBackgroundMonitor: Boolean,
-        uuids: List<UUID>
-    ): Unit = withContext(IO) {
-        queries.updateIsBackgroundMonitorList(isBackgroundMonitor, uuids)
-    }
-
-    public suspend fun updateEveryIsBackgroundMonitorToFalse(): Unit = withContext(IO) {
-        queries.updateEveryIsBackgroundMonitorToFalse()
-    }
-
     public fun currentVehicle(): QueryOne<Vehicle> = queries.currentFavourite(mapper).asOne()
 
     public fun count(): QueryOne<Long> = queries.count().asOne()
@@ -137,9 +112,8 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
             Temperature,
             Vehicle.Kind,
             Boolean,
-            Boolean,
         ) -> Vehicle =
-            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _, isBackgroundMonitor ->
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _ ->
                 Vehicle(
                     uuid,
                     kind,
@@ -149,7 +123,6 @@ public class VehicleDatabase @Inject internal constructor(database: Database) {
                     lowTemp,
                     normalTemp,
                     highTemp,
-                    isBackgroundMonitor,
                 )
             }
     }

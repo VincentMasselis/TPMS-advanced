@@ -3,15 +3,14 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel.State
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleListUseCase
-import com.masselis.tpmsadvanced.core.ui.getMutableStateFlow
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -21,7 +20,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class CurrentVehicleDropdownViewModelImpl @AssistedInject constructor(
+@AssistedInject
+internal class CurrentVehicleDropdownViewModelImpl(
     private val currentVehicleUseCase: CurrentVehicleUseCase,
     vehicleListUseCase: VehicleListUseCase,
     @Assisted savedStateHandle: SavedStateHandle,
@@ -31,8 +31,10 @@ internal class CurrentVehicleDropdownViewModelImpl @AssistedInject constructor(
     interface Factory : (SavedStateHandle) -> CurrentVehicleDropdownViewModelImpl
 
 
-    private val mutableStateFlow = savedStateHandle
-        .getMutableStateFlow<State>("STATE") { State.Loading }
+    private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>(
+        "STATE",
+        State.Loading
+    )
     override val stateFlow = mutableStateFlow.asStateFlow()
 
     init {

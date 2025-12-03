@@ -12,11 +12,12 @@ import com.masselis.tpmsadvanced.playstore.valuesource.ReleaseNote
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.configurationcache.extensions.capitalized
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.from
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.registerIfAbsent
 
 @Suppress("UnstableApiUsage")
@@ -63,7 +64,7 @@ public class PlayStorePlugin : Plugin<Project> {
                         .firstOrNull { it.nameWithoutExtension == ext.version.get().toString() }
                         ?: throw GradleException("The release note file associated to the version ${ext.version.get()} is missing, add it to continue: ${releaseNotesDir.get()}/${ext.version.get()}.txt")
                 }
-                tasks.create<PublishToPlayStore>("publishToPlayStoreBeta${variant.name.capitalized()}") {
+                tasks.register<PublishToPlayStore>("publishToPlayStoreBeta${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")
                     track = "beta"
                     this.packageName = packageName
@@ -71,7 +72,7 @@ public class PlayStorePlugin : Plugin<Project> {
                     this.releaseBundle = releaseBundle
                     this.releaseNotes = releaseNotes
                 }
-                tasks.create<PublishToPlayStore>("publishToPlayStoreProduction${variant.name.capitalized()}") {
+                tasks.register<PublishToPlayStore>("publishToPlayStoreProduction${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")
                     track = "production"
                     this.packageName = packageName
@@ -79,7 +80,7 @@ public class PlayStorePlugin : Plugin<Project> {
                     this.releaseBundle = releaseBundle
                     this.releaseNotes = releaseNotes
                 }
-                tasks.create<UpdatePlayStoreScreenshots>("updatePlayStoreScreenshots${variant.name.capitalized()}") {
+                tasks.register<UpdatePlayStoreScreenshots>("updatePlayStoreScreenshots${variant.name.capitalized()}") {
                     this.packageName = packageName
                     screenshotDirectory = project
                         .layout

@@ -1,85 +1,80 @@
 [versions]
-app = "1.3.4"
+app = "1.4.0"
 # This version is only applied to the application sources, gradles sources, even the Kotlin one and
 # the `buildSrc` sources, uses kotlin embedded in the gradle framework
-kotlin = "2.0.20"
+kotlin = "2.2.20"
 sdk-min = "27"
-sdk-compile = "34"
-sdk-target = "34"
-build-tool = "34.0.0"
-coroutine = "1.9.0-RC.2"
-lifecycle = "2.8.4"
-testServices = "1.5.0"
-sqlDelight = "2.0.2"
-dagger = "2.52"
-mockk = "1.13.12"
-ksp = "1.0.25"
-garunner-emulator = "system-images;android-34;aosp_atd;x86_64"
-serialization-kotlin1 = "1.6.3"
+sdk-compile = "36"
+sdk-target = "36"
+coroutine = "1.10.2"
+lifecycle = "2.9.4"
+testServices = "1.6.0"
+sqlDelight = "2.1.0"
+mockk = "1.14.5"
+ksp = "2.0.3"
+ndk = "29.0.14206865"
 
 [libraries]
-accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.34.0"
-android-gradle-plugin = "com.android.tools.build:gradle:8.6.0"
+accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.37.3"
+android-gradle-plugin = "com.android.tools.build:gradle:8.13.0"
 androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
-androidx-camera2-core = "androidx.camera:camera-camera2:1.3.4"
-androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.3.4"
-androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.5.0-alpha01"
-androidx-compose-bom = "androidx.compose:compose-bom:2024.08.00"
+androidx-camera2-core = "androidx.camera:camera-camera2:1.5.0"
+androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.5.0"
+androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.5.0"
+androidx-compose-bom = "androidx.compose:compose-bom:2025.10.00"
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-compose-junit = { module = "androidx.compose.ui:ui-test-junit4" }
-androidx-core = "androidx.core:core-ktx:1.13.1"
-androidx-savedstate = "androidx.savedstate:savedstate-ktx:1.2.1"
-androidx-startup = "androidx.startup:startup-runtime:1.1.1"
-androidx-test-junit = "androidx.test.ext:junit:1.2.1"
-androidx-test-core = "androidx.test:core-ktx:1.6.1"
-androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
-androidx-test-espresso-device = "androidx.test.espresso:espresso-device:1.0.1"
-androidx-test-runner = "androidx.test:runner:1.6.2"
-androidx-test-rules = "androidx.test:rules:1.6.1"
-androidx-activity = "androidx.activity:activity-ktx:1.9.1"
-androidx-fragment = "androidx.fragment:fragment-ktx:1.8.2"
+androidx-core = "androidx.core:core-ktx:1.17.0"
+androidx-savedstate = "androidx.savedstate:savedstate-ktx:1.3.3"
+androidx-startup = "androidx.startup:startup-runtime:1.2.0"
+androidx-test-junit = "androidx.test.ext:junit:1.3.0"
+androidx-test-core = "androidx.test:core-ktx:1.7.0"
+androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
+androidx-test-espresso-device = "androidx.test.espresso:espresso-device:1.1.0"
+androidx-test-runner = "androidx.test:runner:1.7.0"
+androidx-test-rules = "androidx.test:rules:1.7.0"
+androidx-activity = "androidx.activity:activity-ktx:1.11.0"
+androidx-fragment = "androidx.fragment:fragment-ktx:1.8.9"
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-compose-activity = "androidx.activity:activity-compose:1.9.1"
-compose-constraintlayout = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-compose-detekt = "io.nlopez.compose.rules:detekt:0.4.11"
-compose-navigation = "androidx.navigation:navigation-compose:2.7.7"
-dagger-lib = { module = "com.google.dagger:dagger", version.ref = "dagger" }
-dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
-detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6"
-google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20240821-2.0.0"
+compose-activity = "androidx.activity:activity-compose:1.11.0"
+compose-constraintlayout = "androidx.constraintlayout:constraintlayout-compose:1.1.1"
+compose-detekt = "io.nlopez.compose.rules:detekt:0.4.27"
+compose-navigation = "androidx.navigation:navigation-compose:2.9.3"
+detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
+google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20250904-2.0.0"
 # 33.0.0 causes a "GradleCompatible" exception where some gms/firebase libs are used but differents version are used in the same time
-google-firebase-bom = "com.google.firebase:firebase-bom:33.2.0"
+google-firebase-bom = "com.google.firebase:firebase-bom:34.4.0"
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1"
-google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.24.1"
+google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.39.1"
 junit = "junit:junit:4.13.2"
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
-kotlinx-collection = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7"
+kotlinx-collection = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0"
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutine" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutine" }
 kotlinx-coroutines-playservices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutine" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "coroutine" }
-kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
+kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1"
 lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "lifecycle" }
-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
-material3 = "androidx.compose.material3:material3:1.2.1"
-material = "com.google.android.material:material:1.12.0"
+lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycle" }
+material3 = "androidx.compose.material3:material3:1.4.0"
+material = "com.google.android.material:material:1.13.0"
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
-paparazzi-gradle-plugin = "app.cash.paparazzi:paparazzi-gradle-plugin:1.3.4"
 placeholder = "io.github.fornewid:placeholder-material3:2.0.0"
-relinker = "com.getkeepsafe.relinker:relinker:1.4.4"
-requery = "com.github.requery:sqlite-android:3.45.0"
+relinker = "com.getkeepsafe.relinker:relinker:1.4.5"
+requery = "com.github.requery:sqlite-android:3.49.0"
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 sqldelight-coroutines-ext = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqlDelight" }
 sqldelight-coroutines-jvm = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqlDelight" }
@@ -87,10 +82,12 @@ sqldelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapte
 sqldelight-dialect338 = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqlDelight" }
 test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "testServices" }
 test-services = { module = "androidx.test.services:test-services", version.ref = "testServices" }
-turbine = "app.cash.turbine:turbine:1.1.0"
+turbine = "app.cash.turbine:turbine:1.2.1"
 
 [plugins]
-crashlytics = "com.google.firebase.crashlytics:3.0.2"
-google-services = "com.google.gms.google-services:4.4.2"
+crashlytics = "com.google.firebase.crashlytics:3.0.6"
+google-services = "com.google.gms.google-services:4.4.3"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+paparazzi = "app.cash.paparazzi:2.0.0-alpha02"
+metro = "dev.zacsweers.metro:0.6.10"

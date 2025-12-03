@@ -72,8 +72,10 @@ public class Settings(
     }
 
     public companion object {
-        context(ComposeTestRule)
-        public operator fun invoke(backButtonTag: String, containerTag: String): Settings =
-            Settings(backButtonTag, containerTag, this@ComposeTestRule)
+        context(rule: ComposeTestRule)
+        public operator fun invoke(
+            backButtonTag: String,
+            containerTag: String
+        ): Settings = Settings(backButtonTag, containerTag, rule)
     }
 }

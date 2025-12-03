@@ -16,10 +16,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
-import javax.inject.Inject
 
 @Suppress("OPT_IN_USAGE")
-internal class CameraAnalyser @Inject constructor() {
+internal class CameraAnalyser {
 
     private val scanner = BarcodeScannerOptions
         .Builder()

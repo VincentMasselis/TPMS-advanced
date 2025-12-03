@@ -1,10 +1,16 @@
 package com.masselis.tpmsadvanced.core.common
 
 import android.content.Context
+import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import dagger.BindsInstance
-import dagger.Component
+import com.google.firebase.crashlytics.crashlytics
+import com.google.firebase.initialize
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.createGraph
 
 public interface CoreCommonComponent {
 
@@ -13,27 +19,35 @@ public interface CoreCommonComponent {
     public companion object : CoreCommonComponent by InternalComponent
 }
 
-@Component(
-    modules = [
-        FirebaseModule::class
-    ]
+@DependencyGraph(
+    AppScope::class,
+    bindingContainers = [Bindings::class]
 )
 internal interface InternalComponent : CoreCommonComponent {
 
-    @Component.Factory
-    interface Factory {
-        fun build(@BindsInstance context: Context = appContext): InternalComponent
-    }
+    fun firebaseApp(): FirebaseApp?
 
-    val firebaseApp: FirebaseApp?
-    val crashlytics: FirebaseCrashlytics?
+    fun crashlytics(): FirebaseCrashlytics?
 
-    companion object : InternalComponent by DaggerInternalComponent.factory().build() {
+    companion object : InternalComponent by createGraph<InternalComponent>() {
         init {
-            // Forces FirebaseApp to be initialized
-            firebaseApp
-            // Forces FirebaseCrashlytics to be initialized
-            crashlytics
+            // Forces FirebaseApp and crashlytics to be initialized
+            firebaseApp()
+            crashlytics()
         }
     }
+}
+
+@Suppress("unused")
+@BindingContainer
+private object Bindings {
+    @Provides
+    private fun firebaseApp(context: Context): FirebaseApp? = Firebase.initialize(context)
+
+    @Provides
+    private fun crashlytics(firebaseApp: FirebaseApp?): FirebaseCrashlytics? =
+        firebaseApp?.let { Firebase.crashlytics }
+
+    @Provides
+    private fun context(): Context = appContext
 }

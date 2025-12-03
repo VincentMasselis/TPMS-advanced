@@ -8,10 +8,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class SearchSensorToBindUseCase @Inject constructor(
+internal class SearchSensorToBindUseCase(
     private val listenTyreUseCase: ListenTyreUseCase,
     private val sensorBindingUseCase: SensorBindingUseCase,
 ) : () -> Flow<SearchSensorToBindUseCase.Result> {

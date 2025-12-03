@@ -75,7 +75,7 @@ import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensor
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorListTags.sensorUnpluggedButton
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModel
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModel.State
-import com.masselis.tpmsadvanced.feature.unlocated.ioc.FeatureUnlocatedBinding.Companion.ListSensorViewModel
+import com.masselis.tpmsadvanced.feature.unlocated.ioc.FeatureUnlocatedComponent.Companion.ListSensorViewModel
 import io.github.fornewid.placeholder.foundation.PlaceholderHighlight
 import io.github.fornewid.placeholder.material3.placeholder
 import io.github.fornewid.placeholder.material3.shimmer
@@ -176,7 +176,7 @@ private fun UnplugEverySensor(
 ) {
     Column(modifier) {
         Text(
-            text = "Before we start, ensure to unplug every sensor to bind from your tyres",
+            text = "Before starting, please unplug all sensors you intend to bind from your tyres.",
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )

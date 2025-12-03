@@ -14,6 +14,7 @@ plugins {
 kotlinDslPluginOptions {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
+
             // Uses the embedded kotlin api and language version instead of the default language
             // version from the KotlinDSL plugin
             apiVersion = DEFAULT
@@ -21,7 +22,7 @@ kotlinDslPluginOptions {
             freeCompilerArgs.addAll(
                 "-Xexplicit-api=strict",
                 "-opt-in=kotlin.RequiresOptIn",
-                "-Xcontext-receivers", // Builds as expected but the IDE is still showing an error,
+                "-Xcontext-parameters", // Builds as expected but the IDE is still showing an error,
             )
         }
     }
@@ -34,21 +35,12 @@ dependencies {
     implementation(libs.detekt.gradle.plugin)
     implementation(libs.google.oauth2.http)
     implementation(libs.google.android.publisher)
-    implementation(libs.kotlinx.serialization.json.map {
-        DefaultMinimalDependency(
-            it.module,
-            if (embeddedKotlinVersion >= "2")
-                DefaultMutableVersionConstraint(it.versionConstraint)
-            else
-                DefaultMutableVersionConstraint(libs.versions.serialization.kotlin1.get())
-        )
-    })
+    implementation(libs.kotlinx.serialization.json)
     implementation(
         libs.ksp.gradle.plugin.get()
             .copy()
             .apply { version { prefer("${libs.versions.kotlin.get()}-${libs.versions.ksp.get()}") } }
     )
-    implementation(libs.paparazzi.gradle.plugin)
 
     // https://github.com/gradle/gradle/issues/15383
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
@@ -59,6 +51,22 @@ gradlePlugin {
         create("GitflowPlugin") {
             id = "gitflow"
             implementationClass = "com.masselis.tpmsadvanced.gitflow.GitflowPlugin"
+        }
+        create("AndroidAppPlugin") {
+            id = "android-app"
+            implementationClass = "AndroidAppPlugin"
+        }
+        create("AndroidLibPlugin") {
+            id = "android-lib"
+            implementationClass = "AndroidLibPlugin"
+        }
+        create("ComposePlugin") {
+            id = "compose"
+            implementationClass = "ComposePlugin"
+        }
+        create("DetektPlugin") {
+            id = "detekt"
+            implementationClass = "DetektPlugin"
         }
     }
 }

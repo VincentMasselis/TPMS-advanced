@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.feature.main.usecase
 
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
@@ -11,14 +10,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
-import javax.inject.Named
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
-@VehicleComponent.Scope
-public class VehicleRangesUseCase @Inject internal constructor(
-    @Named("base") private val vehicle: Vehicle,
+public class VehicleRangesUseCase internal constructor(
+    vehicle: Vehicle,
     scope: CoroutineScope,
     database: VehicleDatabase,
 ) {

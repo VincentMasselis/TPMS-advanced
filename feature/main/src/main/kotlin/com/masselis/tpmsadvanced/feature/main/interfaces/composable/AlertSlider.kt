@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.RangeSlider
@@ -14,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +27,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.psi
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.fahrenheit
+import com.masselis.tpmsadvanced.feature.main.R
 
 @Composable
 internal fun PressureRangeSlider(
@@ -54,7 +55,7 @@ internal fun PressureRangeSlider(
                 onClick = openInfo,
                 content = {
                     Icon(
-                        imageVector = Icons.Outlined.Info,
+                        imageVector = ImageVector.vectorResource(R.drawable.info_24px),
                         contentDescription = "More information about this alert"
                     )
                 }
@@ -125,7 +126,7 @@ internal fun TemperatureSlider(
                 onClick = openInfo,
                 content = {
                     Icon(
-                        imageVector = Icons.Outlined.Info,
+                        imageVector = ImageVector.vectorResource(R.drawable.info_24px),
                         contentDescription = "More information about this alert"
                     )
                 }

@@ -17,13 +17,13 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DropdownMenu
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags
 
 
-context (ComposeTestRule)
 @OptIn(ExperimentalTestApi::class)
 internal class Home private constructor(
     composeTestRule: ComposeTestRule
-) : EnterComposable<Home> by onEnter(
-    { composeTestRule.waitUntilExactlyOneExists(hasTestTag(HomeTags.carListDropdownMenu)) }
-) {
+) : ComposeTestRule by composeTestRule,
+    EnterComposable<Home> by onEnter(
+        { composeTestRule.waitUntilExactlyOneExists(hasTestTag(HomeTags.carListDropdownMenu)) }
+    ) {
 
     private val carListDropdownMenu get() = onNodeWithTag(HomeTags.carListDropdownMenu)
     private val actionOverflowButton get() = onNodeWithTag(HomeTags.Actions.overflow)

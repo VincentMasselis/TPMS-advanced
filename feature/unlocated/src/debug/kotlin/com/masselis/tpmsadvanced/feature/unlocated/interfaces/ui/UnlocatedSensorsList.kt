@@ -60,8 +60,7 @@ public class UnlocatedSensorsList private constructor(
     }
 
     public companion object {
-        context(ComposeTestRule)
-        public operator fun invoke(): UnlocatedSensorsList =
-            UnlocatedSensorsList(this@ComposeTestRule)
+        context(rule: ComposeTestRule)
+        public operator fun invoke(): UnlocatedSensorsList = UnlocatedSensorsList(rule)
     }
 }

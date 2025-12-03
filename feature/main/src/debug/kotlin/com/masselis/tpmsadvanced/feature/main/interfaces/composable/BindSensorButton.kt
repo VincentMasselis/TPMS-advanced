@@ -48,8 +48,8 @@ public class BindSensorButton private constructor(
     }
 
     public companion object {
-        context (ComposeTestRule)
+        context(rule: ComposeTestRule)
         public operator fun invoke(location: Vehicle.Kind.Location): BindSensorButton =
-            BindSensorButton(location, this@ComposeTestRule)
+            BindSensorButton(location, rule)
     }
 }

@@ -8,12 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuBoxScope
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -33,13 +32,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.addButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.cancelButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.AddVehicle.kindRadio
@@ -85,7 +87,7 @@ private fun CurrentVehicleDropdown(
     ) {
         Row(
             verticalAlignment = Alignment.Bottom,
-            modifier = Modifier.menuAnchor()
+            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
         ) {
             Text(text = vehicles.current.name, Modifier.testTag(currentVehicleTest))
             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
@@ -133,7 +135,12 @@ private fun ExposedDropdownMenuBoxScope.VehicleListDropdownMenu(
         }
         DropdownMenuItem(
             text = { Text(text = "Add a vehicle", Modifier.weight(1f)) },
-            trailingIcon = { Icon(Icons.Filled.AddCircle, contentDescription = "") },
+            trailingIcon = {
+                Icon(
+                    ImageVector.vectorResource(R.drawable.add_circle_24px),
+                    contentDescription = ""
+                )
+            },
             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
             onClick = { onAskNewVehicle(); onDismissRequest() },
             modifier = Modifier.testTag(dropdownEntryAddVehicle)

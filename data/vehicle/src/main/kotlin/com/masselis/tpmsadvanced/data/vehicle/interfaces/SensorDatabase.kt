@@ -12,9 +12,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import java.util.UUID
-import javax.inject.Inject
 
-public class SensorDatabase @Inject internal constructor(
+public class SensorDatabase internal constructor(
     private val database: Database,
 ) {
     private val vehicleQueries = database.vehicleQueries

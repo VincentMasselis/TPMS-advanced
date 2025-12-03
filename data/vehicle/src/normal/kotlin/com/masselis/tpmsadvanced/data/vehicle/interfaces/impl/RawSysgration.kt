@@ -6,13 +6,12 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 @OptIn(ExperimentalUnsignedTypes::class)
-@Suppress("MagicNumber", "DataClassPrivateConstructor")
+@Suppress("MagicNumber")
+@ConsistentCopyVisibility
 internal data class RawSysgration private constructor(
     private val rssi: Int,
     private val manufacturerData: ByteArray

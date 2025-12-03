@@ -5,9 +5,8 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.util.UUID
-import javax.inject.Inject
 
-internal class BindSensorToVehicleUseCase @Inject constructor(
+internal class BindSensorToVehicleUseCase(
     private val sensorDatabase: SensorDatabase,
     private val tyreDatabase: TyreDatabase,
 ) {

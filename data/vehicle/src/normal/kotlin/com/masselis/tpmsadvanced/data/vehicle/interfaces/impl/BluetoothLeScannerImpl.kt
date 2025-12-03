@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
 import androidx.core.util.size
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
 import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
@@ -42,14 +44,12 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import java.util.UUID.fromString
-import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
-@DataVehicleComponent.Scope
-internal class BluetoothLeScannerImpl @Inject internal constructor(
+internal class BluetoothLeScannerImpl(
     private val context: Context
 ) : BluetoothLeScanner {
 

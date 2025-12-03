@@ -35,12 +35,5 @@ runs:
       with:
         log-accepted-android-sdk-licenses: false # Cleans the log output
 
-    - name: AVD images cache
-      uses: actions/cache@v4
-      with:
-        key: ${{ steps.initialization_scripts.outputs.emulatorPackage }}
-        path: |
-          ${{ env.ANDROID_HOME }}/system-images
-
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3

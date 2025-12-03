@@ -7,9 +7,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-internal class VehicleHomeViewModel @Inject constructor(
+internal class VehicleHomeViewModel(
     noveltyUseCase: NoveltyUseCase,
 ) : ViewModel() {
 

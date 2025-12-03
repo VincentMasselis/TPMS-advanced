@@ -9,19 +9,25 @@ public interface ScreenOnCounter {
 
     public fun decrement()
 
-    context (android.app.Activity)
-    public class Activity : ScreenOnCounter {
+    public class Activity private constructor(
+        private val activity: android.app.Activity
+    ) : ScreenOnCounter {
 
         private val screenOnCounter = AtomicInteger(0)
 
         override fun increment() {
             if (screenOnCounter.getAndIncrement() == 0)
-                window.addFlags(FLAG_KEEP_SCREEN_ON)
+                activity.window.addFlags(FLAG_KEEP_SCREEN_ON)
         }
 
         override fun decrement() {
             if (screenOnCounter.decrementAndGet() == 0)
-                window?.clearFlags(FLAG_KEEP_SCREEN_ON)
+                activity.window?.clearFlags(FLAG_KEEP_SCREEN_ON)
+        }
+
+        public companion object {
+            context(activity: android.app.Activity)
+            public operator fun invoke(): Activity = Activity(activity)
         }
     }
 }

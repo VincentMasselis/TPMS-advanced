@@ -2,16 +2,17 @@ package com.masselis.tpmsadvanced.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.feature.main.ioc.VehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-internal class HomeViewModel @AssistedInject constructor(
+@AssistedInject
+internal class HomeViewModel(
     private val currentVehicleUseCase: CurrentVehicleUseCase,
     @Assisted expectedVehicle: UUID?,
 ) : ViewModel() {

@@ -6,9 +6,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.util.UUID
-import javax.inject.Inject
 
-internal class VehicleBindingStatusUseCase @Inject constructor(
+internal class VehicleBindingStatusUseCase(
     private val vehicleDatabase: VehicleDatabase,
     private val sensorDatabase: SensorDatabase,
 ) {
