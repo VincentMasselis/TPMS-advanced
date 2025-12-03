@@ -2,7 +2,7 @@
 app = "1.4.0"
 # This version is only applied to the application sources, gradles sources, even the Kotlin one and
 # the `buildSrc` sources, uses kotlin embedded in the gradle framework
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 sdk-min = "27"
 sdk-compile = "36"
 sdk-target = "36"
@@ -11,7 +11,6 @@ lifecycle = "2.10.0"
 testServices = "1.6.0"
 sqlDelight = "2.2.1"
 mockk = "1.14.6"
-ksp = "2.0.3"
 ndk = "29.0.14206865"
 
 [libraries]
@@ -52,7 +51,6 @@ google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlyti
 google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1"
 google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.40.0"
 junit = "junit:junit:4.13.2"
-ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlinx-collection = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0"

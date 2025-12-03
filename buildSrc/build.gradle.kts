@@ -36,11 +36,6 @@ dependencies {
     implementation(libs.google.oauth2.http)
     implementation(libs.google.android.publisher)
     implementation(libs.kotlinx.serialization.json)
-    implementation(
-        libs.ksp.gradle.plugin.get()
-            .copy()
-            .apply { version { prefer("${libs.versions.kotlin.get()}-${libs.versions.ksp.get()}") } }
-    )
 
     // https://github.com/gradle/gradle/issues/15383
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
