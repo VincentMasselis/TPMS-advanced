@@ -18,8 +18,8 @@ public value class Temperature(public val celsius: Float) : Parcelable, Comparab
         FAHRENHEIT -> (celsius * (9f / 5f)) + 32f
     }
 
-    public fun string(unit: TemperatureUnit): String = when (unit) {
-        CELSIUS -> "%.1f°C".format(celsius)
+    public fun string(unit: TemperatureUnit, compact: Boolean = false): String = when (unit) {
+        CELSIUS -> (if (compact) "%.0f°C" else "%.1f°C").format(celsius)
         FAHRENHEIT -> "%.0f°F".format(asFahrenheit())
     }
 

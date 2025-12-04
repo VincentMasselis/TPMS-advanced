@@ -23,6 +23,7 @@ public sealed interface VehicleComponent {
     public val vehicleRangesUseCase: VehicleRangesUseCase
 
     public val TyreComponent: (Vehicle.Kind.Location) -> TyreComponent
+    public val TyreComponents: List<TyreComponent> get() = vehicle.kind.locations.map(TyreComponent)
 
     public companion object : (Vehicle) -> VehicleComponent by InternalVehicleComponent {
         public fun VehicleComponent.key(): Keyed = mapOf("vehicle_id" to vehicle.uuid.toString())

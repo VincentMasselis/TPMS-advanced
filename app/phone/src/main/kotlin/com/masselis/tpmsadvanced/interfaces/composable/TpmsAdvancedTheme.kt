@@ -6,6 +6,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import com.masselis.tpmsadvanced.core.ui.DarkColors
+import com.masselis.tpmsadvanced.core.ui.LightColors
 
 @Composable
 internal fun TpmsAdvancedTheme(
