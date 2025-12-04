@@ -55,6 +55,10 @@ gradlePlugin {
             id = "android-lib"
             implementationClass = "AndroidLibPlugin"
         }
+        create("AndroidTestPlugin") {
+            id = "android-test"
+            implementationClass = "AndroidTestPlugin"
+        }
         create("ComposePlugin") {
             id = "compose"
             implementationClass = "ComposePlugin"

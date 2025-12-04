@@ -9,6 +9,7 @@ import com.masselis.tpmsadvanced.playstore.task.UpdatePlayStoreScreenshots
 
 plugins {
     `android-app`
+    `android-test`
     compose
     alias(libs.plugins.metro)
     alias(libs.plugins.paparazzi)
@@ -50,11 +51,7 @@ android {
         )
     }
     buildFeatures.buildConfig = true
-    val pixel2api34 by testOptions.managedDevices.localDevices.creating {
-        device = "Pixel 2"
-        apiLevel = 34
-        systemImageSource = "aosp-atd"
-    }
+    val pixel2api34 = testOptions.managedDevices.localDevices.getByName("pixel2api34")
     val copyScreenshot by tasks.registering(Copy::class) {
         dependsOn("${pixel2api34.name}DemoDebugAndroidTest")
         group = "publishing"
@@ -97,8 +94,4 @@ dependencies {
     implementation(project(":feature:android-auto"))
 
     testImplementation(project(":core:test"))
-
-    androidTestUtil(libs.test.orchestrator)
-    androidTestUtil(libs.test.services)
-    androidTestImplementation(project(":core:android-test"))
 }
