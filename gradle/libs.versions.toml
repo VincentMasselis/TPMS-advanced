@@ -16,7 +16,7 @@ car-app = "1.7.0"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.37.3"
-android-gradle-plugin = "com.android.tools.build:gradle:8.13.1"
+android-gradle-plugin = "com.android.tools.build:gradle:9.0.0"
 androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
 androidx-camera2-core = "androidx.camera:camera-camera2:1.5.1"
 androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.5.1"
