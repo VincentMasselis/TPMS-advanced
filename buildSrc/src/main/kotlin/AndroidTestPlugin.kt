@@ -1,4 +1,5 @@
-import com.android.build.gradle.BaseExtension
+
+import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -8,8 +9,8 @@ import org.gradle.kotlin.dsl.dependencies
 internal class AndroidTestPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         apply<AndroidCommonPlugin>()
-        configure<BaseExtension> {
-            defaultConfig {
+        configure<CommonExtension> {
+            with(defaultConfig) {
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 // `useTestStorageService` enables the ability to store files when capturing screenshots.
                 // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
@@ -19,12 +20,12 @@ internal class AndroidTestPlugin : Plugin<Project> {
                     "useTestStorageService" to "true",
                     "clearPackageData" to "true"
                 )
-                testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
-                testOptions.managedDevices.localDevices.create("pixel2api34") {
-                    device = "Pixel 2"
-                    apiLevel = 34
-                    systemImageSource = "aosp-atd"
-                }
+            }
+            testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
+            testOptions.managedDevices.localDevices.create("pixel2api34") {
+                device = "Pixel 2"
+                apiLevel = 34
+                systemImageSource = "aosp-atd"
             }
         }
         dependencies {
