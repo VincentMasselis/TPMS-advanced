@@ -24,6 +24,7 @@ internal class AndroidTestPlugin : Plugin<Project> {
                     device = "Pixel 2"
                     apiLevel = 34
                     systemImageSource = "aosp-atd"
+                    if (isCI) testedAbi = "x86_64"
                 }
             }
         }
