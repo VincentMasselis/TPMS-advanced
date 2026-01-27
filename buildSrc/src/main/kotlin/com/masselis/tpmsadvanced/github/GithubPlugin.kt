@@ -1,17 +1,16 @@
 package com.masselis.tpmsadvanced.github
 
-import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.android.build.api.variant.impl.VariantOutputImpl
 import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.masselis.tpmsadvanced.github.task.CreateRelease
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.assign
-import org.gradle.kotlin.dsl.configure
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.the
 
 public class GithubPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -33,14 +32,12 @@ public class GithubPlugin : Plugin<Project> {
         }
         project.subprojects {
             plugins.all {
-                if (this is AppPlugin) configure<ApplicationAndroidComponentsExtension> {
-                    onVariants { variant ->
-                        upsertGithubPreRelease.dependsOn("${this@subprojects.path}:assemble${variant.name.capitalized()}")
-                        upsertGithubRelease.dependsOn("${this@subprojects.path}:assemble${variant.name.capitalized()}")
-                        variant.outputs.map { it as VariantOutputImpl }.forEach {
-                            upsertGithubPreRelease.assets.from(it.outputFileName.get())
-                            upsertGithubRelease.assets.from(it.outputFileName.get())
-                        }
+                if (this is AppPlugin) the<BaseAppModuleExtension>().applicationVariants.all {
+                    upsertGithubPreRelease.dependsOn("${this@subprojects.path}:assemble${name.capitalized()}")
+                    upsertGithubRelease.dependsOn("${this@subprojects.path}:assemble${name.capitalized()}")
+                    outputs.all {
+                        upsertGithubPreRelease.assets.from(outputFile)
+                        upsertGithubRelease.assets.from(outputFile)
                     }
                 }
             }
