@@ -2,10 +2,10 @@ package com.masselis.tpmsadvanced.gitflow
 
 import CommitSha
 import SemanticVersion
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.masselis.tpmsadvanced.gitflow.task.AssertBranchIsUnique
 import com.masselis.tpmsadvanced.gitflow.task.AssertCurrentBranch
 import com.masselis.tpmsadvanced.gitflow.task.AssertGitDiffIsEmpty
@@ -76,7 +76,7 @@ public class GitflowPlugin : Plugin<Project> {
         })
         subprojects {
             plugins.all {
-                if (this is LibraryPlugin) configure<BaseExtension> {
+                if (this is LibraryPlugin) configure<CommonExtension> {
                     afterEvaluate {
                         if (buildFeatures.buildConfig == true) productFlavors.all {
                             buildConfigField(
@@ -92,7 +92,7 @@ public class GitflowPlugin : Plugin<Project> {
                         }
                     }
                 }
-                if (this is AppPlugin) configure<BaseAppModuleExtension> {
+                if (this is AppPlugin) configure<ApplicationExtension> {
                     defaultConfig.versionCode = versionCode.get()
                     defaultConfig.versionName = currentReleaseTag.get().toString()
                 }
