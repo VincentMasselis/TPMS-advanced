@@ -37,6 +37,7 @@ jobs:
           verifyPaparazzi
           pixel2api34DemoDebugAndroidTest
           copyScreenshot
+          -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
           --scan
           --stacktrace
 
