@@ -30,6 +30,8 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      # Github Action free runners are running only 16gb of RAM. To avoid OOM, only 2 gradle managed
+      # devices are authorized to run in parallel
       - name: Analyse code, build and test everything
         run: >
           ./gradlew
@@ -37,7 +39,7 @@ jobs:
           verifyPaparazzi
           pixel2api34DemoDebugAndroidTest
           copyScreenshot
-          -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
+          -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=2
           --scan
           --stacktrace
 
