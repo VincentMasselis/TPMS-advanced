@@ -92,4 +92,4 @@ google-services = "com.google.gms.google-services:4.4.4"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 paparazzi = "app.cash.paparazzi:2.0.0-alpha02"
-metro = "dev.zacsweers.metro:0.10.1"
+metro = "dev.zacsweers.metro:0.10.2"
