@@ -36,4 +36,4 @@ runs:
         log-accepted-android-sdk-licenses: false # Cleans the log output
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v5
