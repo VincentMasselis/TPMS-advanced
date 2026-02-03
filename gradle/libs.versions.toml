@@ -1,32 +1,35 @@
 [versions]
-app = "1.4.0"
+app = "1.5.0"
 # This version is only applied to the application sources, gradles sources, even the Kotlin one and
 # the `buildSrc` sources, uses kotlin embedded in the gradle framework
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 sdk-min = "27"
 sdk-compile = "36"
 sdk-target = "36"
 coroutine = "1.10.2"
-lifecycle = "2.9.4"
+lifecycle = "2.10.0"
 testServices = "1.6.0"
-sqlDelight = "2.1.0"
-mockk = "1.14.5"
-ksp = "2.0.3"
+sqlDelight = "2.2.1"
+mockk = "1.14.6"
 ndk = "29.0.14206865"
+car-app = "1.7.0"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.37.3"
-android-gradle-plugin = "com.android.tools.build:gradle:8.13.0"
+android-gradle-plugin = "com.android.tools.build:gradle:8.13.1"
 androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
-androidx-camera2-core = "androidx.camera:camera-camera2:1.5.0"
-androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.5.0"
-androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.5.0"
-androidx-compose-bom = "androidx.compose:compose-bom:2025.10.00"
+androidx-camera2-core = "androidx.camera:camera-camera2:1.5.1"
+androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.5.1"
+androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.5.1"
+androidx-compose-bom = "androidx.compose:compose-bom:2025.11.01"
+androidx-car-app = { module = "androidx.car.app:app", version.ref = "car-app" }
+androidx-car-projected = { module = "androidx.car.app:app-projected", version.ref = "car-app" }
+androidx-car-automotive = { module = "androidx.car.app:app-automotive", version.ref = "car-app" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-compose-junit = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-core = "androidx.core:core-ktx:1.17.0"
-androidx-savedstate = "androidx.savedstate:savedstate-ktx:1.3.3"
+androidx-savedstate = "androidx.savedstate:savedstate-ktx:1.4.0"
 androidx-startup = "androidx.startup:startup-runtime:1.2.0"
 androidx-test-junit = "androidx.test.ext:junit:1.3.0"
 androidx-test-core = "androidx.test:core-ktx:1.7.0"
@@ -34,25 +37,24 @@ androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
 androidx-test-espresso-device = "androidx.test.espresso:espresso-device:1.1.0"
 androidx-test-runner = "androidx.test:runner:1.7.0"
 androidx-test-rules = "androidx.test:rules:1.7.0"
-androidx-activity = "androidx.activity:activity-ktx:1.11.0"
+androidx-activity = "androidx.activity:activity-ktx:1.12.0"
 androidx-fragment = "androidx.fragment:fragment-ktx:1.8.9"
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-compose-activity = "androidx.activity:activity-compose:1.11.0"
+compose-activity = "androidx.activity:activity-compose:1.12.0"
 compose-constraintlayout = "androidx.constraintlayout:constraintlayout-compose:1.1.1"
-compose-detekt = "io.nlopez.compose.rules:detekt:0.4.27"
-compose-navigation = "androidx.navigation:navigation-compose:2.9.3"
+compose-detekt = "io.nlopez.compose.rules:detekt:0.4.28"
+compose-navigation = "androidx.navigation:navigation-compose:2.9.6"
 detekt-gradle-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
-google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20250904-2.0.0"
+google-android-publisher = "com.google.apis:google-api-services-androidpublisher:v3-rev20251119-2.0.0"
 # 33.0.0 causes a "GradleCompatible" exception where some gms/firebase libs are used but differents version are used in the same time
-google-firebase-bom = "com.google.firebase:firebase-bom:34.4.0"
+google-firebase-bom = "com.google.firebase:firebase-bom:34.6.0"
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1"
-google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.39.1"
+google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.40.0"
 junit = "junit:junit:4.13.2"
-ksp-gradle-plugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlinx-collection = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0"
@@ -86,8 +88,8 @@ turbine = "app.cash.turbine:turbine:1.2.1"
 
 [plugins]
 crashlytics = "com.google.firebase.crashlytics:3.0.6"
-google-services = "com.google.gms.google-services:4.4.3"
+google-services = "com.google.gms.google-services:4.4.4"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 paparazzi = "app.cash.paparazzi:2.0.0-alpha02"
-metro = "dev.zacsweers.metro:0.6.10"
+metro = "dev.zacsweers.metro:0.7.7"

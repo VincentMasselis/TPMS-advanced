@@ -1,5 +1,6 @@
 plugins {
     `android-lib`
+    `android-test`
     compose
     alias(libs.plugins.metro)
 }
@@ -17,8 +18,6 @@ dependencies {
 
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
-
-    testImplementation(project(":core:test"))
 
     implementation(libs.google.mlkit.barecode)
     implementation(libs.androidx.camera2.core)

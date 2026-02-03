@@ -2,6 +2,7 @@
 
 plugins {
     `android-lib`
+    `android-test`
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.metro)
 }
@@ -17,9 +18,7 @@ dependencies {
 
     testImplementation(project(":core:test"))
 
-    androidTestImplementation(project(":core:android-test"))
     androidTestImplementation(libs.requery)
-    androidTestUtil(libs.test.orchestrator)
 }
 
 sqldelight {

@@ -38,16 +38,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.createSavedStateHandle
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.ui.restartApp
 import com.masselis.tpmsadvanced.core.ui.viewModel
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.R
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreViewModel.State
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreIconViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.keyed
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -61,9 +60,9 @@ internal fun Tyre(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     vehicleComponent: InternalVehicleComponent = LocalInternalVehicleComponent.current,
-    viewModel: TyreViewModel = vehicleComponent
+    viewModel: TyreIconViewModel = vehicleComponent
         .TyreComponent(location)
-        .let { viewModel(it.keyed()) { it.TyreViewModel(createSavedStateHandle()) } },
+        .let { viewModel(it.keyed()) { it.TyreIconViewModel() } },
 ) {
     val state by viewModel.stateFlow.collectAsState()
     Tyre(state, snackbarHostState, modifier)

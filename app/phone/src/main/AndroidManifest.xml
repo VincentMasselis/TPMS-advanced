@@ -31,6 +31,11 @@
 
             </intent-filter>
         </activity>
+        <service
+            android:name="com.masselis.tpmsadvanced.feature.androidauto.endpoint.CarAppService"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            tools:node="merge" />
     </application>
 
 </manifest>

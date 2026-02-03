@@ -479,12 +479,12 @@ private fun TyreCell(
                 )
                 Text(
                     text = if (sensorToVehicle != null)
-                        StringBuilder()
-                            .append("Bound to the ")
-                            .appendLoc(sensorToVehicle.first.location)
-                            .append(" of ")
-                            .append(sensorToVehicle.second.name)
-                            .toString()
+                        buildString {
+                            append("Bound to the ")
+                            appendLoc(sensorToVehicle.first.location)
+                            append(" of ")
+                            append(sensorToVehicle.second.name)
+                        }
                     else
                         "${tyre.pressure.string(pressureUnit)} / " +
                                 tyre.temperature.string(temperatureUnit),
@@ -564,11 +564,10 @@ private fun BoundSensorCell(
         ) {
             Column(Modifier.weight(1f)) {
                 Text(
-                    text = StringBuilder()
-                        .appendLoc(sensor.location)
-                        .append(" is bound")
-                        .toString()
-                        .capitalize(LocaleList.current),
+                    text = buildString {
+                        appendLoc(sensor.location)
+                        append(" is bound")
+                    }.capitalize(LocaleList.current),
                     fontSize = 14.sp,
                 )
                 if (tyre != null)

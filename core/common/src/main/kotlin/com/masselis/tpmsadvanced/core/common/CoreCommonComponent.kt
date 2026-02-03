@@ -32,8 +32,8 @@ internal interface InternalComponent : CoreCommonComponent {
     companion object : InternalComponent by createGraph<InternalComponent>() {
         init {
             // Forces FirebaseApp and crashlytics to be initialized
-            firebaseApp()
-            crashlytics()
+            firebaseApp()?.isDataCollectionDefaultEnabled = BuildConfig.DEBUG.not()
+            crashlytics()?.isCrashlyticsCollectionEnabled = BuildConfig.DEBUG.not()
         }
     }
 }

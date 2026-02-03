@@ -22,17 +22,6 @@ public class AndroidCommonPlugin : Plugin<Project> {
             defaultConfig {
                 minSdk = libs.versions.sdk.min.map { it.toInt() }.get()
                 targetSdk = libs.versions.sdk.target.map { it.toInt() }.get()
-
-                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-                // `useTestStorageService` enables the ability to store files when capturing screenshots.
-                // `clearPackageData` makes the Android Test Orchestrator run its "pm clear" command after
-                // each test invocation. This command ensures that the app's state is completely cleared
-                // between tests.
-                testInstrumentationRunnerArguments += mapOf(
-                    "useTestStorageService" to "true",
-                    "clearPackageData" to "true"
-                )
-                testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
                 ndkVersion = libs.versions.ndk.get()
                 ndk {
                     // Removes the abi "riscv64" to avoid issues when uploading to the play store

@@ -1,5 +1,6 @@
 plugins {
     `android-lib`
+    `android-test`
     compose
 }
 
@@ -41,7 +42,4 @@ dependencies {
     implementation(project(":core:debug-ui"))
 
     testImplementation(project(":core:test"))
-
-    androidTestImplementation(project(":core:android-test"))
-    androidTestUtil(libs.test.orchestrator)
 }
