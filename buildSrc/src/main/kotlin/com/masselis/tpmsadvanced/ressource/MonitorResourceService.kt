@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.ressource
 
 import com.masselis.tpmsadvanced.ressource.MonitorResourceService.Params
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
@@ -12,6 +13,7 @@ import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import org.gradle.tooling.events.FinishEvent
 import org.gradle.tooling.events.OperationCompletionListener
+import org.slf4j.LoggerFactory
 import oshi.SystemInfo
 import java.io.File
 import java.lang.System.currentTimeMillis
@@ -33,29 +35,37 @@ internal abstract class MonitorResourceService :
         val maxGraphPoints: Property<Short>
     }
 
+    private val logger = LoggerFactory.getLogger(this::class.java)
     private val startTs = currentTimeMillis()
+    @Suppress("LoggingPlaceholderCountMatchesArgumentCount")
     private val job = GlobalScope.launch(IO) {
-        val csvFile = parameters.outputCsv.get().asFile
-        if (csvFile.exists()) csvFile.delete()
-        if (csvFile.parentFile.exists().not()) csvFile.parentFile.mkdirs()
-        csvFile.createNewFile()
-        csvFile.writeText("timestamp,cpu,mem\n")
-        var previousTick: LongArray
-        with(SystemInfo().hardware.also { previousTick = it.processor.systemCpuLoadTicks }) {
-            while (true) {
-                delay(1.seconds)
-                "%s,%.2f,%.2f\n"
-                    .format(
-                        ROOT,
-                        (currentTimeMillis() - startTs).milliseconds,
-                        processor.getSystemCpuLoadBetweenTicks(previousTick)
-                            .also { previousTick = processor.systemCpuLoadTicks }
-                            .let { if (it < 0) 0.0 else it * 100.0 },
-                        memory.available
-                            .toDouble()
-                            .let { ((memory.total - it) / memory.total) * 100.0 }
-                    )
-                    .also(csvFile::appendText)
+        runCatching {
+            val csvFile = parameters.outputCsv.get().asFile
+            if (csvFile.exists()) csvFile.delete()
+            if (csvFile.parentFile.exists().not()) csvFile.parentFile.mkdirs()
+            csvFile.createNewFile()
+            csvFile.writeText("timestamp,cpu,mem\n")
+            var previousTick: LongArray
+            with(SystemInfo().hardware.also { previousTick = it.processor.systemCpuLoadTicks }) {
+                while (true) {
+                    delay(1.seconds)
+                    "%s,%.2f,%.2f\n"
+                        .format(
+                            ROOT,
+                            (currentTimeMillis() - startTs).milliseconds,
+                            processor.getSystemCpuLoadBetweenTicks(previousTick)
+                                .also { previousTick = processor.systemCpuLoadTicks }
+                                .let { if (it < 0) 0.0 else it * 100.0 },
+                            memory.available
+                                .toDouble()
+                                .let { ((memory.total - it) / memory.total) * 100.0 }
+                        )
+                        .also(csvFile::appendText)
+                }
+            }
+        }.onFailure {
+            if (it !is CancellationException) {
+                logger.error("An error occurred during the resource monitoring", it)
             }
         }
     }
@@ -115,7 +125,7 @@ internal abstract class MonitorResourceService :
                     ?.apply {
                         appendText("### 📊 Resource usage for tasks \"${parameters.graphName.get()}\"\n")
                         appendText("**Blue: CPU** | **Gray: Memory**\n\n")
-                        appendText(markdownChart)
+                        appendText("$markdownChart\n")
                         appendText("Complete report is attached as a CSV file below, see the [artifacts section](#artifacts)")
                     }
             }
