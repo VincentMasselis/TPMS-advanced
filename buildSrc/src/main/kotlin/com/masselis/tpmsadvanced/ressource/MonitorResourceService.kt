@@ -37,14 +37,16 @@ internal abstract class MonitorResourceService :
 
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val startTs = currentTimeMillis()
+
     @Suppress("LoggingPlaceholderCountMatchesArgumentCount")
     private val job = GlobalScope.launch(IO) {
         runCatching {
-            val csvFile = parameters.outputCsv.get().asFile
-            if (csvFile.exists()) csvFile.delete()
-            if (csvFile.parentFile.exists().not()) csvFile.parentFile.mkdirs()
-            csvFile.createNewFile()
-            csvFile.writeText("timestamp,cpu,mem\n")
+            val csvFile = parameters.outputCsv.get().asFile.apply {
+                if (exists()) delete()
+                if (parentFile.exists().not()) parentFile.mkdirs()
+                createNewFile()
+                writeText("timestamp,cpu,mem\n")
+            }
             var previousTick: LongArray
             with(SystemInfo().hardware.also { previousTick = it.processor.systemCpuLoadTicks }) {
                 while (true) {
