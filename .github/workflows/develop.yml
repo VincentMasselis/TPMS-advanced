@@ -95,3 +95,10 @@ jobs:
         with:
           name: Configuration-cache-report
           path: "build/reports/configuration-cache/*/*/configuration-cache-report.html"
+
+      - name: Resources monitor report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Resource-monitor-report
+          path: "build/reports/resources/*.csv"

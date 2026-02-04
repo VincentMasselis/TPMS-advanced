@@ -36,6 +36,8 @@ dependencies {
     implementation(libs.google.oauth2.http)
     implementation(libs.google.android.publisher)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.oshi)
 
     // https://github.com/gradle/gradle/issues/15383
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
@@ -46,6 +48,10 @@ gradlePlugin {
         create("GitflowPlugin") {
             id = "gitflow"
             implementationClass = "com.masselis.tpmsadvanced.gitflow.GitflowPlugin"
+        }
+        create("MonitorResourcePlugin") {
+            id = "monitor-resource"
+            implementationClass = "com.masselis.tpmsadvanced.ressource.MonitorResourcePlugin"
         }
         create("AndroidAppPlugin") {
             id = "android-app"

@@ -7,6 +7,7 @@ import kotlinx.serialization.json.decodeFromStream
 
 plugins {
     gitflow
+    `monitor-resource`
 }
 
 gitflow {
