@@ -18,9 +18,9 @@ car-app = "1.7.0"
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.37.3"
 android-gradle-plugin = "com.android.tools.build:gradle:9.0.0"
 androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
-androidx-camera2-core = "androidx.camera:camera-camera2:1.5.3"
-androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.5.3"
-androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.5.3"
+androidx-camera2-core = "androidx.camera:camera-camera2:1.6.0"
+androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.6.0"
+androidx-camera2-mlkitvision = "androidx.camera:camera-mlkit-vision:1.6.0"
 androidx-compose-bom = "androidx.compose:compose-bom:2026.01.01"
 androidx-car-app = { module = "androidx.car.app:app", version.ref = "car-app" }
 androidx-car-projected = { module = "androidx.car.app:app-projected", version.ref = "car-app" }
