@@ -67,7 +67,7 @@ import java.util.UUID
 internal fun Home(
     expectedVehicle: UUID?,
     viewModel: HomeViewModel = viewModel(key = "HomeViewModel_$expectedVehicle") {
-        HomeViewModel(expectedVehicle)
+        HomeViewModel.invoke(expectedVehicle = expectedVehicle)
     }
 ) {
     val vehicleComponent by viewModel.vehicleComponentStateFlow.collectAsState()

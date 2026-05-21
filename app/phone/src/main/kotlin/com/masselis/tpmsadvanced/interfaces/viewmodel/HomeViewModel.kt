@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.interfaces.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
@@ -18,7 +19,9 @@ internal class HomeViewModel(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface Factory : (UUID?) -> HomeViewModel
+    interface Factory {
+        operator fun invoke(expectedVehicle: UUID?): HomeViewModel
+    }
 
     init {
         expectedVehicle?.also {

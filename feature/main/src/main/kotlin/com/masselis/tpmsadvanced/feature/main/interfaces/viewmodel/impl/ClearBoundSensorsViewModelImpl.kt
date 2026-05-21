@@ -24,7 +24,9 @@ internal class ClearBoundSensorsViewModelImpl(
 ) : ViewModel(), ClearBoundSensorsViewModel {
 
     @AssistedFactory
-    interface Factory : (SavedStateHandle) -> ClearBoundSensorsViewModelImpl
+    interface Factory {
+        operator fun invoke(savedStateHandle: SavedStateHandle): ClearBoundSensorsViewModelImpl
+    }
 
     private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>(
         "STATE",
