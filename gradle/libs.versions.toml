@@ -10,7 +10,7 @@ coroutine = "1.10.2"
 lifecycle = "2.10.0"
 testServices = "1.6.0"
 sqlDelight = "2.3.2"
-mockk = "1.14.9"
+mockk = "1.14.11"
 ndk = "29.0.14206865"
 car-app = "1.7.0"
 
