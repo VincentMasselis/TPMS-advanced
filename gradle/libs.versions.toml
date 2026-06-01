@@ -72,7 +72,7 @@ lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel
 lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
 lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycle" }
 material3 = "androidx.compose.material3:material3:1.4.0"
-material = "com.google.android.material:material:1.13.0"
+material = "com.google.android.material:material:1.14.0"
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
 oshi = "com.github.oshi:oshi-core-java11:7.0.0"
