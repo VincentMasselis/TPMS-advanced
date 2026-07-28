@@ -13,6 +13,7 @@ plugins {
     // declared in a version catalog in your settings file or settings plugin (because catalogs are
     // defined in settings themselves, it would be a chicken and egg problem)."
     id("com.gradle.develocity") version "4.5.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 @Suppress("UnstableApiUsage")
