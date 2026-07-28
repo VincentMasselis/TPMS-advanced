@@ -40,7 +40,9 @@ internal class ListSensorViewModelImpl(
 ) : ViewModel(), ListSensorViewModel {
 
     @AssistedFactory
-    interface Factory : (UUID) -> ListSensorViewModelImpl
+    interface Factory {
+        operator fun invoke(vehicleUuid: UUID): ListSensorViewModelImpl
+    }
 
     private val searchingUnlocatedTyresUseCase = searchingUnlocatedTyresUseCaseFactory(vehicleUuid)
     private val boundSensorUseCase = boundSensorUseCaseFactory(vehicleUuid)

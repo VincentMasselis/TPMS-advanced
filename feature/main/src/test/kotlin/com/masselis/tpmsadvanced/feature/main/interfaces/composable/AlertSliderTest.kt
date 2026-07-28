@@ -5,8 +5,11 @@ import app.cash.paparazzi.Paparazzi
 import com.masselis.tpmsadvanced.core.test.MainDispatcherRule
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.PressureRangeSliderPreview
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.TemperatureSliderPreview
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
+import java.util.TimeZone
 
 internal class AlertSliderTest {
 
@@ -20,6 +23,12 @@ internal class AlertSliderTest {
     val paparazzi = Paparazzi(
         theme = "android:Theme.Material3.DayNight.NoActionBar"
     )
+
+    @Before
+    fun setup() {
+        Locale.setDefault(Locale.FRANCE)
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"))
+    }
 
     @Test
     fun pressureRangeSlider() {

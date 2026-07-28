@@ -34,7 +34,9 @@ internal class QRCodeViewModel(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface Factory : (CameraController) -> QRCodeViewModel
+    interface Factory {
+        operator fun invoke(controller: CameraController): QRCodeViewModel
+    }
 
     sealed interface State {
         data object Scanning : State

@@ -66,7 +66,7 @@ jobs:
         if: failure()
         with:
           name: Paparazzi-failures
-          path: "**/build/paparazzi/failures/*.png"
+          path: "**/build/paparazzi/failures/**/*.png"
 
       - name: Instrumented tests reports
         uses: actions/upload-artifact@v6

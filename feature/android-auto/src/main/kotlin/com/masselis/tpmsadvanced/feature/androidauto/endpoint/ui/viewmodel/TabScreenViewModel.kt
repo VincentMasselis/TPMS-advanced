@@ -32,7 +32,9 @@ internal class TabScreenViewModel(
 ) : LifecycleOwner by lifecycleOwner {
 
     @AssistedFactory
-    interface Factory : (LifecycleOwner) -> TabScreenViewModel
+    interface Factory {
+        operator fun invoke(lifecycleOwner: LifecycleOwner): TabScreenViewModel
+    }
 
     sealed interface State {
         data object Loading : State

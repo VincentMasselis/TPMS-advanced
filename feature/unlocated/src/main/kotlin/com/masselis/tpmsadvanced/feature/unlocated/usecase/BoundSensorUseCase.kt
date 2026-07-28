@@ -14,7 +14,9 @@ internal class BoundSensorUseCase(
     @Assisted private val vehicleUuid: UUID,
 ) {
     @AssistedFactory
-    interface Factory : (UUID) -> BoundSensorUseCase
+    interface Factory {
+        operator fun invoke(vehicleUuid: UUID): BoundSensorUseCase
+    }
 
     fun everyWheelIsAlreadyBound() = Pair(
         vehicleDatabase.selectByUuid(vehicleUuid).execute().kind,
