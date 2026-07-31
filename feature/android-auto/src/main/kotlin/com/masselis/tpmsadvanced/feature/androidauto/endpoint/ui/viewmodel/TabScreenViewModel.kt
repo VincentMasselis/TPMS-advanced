@@ -3,6 +3,7 @@ package com.masselis.tpmsadvanced.feature.androidauto.endpoint.ui.viewmodel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreStatsStateFlow
@@ -67,7 +68,7 @@ internal class TabScreenViewModel(
         ) { list, current -> list to current }
             .flatMapLatest { (list, current) ->
                 current
-                    .TyreComponents
+                    .vehicle.kind.locations.map{ current.TyreComponent(it) }
                     .map { tyreComponent ->
                         combine(
                             tyreComponent.tyreIconStateFlow,

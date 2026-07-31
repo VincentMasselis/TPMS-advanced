@@ -1,30 +1,45 @@
 package com.masselis.tpmsadvanced.feature.background.ioc
 
+import com.masselis.tpmsadvanced.core.common.appGraph
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.BackgroundViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
-import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.Includes
-import dev.zacsweers.metro.createGraphFactory
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Provides
 
-@Suppress("unused")
-@DependencyGraph(
-    BackgroundComponent::class,
-    bindingContainers = [Bindings::class]
+@Suppress("unused", "FunctionNaming")
+@GraphExtension(
+    BackgroundComponent.Scope::class,
 )
-internal interface BackgroundComponent {
+public interface BackgroundComponent {
 
-    @DependencyGraph.Factory
-    interface Factory : (VehicleComponent) -> BackgroundComponent {
-        override operator fun invoke(
-            @Includes vehicleComponent: VehicleComponent
-        ): BackgroundComponent
+    public abstract class Scope private constructor()
 
-        companion object :
-                (VehicleComponent) -> BackgroundComponent by createGraphFactory<Factory>()
+    @ContributesTo(AppScope::class)
+    @GraphExtension.Factory
+    public interface Factory {
+        public fun build(@Includes vehicleComponent: VehicleComponent): BackgroundComponent
     }
 
-    fun BackgroundViewModel(): BackgroundViewModel
+    @Provides
+    private fun backgroundViewModel(vehicle: Vehicle): BackgroundViewModel =
+        BackgroundViewModel(vehicle)
 
-    companion object : (VehicleComponent) -> BackgroundComponent by Factory
+    public val internal: Internal
 
+    @Inject
+    public class Internal internal constructor(
+        internal val backgroundViewModel: () -> BackgroundViewModel
+    )
+
+    public companion object {
+        public operator fun invoke(vehicle: VehicleComponent): BackgroundComponent =
+            (appGraph as Factory).build(vehicle)
+
+        internal fun BackgroundComponent.BackgroundViewModel() = internal.backgroundViewModel()
+    }
 }

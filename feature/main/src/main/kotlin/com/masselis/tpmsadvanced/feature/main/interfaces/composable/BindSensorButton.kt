@@ -29,14 +29,16 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorTa
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorTags.Dialog.cancelButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorButtonViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.BindSensorButtonViewModel.State
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreBindings.Companion.BindSensorButtonViewModel
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.keyed
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 
 @Composable
 internal fun BindSensorButton(
     location: Location,
     modifier: Modifier = Modifier,
-    vehicleComponent: InternalVehicleComponent = LocalInternalVehicleComponent.current,
+    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
     viewModel: BindSensorButtonViewModel = vehicleComponent
         .TyreComponent(location)
         .let { viewModel(it.keyed()) { it.BindSensorButtonViewModel(createSavedStateHandle()) } }

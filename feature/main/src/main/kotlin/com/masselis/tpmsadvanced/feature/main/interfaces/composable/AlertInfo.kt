@@ -17,17 +17,9 @@ import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreIconViewModel
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.InternalTyreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
-import com.masselis.tpmsadvanced.feature.main.usecase.FindTyreComponentUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
-import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -47,7 +39,7 @@ internal fun PressureInfo(
                     location = Location.Side(SensorLocation.Side.LEFT),
                     snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
-                    vehicleComponent = DemoVehicleComponent(),
+                    vehicleComponent = lazy { error("Shouldn't be called") },
                     viewModel = DemoTyreIconViewModel(State.Alerting),
                 )
                 Text(
@@ -83,7 +75,7 @@ internal fun TemperatureInfo(
                     location = Location.Side(SensorLocation.Side.LEFT),
                     snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
-                    vehicleComponent = DemoVehicleComponent(),
+                    vehicleComponent = lazy { error("Shouldn't be called") },
                     viewModel = demoTyreViewModel,
                 )
                 Text(text.format(temperature.string(unit)))
@@ -96,27 +88,6 @@ internal fun TemperatureInfo(
 
 private class DemoTyreIconViewModel(state: State) : TyreIconViewModel {
     override val stateFlow: StateFlow<State> = MutableStateFlow(state)
-}
-
-private class DemoVehicleComponent : InternalVehicleComponent {
-    override val TyreComponent: FindTyreComponentUseCase
-        get() = error("Not implemented")
-    override val tyreFactory: InternalTyreComponent.Factory
-        get() = error("Not implemented")
-    override val vehicle: Vehicle
-        get() = error("Not implemented")
-    override val vehicleStateFlow: StateFlow<Vehicle>
-        get() = error("Not implemented")
-    override val vehicleRangesUseCase: VehicleRangesUseCase
-        get() = error("Not implemented")
-    override val ClearBoundSensorsViewModel: ClearBoundSensorsViewModelImpl.Factory
-        get() = error("Not implemented")
-
-    override fun VehicleSettingsViewModel(): VehicleSettingsViewModelImpl =
-        error("Not implemented")
-
-    override fun DeleteVehicleViewModel(): DeleteVehicleViewModelImpl =
-        error("Not implemented")
 }
 
 private val DemoSnackbarHostState = SnackbarHostState()

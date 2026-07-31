@@ -19,9 +19,9 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.VehicleSettingsViewModel
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleBindings.Companion.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Companion.key
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Factory.Companion.key
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
 
 @Composable
@@ -33,7 +33,8 @@ public fun VehicleSettings(
     VehicleSettings(
         modifier,
         backgroundSettings,
-        component as InternalVehicleComponent,
+        component,
+        component.viewModel(component.key()) { it.VehicleSettingsViewModel() },
     )
 }
 
@@ -41,10 +42,9 @@ public fun VehicleSettings(
 internal fun VehicleSettings(
     modifier: Modifier = Modifier,
     backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
-    component: InternalVehicleComponent = LocalInternalVehicleComponent.current,
+    component: VehicleComponent = LocalVehicleComponent.current,
     viewModel: VehicleSettingsViewModel = component.viewModel(component.key()) { it.VehicleSettingsViewModel() },
 ) {
-    val component = LocalVehicleComponent.current
     val highTemp by viewModel.highTemp.collectAsState()
     val normalTemp by viewModel.normalTemp.collectAsState()
     val lowTemp by viewModel.lowTemp.collectAsState()

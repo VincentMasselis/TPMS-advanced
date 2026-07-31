@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":data:vehicle"))
     implementation(project(":data:unit"))
+    implementation(project(":data:app"))
     implementation(project(":feature:main"))
     implementation(libs.androidx.car.app)
 }

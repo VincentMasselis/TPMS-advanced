@@ -21,14 +21,14 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import java.util.UUID
 
 @Suppress("unused")
-@BindingContainer
-internal object Bindings {
+@ContributesTo(AppScope::class)
+public interface Bindings {
 
     @Provides
     @SingleIn(AppScope::class)
