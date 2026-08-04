@@ -34,7 +34,7 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.feature.qrcode.R
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel.State
-import com.masselis.tpmsadvanced.feature.qrcode.ioc.FeatureQrCodeComponent.Companion.QrCodeViewModel
+import com.masselis.tpmsadvanced.feature.qrcode.ioc.Bindings.Companion.QrCodeViewModel
 
 
 @OptIn(ExperimentalPermissionsApi::class)

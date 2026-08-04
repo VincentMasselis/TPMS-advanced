@@ -1,16 +1,20 @@
 package com.masselis.tpmsadvanced.feature.qrcode.ioc
 
+import com.masselis.tpmsadvanced.core.common.appGraph
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.CameraAnalyser
+import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel
 import com.masselis.tpmsadvanced.feature.qrcode.usecase.BoundSensorMapUseCase
 import com.masselis.tpmsadvanced.feature.qrcode.usecase.QrCodeSensorUseCase
-import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.Provides
 
 @Suppress("unused")
-@BindingContainer
-internal object Bindings {
+@ContributesTo(AppScope::class)
+public interface Bindings {
 
     @Provides
     private fun cameraAnalyser(): CameraAnalyser = CameraAnalyser()
@@ -26,4 +30,16 @@ internal object Bindings {
         cameraAnalyser: CameraAnalyser,
         currentVehicleUseCase: CurrentVehicleUseCase
     ): QrCodeSensorUseCase = QrCodeSensorUseCase(cameraAnalyser, currentVehicleUseCase)
+
+    public val featureQrCodeInternal: Internal
+
+    @Inject
+    public class Internal internal constructor(
+        internal val qrCodeViewModel: QRCodeViewModel.Factory
+    )
+
+   public companion object {
+        internal val QrCodeViewModel
+            get() = (appGraph as Bindings).featureQrCodeInternal.qrCodeViewModel
+    }
 }

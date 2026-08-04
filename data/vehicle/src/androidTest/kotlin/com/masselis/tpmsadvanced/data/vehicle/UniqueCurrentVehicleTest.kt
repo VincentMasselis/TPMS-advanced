@@ -3,8 +3,10 @@ package com.masselis.tpmsadvanced.data.vehicle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.masselis.tpmsadvanced.data.vehicle.ioc.InternalComponent
+import com.masselis.tpmsadvanced.core.common.appGraph
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
@@ -22,13 +24,18 @@ import kotlin.test.assertTrue
 @RunWith(AndroidJUnit4::class)
 internal class UniqueCurrentVehicleTest {
 
+    @ContributesTo(AppScope::class)
+    internal interface Extractor {
+        val database: Database
+    }
+
     private lateinit var database: Database
     private lateinit var vehicleQueries: VehicleQueries
     private lateinit var debugVehicleQueries: DebugVehicleQueries
 
     @Before
     fun setup() {
-        database = InternalComponent.database
+        database = (appGraph as Extractor).database
         vehicleQueries = database.vehicleQueries
         debugVehicleQueries = database.debugVehicleQueries
         vehicleQueries.currentFavourite()

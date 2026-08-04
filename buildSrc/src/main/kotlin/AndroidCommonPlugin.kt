@@ -54,6 +54,7 @@ public class AndroidCommonPlugin : Plugin<Project> {
             testOptions.emulatorControl {
                 enable = true
             }
+            lint.disable += "EnsureInitializerMetadata"
         }
 
         // Does the same than `android.kotlinOptions {}`

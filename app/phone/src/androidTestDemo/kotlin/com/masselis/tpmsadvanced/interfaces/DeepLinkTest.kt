@@ -3,14 +3,18 @@ package com.masselis.tpmsadvanced.interfaces
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.net.Uri
-import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.masselis.tpmsadvanced.core.common.appGraph
 import com.masselis.tpmsadvanced.core.database.QueryOne.Companion.asOne
-import com.masselis.tpmsadvanced.data.vehicle.ioc.DataVehicleComponent.Companion.database
+import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
 import com.masselis.tpmsadvanced.interfaces.screens.Home.Companion.home
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,8 +23,15 @@ import java.util.UUID
 @RunWith(AndroidJUnit4::class)
 internal class DeepLinkTest {
 
+    @ContributesTo(AppScope::class)
+    interface Extractor {
+        val database: Database
+    }
+
     @get:Rule
     val composeTestRule = createEmptyComposeRule()
+
+    private lateinit var database: Database
 
     private fun test(
         uuid: UUID = UUID.randomUUID(),
@@ -29,6 +40,11 @@ internal class DeepLinkTest {
         if (uri != null) Intent(ACTION_VIEW, uri)
         else Intent(getApplicationContext(), RootActivity::class.java)
     )
+
+    @Before
+    fun setup() {
+        database = (appGraph as Extractor).database
+    }
 
     @Test
     fun openRandomUuid() = test().use {

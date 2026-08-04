@@ -2,54 +2,42 @@ package com.masselis.tpmsadvanced.feature.main.ioc.vehicle
 
 import com.masselis.tpmsadvanced.core.ui.Keyed
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.InternalTyreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreSubcomponentBindings
+import com.masselis.tpmsadvanced.feature.main.ioc.Bindings
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.Provides
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
-@Suppress("PropertyName", "VariableNaming")
-public sealed interface VehicleComponent {
+@Suppress("VariableNaming")
+@GraphExtension(
+    scope = VehicleComponent.Scope::class,
+)
+public interface VehicleComponent {
+
+    public abstract class Scope private constructor()
+
+    @ContributesTo(AppScope::class)
+    @GraphExtension.Factory
+    public interface Factory {
+        public fun build(@Provides vehicle: Vehicle): VehicleComponent
+
+        public companion object {
+            public fun VehicleComponent.key(): Keyed =
+                mapOf("vehicle_id" to vehicle.uuid.toString())
+        }
+    }
 
     public val vehicle: Vehicle
+    @VehicleLifecycle
+    public val scope: CoroutineScope
     public val vehicleStateFlow: StateFlow<Vehicle>
-
     public val vehicleRangesUseCase: VehicleRangesUseCase
 
-    public val TyreComponent: (Vehicle.Kind.Location) -> TyreComponent
-    public val TyreComponents: List<TyreComponent> get() = vehicle.kind.locations.map(TyreComponent)
-
-    public companion object : (Vehicle) -> VehicleComponent by InternalVehicleComponent {
-        public fun VehicleComponent.key(): Keyed = mapOf("vehicle_id" to vehicle.uuid.toString())
+    public companion object {
+        public operator fun invoke(vehicle: Vehicle): VehicleComponent =
+            Bindings.vehicleComponentCache.get(vehicle)
     }
-}
-
-@Suppress("PropertyName", "FunctionName", "VariableNaming", "unused")
-@GraphExtension(
-    scope = VehicleComponent::class,
-    bindingContainers = [Bindings::class, TyreSubcomponentBindings::class]
-)
-internal interface InternalVehicleComponent : VehicleComponent {
-
-    @GraphExtension.Factory
-    interface Factory {
-        fun build(@Provides vehicle: Vehicle): InternalVehicleComponent
-    }
-
-    override val TyreComponent: (Vehicle.Kind.Location) -> InternalTyreComponent
-
-    val tyreFactory: InternalTyreComponent.Factory
-
-    val ClearBoundSensorsViewModel: ClearBoundSensorsViewModelImpl.Factory
-    fun VehicleSettingsViewModel(): VehicleSettingsViewModelImpl
-    fun DeleteVehicleViewModel(): DeleteVehicleViewModelImpl
-
-    companion object :
-            (Vehicle) -> InternalVehicleComponent by InternalComponent.VehicleComponentFactory
 }

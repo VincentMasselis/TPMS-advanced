@@ -17,24 +17,30 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.PreconditionsViewModel
-import com.masselis.tpmsadvanced.feature.main.ioc.InternalComponent.Companion.PreconditionsViewModel
 import com.masselis.tpmsadvanced.core.ui.BluetoothState
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.rememberBluetoothState
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.PreconditionsViewModel
+import com.masselis.tpmsadvanced.feature.main.ioc.Bindings.Companion.PreconditionsViewModel
+import dev.zacsweers.metro.Assisted
 
 @Composable
 public fun Preconditions(
-    modifier: Modifier = Modifier,
-    ready: @Composable () -> Unit,
-): Unit = InternalPreconditions(ready, modifier)
+    @Assisted modifier: Modifier = Modifier,
+    @Assisted ready: @Composable () -> Unit,
+) {
+    InternalPreconditions(
+        ready = ready,
+        modifier = modifier
+    )
+}
 
 @Suppress("ModifierNotUsedAtRoot")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun InternalPreconditions(
-    ready: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
+    @Assisted ready: @Composable () -> Unit,
+    @Assisted modifier: Modifier = Modifier,
     viewModel: PreconditionsViewModel = viewModel { PreconditionsViewModel() }
 ) {
     val permissionState = rememberMultiplePermissionsState(viewModel.requiredPermission())

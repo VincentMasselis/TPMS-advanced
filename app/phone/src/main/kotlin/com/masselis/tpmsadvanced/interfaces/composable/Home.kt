@@ -56,18 +56,18 @@ import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QrCodeScan
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorList
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.carListDropdownMenu
-import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent.Companion.HomeViewModel
-import com.masselis.tpmsadvanced.interfaces.ioc.AppPhoneComponent.Companion.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.SpotlightEvent
+import com.masselis.tpmsadvanced.ioc.Bindings.Companion.HomeViewModel
+import com.masselis.tpmsadvanced.ioc.Bindings.Companion.VehicleHomeViewModel
 import java.util.UUID
 
 @Composable
 internal fun Home(
     expectedVehicle: UUID?,
     viewModel: HomeViewModel = viewModel(key = "HomeViewModel_$expectedVehicle") {
-        HomeViewModel.invoke(expectedVehicle = expectedVehicle)
+        HomeViewModel(expectedVehicle = expectedVehicle)
     }
 ) {
     val vehicleComponent by viewModel.vehicleComponentStateFlow.collectAsState()

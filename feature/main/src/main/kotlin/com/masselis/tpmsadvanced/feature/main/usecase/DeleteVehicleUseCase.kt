@@ -31,7 +31,7 @@ internal class DeleteVehicleUseCase(
         // Flags the vehicle to be deleted
         database.setIsDeleting(vehicle.uuid)
         launch {
-            // Deletes the vehicle after a 1 second timeout
+            // Deletes the vehicle after a 1-second timeout
             delay(1.seconds)
             database.delete(vehicle.uuid)
         }

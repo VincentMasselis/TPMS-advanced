@@ -9,21 +9,21 @@ import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.InternalTyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent
 
 @Suppress("LongParameterList")
 internal class FindTyreComponentUseCase(
     private val vehicle: Vehicle,
-    private val frontLeft: Lazy<InternalTyreComponent>,
-    private val frontRight: Lazy<InternalTyreComponent>,
-    private val rearLeft: Lazy<InternalTyreComponent>,
-    private val rearRight: Lazy<InternalTyreComponent>,
-    private val front: Lazy<InternalTyreComponent>,
-    private val rear: Lazy<InternalTyreComponent>,
-    private val left: Lazy<InternalTyreComponent>,
-    private val right: Lazy<InternalTyreComponent>,
-) : (Vehicle.Kind.Location) -> InternalTyreComponent {
-    override fun invoke(location: Vehicle.Kind.Location): InternalTyreComponent {
+    private val frontLeft: Lazy<TyreComponent>,
+    private val frontRight: Lazy<TyreComponent>,
+    private val rearLeft: Lazy<TyreComponent>,
+    private val rearRight: Lazy<TyreComponent>,
+    private val front: Lazy<TyreComponent>,
+    private val rear: Lazy<TyreComponent>,
+    private val left: Lazy<TyreComponent>,
+    private val right: Lazy<TyreComponent>,
+) : (Vehicle.Kind.Location) -> TyreComponent {
+    override fun invoke(location: Vehicle.Kind.Location): TyreComponent {
         assert(vehicle.kind.locations.contains(location)) {
             "Cannot get a TyreComponent for the filled location $location according to the vehicle kind ${vehicle.kind}"
         }

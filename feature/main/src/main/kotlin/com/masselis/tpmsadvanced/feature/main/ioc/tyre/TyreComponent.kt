@@ -3,18 +3,30 @@ package com.masselis.tpmsadvanced.feature.main.ioc.tyre
 import com.masselis.tpmsadvanced.core.ui.Keyed
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.BindSensorButtonViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.TyreIconViewModelImpl
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.TyreStatsViewModelImpl
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreSubcomponentBindings.Companion.findTyreComponentUseCase
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreAtmosphereUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreStatsStateFlow
+import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.Provides
 
 
-@Suppress("PropertyName", "VariableNaming")
-public sealed interface TyreComponent {
+@Suppress("VariableNaming", "unused")
+@GraphExtension(
+    scope = TyreComponent.Scope::class,
+)
+public interface TyreComponent {
+
+    public class Scope private constructor()
+
+    @ContributesTo(VehicleComponent.Scope::class)
+    @GraphExtension.Factory
+    public interface Factory {
+        public fun build(@Provides location: Location): TyreComponent
+    }
+
     public val vehicle: Vehicle
     public val location: Location
     public val tyreAtmosphereUseCase: TyreAtmosphereUseCase
@@ -26,22 +38,8 @@ public sealed interface TyreComponent {
             "vehicle_id" to vehicle.uuid.toString(),
             "location" to "$location"
         )
+
+        public fun VehicleComponent.TyreComponent(loc: Location): TyreComponent =
+            findTyreComponentUseCase(loc)
     }
-}
-
-@Suppress("PropertyName", "VariableNaming", "unused", "FunctionName")
-@GraphExtension(
-    TyreComponent::class,
-    bindingContainers = [Bindings::class]
-)
-internal interface InternalTyreComponent : TyreComponent {
-
-    @GraphExtension.Factory
-    interface Factory {
-        fun build(@Provides location: Location): InternalTyreComponent
-    }
-
-    fun TyreIconViewModel(): TyreIconViewModelImpl
-    fun TyreStatsViewModel(): TyreStatsViewModelImpl
-    val BindSensorButtonViewModel: BindSensorButtonViewModelImpl.Factory
 }

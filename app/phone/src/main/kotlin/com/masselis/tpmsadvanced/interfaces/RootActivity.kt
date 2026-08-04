@@ -11,7 +11,7 @@ import com.masselis.tpmsadvanced.interfaces.composable.Main
 import com.masselis.tpmsadvanced.interfaces.composable.TpmsAdvancedTheme
 import java.util.UUID
 
-internal class RootActivity : AppCompatActivity() {
+public class RootActivity : AppCompatActivity() {
 
     private val counter = ScreenOnCounter.Activity()
 
