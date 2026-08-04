@@ -21,12 +21,12 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - name: Unlock secret
-        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
-        env:
-          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
-
       - name: Publish to beta and create a github release
+        env:
+          BITWARDEN_SERVER: self-hosted
+          BITWARDEN_SELF_HOSTED_URL: ${{ secrets.BITWARDEN_SELF_HOSTED_URL }}
+          BITWARDEN_EMAIL: ${{ secrets.BITWARDEN_CI_EMAIL }}
+          BITWARDEN_PASSWORD: ${{ secrets.BITWARDEN_CI_PASSWORD }}
         run: >
           ./gradlew
           assertReleaseBranchIsValid

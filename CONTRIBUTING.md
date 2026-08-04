@@ -15,6 +15,24 @@
 Run `git@github.com:VincentMasselis/TPMS-advanced.git` on your machine then `./gradlew build`. You
 don't need the secrets keys to run this project, the gradle configuration works without them.
 
+### Secrets (optional)
+
+Release signing, Play Store publishing, Firebase, and GitHub release notes need secrets that are
+fetched at build time from a Bitwarden/Vaultwarden vault, via the `bw` CLI (install with
+`npm install -g @bitwarden/cli@2026.7.0`). Add the following keys to your gitignored
+`local.properties`:
+
+```properties
+bitwarden.server=self-hosted
+bitwarden.selfHostedUrl=<your vault URL>
+bitwarden.email=<your email>
+bitwarden.password=<your master password>
+```
+
+`bitwarden.server` also accepts `bitwarden.com` or `bitwarden.eu`. If a secret file gets deleted
+without invalidating the configuration cache, force a re-fetch with
+`./gradlew --no-configuration-cache`.
+
 ## Publish in beta
 
 TPMS-Advanced follow the rules of git-flow. To create a release from `develop`, call the task

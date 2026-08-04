@@ -38,3 +38,7 @@ buildSrc/build/**
 .idea/AndroidProjectSystem.xml
 .kotlin/errors/*.log
 .idea/markdown.xml
+
+# Fetched at build time from Bitwarden, see buildSrc BitwardenPlugin (previously git-crypt)
+/secrets/
+/app/phone/google-services.json
