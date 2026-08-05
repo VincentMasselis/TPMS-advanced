@@ -37,6 +37,7 @@ public abstract class BitwardenPlugin : Plugin<Project> {
                 when (it.lowercase()) {
                     "bitwarden.com", BitwardenServer.BitwardenCom.url -> BitwardenServer.BitwardenCom
                     "bitwarden.eu", BitwardenServer.BitwardenEu.url -> BitwardenServer.BitwardenEu
+                    "" -> null
                     else -> BitwardenServer.SelfHosted(it)
                 }
             }
