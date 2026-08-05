@@ -41,12 +41,11 @@ internal abstract class FetchAttachment : WorkAction<Parameters> {
         outputFile.get().asFile.also { file ->
             file.parentFile.mkdirs()
             execOperations.bw(
-                listOf(
-                    "get", "attachment", attachmentId,
-                    "--itemid", itemId,
-                    "--output", file.absolutePath,
-                    "--session", session.get()
-                ),
+                "get",
+                "attachment", attachmentId,
+                "--itemid", itemId,
+                "--output", file.absolutePath,
+                session = session.get(),
             )
         }
     }
@@ -55,7 +54,7 @@ internal abstract class FetchAttachment : WorkAction<Parameters> {
         itemName: String,
         session: String,
     ) =
-        bw(listOf("list", "items", "--search", itemName, "--session", session))
+        bw("list", "items", "--search", itemName, session = session)
             .let { Json.parseToJsonElement(it).jsonArray }
             .map { it.jsonObject }
             .singleOrNull { it["name"]?.jsonPrimitive?.content == itemName }

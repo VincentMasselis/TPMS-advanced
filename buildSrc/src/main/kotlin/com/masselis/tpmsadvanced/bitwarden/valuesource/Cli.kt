@@ -19,11 +19,14 @@ private val bwExecutable: String by lazy {
 }
 
 internal fun ExecOperations.bw(
-    args: List<String>,
+    vararg args: String,
+    session: String? = null,
 ): String = ByteArrayOutputStream().use { stdout ->
     val stderr = ByteArrayOutputStream()
     exec {
         commandLine(listOf(bwExecutable) + args)
+        // Avoids the session to be visible in clear in the exec command
+        if (session != null) environment("BW_SESSION", session)
         standardOutput = stdout
         errorOutput = stderr
         isIgnoreExitValue = true

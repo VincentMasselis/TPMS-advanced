@@ -50,18 +50,18 @@ internal abstract class FetchSession : ValueSource<Optional<String>, Parameters>
         // Using a password file avoids to send a clear password to Gradle which can be displayed in
         // the log because of the `ExecOperations.exec` command.
         password: File,
-    ): String = bw(listOf("status"))
+    ): String = bw("status")
         .let { Json.parseToJsonElement(it).jsonObject["status"]?.jsonPrimitive?.content }!!
         .let { status ->
             // "bw config server" is rejected once a session already exists ("Logout required before
             // server config update"), and this CLI config dir persists across calls/builds - only set it
             // on the very first, still-unauthenticated call, never on the re-used login that follows.
             if (status == "unauthenticated") {
-                bw(listOf("config", "server", server.url))
-                bw(listOf("login", email, "--passwordfile", password.absolutePath, "--raw"))
+                bw("config", "server", server.url)
+                bw("login", email, "--passwordfile", password.absolutePath, "--raw")
             } else {
-                bw(listOf("unlock", "--passwordfile", password.absolutePath, "--raw"))
+                bw("unlock", "--passwordfile", password.absolutePath, "--raw")
             }
         }
-        .also { bw(listOf("sync", "--session", it)) }
+        .also { bw("sync", session = it) }
 }
