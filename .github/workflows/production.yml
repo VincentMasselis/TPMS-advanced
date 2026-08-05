@@ -21,7 +21,7 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - uses: ./.github/download_secrets/setup
+      - uses: ./.github/actions/download_secrets
 
       - name: Promotes the github release, promotes from the beta channel to production, updates the screenshots
         run: >

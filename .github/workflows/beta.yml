@@ -21,7 +21,7 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - uses: ./.github/download_secrets/setup
+      - uses: ./.github/actions/download_secrets
 
       - name: Publish to beta and create a github release
         run: >
