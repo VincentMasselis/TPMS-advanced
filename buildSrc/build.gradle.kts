@@ -45,6 +45,10 @@ dependencies {
 
 gradlePlugin {
     plugins {
+        create("BitwardenPlugin") {
+            id = "bitwarden"
+            implementationClass = "com.masselis.tpmsadvanced.bitwarden.BitwardenPlugin"
+        }
         create("GitflowPlugin") {
             id = "gitflow"
             implementationClass = "com.masselis.tpmsadvanced.gitflow.GitflowPlugin"

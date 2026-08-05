@@ -1,25 +1,23 @@
 package com.masselis.tpmsadvanced.bitwarden
 
-import Keys
-import com.masselis.tpmsadvanced.bitwarden.valuesource.BitwardenCredentials
-import com.masselis.tpmsadvanced.bitwarden.valuesource.FetchBitwardenAttachment
-import com.masselis.tpmsadvanced.bitwarden.valuesource.FetchBitwardenField
+import com.masselis.tpmsadvanced.bitwarden.task.FetchAttachmentsTask
+import com.masselis.tpmsadvanced.bitwarden.valuesource.FetchSession
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.from
+import org.gradle.kotlin.dsl.register
+import org.gradle.process.ExecOperations
 import java.util.Properties
+import javax.inject.Inject
 
-private const val APP_KEYSTORE_ITEM = "TPMS-Advanced - App Keystore"
-private const val PUBLISHER_SERVICE_ACCOUNT_ITEM = "TPMS-Advanced - Play Publisher Service Account"
-private const val GOOGLE_SERVICES_ITEM = "TPMS-Advanced - Google Services"
-private const val BUILD_KEYS_ITEM = "TPMS-Advanced - Build Keys"
+public abstract class BitwardenPlugin : Plugin<Project> {
 
-public class BitwardenPlugin : Plugin<Project> {
+    @get:Inject
+    internal abstract val execOperations: ExecOperations
+
     override fun apply(project: Project): Unit = with(project) {
         val ext = extensions.create<BitwardenExtension>("bitwarden")
 
@@ -43,53 +41,23 @@ public class BitwardenPlugin : Plugin<Project> {
                 }
             }
         )
-        val credentials = providers.provider {
-            if (ext.email.isPresent.not() || ext.password.isPresent.not() || ext.server.isPresent.not())
-                return@provider null
-            BitwardenCredentials(
-                ext.email.get(),
-                ext.password.get(),
-                ext.server.get()
-            )
+        ext.item.convention(resolve("BITWARDEN_ITEM", "bitwarden.item"))
+
+        val session = providers.from(FetchSession::class) {
+            this.email = ext.email
+            this.password = ext.password
+            this.server = ext.server
         }
 
-        val cliConfigDir = layout.projectDirectory.dir(".gradle/bitwarden-cli")
-
-        fun fetchAttachment(itemName: String, outputFile: RegularFile) = providers
-            .from(FetchBitwardenAttachment::class) {
-                this.credentials = credentials
-                this.cliConfigDir = cliConfigDir
-                this.itemName = itemName
-                this.outputFile = outputFile
-            }
-            .orNull
-
-        fun fetchField(itemName: String, fieldName: String) = providers
-            .from(FetchBitwardenField::class) {
-                this.credentials = credentials
-                this.cliConfigDir = cliConfigDir
-                this.itemName = itemName
-                this.fieldName = fieldName
-            }
-            .orNull
-
-        fetchAttachment(
-            APP_KEYSTORE_ITEM,
-            layout.projectDirectory.file("secrets/app-keystore")
-        )
-        fetchAttachment(
-            PUBLISHER_SERVICE_ACCOUNT_ITEM,
-            layout.projectDirectory.file("secrets/publisher-service-account.json")
-        )
-        fetchAttachment(
-            GOOGLE_SERVICES_ITEM,
-            layout.projectDirectory.file("app/phone/google-services.json")
-        )
-
-        val appKeyStorePwd = fetchField(BUILD_KEYS_ITEM, "APP_KEY_STORE_PWD")
-        val appKeyAlias = fetchField(BUILD_KEYS_ITEM, "APP_KEY_ALIAS")
-        val githubToken = fetchField(BUILD_KEYS_ITEM, "GITHUB_TOKEN")
-        if (appKeyStorePwd != null && appKeyAlias != null && githubToken != null)
-            extra["keys"] = Keys(appKeyStorePwd, appKeyAlias, githubToken)
+        tasks.register<FetchAttachmentsTask>("downloadBitwardenSecretFiles") {
+            this.session = session
+            this.itemName = ext.item
+            this.files = mapOf(
+                "app-keystore" to rootProject.layout.projectDirectory.file("secrets/app-keystore"),
+                "publisher-service-account.json" to rootProject.layout.projectDirectory.file("secrets/publisher-service-account.json"),
+                "google-services.json" to rootProject.layout.projectDirectory.file("app/phone/google-services.json"),
+                "keys.json" to rootProject.layout.projectDirectory.file("secrets/keys.json"),
+            )
+        }
     }
 }

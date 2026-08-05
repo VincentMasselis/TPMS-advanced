@@ -35,9 +35,9 @@ runs:
       with:
         log-accepted-android-sdk-licenses: false # Cleans the log output
 
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
-
     - name: Install Bitwarden CLI
       shell: bash
-      run: npm install -g @bitwarden/cli@2026.7.0
+      run: npm install -g @bitwarden/cli@2026.6.0
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v5

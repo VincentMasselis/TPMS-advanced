@@ -1,0 +1,13 @@
+name: Download secret files
+description: Dedicated step to download secrets files used for delivery
+runs:
+  using: "composite"
+  steps:
+    - name: Download secret files
+      shell: bash
+      env:
+        BITWARDEN_SERVER: ${{ secrets.BITWARDEN_CI_SERVER }}
+        BITWARDEN_EMAIL: ${{ secrets.BITWARDEN_CI_EMAIL }}
+        BITWARDEN_PASSWORD: ${{ secrets.BITWARDEN_CI_PASSWORD }}
+        BITWARDEN_ITEM: ${{ secrets.BITWARDEN_CI_ITEM }}
+      run: ./gradlew downloadBitwardenSecretFiles
