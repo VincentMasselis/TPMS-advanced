@@ -30,7 +30,7 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - uses: ./.github/download_secrets/setup
+      - uses: ./.github/actions/download_secrets
 
       - name: Analyse code, build and test everything
         run: >
