@@ -1,13 +1,13 @@
 
 import com.masselis.tpmsadvanced.github.GithubExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 
 plugins {
     gitflow
     `monitor-resource`
+    bitwarden
 }
 
 gitflow {
@@ -18,19 +18,19 @@ gitflow {
     mainBranch = "origin/main"
 }
 
-val keys = try {
-    file("secrets/keys.json")
-        .inputStream()
-        .use {
-            @Suppress("OPT_IN_USAGE")
-            Json.decodeFromStream<Keys>(it)
-        }
-        .also { println("Project secrets decrypted") }
-        .also { extra.set("keys", it) }
-} catch (_: SerializationException) {
-    println("Project secrets encrypted")
-    null
-}
+val keys = file("secrets/keys.json")
+    .takeIf { it.exists() }
+    ?.inputStream()
+    ?.use {
+        @Suppress("OPT_IN_USAGE")
+        Json.decodeFromStream<Keys>(it)
+    }
+    ?.also { println("Project secrets available") }
+    ?.also { extra.set("keys", it) }
+    ?: run {
+        println("Project secrets are missing")
+        null
+    }
 
 if (keys != null) {
     apply<GithubPlugin>()
