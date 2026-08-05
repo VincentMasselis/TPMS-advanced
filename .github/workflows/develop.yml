@@ -30,6 +30,8 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - uses: ./.github/download_secrets/setup
+
       - name: Analyse code, build and test everything
         run: >
           ./gradlew
