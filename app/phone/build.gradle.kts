@@ -17,15 +17,17 @@ plugins {
     alias(libs.plugins.crashlytics) apply false
 }
 
-val keys = rootProject.extra.getOrNull<Keys>("keys")
-if (keys != null) {
+if (file("google-services.json").exists()) {
     // Needs the google-services.json file to work
     apply<GoogleServicesPlugin>()
     apply<CrashlyticsPlugin>()
+}
+
+rootProject.file("secrets/publisher-service-account.json").takeIf { it.exists() }?.also { saFile ->
     apply<PlayStorePlugin>()
     configure<PlayStoreExtension> {
         version = rootProject.the<GitflowExtension>().version
-        serviceAccountCredentials = file("../../secrets/publisher-service-account.json")
+        serviceAccountCredentials = saFile
     }
 }
 
@@ -34,7 +36,7 @@ android {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
     }
-    if (keys != null) {
+    rootProject.extra.getOrNull<Keys>("keys")?.also { keys ->
         signingConfigs.create("release") {
             keyAlias = keys.appKeyAlias
             keyPassword = keys.appKeyStorePwd

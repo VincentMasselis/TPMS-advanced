@@ -7,6 +7,7 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.submit
@@ -18,10 +19,10 @@ import kotlin.jvm.optionals.getOrNull
 
 internal abstract class FetchAttachmentsTask : DefaultTask() {
 
-    @get:Input
+    @get:Internal
     abstract val session: Property<Optional<String>>
 
-    @get:Input
+    @get:Internal
     abstract val itemName: Property<String>
 
     @get:Input

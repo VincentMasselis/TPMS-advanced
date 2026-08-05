@@ -9,6 +9,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.process.ExecOperations
+import java.io.File
 import java.util.Optional
 import javax.inject.Inject
 
@@ -26,15 +27,29 @@ internal abstract class FetchSession : ValueSource<Optional<String>, Parameters>
     override fun obtain(): Optional<String> = parameters.run {
         val server = server.orNull
         val email = email.orNull?.ifBlank { null }
-        val password = password.orNull?.ifBlank { null }
-        if (server == null || email == null || password == null) Optional.empty()
-        else Optional.of(execOperations.bwSession(server, email, password))
+        val passwordFile = password
+            .orNull
+            ?.ifBlank { null }
+            ?.let { pwd ->
+                File.createTempFile("bw-pw", ".tmp").apply {
+                    deleteOnExit()
+                    setReadable(false, false)
+                    setReadable(true, true)
+                    setWritable(false, false)
+                    setWritable(true, true)
+                    writeText(pwd)
+                }
+            }
+        if (server == null || email == null || passwordFile == null) Optional.empty()
+        else Optional.of(execOperations.bwSession(server, email, passwordFile))
     }
 
     private fun ExecOperations.bwSession(
         server: BitwardenServer,
         email: String,
-        password: String,
+        // Using a password file avoids to send a clear password to Gradle which can be displayed in
+        // the log because of the `ExecOperations.exec` command.
+        password: File,
     ): String = bw(listOf("status"))
         .let { Json.parseToJsonElement(it).jsonObject["status"]?.jsonPrimitive?.content }!!
         .let { status ->
@@ -43,9 +58,9 @@ internal abstract class FetchSession : ValueSource<Optional<String>, Parameters>
             // on the very first, still-unauthenticated call, never on the re-used login that follows.
             if (status == "unauthenticated") {
                 bw(listOf("config", "server", server.url))
-                bw(listOf("login", email, password, "--raw"))
+                bw(listOf("login", email, "--passwordfile", password.absolutePath, "--raw"))
             } else {
-                bw(listOf("unlock", password, "--raw"))
+                bw(listOf("unlock", "--passwordfile", password.absolutePath, "--raw"))
             }
         }
         .also { bw(listOf("sync", "--session", it)) }
