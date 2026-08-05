@@ -21,7 +21,14 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - uses: ./.github/actions/download_secrets
+      - name: Download secret files
+        shell: bash
+        env:
+          BITWARDEN_SERVER: ${{ secrets.BITWARDEN_CI_SERVER }}
+          BITWARDEN_EMAIL: ${{ secrets.BITWARDEN_CI_EMAIL }}
+          BITWARDEN_PASSWORD: ${{ secrets.BITWARDEN_CI_PASSWORD }}
+          BITWARDEN_ITEM: ${{ secrets.BITWARDEN_CI_ITEM }}
+        run: ./gradlew downloadBitwardenSecretFiles
 
       - name: Promotes the github release, promotes from the beta channel to production, updates the screenshots
         run: >
