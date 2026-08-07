@@ -23,21 +23,9 @@ internal abstract class TagCommit : DefaultTask() {
 
     @TaskAction
     internal fun process() {
-        // Fetch every tags
-        execOperations.exec {
-            commandLine("git", "fetch")
-            args("--all", "--tags")
-        }
-
-        // If the tag already exists, this step fails
-        execOperations.exec {
-            commandLine("git", "tag", tag.get())
-        }
-
-        // Push the tag to the remote
-        execOperations.exec {
-            commandLine("git", "push")
-            args("--tags")
-        }
+        execOperations.exec { commandLine("git", "fetch", "--all", "--tags") }
+        // Fails immediately if the tag already exists - the actual duplicate-release guard.
+        execOperations.exec { commandLine("git", "tag", tag.get().toString()) }
+        execOperations.exec { commandLine("git", "push", "--tags") }
     }
 }

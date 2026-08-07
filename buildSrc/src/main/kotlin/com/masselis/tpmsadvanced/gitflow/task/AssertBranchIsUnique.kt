@@ -2,7 +2,6 @@ package com.masselis.tpmsadvanced.gitflow.task
 
 import com.masselis.tpmsadvanced.gitflow.valuesource.GitBranchList
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
@@ -30,9 +29,7 @@ internal abstract class AssertBranchIsUnique : DefaultTask() {
     }
 
     @TaskAction
-    internal fun process() {
-        val branchesList = branchesList.get()
-        if (branchesList.isNotEmpty())
-            throw GradleException("A branch named \"${branchesList.joinToString()}\" already exists")
+    internal fun process(): Unit = branchesList.get().let { branches ->
+        check(branches.isEmpty()) { "A branch named \"${branches.joinToString()}\" already exists" }
     }
 }

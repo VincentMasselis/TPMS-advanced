@@ -12,10 +12,9 @@ plugins {
 
 gitflow {
     version = libs.versions.app.map { StricSemanticVersion(it) }
-    developBranch = "origin/develop"
-    releaseBranch = version.map { "origin/release/${it}" }
-    hotfixBranch = version.map { "origin/hotfix/${it}" }
-    mainBranch = "origin/main"
+    remote = "origin"
+    developBranch = "develop"
+    mainBranch = "main"
 }
 
 val keys = file("secrets/keys.json")
@@ -38,6 +37,8 @@ if (keys != null) {
         githubToken = keys.githubToken
         currentReleaseTag = gitflow.currentReleaseTag
         lastReleaseCommitSha = gitflow.lastReleaseCommitSha
+        backMergeSource = gitflow.mainBranch
+        backMergeTarget = gitflow.developBranch
     }
 }
 

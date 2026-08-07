@@ -29,6 +29,7 @@ rootProject.file("secrets/publisher-service-account.json").takeIf { it.exists() 
         version = rootProject.the<GitflowExtension>().version
         serviceAccountCredentials = saFile
     }
+    rootProject.the<GitflowExtension>().releaseNotesDir = the<PlayStoreExtension>().releaseNotesDir
 }
 
 android {
