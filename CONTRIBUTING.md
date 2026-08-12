@@ -13,7 +13,7 @@
 ## How to build
 
 Run `git@github.com:VincentMasselis/TPMS-advanced.git` on your machine then `./gradlew build`. You
-don't need the secrets keys to run this project, the gradle configuration works without them.
+don't need the secrets keys to run this project, the Gradle configuration works without them.
 
 ### Secrets (optional)
 
@@ -23,38 +23,16 @@ fetched at build time from a Bitwarden/Vaultwarden vault, via the `bw` CLI (inst
 `local.properties`:
 
 ```properties
-bitwarden.server=self-hosted
-bitwarden.selfHostedUrl=<your vault URL>
-bitwarden.email=<your email>
-bitwarden.password=<your master password>
+bitwarden.item=<bitwarden-item>
+# Can be "bitwarden.com", "bitwarden.eu" or a custom url
+bitwarden.server=<bitwarden-servel-url>
+bitwarden.email=<bitwarden-account-email>
+bitwarden.password=<associated-account-password>
 ```
 
-`bitwarden.server` also accepts `bitwarden.com` or `bitwarden.eu`. If a secret file gets deleted
-without invalidating the configuration cache, force a re-fetch with
-`./gradlew --no-configuration-cache`.
+Environment variables `BITWARDEN_ITEM`, `BITWARDEN_SERVER`, `BITWARDEN_EMAIL` and
+`BITWARDEN_PASSWORD` can be used instead of `local.properties` if needed.
 
-## Publish in beta
+## Publishing
 
-TPMS-Advanced follow the rules of git-flow. To create a release from `develop`, call the task
-`createRelease`. This task will create a release with a version which match the one filled into the
-root [build.gradle file](build.gradle.kts). Push this release to github to run the tasks:
-
-- `assertReleaseBranchIsValid`: Checks the release branch is valid according to the git-flow
-  branching model
-- `build` and `verifyPaparazzi`: Build the app and run unit tests
-- `createGithubPreRelease`: Create a github pre-release with release notes and attached apks
-- `publishToPlayStoreBetaNormalRelease`: Sends the aabs to the play store into the beta track with
-  the corresponding release note
-
-## Publish in production
-
-To publish into the production track, you have to push a commit on the `main` branch. The commit
-could comme from a `hotfix/*` branch or a `release/*` branch. Push this release to github to run the
-tasks:
-
-- `assertVersionWasNotPushInProductionYet`: Ensure the version to upload is a new version
-- `createGithubRelease`: Create a github release with release notes and attached apks
-- `publishToPlayStoreProductionNormalRelease`: Sends the aabs to the play store into the production
-  track with the corresponding release note
-- `updatePlayStoreScreenshotsNormalRelease`: Update the listing's screenshot to match the latest
-  app release
+See [PUBLISHING.md](PUBLISHING.md) for the git-flow release/hotfix process.

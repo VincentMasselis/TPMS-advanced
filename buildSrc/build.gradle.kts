@@ -20,10 +20,16 @@ kotlinDslPluginOptions {
             apiVersion = DEFAULT
             languageVersion = DEFAULT
             freeCompilerArgs.addAll(
-                "-Xexplicit-api=strict",
                 "-opt-in=kotlin.RequiresOptIn",
                 "-Xcontext-parameters", // Builds as expected but the IDE is still showing an error,
             )
+        }
+    }
+    // Explicit API mode is only enforced on the plugins' own source, not on tests: it would force
+    // an explicit visibility modifier on every test class/function for no benefit.
+    tasks.named<KotlinCompile>("compileKotlin") {
+        compilerOptions {
+            freeCompilerArgs.add("-Xexplicit-api=strict")
         }
     }
 }
@@ -38,9 +44,13 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.oshi)
+    implementation(libs.tomlj)
 
     // https://github.com/gradle/gradle/issues/15383
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
+
+    testImplementation(libs.junit)
+    testImplementation(gradleTestKit())
 }
 
 gradlePlugin {

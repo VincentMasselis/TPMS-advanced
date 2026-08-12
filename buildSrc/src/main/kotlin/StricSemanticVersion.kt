@@ -16,9 +16,12 @@ public sealed interface StricSemanticVersion : Comparable<StricSemanticVersion>,
     }
 
     @JvmInline
-    public value class Impl(private val version: SemanticVersion) :
+    private value class Impl(private val version: SemanticVersion) :
         StricSemanticVersion by version {
-        public constructor(input: String) : this(SemanticVersion.Impl(input))
+        constructor(input: String) : this(SemanticVersion.Impl(input))
+        constructor(major: Int, minor: Int, patch: Int) : this(
+            SemanticVersion.Impl(major, minor, patch, null, null)
+        )
 
         init {
             if (version.prerelease != null || version.buildmetadata != null)
@@ -30,8 +33,8 @@ public sealed interface StricSemanticVersion : Comparable<StricSemanticVersion>,
 
     public companion object {
         public operator fun invoke(input: String): StricSemanticVersion = Impl(input)
-
         public operator fun invoke(version: SemanticVersion): StricSemanticVersion = Impl(version)
-
+        public operator fun invoke(major: Int, minor: Int, patch: Int): StricSemanticVersion =
+            Impl(major, minor, patch)
     }
 }

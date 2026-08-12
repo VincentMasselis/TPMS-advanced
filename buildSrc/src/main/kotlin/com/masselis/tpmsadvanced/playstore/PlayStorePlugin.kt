@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.playstore
 
-import StricSemanticVersion
 import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.VariantOutputConfiguration.OutputType.SINGLE
@@ -32,8 +31,16 @@ public class PlayStorePlugin : Plugin<Project> {
 
         configure<ApplicationAndroidComponentsExtension> {
             onVariants { variant ->
-                if (variant.isMinifyEnabled.not())
+                if (variant.name != "normalRelease")
                     return@onVariants
+                if (variant.isMinifyEnabled.not())
+                    throw GradleException("Release variant doesn't have minify enabled")
+
+                project
+                    .layout
+                    .projectDirectory
+                    .dir("src/${variant.flavorName}/play/release-notes/en-US/")
+                    .also(ext.releaseNotesDir::convention)
 
                 val packageName = variant.applicationId
                 val output = variant
@@ -50,19 +57,7 @@ public class PlayStorePlugin : Plugin<Project> {
                     )
                 }
                 val releaseNotes = providers.from(ReleaseNote::class) {
-                    releaseNotesDir = project
-                        .layout
-                        .projectDirectory
-                        .dir("src/${variant.flavorName}/play/release-notes/en-US/")
-                    // Preconditions
-                    releaseNotesDir.get()
-                        .asFileTree
-                        .firstOrNull { runCatching { StricSemanticVersion(it.nameWithoutExtension) }.isFailure }
-                        ?.also { throw GradleException("This release note file name is invalid: $it") }
-                    releaseNotesDir.get()
-                        .asFileTree
-                        .firstOrNull { it.nameWithoutExtension == ext.version.get().toString() }
-                        ?: throw GradleException("The release note file associated to the version ${ext.version.get()} is missing, add it to continue: ${releaseNotesDir.get()}/${ext.version.get()}.txt")
+                    releaseNotesDir = ext.releaseNotesDir
                 }
                 tasks.register<PublishToPlayStore>("publishToPlayStoreBeta${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")

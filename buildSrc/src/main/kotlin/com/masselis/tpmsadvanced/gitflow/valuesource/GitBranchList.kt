@@ -20,19 +20,17 @@ internal abstract class GitBranchList : ValueSource<List<String>, Parameters> {
     override fun obtain(): List<String> = ByteArrayOutputStream()
         .also {
             execOperations.exec {
-                commandLine(
-                    "git",
-                    "branch",
-                    "-r",
-                    "--list",
-                    parameters.inputFilter.get(),
-                )
+                commandLine("git", "branch", "-r", "--list", parameters.inputFilter.get())
                 standardOutput = it
             }
         }
         .use { it.toString() }
-        .trimIndent()
-        .split('\n')
-        .map { it.substringAfter("*").trimIndent() }
+        .lineSequence()
+        // A leading "* " marks whichever remote-tracking ref the local HEAD happens to point at.
+        .map { it.removePrefix("*").trim() }
         .filter { it.isNotBlank() }
+        // "origin/HEAD -> origin/develop" is a symbolic ref, not a real branch - `git rev-list`
+        // and friends choke on the "-> " part if it's left in.
+        .filterNot { "->" in it }
+        .toList()
 }

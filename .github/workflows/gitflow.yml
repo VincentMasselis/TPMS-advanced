@@ -1,0 +1,82 @@
+name: Gitflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      flow:
+        description: "What to cut"
+        type: choice
+        options:
+          - release
+          - hotfix
+        required: true
+      bump:
+        description: "Version increment (release only - a hotfix always bumps patch)"
+        type: choice
+        options:
+          - minor
+          - patch
+          - major
+        default: minor
+      release-note:
+        description: "Play Store release note for this version"
+        type: string
+        required: true
+
+concurrency:
+  group: gitflow-${{ inputs.flow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  cut:
+    name: Cut a ${{ inputs.flow }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ inputs.flow == 'release' && 'develop' || 'main' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.flow == 'release' && 'develop' || 'main' }}
+
+      - uses: ./.github/actions/setup
+
+      - name: Download secret files
+        shell: bash
+        env:
+          BITWARDEN_SERVER: ${{ secrets.BITWARDEN_CI_SERVER }}
+          BITWARDEN_EMAIL: ${{ secrets.BITWARDEN_CI_EMAIL }}
+          BITWARDEN_PASSWORD: ${{ secrets.BITWARDEN_CI_PASSWORD }}
+          BITWARDEN_ITEM: ${{ secrets.BITWARDEN_CI_ITEM }}
+        run: ./gradlew downloadBitwardenSecretFiles
+
+      - name: Use the release PAT for pushes
+        shell: bash
+        # actions/checkout authenticates with the ephemeral GITHUB_TOKEN, which does NOT trigger
+        # other workflows when it pushes - so pushing the new branch would silently never run
+        # beta.yml/hotfix.yml. Re-point the remote at the real PAT (same one GithubPlugin already
+        # uses) before the push happens.
+        run: |
+          token=$(jq -r .githubToken secrets/keys.json)
+          git remote set-url origin "https://x-access-token:${token}@github.com/VincentMasselis/TPMS-advanced.git"
+          identity=$(curl -sf -H "Authorization: token ${token}" https://api.github.com/user)
+          login=$(echo "$identity" | jq -r .login)
+          id=$(echo "$identity" | jq -r .id)
+          git config user.name "$login"
+          git config user.email "${id}+${login}@users.noreply.github.com"
+
+      - name: Cut the branch, bump the version and push
+        shell: bash
+        env:
+          FLOW: ${{ inputs.flow }}
+          BUMP: ${{ inputs.bump }}
+          RELEASE_NOTE: ${{ inputs.release-note }}
+        run: |
+          if [ "$FLOW" = "release" ]; then
+            cut_task=(createRelease "-Pgitflow.bump=$BUMP")
+          else
+            cut_task=(createHotfix)
+          fi
+          ./gradlew "${cut_task[@]}" pushGitflowBranch -Pgitflow.releaseNote="$RELEASE_NOTE" --stacktrace

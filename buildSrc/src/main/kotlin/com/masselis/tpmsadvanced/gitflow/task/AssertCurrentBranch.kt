@@ -1,20 +1,16 @@
 package com.masselis.tpmsadvanced.gitflow.task
 
+import com.masselis.tpmsadvanced.gitflow.model.HeadState
 import com.masselis.tpmsadvanced.gitflow.valuesource.CurrentBranch
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.from
-import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
 internal abstract class AssertCurrentBranch : DefaultTask() {
-
-    @get:Inject
-    protected abstract val execOperations: ExecOperations
 
     @get:Inject
     protected abstract val providerFactory: ProviderFactory
@@ -22,8 +18,7 @@ internal abstract class AssertCurrentBranch : DefaultTask() {
     @get:Input
     abstract val expectedBranch: Property<String>
 
-    private val realCurrentBranch
-        get() = providerFactory.from(CurrentBranch::class)
+    private val head get() = providerFactory.from(CurrentBranch::class)
 
     init {
         group = "gitflow"
@@ -31,8 +26,13 @@ internal abstract class AssertCurrentBranch : DefaultTask() {
     }
 
     @TaskAction
-    internal fun process() {
-        if (realCurrentBranch.get() != expectedBranch.get())
-            throw GradleException("Current branch is \"${realCurrentBranch.get()}\" but \"${expectedBranch.get()}\" was expected")
+    internal fun process(): Unit = head.get().let { state ->
+        check(state is HeadState.OnBranch && state.branch == expectedBranch.get()) {
+            val actual = when (state) {
+                is HeadState.OnBranch -> state.branch
+                is HeadState.Detached -> "detached HEAD at ${state.sha.take(12)}"
+            }
+            "Current branch is \"$actual\" but \"${expectedBranch.get()}\" was expected"
+        }
     }
 }

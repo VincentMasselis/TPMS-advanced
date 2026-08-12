@@ -38,3 +38,22 @@ jobs:
           publishToPlayStoreProductionNormalRelease
           updatePlayStoreScreenshotsNormalRelease
           --stacktrace
+
+  back-merge:
+    name: Back-merge main into develop
+    needs: promotion
+    # A failed Play Store upload is retryable on its own; a silently-skipped back-merge would
+    # permanently block the next release (assertDevelopContainsMain would fail forever), so it
+    # must not be conditioned on the promotion job's outcome.
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Open (or reuse) the back-merge pull request and enable merge-commit auto-merge
+        run: ./gradlew openBackMergePullRequest --stacktrace
