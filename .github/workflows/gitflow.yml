@@ -59,7 +59,7 @@ jobs:
         # beta.yml/hotfix.yml. Re-point the remote at the real PAT (same one GithubPlugin already
         # uses) before the push happens.
         run: |
-          token=$(jq -r .githubToken secrets/keys.json)
+          token=$(jq -r .GITHUB_TOKEN secrets/keys.json)
           git remote set-url origin "https://x-access-token:${token}@github.com/VincentMasselis/TPMS-advanced.git"
           identity=$(curl -sf -H "Authorization: token ${token}" https://api.github.com/user)
           login=$(echo "$identity" | jq -r .login)
