@@ -41,6 +41,7 @@ import com.masselis.tpmsadvanced.feature.qrcode.ioc.Bindings.Companion.QrCodeVie
 @Composable
 public fun QrCodeScan(
     snackbarHostState: SnackbarHostState,
+    openUnlocatedSensorBinding: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val permissionState = rememberMultiplePermissionsState(listOf(CAMERA))
@@ -54,7 +55,8 @@ public fun QrCodeScan(
 
         else -> Preview(
             snackbarHostState = snackbarHostState,
-            modifier = modifier
+            openUnlocatedSensorBinding = openUnlocatedSensorBinding,
+            modifier = modifier,
         )
     }
 }
@@ -63,6 +65,7 @@ public fun QrCodeScan(
 @Composable
 private fun Preview(
     snackbarHostState: SnackbarHostState,
+    openUnlocatedSensorBinding: () -> Unit,
     modifier: Modifier = Modifier,
     cameraSelector: CameraSelector = DEFAULT_BACK_CAMERA,
 ) {
@@ -101,9 +104,10 @@ private fun Preview(
             onBind = viewModel::bindSensors
         )
 
-        is State.Error -> DuplicateAlert(
+        is State.Error -> ErrorAlert(
             state = state,
-            onDismissRequest = viewModel::scanAgain
+            onDismissRequest = viewModel::scanAgain,
+            openUnlocatedSensorBinding = openUnlocatedSensorBinding,
         )
     }
 
@@ -172,9 +176,10 @@ private fun BindingAlert(
 
 @Suppress("MaxLineLength")
 @Composable
-private fun DuplicateAlert(
+private fun ErrorAlert(
     state: State.Error,
     onDismissRequest: () -> Unit,
+    openUnlocatedSensorBinding: () -> Unit,
 ) {
     AlertDialog(
         text = {
@@ -196,12 +201,24 @@ private fun DuplicateAlert(
                             is State.Error.DuplicateId -> {
                                 append("\n\n⚠️ Filled QR Code contains the same sensor id multiple time")
                             }
+
+                            State.Error.UnsupportedWircarlinkQrCode -> {
+                                append("\n\n⚠️ QR Codes manufactured by Wicarlink are not handled by this app\nYou have to bind manually each of them")
+                            }
                         }
                     }
                     .toString()
             )
         },
         onDismissRequest = onDismissRequest,
+        dismissButton =
+            if (state is State.Error.UnsupportedWircarlinkQrCode) {
+                {
+                    TextButton(onClick = openUnlocatedSensorBinding) {
+                        Text(text = "Bind manually")
+                    }
+                }
+            } else null,
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
                 Text(text = "OK")
@@ -209,6 +226,7 @@ private fun DuplicateAlert(
         },
     )
 }
+
 
 @Composable
 private fun QrCodeOverlay(

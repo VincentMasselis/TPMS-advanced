@@ -59,6 +59,8 @@ internal class QRCodeViewModel(
 
             @JvmInline
             value class DuplicateId(val ids: Collection<Int>) : Error
+
+            data object UnsupportedWircarlinkQrCode : Error
         }
     }
 
@@ -91,6 +93,9 @@ internal class QRCodeViewModel(
                             when (exc) {
                                 is CameraAnalyser.CameraUnavailable ->
                                     channel.send(Event.LeaveBecauseCameraUnavailable)
+
+                                is QrCodeSensorUseCase.UnsupportedWircarlinkQrCode ->
+                                    emit(State.Error.UnsupportedWircarlinkQrCode)
 
                                 is QrCodeSensors.DuplicateWheelLocation -> exc
                                     .wheels

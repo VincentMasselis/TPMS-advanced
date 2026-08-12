@@ -140,6 +140,9 @@ internal fun VehicleHome(
                     composable("${Path.QrCode(vehicleComponent.vehicle.uuid)}") {
                         QrCodeScan(
                             snackbarHostState = snackbarHostState,
+                            openUnlocatedSensorBinding = {
+                                navController.navigate("${Path.Unlocated(vehicleComponent.vehicle.uuid)}")
+                            },
                             modifier = modifier
                         )
                     }
