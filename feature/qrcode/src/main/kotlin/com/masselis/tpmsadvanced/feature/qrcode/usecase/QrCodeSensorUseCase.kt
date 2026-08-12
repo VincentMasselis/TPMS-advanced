@@ -41,6 +41,10 @@ internal class QrCodeSensorUseCase(
         .mapNotNull {
             fourSensorRegex.find(it)?.groupValues?.subList(1, 5)
                 ?: twoSensorRegex.find(it)?.groupValues?.subList(1, 3)
+                ?: run {
+                    if (wicarlinkSensorRegex.matches(it)) throw UnsupportedWircarlinkQrCode()
+                    else null
+                }
         }
         .map { stringHexs ->
             stringHexs
@@ -125,6 +129,8 @@ internal class QrCodeSensorUseCase(
         }
         .flowOn(Default)
 
+    class UnsupportedWircarlinkQrCode : IllegalArgumentException()
+
     companion object {
         // Test available here: https://regex101.com/r/aLJ0o6/1
         private val fourSensorRegex =
@@ -132,5 +138,9 @@ internal class QrCodeSensorUseCase(
 
         private val twoSensorRegex =
             "([0-9a-fA-F]{6})&([0-9a-fA-F]{6})".toRegex()
+
+        // A Wicarlink/LYTPMS QR code only contains a single sensor's 6 hex character id, e.g. AF2206
+        private val wicarlinkSensorRegex =
+            "^([0-9a-fA-F]{6})$".toRegex()
     }
 }
