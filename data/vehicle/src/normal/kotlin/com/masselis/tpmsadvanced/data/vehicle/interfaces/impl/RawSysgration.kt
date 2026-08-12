@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
 import android.bluetooth.le.ScanResult
+import androidx.core.util.size
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
@@ -77,8 +78,13 @@ internal data class RawSysgration private constructor(
         private const val PRESSURE_ALARM_BYTE = 0x01.toByte()
         private val expectedAddress = ubyteArrayOf(0xEAu, 0xCAu).toByteArray()
 
-        operator fun invoke(scanResult: ScanResult, manufacturerData: ByteArray): RawSysgration? =
-            RawSysgration(scanResult.rssi, manufacturerData)
-                .takeIf { it.address().contentEquals(expectedAddress) }
+        operator fun invoke(scanResult: ScanResult): RawSysgration? = scanResult
+            .scanRecord
+            ?.manufacturerSpecificData
+            ?.takeIf { it.size > 0 }
+            ?.valueAt(0)
+            .let { it ?: return null }
+            .let { RawSysgration(scanResult.rssi, it) }
+            .takeIf { it.address().contentEquals(expectedAddress) }
     }
 }

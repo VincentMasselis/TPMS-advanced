@@ -19,7 +19,6 @@ import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
-import androidx.core.util.size
 import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
 import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
@@ -36,6 +35,7 @@ import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
@@ -90,6 +90,10 @@ internal class BluetoothLeScannerImpl(
                 ScanFilter
                     .Builder()
                     .setServiceUuid(PECHAM_SERVICE_UUID)
+                    .build(),
+                ScanFilter
+                    .Builder()
+                    .setServiceUuid(WICARLINK_SERVICE_UUID)
                     .build()
             ),
             ScanSettings
@@ -107,19 +111,15 @@ internal class BluetoothLeScannerImpl(
             }
         }
     }.flowOn(Dispatchers.Main) // System's BluetoothLeScanner class as issues if called on a background thread
-        .mapNotNull { result ->
-            RawPecham(result)
-                ?: result
-                    .scanRecord
-                    ?.manufacturerSpecificData
-                    ?.takeIf { it.size > 0 }
-                    ?.valueAt(0)
-                    ?.let { RawSysgration(result, it) }
+        .mapNotNull {
+            RawPecham(it)
+                ?: RawWicarlink(it)
+                ?: RawSysgration(it)
         }
         // A real sensor emits the same value up to 10 times in a short time, to avoid to emit the
         // same value 10 times, I use `distinctUntilChanged()`.
         .distinctUntilChanged()
-        .mapNotNull { it.asTyre() }
+        .map { it.asTyre() }
 
     private val lowLatencyScanFlow = scan(ScanSettings.SCAN_MODE_LOW_LATENCY).shared()
 
@@ -155,5 +155,6 @@ internal class BluetoothLeScannerImpl(
         private val PECHAM_SERVICE_UUID = ParcelUuid(
             fromString("000027a5-0000-1000-8000-00805f9b34fb")
         )
+        private val WICARLINK_SERVICE_UUID = RawWicarlink.SERVICE_UUID
     }
 }
