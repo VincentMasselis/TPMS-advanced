@@ -14,9 +14,9 @@ on:
         description: "Version increment (release only - a hotfix always bumps patch)"
         type: choice
         options:
-          - minor
-          - patch
-          - major
+          - major (+1.x.x)
+          - minor (x.+1.x)
+          - patch (x.x.+1)
         default: minor
       release-note:
         description: "Play Store release note for this version"
