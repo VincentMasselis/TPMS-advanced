@@ -58,6 +58,7 @@ public class PlayStorePlugin : Plugin<Project> {
                 }
                 val releaseNotes = providers.from(ReleaseNote::class) {
                     releaseNotesDir = ext.releaseNotesDir
+                    version = ext.version
                 }
                 tasks.register<PublishToPlayStore>("publishToPlayStoreBeta${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")

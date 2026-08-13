@@ -15,19 +15,18 @@ internal abstract class ReleaseNote : ValueSource<String, Parameters> {
         val releaseNotesDir: DirectoryProperty
     }
 
-    override fun obtain(): String {
+    override fun obtain(): String = with(parameters) {
         // Preconditions
-        parameters.releaseNotesDir.get()
+        releaseNotesDir.get()
             .asFileTree
             .firstOrNull { runCatching { StricSemanticVersion(it.nameWithoutExtension) }.isFailure }
             ?.also { throw GradleException("This release note file name is invalid: $it") }
-        parameters.releaseNotesDir.get()
+        releaseNotesDir.get()
             .asFileTree
-            .firstOrNull { it.nameWithoutExtension == parameters.version.get().toString() }
-            ?: throw GradleException("The release note file associated to the version ${parameters.version.get()} is missing, add it to continue: ${parameters.releaseNotesDir.get()}/${parameters.version.get()}.txt")
+            .firstOrNull { it.nameWithoutExtension == version.get().toString() }
+            ?: throw GradleException("The release note file associated to the version ${version.get()} is missing, add it to continue: ${releaseNotesDir.get()}/${version.get()}.txt")
 
-        return parameters
-            .releaseNotesDir
+        return releaseNotesDir
             .get()
             .asFileTree
             .sortedByDescending { StricSemanticVersion(it.nameWithoutExtension) }
