@@ -8,20 +8,15 @@ import com.masselis.tpmsadvanced.gitflow.task.AssertBranchIsAncestor
 import com.masselis.tpmsadvanced.gitflow.task.AssertBranchIsUnique
 import com.masselis.tpmsadvanced.gitflow.task.AssertBranchProvenance
 import com.masselis.tpmsadvanced.gitflow.task.AssertCurrentBranch
-import com.masselis.tpmsadvanced.gitflow.task.AssertReleaseNoteExists
 import com.masselis.tpmsadvanced.gitflow.task.AssertTagIsUnique
-import com.masselis.tpmsadvanced.gitflow.task.AssertWorkingTreeIsClean
-import com.masselis.tpmsadvanced.gitflow.task.BumpVersionAndCommit
+import com.masselis.tpmsadvanced.gitflow.task.CommitAddedFiles
 import com.masselis.tpmsadvanced.gitflow.task.CreateBranch
 import com.masselis.tpmsadvanced.gitflow.task.FetchGitRefs
 import com.masselis.tpmsadvanced.gitflow.task.PushGitflowBranch
 import com.masselis.tpmsadvanced.gitflow.task.TagCommit
-import com.masselis.tpmsadvanced.gitflow.task.WriteReleaseNoteIfSupplied
 import com.masselis.tpmsadvanced.gitflow.valuesource.CommitCountBetweenBranch
 import com.masselis.tpmsadvanced.gitflow.valuesource.CurrentBranch
 import com.masselis.tpmsadvanced.gitflow.valuesource.VersionCode
-import com.masselis.tpmsadvanced.gitflow.version.BumpType
-import com.masselis.tpmsadvanced.gitflow.version.BumpType.PATCH
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -34,10 +29,12 @@ import org.gradle.kotlin.dsl.register
 
 public class GitflowPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = with(project) {
+        val versionCode = objects.property<Int>()
         val currentReleaseTag = objects.property<SemanticVersion>()
         val lastReleaseCommitSha = objects.property<String>()
         val ext = extensions.create<GitflowExtension>(
             "gitflow",
+            versionCode,
             currentReleaseTag,
             lastReleaseCommitSha,
         )
@@ -56,7 +53,7 @@ public class GitflowPlugin : Plugin<Project> {
 
         // Empty string never matches a real branch name - a safe "detached HEAD" sentinel for the
         // plain string comparisons below (VersionCode, currentReleaseTag, lastReleaseCommitSha).
-        val currentBranchName: Provider<String> = providers.from(CurrentBranch::class).map {
+        val currentBranchName = providers.from(CurrentBranch::class).map {
             when (it) {
                 is HeadState.OnBranch -> it.branch
                 is HeadState.Detached -> ""
@@ -67,13 +64,13 @@ public class GitflowPlugin : Plugin<Project> {
             fromBranch = developRef
             toBranch = releaseRef
         }
-        val versionCode = providers.from(VersionCode::class) {
+        versionCode.set(providers.from(VersionCode::class) {
             version = ext.version
-            this.currentBranch = currentBranchName
+            currentBranch = currentBranchName
             releaseBranch = ext.releaseBranch
             mainBranch = ext.mainBranch
             this.releaseBuildCount = releaseBuildCount
-        }
+        })
         currentReleaseTag.set(versionCode.flatMap { vc ->
             if (currentBranchName.get() == ext.releaseBranch.get())
                 provider { SemanticVersion("${ext.version.get()}+vc$vc") }
@@ -103,23 +100,9 @@ public class GitflowPlugin : Plugin<Project> {
             }
         })
 
-        val versionCatalogFile = layout.projectDirectory.file("gradle/libs.versions.toml")
-        val releaseNoteText = providers.gradleProperty("gitflow.releaseNote")
-        val releaseBumpType: Provider<BumpType> = providers
-            .gradleProperty("gitflow.bump")
-            .map { BumpType.fromWorkflowDispatch(it) }
-        val hotfixBumpType: Provider<BumpType> = releaseBumpType
-            .map { type ->
-                check(type == PATCH) { "createHotfix always bumps patch; the \"-Pgitflow.bump\" argument is not allowed here" }
-                type
-            }
-            .orElse(PATCH)
-
         val fetchGitRefs = tasks.register<FetchGitRefs>("fetchGitRefs") {
             remote = ext.remote
         }
-        val assertWorkingTreeIsClean =
-            tasks.register<AssertWorkingTreeIsClean>("assertWorkingTreeIsClean")
 
         // A release branch must:
         // - Start from develop
@@ -148,48 +131,19 @@ public class GitflowPlugin : Plugin<Project> {
                 ancestor = mainRef
                 descendant = developRef
             }
-        val writeReleaseNoteIfSupplied =
-            tasks.register<WriteReleaseNoteIfSupplied>("writeReleaseNoteIfSupplied") {
-                versionCatalog = versionCatalogFile
-                bumpType = releaseBumpType
-                noteText = releaseNoteText
-                this.releaseNotesDir = ext.releaseNotesDir
-            }
-        val assertReleaseNoteExists =
-            tasks.register<AssertReleaseNoteExists>("assertReleaseNoteExists") {
-                // Ordered, not depended-on: an assertion doesn't "require" the write task, it just
-                // needs to run after it so a workflow_dispatch-supplied note is there to check.
-                mustRunAfter(writeReleaseNoteIfSupplied)
-                versionCatalog = versionCatalogFile
-                bumpType = releaseBumpType
-                this.releaseNotesDir = ext.releaseNotesDir
-            }
 
-        val createReleaseBranch = tasks.register<CreateBranch>("createReleaseBranch") {
+        val createRelease = tasks.register<CreateBranch>("createRelease") {
+            group = "gitflow"
+            description = "Cuts a new release branch from develop and bumps its version"
             dependsOn(
                 fetchGitRefs,
                 assertCurrentBranchIsDevelop,
-                assertWorkingTreeIsClean,
                 assertVersionIsUnreleased,
                 assertReleaseBranchIsAvailable,
                 assertHotfixBranchIsAvailable,
                 assertDevelopContainsMain,
-                writeReleaseNoteIfSupplied,
-                assertReleaseNoteExists,
             )
             branch = ext.releaseBranch
-        }
-        val bumpReleaseVersion = tasks.register<BumpVersionAndCommit>("bumpReleaseVersion") {
-            dependsOn(createReleaseBranch)
-            versionCatalog = versionCatalogFile
-            // No fallback here on purpose: BumpVersionAndCommit requires this and reports a clear
-            // error itself if it's absent when the task actually runs.
-            bumpType = releaseBumpType
-        }
-        tasks.register("createRelease") {
-            group = "gitflow"
-            description = "Cuts a new release branch from develop and bumps its version"
-            dependsOn(bumpReleaseVersion)
         }
 
         // Release branch post-creation checks
@@ -233,43 +187,17 @@ public class GitflowPlugin : Plugin<Project> {
             tasks.register<AssertCurrentBranch>("assertCurrentBranchIsMain") {
                 expectedBranch = ext.mainBranch
             }
-        val writeHotfixReleaseNoteIfSupplied =
-            tasks.register<WriteReleaseNoteIfSupplied>("writeHotfixReleaseNoteIfSupplied") {
-                versionCatalog = versionCatalogFile
-                bumpType = hotfixBumpType
-                noteText = releaseNoteText
-                this.releaseNotesDir = ext.releaseNotesDir
-            }
-        val assertHotfixReleaseNoteExists =
-            tasks.register<AssertReleaseNoteExists>("assertHotfixReleaseNoteExists") {
-                // Ordered, not depended-on: see assertReleaseNoteExists above.
-                mustRunAfter(writeHotfixReleaseNoteIfSupplied)
-                versionCatalog = versionCatalogFile
-                bumpType = hotfixBumpType
-                this.releaseNotesDir = ext.releaseNotesDir
-            }
-        val createHotfixBranch = tasks.register<CreateBranch>("createHotfixBranch") {
+        val createHotfix = tasks.register<CreateBranch>("createHotfix") {
+            group = "gitflow"
+            description = "Cuts a new hotfix branch from main and bumps its version"
             dependsOn(
                 fetchGitRefs,
                 assertCurrentBranchIsMain,
-                assertWorkingTreeIsClean,
                 assertVersionIsUnreleased,
                 assertHotfixBranchIsAvailable,
                 assertReleaseBranchIsAvailable,
-                writeHotfixReleaseNoteIfSupplied,
-                assertHotfixReleaseNoteExists,
             )
             branch = ext.hotfixBranch
-        }
-        val bumpHotfixVersion = tasks.register<BumpVersionAndCommit>("bumpHotfixVersion") {
-            dependsOn(createHotfixBranch)
-            versionCatalog = versionCatalogFile
-            bumpType = hotfixBumpType
-        }
-        tasks.register("createHotfix") {
-            group = "gitflow"
-            description = "Cuts a new hotfix branch from main and bumps its version"
-            dependsOn(bumpHotfixVersion)
         }
 
         val assertCurrentBranchIsHotfix =
@@ -311,9 +239,13 @@ public class GitflowPlugin : Plugin<Project> {
             tag = currentReleaseTag
         }
 
+        val commitAddedFiles = tasks.register<CommitAddedFiles>("commitAddedFiles") {
+            mustRunAfter(createRelease, createHotfix)
+            commitMessage = providers.gradleProperty("gitflow.gitflowBranchCommitMessage")
+        }
         tasks.register<PushGitflowBranch>("pushGitflowBranch") {
+            mustRunAfter(createRelease, createHotfix, commitAddedFiles)
             remote = ext.remote
-            mustRunAfter("createRelease", "createHotfix")
         }
     }
 }

@@ -2,11 +2,11 @@ package com.masselis.tpmsadvanced.gitflow
 
 import SemanticVersion
 import StricSemanticVersion
-import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 
 public abstract class GitflowExtension internal constructor(
+    public val versionCode: Provider<Int>,
     public val currentReleaseTag: Provider<SemanticVersion>,
     public val lastReleaseCommitSha: Provider<String>,
 ) {
@@ -30,9 +30,6 @@ public abstract class GitflowExtension internal constructor(
 
     /** Same as [releaseBranch], for hotfixes: `hotfix/<version>`. */
     public val hotfixBranch: Provider<String> = version.map { "hotfix/$it" }
-
-    /** Directory holding the Play Store release notes, one `<version>.txt` file per release. */
-    public abstract val releaseNotesDir: DirectoryProperty
 
     init {
         remote.convention("origin")

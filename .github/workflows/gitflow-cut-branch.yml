@@ -1,0 +1,77 @@
+name: Cut a version branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      flow:
+        description: "Which kind of version ?"
+        type: choice
+        options:
+          - release
+          - hotfix
+        required: true
+
+concurrency:
+  group: gitflow-${{ inputs.flow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  cut:
+    name: Cut a ${{ inputs.flow }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ inputs.flow == 'release' && 'develop' || 'main' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.flow == 'release' && 'develop' || 'main' }}
+
+      - uses: ./.github/actions/setup
+
+      - name: Download secret files
+        shell: bash
+        env:
+          BITWARDEN_SERVER: ${{ secrets.BITWARDEN_CI_SERVER }}
+          BITWARDEN_EMAIL: ${{ secrets.BITWARDEN_CI_EMAIL }}
+          BITWARDEN_PASSWORD: ${{ secrets.BITWARDEN_CI_PASSWORD }}
+          BITWARDEN_ITEM: ${{ secrets.BITWARDEN_CI_ITEM }}
+        run: ./gradlew downloadBitwardenSecretFiles
+
+      - name: Use the release PAT for pushes
+        shell: bash
+        # actions/checkout authenticates with the ephemeral GITHUB_TOKEN, which does NOT trigger
+        # other workflows when it pushes - so pushing the new branch would silently never run
+        # beta.yml/hotfix.yml. Re-point the remote at the real PAT (same one GithubPlugin already
+        # uses) before the push happens.
+        #
+        # actions/checkout (persist-credentials: true, the default) also injects an
+        # "http.https://github.com/.extraheader" git config entry carrying the ephemeral
+        # GITHUB_TOKEN - that header is sent on every git request to github.com regardless of the
+        # remote URL's own credentials, so it must be removed or the PAT below is silently ignored
+        # by every subsequent git fetch/push.
+        run: |
+          git config --unset-all http.https://github.com/.extraheader || true
+          token=$(jq -r .GITHUB_TOKEN secrets/keys.json)
+          git remote set-url origin "https://x-access-token:${token}@github.com/VincentMasselis/TPMS-advanced.git"
+          identity=$(curl -sf -H "Authorization: token ${token}" https://api.github.com/user)
+          login=$(echo "$identity" | jq -r .login)
+          id=$(echo "$identity" | jq -r .id)
+          git config user.name "$login"
+          git config user.email "${id}+${login}@users.noreply.github.com"
+
+      # The version bump and release note are assumed already committed to develop/main - this
+      # workflow only validates the gitflow branching model and cuts/pushes the branch.
+      - name: Run every gitflow assertion and cut the branch
+        shell: bash
+        env:
+          FLOW: ${{ inputs.flow }}
+        run: |
+          if [ "$FLOW" = "release" ]; then
+            cut_task=(createRelease)
+          else
+            cut_task=(createHotfix)
+          fi
+          ./gradlew "${cut_task[@]}" pushGitflowBranch --stacktrace

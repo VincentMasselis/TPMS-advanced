@@ -17,6 +17,12 @@ gitflow {
     mainBranch = "main"
 }
 
+tasks.register<BumpVersionTask>("bumpVersion") {
+    this.bumpType = providers.gradleProperty("version.bump")
+        .map { BumpVersionTask.Type.fromArgument(it) }
+    this.versionCatalog = layout.projectDirectory.file("gradle/libs.versions.toml")
+}
+
 val keys = file("secrets/keys.json")
     .takeIf { it.exists() }
     ?.inputStream()

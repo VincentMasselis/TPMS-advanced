@@ -29,7 +29,11 @@ rootProject.file("secrets/publisher-service-account.json").takeIf { it.exists() 
         version = rootProject.the<GitflowExtension>().version
         serviceAccountCredentials = saFile
     }
-    rootProject.the<GitflowExtension>().releaseNotesDir = the<PlayStoreExtension>().releaseNotesDir
+    tasks.register<WriteReleaseNoteTask>("writeReleaseNote") {
+        this.noteText = providers.gradleProperty("version.releaseNote")
+        this.releaseNotesDir = project.the<PlayStoreExtension>().releaseNotesDir
+        this.targetVersion = rootProject.the<GitflowExtension>().version
+    }
 }
 
 android {
