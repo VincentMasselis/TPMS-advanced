@@ -4,8 +4,20 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -16,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -24,14 +37,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -58,7 +76,7 @@ import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.backButton
 import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.carListDropdownMenu
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
-import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.SpotlightEvent
+import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.Event
 import com.masselis.tpmsadvanced.ioc.Bindings.Companion.HomeViewModel
 import com.masselis.tpmsadvanced.ioc.Bindings.Companion.VehicleHomeViewModel
 import java.util.UUID
@@ -89,6 +107,7 @@ internal fun VehicleHome(
     ) {
         var offsetToFocus by remember { mutableStateOf<Offset?>(null) }
         var showManualMonitoringSpotlight by remember { mutableStateOf(false) }
+        var showWicarlinkSupportAlert by remember { mutableStateOf(false) }
         val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
             topBar = {
@@ -185,11 +204,19 @@ internal fun VehicleHome(
                     )
                 }
             }
+        if (showWicarlinkSupportAlert) {
+            WicarlinkSupportAlert(
+                onDismissRequest = { showWicarlinkSupportAlert = false }
+            )
+        }
         LaunchedEffect(viewModel) {
             for (event in viewModel.eventChannel) {
                 when (event) {
-                    SpotlightEvent.ManualMonitorDropdown ->
+                    Event.ManualMonitorDropdown ->
                         showManualMonitoringSpotlight = true
+
+                    Event.WicarlinkSupport ->
+                        showWicarlinkSupportAlert = true
                 }
             }
         }
@@ -282,6 +309,45 @@ private fun TopAppBar(
             }
         },
         modifier = modifier
+    )
+}
+
+@Composable
+private fun WicarlinkSupportAlert(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("New sensor support!") },
+        text = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Card(
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier.size(56.dp)
+                ) {
+                    Image(
+                        bitmap = ImageBitmap.imageResource(id = R.drawable.lytpms_icon),
+                        contentDescription = "LTPMS Icon app",
+                    )
+                }
+
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "Sensors manufactured by \"Wicarlink\" shown within their app \"LYTPMS\" are now " +
+                            "supported by TPMS Advanced",
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("OK")
+            }
+        },
+        modifier = modifier,
     )
 }
 

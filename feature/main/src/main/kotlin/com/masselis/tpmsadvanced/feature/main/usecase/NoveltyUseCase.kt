@@ -15,11 +15,11 @@ public class NoveltyUseCase internal constructor(
     /**
      * @return `true` if you can show the novelty, `false` otherwise
      */
-    public fun consume(name: String, targetVc: Long): Boolean = with(appPreferences) {
+    public fun consume(name: String, targetVcRange: LongRange): Boolean = with(appPreferences) {
         // When running instrumented test, I don't want to show any contextual overlay
         isRunningInstrumentedTest.not()
                 // Current version targets the right version code
-                && currentVersionCode == targetVc
+                && currentVersionCode in targetVcRange
                 // Current apk is an update
                 && isFreshInstallation.not()
                 // This session was started for the first time since the update
