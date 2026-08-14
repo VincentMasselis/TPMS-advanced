@@ -19,7 +19,7 @@ on:
           - patch
         default: minor
       release-note:
-        description: "Play Store release note for this version"
+        description: "Play Store release note for this version (use \n for line breaks, the UI field is single-line)"
         type: string
         required: true
 
@@ -86,7 +86,7 @@ jobs:
         env:
           RELEASE_NOTE: ${{ inputs.release-note }}
         run: |
-          ./gradlew writeReleaseNote -Pversion.releaseNote="$RELEASE_NOTE" --stacktrace
+          ./gradlew writeReleaseNote -Pversion.releaseNote="$(printf '%b' "$RELEASE_NOTE")" --stacktrace
 
       - name: Run every gitflow assertion and cut the branch
         shell: bash
