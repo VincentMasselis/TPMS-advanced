@@ -1,53 +1,52 @@
 ## Publish in beta
 
-TPMS-Advanced follows the rules of git-flow, enforced by the `gitflow` buildSrc plugin
-(`buildSrc/src/main/kotlin/com/masselis/tpmsadvanced/gitflow/`). It's backed entirely by the `git`
-CLI, and every action below is a plain Gradle task you can run locally - the `workflow_dispatch`
-entry point below just runs the same tasks in CI.
+Git-flow is enforced by the `gitflow` buildSrc plugin, backed by the `git` CLI. Every step below is
+a plain Gradle task - the `workflow_dispatch` entry points just run the same tasks in CI.
 
-Before cutting a release, add the Play Store release note for the new version under
-`app/phone/src/normal/play/release-notes/en-US/<version>.txt` - `createRelease`/`createHotfix`
-check it exists before doing anything else.
-
-To create a release from `develop`, run:
+From `develop`, run each as its own `./gradlew` invocation (required: `bumpVersion` and
+`writeReleaseNote` write the version and the release note to disk, and each following task reads
+the version catalog fresh - combining them in one command line would use stale values):
 
 ```shell
-./gradlew createRelease pushGitflowBranch -Pgitflow.bump=minor  # or major / patch
+./gradlew bumpVersion -Pversion.bump=minor            # or major / patch
+./gradlew writeReleaseNote -Pversion.releaseNote="..."
+./gradlew createRelease commitAddedFiles pushGitflowBranch \
+  -Pgitflow.gitflowBranchCommitMessage="Version bump"
 ```
 
-`createRelease` cuts `release/<version>` from `develop`'s current tip and bumps
-`gradle/libs.versions.toml`'s `app` version on the new branch (never on `develop` - that's what
-keeps the automatic main-to-develop back-merge conflict-free, see below). `pushGitflowBranch` can
-also be run on its own afterward if you'd rather review the bump commit before pushing.
+`writeReleaseNote` only exists if `secrets/publisher-service-account.json` is present locally (see
+[CONTRIBUTING.md](CONTRIBUTING.md)); always available in CI.
 
-Alternatively, use the **Gitflow** workflow's `workflow_dispatch` trigger from the Actions tab (or
-`gh workflow run gitflow.yml -f flow=release -f bump=minor -f release-note="..."`) to do this from
-CI directly - supply the release note text as a workflow input instead of committing the file
-yourself.
+Alternatively, trigger the
+[Start a new version branch](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/gitflow-start-version.yml)
+workflow (`gh workflow run gitflow-start-version.yml -f flow=release -f bump=minor -f
+release-note="..."`) to do this from CI. Its `release-note` input is a single-line text box - use
+literal `\n` for line breaks (e.g. `- Fix A\n- Fix B`); the workflow unescapes it before writing
+the file.
 
-Pushing the release branch triggers `beta.yml`, which runs:
+If the version bump and release note are already committed to `develop` yourself, skip to
+`createRelease commitAddedFiles pushGitflowBranch`, or trigger
+[Cut a version branch](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/gitflow-cut-branch.yml)
+(`gh workflow run gitflow-cut-branch.yml -f flow=release`).
 
-- `assertReleaseBranchIsValid`: checks the release branch was actually cut from `develop` (not
-  `main` or a feature branch), that its version isn't already tagged or branched elsewhere, and
-  that `main` is fully merged into `develop`
-- `build` and `verifyPaparazzi`: build the app and run unit tests
-- `createGithubPreRelease`: create a GitHub pre-release with release notes and attached APKs
-- `publishToPlayStoreBetaNormalRelease`: send the AABs to the Play Store beta track
+Pushing the release branch triggers
+[beta.yml](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/beta.yml):
+`assertReleaseBranchIsValid` (checks the branch was cut from `develop`, its version isn't already
+tagged/branched, and `main` is fully merged into `develop`), `build` + `verifyPaparazzi`,
+`createGithubPreRelease`, then `publishToPlayStoreBetaNormalRelease`.
 
-Hotfixes work the same way from `main`, always bumping patch (`./gradlew createHotfix
-pushGitflowBranch` takes no `-Pgitflow.bump`, or use `workflow_dispatch` with `flow=hotfix`);
-pushing `hotfix/<version>` triggers `hotfix.yml`.
+Hotfixes use the same workflows/tasks from `main` with `flow=hotfix` (pick `bump=patch` yourself -
+nothing enforces it), cutting `hotfix/<version>`. Pushing it triggers
+[hotfix.yml](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/hotfix.yml), which
+only runs `assertHotfixBranchIsValid`, `build` and `verifyPaparazzi` - no beta publish or
+pre-release; a hotfix only reaches users once merged into `main`.
 
 ## Publish in production
 
-To publish into the production track, push a commit on the `main` branch - it comes from merging a
-`hotfix/*` or `release/*` branch. Push this to GitHub to run `production.yml`, which runs:
+Pushing to `main` (via merging a `hotfix/*` or `release/*` branch) triggers
+[production.yml](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/production.yml):
+`assertVersionWasNotPushInProductionYet`, `createGithubRelease`,
+`publishToPlayStoreProductionNormalRelease`, `updatePlayStoreScreenshotsNormalRelease`.
 
-- `assertVersionWasNotPushInProductionYet`: ensure the version to upload is a new version
-- `createGithubRelease`: create a GitHub release with release notes and attached APKs
-- `publishToPlayStoreProductionNormalRelease`: send the AABs to the Play Store production track
-- `updatePlayStoreScreenshotsNormalRelease`: update the listing's screenshots
-
-Once that's done, a second job automatically opens (or reuses) a pull request merging `main` back
-into `develop` and enables GitHub's auto-merge with a merge commit (never squash/rebase, so both
-branches stay alive) - this is what keeps `develop` from silently drifting behind `main`.
+A second job then opens (or reuses) a merge-commit PR back into `develop` with auto-merge enabled,
+keeping `develop` from drifting behind `main`.
