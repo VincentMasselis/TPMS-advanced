@@ -68,9 +68,9 @@ public interface ServiceComponent {
             foregroundService,
             scope,
             VehicleComponent(vehicle),
-        ).apply { serviceNotifier } // Creates an instance of `ServiceNotifier` after build.
+        ).apply { ServiceNotifier() } // Creates an instance of `ServiceNotifier` after build.
 
-        internal val ServiceComponent.serviceNotifier
-            get() = internal.serviceNotifier
+        @SuppressWarnings("FunctionNaming")
+        internal fun ServiceComponent.ServiceNotifier() = internal.serviceNotifier()
     }
 }
