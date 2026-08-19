@@ -12,28 +12,29 @@ import kotlin.math.roundToInt
 @Suppress("MagicNumber")
 internal data class RawA827 private constructor(
     private val rssi: Int,
-    private val data: ByteArray,
+    private val manufacturerData: ByteArray,
 ) : Raw {
 
     fun id() =
-        (data[14].toInt() and 0xFF) or
-                ((data[15].toInt() and 0xFF) shl 8) or
-                ((data[16].toInt() and 0xFF) shl 16)
+        (manufacturerData[4].toInt() and 0xFF) or
+                ((manufacturerData[5].toInt() and 0xFF) shl 8) or
+                ((manufacturerData[6].toInt() and 0xFF) shl 16)
 
     fun pressure() = (
-            ((data[12].toInt() and 0xFF) shl 8) or
-                    (data[13].toInt() and 0xFF)
+            ((manufacturerData[2].toInt() and 0xFF) shl 8) or
+                    (manufacturerData[3].toInt() and 0xFF)
             )
         .minus(100)
         .toFloat()
         .kpa
 
     fun temperature() =
-        ((data[11].toInt() and 0xFF) - 50)
+        ((manufacturerData[1].toInt() and 0xFF) - 50)
             .toFloat()
             .celsius
+
     fun voltage() =
-        (data[10].toInt() and 0xFF) * 0.01f + 1.22f
+        (manufacturerData[0].toInt() and 0xFF) * 0.01f + 1.22f
 
     fun battery() =
         voltage()
@@ -56,6 +57,9 @@ internal data class RawA827 private constructor(
             fromString("0000a827-0000-1000-8000-00805f9b34fb")
         )
 
+        private const val MANUFACTURER_ID = 0x0002
+        private const val MIN_MANUFACTURER_DATA_LENGTH = 9
+
         operator fun invoke(scanResult: ScanResult): RawA827? {
             val scanRecord = scanResult.scanRecord ?: return null
 
@@ -63,13 +67,15 @@ internal data class RawA827 private constructor(
                 return null
             }
 
-            val bytes = scanRecord.bytes
+            val manufacturerData =
+                scanRecord.getManufacturerSpecificData(MANUFACTURER_ID)
+                    ?: return null
 
-            if (bytes.size < 17) {
+            if (manufacturerData.size < MIN_MANUFACTURER_DATA_LENGTH) {
                 return null
             }
 
-            return RawA827(scanResult.rssi, bytes)
+            return RawA827(scanResult.rssi, manufacturerData)
         }
     }
 }
