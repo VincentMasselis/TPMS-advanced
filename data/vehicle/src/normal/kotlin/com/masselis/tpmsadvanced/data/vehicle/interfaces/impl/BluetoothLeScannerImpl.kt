@@ -94,6 +94,10 @@ internal class BluetoothLeScannerImpl(
                 ScanFilter
                     .Builder()
                     .setServiceUuid(WICARLINK_SERVICE_UUID)
+                    .build(),
+                ScanFilter
+                    .Builder()
+                    .setServiceUuid(A827_SERVICE_UUID)
                     .build()
             ),
             ScanSettings
@@ -113,6 +117,7 @@ internal class BluetoothLeScannerImpl(
     }.flowOn(Dispatchers.Main) // System's BluetoothLeScanner class as issues if called on a background thread
         .mapNotNull {
             RawPecham(it)
+                ?: RawA827(it)
                 ?: RawWicarlink(it)
                 ?: RawSysgration(it)
         }
@@ -156,5 +161,6 @@ internal class BluetoothLeScannerImpl(
             fromString("000027a5-0000-1000-8000-00805f9b34fb")
         )
         private val WICARLINK_SERVICE_UUID = RawWicarlink.SERVICE_UUID
+        private val A827_SERVICE_UUID = RawA827.SERVICE_UUID
     }
 }
