@@ -7,6 +7,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.util.UUID.fromString
+import kotlin.math.roundToInt
 
 @Suppress("MagicNumber")
 internal data class RawA827 private constructor(
@@ -31,6 +32,14 @@ internal data class RawA827 private constructor(
         ((data[11].toInt() and 0xFF) - 50)
             .toFloat()
             .celsius
+    fun voltage() =
+        (data[10].toInt() and 0xFF) * 0.01f + 1.22f
+
+    fun battery() =
+        voltage()
+            .times(10f)
+            .roundToInt()
+            .toUShort()
 
     override fun asTyre(): Tyre.SensorInput = Tyre.Unlocated(
         now(),
@@ -38,7 +47,7 @@ internal data class RawA827 private constructor(
         id(),
         pressure(),
         temperature(),
-        100u,
+        battery(),
         false,
     )
 

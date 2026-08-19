@@ -39,6 +39,9 @@ internal class A827Test {
 
         // Raw temperature 0x44 = 68; 68 - 50 = 18°C
         assertEquals(18f, tyre.temperature.celsius, 0.01f)
+		// Raw battery value 0xAF = 175; 175 * 0.01 + 1.22 = 2.97 V
+		// Battery values are stored in tenths of a volt.
+		assertEquals(30u.toUShort(), tyre.battery)
     }
 
     @Test
