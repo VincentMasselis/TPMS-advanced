@@ -2,12 +2,14 @@ package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
 import android.bluetooth.le.ScanRecord
 import android.bluetooth.le.ScanResult
+import android.os.ParcelUuid
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.psi
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
+import java.util.UUID.fromString
 
 @OptIn(ExperimentalStdlibApi::class)
 @ConsistentCopyVisibility
@@ -18,6 +20,7 @@ internal data class RawPecham private constructor(
 ) : Raw {
 
     fun id() = macAddress.hashCode()
+
     fun pressure() = (((data[3].toInt() and 0xFF) shl 8) or (data[4].toInt() and 0xFF))
         .minus(145)
         .div(10)
@@ -55,6 +58,8 @@ internal data class RawPecham private constructor(
     }
 
     companion object {
+        internal val SERVICE_UUID = ParcelUuid(fromString("000027a5-0000-1000-8000-00805f9b34fb"))
+
         operator fun invoke(result: ScanResult): RawPecham? {
             val scanRecord = result.scanRecord
                 ?: return null

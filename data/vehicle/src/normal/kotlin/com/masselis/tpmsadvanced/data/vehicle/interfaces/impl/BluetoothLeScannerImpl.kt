@@ -14,7 +14,6 @@ import android.bluetooth.le.ScanSettings.MATCH_MODE_AGGRESSIVE
 import android.bluetooth.le.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT
 import android.content.Context
 import android.os.Build
-import android.os.ParcelUuid
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
@@ -40,7 +39,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import java.util.UUID.fromString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -82,20 +80,7 @@ internal class BluetoothLeScannerImpl(
             awaitCancellation()
         }
         leScanner.startScan(
-            listOf(
-                ScanFilter
-                    .Builder()
-                    .setServiceUuid(SYSGRATION_SERVICE_UUID)
-                    .build(),
-                ScanFilter
-                    .Builder()
-                    .setServiceUuid(PECHAM_SERVICE_UUID)
-                    .build(),
-                ScanFilter
-                    .Builder()
-                    .setServiceUuid(WICARLINK_SERVICE_UUID)
-                    .build()
-            ),
+            SERVICES.map { ScanFilter.Builder().setServiceUuid(it).build() },
             ScanSettings
                 .Builder()
                 .setScanMode(mode)
@@ -113,6 +98,7 @@ internal class BluetoothLeScannerImpl(
     }.flowOn(Dispatchers.Main) // System's BluetoothLeScanner class as issues if called on a background thread
         .mapNotNull {
             RawPecham(it)
+                ?: RawBekubeeKy(it)
                 ?: RawWicarlink(it)
                 ?: RawSysgration(it)
         }
@@ -149,12 +135,11 @@ internal class BluetoothLeScannerImpl(
 
     @OptIn(ExperimentalUnsignedTypes::class)
     companion object {
-        private val SYSGRATION_SERVICE_UUID = ParcelUuid(
-            fromString("0000fbb0-0000-1000-8000-00805f9b34fb")
+        private val SERVICES = listOf(
+            RawSysgration.SERVICE_UUID,
+            RawPecham.SERVICE_UUID,
+            RawWicarlink.SERVICE_UUID,
+            RawBekubeeKy.SERVICE_UUID
         )
-        private val PECHAM_SERVICE_UUID = ParcelUuid(
-            fromString("000027a5-0000-1000-8000-00805f9b34fb")
-        )
-        private val WICARLINK_SERVICE_UUID = RawWicarlink.SERVICE_UUID
     }
 }

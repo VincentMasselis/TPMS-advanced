@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
 import android.bluetooth.le.ScanResult
+import android.os.ParcelUuid
 import androidx.core.util.size
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
@@ -9,6 +10,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.UUID.fromString
 
 @OptIn(ExperimentalUnsignedTypes::class)
 @Suppress("MagicNumber")
@@ -75,6 +77,7 @@ internal data class RawSysgration private constructor(
     }
 
     companion object {
+        internal val SERVICE_UUID = ParcelUuid(fromString("0000fbb0-0000-1000-8000-00805f9b34fb"))
         private const val PRESSURE_ALARM_BYTE = 0x01.toByte()
         private val expectedAddress = ubyteArrayOf(0xEAu, 0xCAu).toByteArray()
 
