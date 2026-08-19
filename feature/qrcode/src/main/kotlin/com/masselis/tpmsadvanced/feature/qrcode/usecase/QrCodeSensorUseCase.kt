@@ -38,77 +38,42 @@ internal class QrCodeSensorUseCase(
         controller: CameraController
     ): Flow<Pair<QrCodeSensors, Set<Location>>> = cameraAnalyser
         .findQrCode(controller)
-        .mapNotNull { qrCode ->
-            fourSensorRegex.find(qrCode)
-                ?.groupValues
-                ?.subList(1, 5)
-                ?.let { it to false }
-                ?: wicarlinkTwoSensorRegex.matchEntire(qrCode)
-                    ?.groupValues
-                    ?.subList(1, 3)
-                    ?.let { it to true }
-                ?: twoSensorRegex.find(qrCode)
-                    ?.groupValues
-                    ?.subList(1, 3)
-                    ?.let { it to false }
+        .mapNotNull {
+            fourSensorRegex.find(it)?.groupValues?.subList(1, 5)
+                ?: twoSensorRegex.find(it)?.groupValues?.subList(1, 3)
                 ?: run {
-                    if (wicarlinkSensorRegex.matches(qrCode)) {
-                        throw UnsupportedWircarlinkQrCode()
-                    } else {
-                        null
-                    }
+                    if (wicarlinkSensorRegex.matches(it)) throw UnsupportedWircarlinkQrCode()
+                    else null
                 }
         }
-        .map { (stringHexs, isWicarlink) ->
+        .map { stringHexs ->
             stringHexs
-                .mapIndexed { index, stringHex ->
+                .map { stringHex ->
                     Pair(
-                        if (isWicarlink) {
-                            // Wicarlink QR codes don't encode a wheel position.
-                            // For a two-wheel vehicle:
-                            // first sensor = front
-                            // second sensor = rear
-                            when (index) {
-                                0 -> Location.Wheel(FRONT_LEFT)
-                                1 -> Location.Wheel(REAR_LEFT)
-                                else -> error("Wicarlink QR code contains too many sensors")
-                            }
-                        } else {
-                            // Existing Sysgration-style QR location detection
-                            when (stringHex.first()) {
-                                '1' -> Location.Wheel(FRONT_LEFT)
-                                '2' -> Location.Wheel(FRONT_RIGHT)
-                                '3' -> Location.Wheel(REAR_LEFT)
-                                '4' -> Location.Wheel(REAR_RIGHT)
-                                else -> null
-                            }
+                        // Trying to recognize the location with the id of the sensor
+                        when (stringHex.first()) {
+                            '1' -> Location.Wheel(FRONT_LEFT)
+                            '2' -> Location.Wheel(FRONT_RIGHT)
+                            '3' -> Location.Wheel(REAR_LEFT)
+                            '4' -> Location.Wheel(REAR_RIGHT)
+                            else -> null
                         },
-
-                        // Convert hexadecimal sensor ID to the integer format
-                        // used by the BLE decoder.
+                        // Converts the hexadecimal id to an int
                         stringHex
                             .hexToByteArray()
                             .let {
-                                if (isWicarlink) {
-                                    // Wicarlink uses the three ID bytes directly
-                                    // as a little-endian 24-bit value.
-                                    ByteBuffer
-                                        .wrap(it + byteArrayOf(0x00))
-                                        .order(ByteOrder.LITTLE_ENDIAN)
-                                        .int
-                                } else {
-                                    // Existing Sysgration-style conversion.
-                                    ByteBuffer
-                                        .wrap(byteArrayOf(0x00) + it)
-                                        .order(ByteOrder.LITTLE_ENDIAN)
-                                        .int
-                                }
+                                ByteBuffer
+                                    .wrap(byteArrayOf(0x00) + it)
+                                    .order(ByteOrder.LITTLE_ENDIAN)
+                                    .int
                             },
                     )
                 }
                 .mapIndexed { index, (location, id) ->
                     QrCodeSensor(
                         id,
+                        // The sensor id didn't provided the location, let's determine it with the
+                        // list index
                         location ?: when (index) {
                             0 -> Location.Wheel(FRONT_LEFT)
                             1 -> Location.Wheel(FRONT_RIGHT)
@@ -122,9 +87,7 @@ internal class QrCodeSensorUseCase(
                     when (it.size) {
                         2 -> TwoWheel(it[0], it[1])
                         4 -> FourWheel(it[0], it[1], it[2], it[3])
-                        else -> error(
-                            "Unreachable state, previous regex should only contains 2 or 4 sensors, current sensors: $it"
-                        )
+                        else -> error("Unreachable state, previous regex should only contains 2 or 4 sensors, current sensors: $it")
                     }
                 }
         }
@@ -176,12 +139,7 @@ internal class QrCodeSensorUseCase(
         private val twoSensorRegex =
             "([0-9a-fA-F]{6})&([0-9a-fA-F]{6})".toRegex()
 
-        // Custom QR format for a pair of Wicarlink/LYTPMS sensors.
-        // Example: W:002D56&002E63
-        private val wicarlinkTwoSensorRegex =
-            "^[Ww]:([0-9a-fA-F]{6})&([0-9a-fA-F]{6})$".toRegex()
-
-        // Original Wicarlink QR code contains one sensor ID only.
+        // A Wicarlink/LYTPMS QR code only contains a single sensor's 6 hex character id, e.g. AF2206
         private val wicarlinkSensorRegex =
             "^([0-9a-fA-F]{6})$".toRegex()
     }
