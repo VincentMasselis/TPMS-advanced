@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
-import io.mockk.every
-import io.mockk.mockk
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.utils.mockScanRecord
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.utils.mockScanResult
 import org.junit.Test
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -22,19 +22,13 @@ internal class WircarlinkTest {
             .map { it.hexToByteArray() }
             .mapNotNull { completeData ->
                 RawWicarlink(
-                    mockk {
-                        every { scanRecord } returns mockk {
-                            every { rssi } returns -60
-                            every { advertiseFlags } returns 0x06
-                            every { serviceUuids } returns mockk {
-                                every { contains(any()) } returns true
-                            }
-                            every { bytes } returns completeData
-                            every { device } returns mockk {
-                                every { address } returns "00:00:00:00:00"
-                            }
-                        }
-                    },
+                    mockScanResult(
+                        mockScanRecord = mockScanRecord(
+                            mockAdvertiseFlags = 0x06,
+                            containsServiceUuids = true,
+                            mockBytes = completeData
+                        )
+                    ),
                 )
             }
             .map { it.asTyre() }

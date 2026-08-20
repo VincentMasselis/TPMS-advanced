@@ -1,7 +1,7 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
-import io.mockk.every
-import io.mockk.mockk
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.utils.mockScanRecord
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.utils.mockScanResult
 import org.junit.Test
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -48,16 +48,12 @@ internal class PechamTest {
             .map { it.hexToByteArray() }
             .mapNotNull { completeData ->
                 RawPecham(
-                    mockk {
-                        every { scanRecord } returns mockk {
-                            every { deviceName } returns "BR"
-                            every { rssi } returns -60
-                            every { bytes } returns completeData
-                            every { device } returns mockk {
-                                every { address } returns "00:00:00:00:00"
-                            }
-                        }
-                    },
+                    mockScanResult(
+                        mockScanRecord = mockScanRecord(
+                            mockDeviceName = "BR",
+                            mockBytes = completeData,
+                        )
+                    )
                 )
             }
             .map { it.asTyre() }

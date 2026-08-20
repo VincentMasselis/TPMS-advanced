@@ -100,6 +100,7 @@ internal class BluetoothLeScannerImpl(
             RawPecham(it)
                 ?: RawBekubeeKy(it)
                 ?: RawWicarlink(it)
+                ?: RawBekubeeTpms(it)
                 ?: RawSysgration(it)
         }
         // A real sensor emits the same value up to 10 times in a short time, to avoid to emit the
@@ -139,7 +140,8 @@ internal class BluetoothLeScannerImpl(
             RawSysgration.SERVICE_UUID,
             RawPecham.SERVICE_UUID,
             RawWicarlink.SERVICE_UUID,
-            RawBekubeeKy.SERVICE_UUID
+            RawBekubeeKy.SERVICE_UUID,
+            RawBekubeeTpms.SERVICE_UUID
         )
     }
 }
