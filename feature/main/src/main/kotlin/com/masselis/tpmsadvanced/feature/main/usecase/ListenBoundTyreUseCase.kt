@@ -12,6 +12,7 @@ internal class ListenBoundTyreUseCase(
     override fun listen(): Flow<Tyre.Located> = listenTyreUseCase
         .listen()
         .filter {
+            // If not bound sensor exist for the current tyre, return the tyre record
             val boundSensorId = sensorBindingUseCase.boundSensor().value?.id ?: return@filter true
             boundSensorId == it.sensorId
         }

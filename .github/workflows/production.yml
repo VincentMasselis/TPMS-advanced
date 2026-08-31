@@ -35,8 +35,8 @@ jobs:
           ./gradlew
           assertVersionWasNotPushInProductionYet
           createGithubRelease
-          publishToPlayStoreProductionNormalRelease
-          updatePlayStoreScreenshotsNormalRelease
+          publishToPlayStoreProductionRelease
+          updatePlayStoreScreenshotsRelease
           --stacktrace
 
   back-merge:

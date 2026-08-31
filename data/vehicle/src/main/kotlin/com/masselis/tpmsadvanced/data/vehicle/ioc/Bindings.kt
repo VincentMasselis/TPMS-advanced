@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.ioc
 
+import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.EnumColumnAdapter
@@ -12,20 +13,26 @@ import com.masselis.tpmsadvanced.data.vehicle.Database
 import com.masselis.tpmsadvanced.data.vehicle.Sensor
 import com.masselis.tpmsadvanced.data.vehicle.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.afterVersion3
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.demo.DemoLeScanner
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.BluetoothLeScannerImpl
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.data.vehicle.usecase.DemoOrBleScannerUseCase
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.UUID
 
+@OptIn(DelicateCoroutinesApi::class)
 @Suppress("unused")
 @ContributesTo(AppScope::class)
 public interface Bindings {
@@ -166,4 +173,13 @@ public interface Bindings {
             uuidAdapter,
         )
     )
+
+    @Provides
+    @SingleIn(AppScope::class)
+    private fun bluetoothLeScannerImpl(
+        demoOrBleScannerUseCase: DemoOrBleScannerUseCase,
+        context: Context
+    ): BluetoothLeScanner =
+        if (demoOrBleScannerUseCase.isDemo.value) DemoLeScanner()
+        else BluetoothLeScannerImpl(context)
 }

@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.interfaces.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent

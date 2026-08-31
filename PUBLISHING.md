@@ -6,7 +6,7 @@ CLI, and every action below is a plain Gradle task you can run locally - the `wo
 entry point below just runs the same tasks in CI.
 
 Before cutting a release, add the Play Store release note for the new version under
-`app/phone/src/normal/play/release-notes/en-US/<version>.txt` - `createRelease`/`createHotfix`
+`app/phone/src/main/play/release-notes/en-US/<version>.txt` - `createRelease`/`createHotfix`
 check it exists before doing anything else.
 
 To create a release from `develop`, run:
@@ -32,7 +32,7 @@ Pushing the release branch triggers `beta.yml`, which runs:
   that `main` is fully merged into `develop`
 - `build` and `verifyPaparazzi`: build the app and run unit tests
 - `createGithubPreRelease`: create a GitHub pre-release with release notes and attached APKs
-- `publishToPlayStoreBetaNormalRelease`: send the AABs to the Play Store beta track
+- `publishToPlayStoreBetaRelease`: send the AABs to the Play Store beta track
 
 Hotfixes work the same way from `main`, always bumping patch (`./gradlew createHotfix
 pushGitflowBranch` takes no `-Pgitflow.bump`, or use `workflow_dispatch` with `flow=hotfix`);
@@ -45,8 +45,8 @@ To publish into the production track, push a commit on the `main` branch - it co
 
 - `assertVersionWasNotPushInProductionYet`: ensure the version to upload is a new version
 - `createGithubRelease`: create a GitHub release with release notes and attached APKs
-- `publishToPlayStoreProductionNormalRelease`: send the AABs to the Play Store production track
-- `updatePlayStoreScreenshotsNormalRelease`: update the listing's screenshots
+- `publishToPlayStoreProductionRelease`: send the AABs to the Play Store production track
+- `updatePlayStoreScreenshotsRelease`: update the listing's screenshots
 
 Once that's done, a second job automatically opens (or reuses) a pull request merging `main` back
 into `develop` and enables GitHub's auto-merge with a merge commit (never squash/rebase, so both

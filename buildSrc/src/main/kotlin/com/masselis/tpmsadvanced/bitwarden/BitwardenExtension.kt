@@ -1,5 +1,7 @@
 package com.masselis.tpmsadvanced.bitwarden
 
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 
 public interface BitwardenExtension {
@@ -7,4 +9,5 @@ public interface BitwardenExtension {
     public val email: Property<String>
     public val password: Property<String>
     public val item: Property<String>
+    public val files: MapProperty<String, RegularFile>
 }

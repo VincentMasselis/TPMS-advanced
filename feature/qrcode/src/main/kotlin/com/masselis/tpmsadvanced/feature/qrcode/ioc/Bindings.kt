@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.feature.qrcode.ioc
 
 import com.masselis.tpmsadvanced.core.common.appGraph
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
+import com.masselis.tpmsadvanced.data.vehicle.usecase.DemoOrBleScannerUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.CameraAnalyser
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel
@@ -21,9 +22,12 @@ public interface Bindings {
 
     @Provides
     private fun boundSensorMapUseCase(
+        demoOrBleScannerUseCase: DemoOrBleScannerUseCase,
         sensorDatabase: SensorDatabase,
         currentVehicleUseCase: CurrentVehicleUseCase,
-    ): BoundSensorMapUseCase = BoundSensorMapUseCase(sensorDatabase, currentVehicleUseCase)
+    ): BoundSensorMapUseCase =
+        if (demoOrBleScannerUseCase.isDemo.value) BoundSensorMapUseCase.NoOp
+        else BoundSensorMapUseCase.Impl(sensorDatabase, currentVehicleUseCase)
 
     @Provides
     private fun qrCodeSensorUseCase(
@@ -38,7 +42,7 @@ public interface Bindings {
         internal val qrCodeViewModel: QRCodeViewModel.Factory
     )
 
-   public companion object {
+    public companion object {
         internal val QrCodeViewModel
             get() = (appGraph as Bindings).featureQrCodeInternal.qrCodeViewModel
     }

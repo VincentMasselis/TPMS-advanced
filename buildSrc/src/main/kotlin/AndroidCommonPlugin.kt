@@ -29,15 +29,6 @@ public class AndroidCommonPlugin : Plugin<Project> {
                 sourceCompatibility = VERSION_21
                 targetCompatibility = VERSION_21
             }
-            flavorDimensions += "mode"
-            with(productFlavors) {
-                create("demo") {
-                    dimension = "mode"
-                }
-                create("normal") {
-                    dimension = "mode"
-                }
-            }
             packaging.resources.excludes += setOf(
                 "META-INF/DEPENDENCIES",
                 "META-INF/LICENSE",

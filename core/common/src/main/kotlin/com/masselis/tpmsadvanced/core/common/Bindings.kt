@@ -22,9 +22,6 @@ public interface Bindings {
     private fun crashlytics(firebaseApp: FirebaseApp?): FirebaseCrashlytics? =
         firebaseApp?.let { Firebase.crashlytics }
 
-    @Provides
-    private fun context(): Context = appContext
-
     public val coreCommonInternal: Internal
 
     @Inject

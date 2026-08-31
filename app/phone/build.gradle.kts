@@ -1,7 +1,9 @@
 @file:Suppress("LocalVariableName", "UnstableApiUsage")
 
+import Keys.Companion.keys
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
 import com.google.gms.googleservices.GoogleServicesPlugin
+import com.masselis.tpmsadvanced.bitwarden.BitwardenExtension
 import com.masselis.tpmsadvanced.gitflow.GitflowExtension
 import com.masselis.tpmsadvanced.playstore.PlayStoreExtension
 import com.masselis.tpmsadvanced.playstore.PlayStorePlugin
@@ -15,6 +17,19 @@ plugins {
     alias(libs.plugins.paparazzi)
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.crashlytics) apply false
+}
+
+val keysFile = rootProject.layout.projectDirectory.file("secrets/keys.json")
+rootProject.configure<BitwardenExtension> {
+    files.putAll(
+        mapOf(
+            // All of theses files are required in this gradle project
+            "publisher-service-account.json" to rootProject.layout.projectDirectory.file("secrets/publisher-service-account.json"),
+            "google-services.json" to rootProject.layout.projectDirectory.file("app/phone/google-services.json"),
+            "app-keystore" to rootProject.layout.projectDirectory.file("secrets/app-keystore"),
+            "keys.json" to keysFile,
+        )
+    )
 }
 
 if (file("google-services.json").exists()) {
@@ -41,7 +56,7 @@ android {
         applicationId = "com.masselis.tpmsadvanced"
         namespace = "com.masselis.tpmsadvanced"
     }
-    rootProject.extra.getOrNull<Keys>("keys")?.also { keys ->
+    keys(keysFile.asFile)?.also { keys ->
         signingConfigs.create("release") {
             keyAlias = keys.appKeyAlias
             keyPassword = keys.appKeyStorePwd
@@ -60,12 +75,12 @@ android {
     buildFeatures.buildConfig = true
     val pixel2api34 = testOptions.managedDevices.localDevices.getByName("pixel2api34")
     val copyScreenshot by tasks.registering(Copy::class) {
-        dependsOn("${pixel2api34.name}DemoDebugAndroidTest")
+        dependsOn("${pixel2api34.name}DebugAndroidTest")
         group = "publishing"
         description =
             "Copy and rename the screenshots from the phone in order to be uploaded to the play store listing"
-        from(layout.buildDirectory.dir("outputs/managed_device_android_test_additional_output/debug/flavors/demo/${pixel2api34.name}"))
-        into("$projectDir/src/normal/play/listings/en-US/graphics/phone-screenshots")
+        from(layout.buildDirectory.dir("outputs/managed_device_android_test_additional_output/debug/${pixel2api34.name}"))
+        into("$projectDir/src/main/play/listings/en-US/graphics/phone-screenshots")
         eachFile {
             name = when {
                 name.startsWith("light_main") -> "1.png"

@@ -7,6 +7,7 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.data.vehicle.usecase.DemoOrBleScannerUseCase
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreIconViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.BindSensorButtonViewModelImpl
@@ -37,18 +38,23 @@ public interface TyreBindings {
     @SingleIn(TyreComponent.Scope::class)
     @Provides
     private fun sensorBindingUseCase(
+        demoOrBleScannerUseCase: DemoOrBleScannerUseCase,
         currentVehicle: Vehicle,
         vehicleDatabase: VehicleDatabase,
         sensorDatabase: SensorDatabase,
         currentLocation: Location,
         @VehicleLifecycle scope: CoroutineScope,
-    ): SensorBindingUseCase = SensorBindingUseCase(
-        currentVehicle,
-        vehicleDatabase,
-        sensorDatabase,
-        currentLocation,
-        scope
-    )
+    ): SensorBindingUseCase =
+        if (demoOrBleScannerUseCase.isDemo.value)
+            SensorBindingUseCase.NoOp
+        else
+            SensorBindingUseCase.Impl(
+                currentVehicle,
+                vehicleDatabase,
+                sensorDatabase,
+                currentLocation,
+                scope
+            )
 
     @SingleIn(TyreComponent.Scope::class)
     @Provides
@@ -57,9 +63,22 @@ public interface TyreBindings {
         location: Location,
         tyreDatabase: TyreDatabase,
         listenTyreUseCase: ListenTyreSmartDutyUseCase,
+        demoOrBleScannerUseCase: DemoOrBleScannerUseCase,
         @VehicleLifecycle scope: CoroutineScope,
     ): ListenTyreWithDatabaseUseCase =
-        ListenTyreWithDatabaseUseCase(vehicle, location, tyreDatabase, listenTyreUseCase, scope)
+        if (demoOrBleScannerUseCase.isDemo.value)
+            ListenTyreWithDatabaseUseCase.Wrapper(
+                listenTyreUseCase
+            )
+        else
+            ListenTyreWithDatabaseUseCase.Impl(
+                vehicle,
+                location,
+                tyreDatabase,
+                listenTyreUseCase,
+                scope
+            )
+
 
     @Provides
     private fun listenBoundTyreUseCase(

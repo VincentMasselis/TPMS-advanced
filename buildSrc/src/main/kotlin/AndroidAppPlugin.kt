@@ -11,7 +11,6 @@ public class AndroidAppPlugin : Plugin<Project> {
         plugins.apply("com.android.application")
         apply<AndroidCommonPlugin>()
         the<ApplicationAndroidComponentsExtension>().apply {
-            ignoreDemoRelease()
             onVariants { variant ->
                 variant.outputs.forEach { output ->
                     with(rootProject.the<GitflowExtension>()) {
