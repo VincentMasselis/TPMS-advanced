@@ -14,7 +14,6 @@ import com.masselis.tpmsadvanced.feature.unlocated.usecase.BindSensorToVehicleUs
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -70,7 +69,7 @@ internal class BindDialogViewModelImpl(
     }
 
     override fun bind(location: Location) {
-        viewModelScope.launch(NonCancellable) {
+        viewModelScope.launch {
             bindSensorToVehicleUseCase.bind(vehicleUuid, Sensor(tyre.sensorId, location), tyre)
         }
     }
