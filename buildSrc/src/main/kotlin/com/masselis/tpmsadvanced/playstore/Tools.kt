@@ -13,7 +13,9 @@ internal fun <T> Edits.withEdit(
 ): T = serviceHolder.editsLock.withLock {
     val edit = insert(packageName, content).execute()
     val result = block(edit)
-    commit(packageName, edit.id).execute()
+    commit(packageName, edit.id)
+        .setChangesNotSentForReview(true)
+        .execute()
     result
 }
 
