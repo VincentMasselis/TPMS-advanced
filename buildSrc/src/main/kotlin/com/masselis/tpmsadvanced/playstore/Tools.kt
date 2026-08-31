@@ -14,7 +14,7 @@ internal fun <T> Edits.withEdit(
     val edit = insert(packageName, content).execute()
     val result = block(edit)
     commit(packageName, edit.id)
-        .setChangesNotSentForReview(true)
+        .setChangesNotSentForReview(true) // Temp fix because of the rejection
         .execute()
     result
 }
