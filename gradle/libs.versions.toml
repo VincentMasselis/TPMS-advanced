@@ -57,7 +57,7 @@ google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.50.0"
 junit = "junit:junit:4.13.2"
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
-kotlinx-collection = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.5.1"
+kotlinx-collection = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.5.2"
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutine" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutine" }
