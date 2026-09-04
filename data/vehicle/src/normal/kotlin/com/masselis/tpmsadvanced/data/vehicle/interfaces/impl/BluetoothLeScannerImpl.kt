@@ -14,11 +14,11 @@ import android.bluetooth.le.ScanSettings.MATCH_MODE_AGGRESSIVE
 import android.bluetooth.le.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT
 import android.content.Context
 import android.os.Build
-import android.os.ParcelUuid
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.getSystemService
+import co.touchlab.kermit.Logger
 import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
 import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
@@ -37,10 +37,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import java.util.UUID.fromString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -49,6 +49,8 @@ import kotlin.time.Duration.Companion.seconds
 internal class BluetoothLeScannerImpl(
     private val context: Context
 ) : BluetoothLeScanner {
+
+    private val logger = Logger.withTag("BluetoothLeScannerImpl")
 
     private var lastStartScan = Duration.ZERO
 
@@ -82,20 +84,7 @@ internal class BluetoothLeScannerImpl(
             awaitCancellation()
         }
         leScanner.startScan(
-            listOf(
-                ScanFilter
-                    .Builder()
-                    .setServiceUuid(SYSGRATION_SERVICE_UUID)
-                    .build(),
-                ScanFilter
-                    .Builder()
-                    .setServiceUuid(PECHAM_SERVICE_UUID)
-                    .build(),
-                ScanFilter
-                    .Builder()
-                    .setServiceUuid(WICARLINK_SERVICE_UUID)
-                    .build()
-            ),
+            SERVICES.map { ScanFilter.Builder().setServiceUuid(it).build() },
             ScanSettings
                 .Builder()
                 .setScanMode(mode)
@@ -112,14 +101,22 @@ internal class BluetoothLeScannerImpl(
         }
     }.flowOn(Dispatchers.Main) // System's BluetoothLeScanner class as issues if called on a background thread
         .mapNotNull {
+            logger.v("Sensor found during scan")
             RawPecham(it)
+                ?: RawBekubeeKy(it)
                 ?: RawWicarlink(it)
+                ?: RawBekubeeTpms(it)
                 ?: RawSysgration(it)
+                ?: run {
+                    logger.d("Sensor not parsed. Scan bytes: ${it.scanRecord?.bytes}")
+                    null
+                }
         }
         // A real sensor emits the same value up to 10 times in a short time, to avoid to emit the
         // same value 10 times, I use `distinctUntilChanged()`.
         .distinctUntilChanged()
         .map { it.asTyre() }
+        .onEach { logger.d("Sensor content: $it") }
 
     private val lowLatencyScanFlow = scan(ScanSettings.SCAN_MODE_LOW_LATENCY).shared()
 
@@ -149,12 +146,12 @@ internal class BluetoothLeScannerImpl(
 
     @OptIn(ExperimentalUnsignedTypes::class)
     companion object {
-        private val SYSGRATION_SERVICE_UUID = ParcelUuid(
-            fromString("0000fbb0-0000-1000-8000-00805f9b34fb")
+        private val SERVICES = listOf(
+            RawSysgration.SERVICE_UUID,
+            RawPecham.SERVICE_UUID,
+            RawWicarlink.SERVICE_UUID,
+            RawBekubeeKy.SERVICE_UUID,
+            RawBekubeeTpms.SERVICE_UUID
         )
-        private val PECHAM_SERVICE_UUID = ParcelUuid(
-            fromString("000027a5-0000-1000-8000-00805f9b34fb")
-        )
-        private val WICARLINK_SERVICE_UUID = RawWicarlink.SERVICE_UUID
     }
 }

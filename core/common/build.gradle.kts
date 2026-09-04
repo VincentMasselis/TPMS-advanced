@@ -9,6 +9,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.kermit.crashlytics)
+
     api(libs.androidx.core)
     // For an unknown reason, startup-runtime tries to load DefaultLifecycleObserver when running an
     // instrumented test. To avoid crashes in this case, I manually add this dependency at the same

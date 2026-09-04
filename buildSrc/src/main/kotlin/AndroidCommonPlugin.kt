@@ -3,6 +3,7 @@ import org.gradle.api.JavaVersion.VERSION_21
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
 
 public class AndroidCommonPlugin : Plugin<Project> {
@@ -10,7 +11,7 @@ public class AndroidCommonPlugin : Plugin<Project> {
         plugins.apply("com.android.base")
         plugins.apply("org.jetbrains.kotlin.plugin.parcelize")
 
-// `android {}` is unavailable since I only use the plugin com.android.base
+        // `android {}` is unavailable since I only use the plugin com.android.base
         configure<CommonExtension> android@{
             compileSdk = libs.versions.sdk.compile.map { it.toInt() }.get()
             with(defaultConfig) {
@@ -68,6 +69,10 @@ public class AndroidCommonPlugin : Plugin<Project> {
                     "-opt-in=kotlin.RequiresOptIn",
                 )
             }
+        }
+
+        dependencies {
+            "implementation"(libs.kermit)
         }
     }
 }
