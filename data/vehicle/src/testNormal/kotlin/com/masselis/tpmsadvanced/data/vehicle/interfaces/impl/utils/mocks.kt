@@ -24,7 +24,13 @@ internal fun mockScanRecord(
         every { contains(any()) } returns containsServiceUuids
     }
     every { advertiseFlags } returns mockAdvertiseFlags
-    every { getManufacturerSpecificData(0x0002) } returns mockManufacturerData
+    // Mocked company-id-agnostic, matching ScanRecord.manufacturerSpecificData: real sensors can
+    // advertise the same payload under different company IDs, so decoders should read
+    // valueAt(0) rather than requiring a specific key.
+    every { manufacturerSpecificData } returns mockk {
+        every { size() } returns 1
+        every { valueAt(0) } returns mockManufacturerData
+    }
     every { bytes } returns mockBytes
 }
 

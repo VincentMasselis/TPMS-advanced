@@ -8,8 +8,9 @@ import org.junit.Test
 internal class BekubeeTpmsTest {
 
     // 0x08: Shortened Local Name ("TPMS")
-    // 0xFF: Manufacturer Specific Data, company ID 0x0002 (values below are the payload
-    // *after* the company ID, i.e. what ScanRecord.getManufacturerSpecificData(0x0002) returns)
+    // 0xFF: Manufacturer Specific Data. The values below are the payload *after* the company ID
+    // (i.e. what ScanRecord.manufacturerSpecificData's valueAt(0) returns). The company ID itself
+    // varies with sensor state (0x0002 mounted, 0x0006 unplugged) so it must not be filtered on.
     // 0x03: Complete List of 16-bit Service Class UUIDs (0xA827)
 
     private val samples = listOf(
@@ -27,6 +28,13 @@ internal class BekubeeTpmsTest {
         // Temperature change without a pressure change.
         // Unlocated(sensorId=5647616, pressure=Pressure(kpa=37.0), temperature=Temperature(celsius=27.0), battery=30, isAlarm=false)
         "B14D0089002D563A76",
+
+        // Same physical sensor, unplugged from its valve. Full raw advertisement:
+        // 050854504D530CFF0600B34A0064002FA0057D030327A8
+        // Company ID is 0x0006 here (not 0x0002 like every mounted sample above) — this is the
+        // real-world case that broke ScanRecord.getManufacturerSpecificData(0x0002).
+        // Unlocated(sensorId=10497792, pressure=Pressure(kpa=0.0), temperature=Temperature(celsius=24.0), battery=30, isAlarm=false)
+        "B34A0064002FA0057D",
     )
 
     @Test

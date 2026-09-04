@@ -55,6 +55,8 @@ google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlyti
 google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1"
 google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.50.0"
 junit = "junit:junit:4.13.2"
+kermit = "co.touchlab:kermit:2.1.0"
+kermit-crashlytics = "co.touchlab:kermit-crashlytics:2.1.0"
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlinx-collection = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.5.1"

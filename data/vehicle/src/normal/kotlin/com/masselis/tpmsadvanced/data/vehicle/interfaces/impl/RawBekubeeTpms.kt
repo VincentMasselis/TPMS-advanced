@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
 import android.bluetooth.le.ScanResult
 import android.os.ParcelUuid
+import androidx.core.util.size
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
@@ -9,6 +10,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.util.UUID.fromString
 import kotlin.math.roundToInt
 
+/** This a sensor from the HRTPMS app, see [pull request](https://github.com/VincentMasselis/TPMS-advanced/pull/446) */
 @ConsistentCopyVisibility
 @Suppress("MagicNumber")
 internal data class RawBekubeeTpms private constructor(
@@ -65,14 +67,19 @@ internal data class RawBekubeeTpms private constructor(
     companion object {
         internal val SERVICE_UUID = ParcelUuid(fromString("0000a827-0000-1000-8000-00805f9b34fb"))
 
-        private const val MANUFACTURER_ID = 0x0002
+        private const val MIN_MANUFACTURER_DATA_LENGTH = 9
 
         operator fun invoke(scanResult: ScanResult): RawBekubeeTpms? {
             val scanRecord = scanResult.scanRecord ?: return null
             if (scanRecord.deviceName != "TPMS") return null
             if (scanRecord.serviceUuids?.contains(SERVICE_UUID)?.not() ?: true) return null
-            val manufacturerData = scanRecord.getManufacturerSpecificData(MANUFACTURER_ID)
-                ?.takeIf { it.size >= 9 }
+            // This sensor advertises the same payload shape under different company IDs depending
+            // on its state (observed 0x0002 when mounted with a valid pressure reading, 0x0006 when
+            // unplugged/idle).
+            val manufacturerData = scanRecord.manufacturerSpecificData
+                ?.takeIf { it.size > 0 }
+                ?.valueAt(0)
+                ?.takeIf { it.size >= MIN_MANUFACTURER_DATA_LENGTH }
                 ?: return null
 
             return RawBekubeeTpms(scanResult.rssi, manufacturerData)

@@ -12,6 +12,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.util.UUID.fromString
 
 /**
+ * This a sensor from the HRTPMS app, see [pull request](https://github.com/VincentMasselis/TPMS-advanced/pull/446)
+ *
  * Copied from [RawPecham], the only changes are name filtering ("KY" instead of "BR") and the CRC
  * tables
  */
