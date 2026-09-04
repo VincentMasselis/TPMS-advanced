@@ -13,7 +13,6 @@ import java.io.File
  * `app` entry, then edits only that line, leaving every comment and every other entry byte for
  * byte as they were - a full TOML writer would reflow the whole ~120-line file.
  */
-@Suppress("MISSING_DEPENDENCY_IN_INFERRED_TYPE_ANNOTATION_WARNING")
 @JvmInline
 internal value class TpmsToml(private val file: File) {
 
@@ -21,8 +20,8 @@ internal value class TpmsToml(private val file: File) {
         get() = file
             .asToml()
             .getString(KEY)
-            .let { it ?: throw GradleException("\"$KEY\" is missing or is not a string in ${file.path}") }
-            .let { StricSemanticVersion(it) }
+            ?.let(StricSemanticVersion.Companion::invoke)
+            ?: throw GradleException("\"$KEY\" is missing or is not a string in ${file.path}")
         set(value) {
             file.asToml()
                 .inputPositionOf(KEY)
