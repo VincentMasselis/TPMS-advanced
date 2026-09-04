@@ -15,6 +15,11 @@
 Run `git@github.com:VincentMasselis/TPMS-advanced.git` on your machine then `./gradlew build`. You
 don't need the secrets keys to run this project, the Gradle configuration works without them.
 
+## How to try with Android Auto
+
+With a device attached, run `./gradlew desktopAndroidAutoHeadUnit` to start the Desktop Head Unit.
+Add `-Pandroid_auto_via_usb` to force the USB transport (`-u`/`--usb`) instead of the default one.
+
 ### Secrets (optional)
 
 Release signing, Play Store publishing, Firebase, and GitHub release notes need secrets that are
