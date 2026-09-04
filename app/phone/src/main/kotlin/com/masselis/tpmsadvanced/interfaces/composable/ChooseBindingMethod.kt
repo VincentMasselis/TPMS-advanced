@@ -34,7 +34,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.interfaces.composable.BindingMethod.MANUALLY
 import com.masselis.tpmsadvanced.interfaces.composable.BindingMethod.QR_CODE
@@ -154,7 +153,7 @@ private fun Method(
         Text(
             text = when (method) {
                 QR_CODE -> "Sysgration sensors"
-                MANUALLY -> "Pecham sensors"
+                MANUALLY -> "Other sensors"
             },
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally),
