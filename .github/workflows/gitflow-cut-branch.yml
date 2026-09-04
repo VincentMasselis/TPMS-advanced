@@ -24,10 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ${{ inputs.flow == 'release' && 'develop' || 'main' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ inputs.flow == 'release' && 'develop' || 'main' }}
+          persist-credentials: false
 
       - uses: ./.github/actions/setup
 
@@ -47,13 +48,9 @@ jobs:
         # beta.yml/hotfix.yml. Re-point the remote at the real PAT (same one GithubPlugin already
         # uses) before the push happens.
         #
-        # actions/checkout (persist-credentials: true, the default) also injects an
-        # "http.https://github.com/.extraheader" git config entry carrying the ephemeral
-        # GITHUB_TOKEN - that header is sent on every git request to github.com regardless of the
-        # remote URL's own credentials, so it must be removed or the PAT below is silently ignored
-        # by every subsequent git fetch/push.
+        # persist-credentials: false above means checkout never configures a GITHUB_TOKEN
+        # credential in the first place.
         run: |
-          git config --unset-all http.https://github.com/.extraheader || true
           token=$(jq -r .GITHUB_TOKEN secrets/keys.json)
           git remote set-url origin "https://x-access-token:${token}@github.com/VincentMasselis/TPMS-advanced.git"
           identity=$(curl -sf -H "Authorization: token ${token}" https://api.github.com/user)
