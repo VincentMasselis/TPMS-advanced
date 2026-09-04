@@ -24,14 +24,20 @@ runs:
         package=`perl -nlE 'say if s/garunner-emulator \= \"(.*)\"/$1/g' gradle/libs.versions.toml`
         echo "emulatorPackage=$package" >> $GITHUB_OUTPUT
 
-    - name: Set up JDK 17
+    # This JDK is downloaded because Gradle needs a basic java environment to start before
+    # downloading its own JDK distribution and also because some tools used by
+    # "android-actions/setup-android" need a JVM.
+    - name: Set up bootstrap JDK
       uses: actions/setup-java@v6
       with:
         distribution: temurin
-        java-version: 17
+        # JDK used by Gradle to run on is always fetch from gradle-daemon-jvm.properties.
+        # JDK used to compile code is automatically fetch by plugin "org.gradle.toolchains.foojay-resolver-convention"
+        # but if the current machine already have JDK 21 installed, the compiler reuses it.
+        java-version: 21
 
     - name: Setup Android SDK Tools
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v4
       with:
         log-accepted-android-sdk-licenses: false # Cleans the log output
 
