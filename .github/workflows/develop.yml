@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           # Uses the latest commit from the branch when running a pull request instead of compiling a merge commit
@@ -51,56 +51,56 @@ jobs:
           files: "**/build/test-results/**/*.xml"
 
       - name: Lint reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Lint-reports
           path: "**/build/reports/lint-*.html"
 
       - name: Detekt reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Detekt-reports
           path: "**/build/reports/detekt/*.html"
 
       - name: Paparazzi failures screens
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: Paparazzi-failures
           path: "**/build/paparazzi/failures/**/*.png"
 
       - name: Instrumented tests reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Instrumented-reports
           path: "**/build/reports/androidTests/**/*.html"
 
       - name: Screenshots report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Screenshots-reports
           path: "**/graphics/phone-screenshots/*.png"
 
       - name: APKs
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: APKs
           path: "**/build/outputs/apk/**/*.apk"
 
       - name: Configuration cache reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Configuration-cache-report
           path: "build/reports/configuration-cache/*/*/configuration-cache-report.html"
 
       - name: Resources monitor report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Resource-monitor-report
