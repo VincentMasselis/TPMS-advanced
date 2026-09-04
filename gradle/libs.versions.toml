@@ -16,7 +16,9 @@ car-app = "1.7.0"
 
 [libraries]
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.37.3"
-android-gradle-plugin = "com.android.tools.build:gradle:9.3.1"
+# Do NOT update to 9.4.0 because bundled managed device doesn't accept orientation changes anymore,
+# ignore this version until it is fixed
+android-gradle-plugin = "com.android.tools.build:gradle:9.3.2"
 androidx-arch-core-testing = "androidx.arch.core:core-testing:2.2.0"
 androidx-camera2-core = "androidx.camera:camera-camera2:1.6.1"
 androidx-camera2-lifecycle = "androidx.camera:camera-lifecycle:1.6.1"
