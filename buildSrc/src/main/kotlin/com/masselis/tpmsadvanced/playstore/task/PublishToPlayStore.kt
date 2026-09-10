@@ -36,6 +36,8 @@ internal abstract class PublishToPlayStore : DefaultTask(), ServiceHolder {
     @get:Input
     abstract val releaseNotes: Property<String>
 
+    @get:Input
+    abstract val changesNotSentForReview: Property<Boolean>
 
     init {
         group = "publishing"
@@ -48,7 +50,7 @@ internal abstract class PublishToPlayStore : DefaultTask(), ServiceHolder {
         val packageName by packageName
         androidPublisher
             .edits()
-            .withEdit(this, packageName) { edit ->
+            .withEdit(this, packageName, changesNotSentForReview.get()) { edit ->
                 bundles()
                     .upload(
                         packageName,

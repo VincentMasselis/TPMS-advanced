@@ -38,4 +38,5 @@ jobs:
           verifyPaparazzi
           createGithubPreRelease
           publishToPlayStoreBetaRelease
+          -PplayStore.changesNotSentForReview=${{ vars.PLAY_STORE_CHANGES_NOT_SENT_FOR_REVIEW }}
           --stacktrace

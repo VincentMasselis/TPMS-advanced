@@ -8,13 +8,14 @@ import kotlin.concurrent.withLock
 internal fun <T> Edits.withEdit(
     serviceHolder: ServiceHolder,
     packageName: String,
+    changesNotSentForReview: Boolean,
     content: AppEdit? = null,
     block: Edits.(AppEdit) -> T
 ): T = serviceHolder.editsLock.withLock {
     val edit = insert(packageName, content).execute()
     val result = block(edit)
     commit(packageName, edit.id)
-        .setChangesNotSentForReview(true) // Temp fix because of the rejection
+        .setChangesNotSentForReview(changesNotSentForReview)
         .execute()
     result
 }

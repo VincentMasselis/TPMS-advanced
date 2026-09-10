@@ -37,6 +37,7 @@ jobs:
           createGithubRelease
           publishToPlayStoreProductionRelease
           updatePlayStoreScreenshotsRelease
+          -PplayStore.changesNotSentForReview=${{ vars.PLAY_STORE_CHANGES_NOT_SENT_FOR_REVIEW }}
           --stacktrace
 
   back-merge:
