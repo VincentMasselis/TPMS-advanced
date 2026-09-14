@@ -42,14 +42,14 @@ internal class QrCodeSensorUseCase(
             fourSensorRegex.find(it)?.groupValues?.subList(1, 5)
                 ?: twoSensorRegex.find(it)?.groupValues?.subList(1, 3)
                 ?: run {
-                    if (wicarlinkSensorRegex.matches(it)) {
-						val sensorId = SensorIdParser.parse(it)
-							?: return@mapNotNull null
+                    if (singleSensorRegex.matches(it)) {
+                        val sensorId = SensorIdParser.parse(it)
+                            ?: return@mapNotNull null
 
-						throw SingleSensorQrCode(sensorId)
-					} else {
-						null
-					}
+                        throw SingleSensorQrCode(sensorId)
+                    } else {
+                        null
+                    }
                 }
         }
         .map { stringHexs ->
@@ -136,8 +136,8 @@ internal class QrCodeSensorUseCase(
         .flowOn(Default)
 
     data class SingleSensorQrCode(
-		val sensorId: Int
-	) : IllegalArgumentException()
+        val sensorId: Int
+    ) : IllegalArgumentException()
 
     companion object {
         // Test available here: https://regex101.com/r/aLJ0o6/1
@@ -147,8 +147,8 @@ internal class QrCodeSensorUseCase(
         private val twoSensorRegex =
             "([0-9a-fA-F]{6})&([0-9a-fA-F]{6})".toRegex()
 
-        // A Wicarlink/LYTPMS QR code only contains a single sensor's 6 hex character id, e.g. AF2206
-        private val wicarlinkSensorRegex =
+        // A single sensor QR contains one 6-character hexadecimal sensor ID, e.g. 002D56
+        private val singleSensorRegex =
             "^([0-9a-fA-F]{6})$".toRegex()
     }
 }

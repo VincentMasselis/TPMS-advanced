@@ -167,18 +167,18 @@ internal class QrCodeSensorUseCaseTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-	
-	@Test
-	fun singleSensorQrCode() = runTest {
-		every { cameraAnalyser.findQrCode(any()) } returns MutableStateFlow("002D56")
 
-		test().analyse(mockk()).test {
-			val error = awaitError() as QrCodeSensorUseCase.SingleSensorQrCode
+    @Test
+    fun singleSensorQrCode() = runTest {
+        every { cameraAnalyser.findQrCode(any()) } returns MutableStateFlow("002D56")
 
-			assertEquals(
-				0x562D00,
-				error.sensorId
-			)
-		}
-	}
+        test().analyse(mockk()).test {
+            val error = awaitError() as QrCodeSensorUseCase.SingleSensorQrCode
+
+            assertEquals(
+                0x562D00,
+                error.sensorId
+            )
+        }
+    }
 }

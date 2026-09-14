@@ -15,7 +15,7 @@ internal object SensorIdParser {
         val bytes = normalized.hexToByteArray()
 
         return (bytes[0].toInt() and 0xFF) or
-            ((bytes[1].toInt() and 0xFF) shl 8) or
-            ((bytes[2].toInt() and 0xFF) shl 16)
+                ((bytes[1].toInt() and 0xFF) shl 8) or
+                ((bytes[2].toInt() and 0xFF) shl 16)
     }
 }
