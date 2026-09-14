@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Wheel
+import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.qrcode.model.QrCodeSensors
 import com.masselis.tpmsadvanced.feature.qrcode.usecase.BoundSensorMapUseCase
 import com.masselis.tpmsadvanced.feature.qrcode.usecase.QrCodeSensorUseCase
+import com.masselis.tpmsadvanced.feature.qrcode.usecase.SensorIdParser
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -30,6 +32,7 @@ import kotlinx.coroutines.launch
 internal class QRCodeViewModel(
     private val qrCodeSensorUseCase: QrCodeSensorUseCase,
     private val boundSensorMapUseCase: BoundSensorMapUseCase,
+    private val currentVehicleUseCase: CurrentVehicleUseCase,
     @Assisted private val controller: CameraController
 ) : ViewModel() {
 
@@ -40,6 +43,11 @@ internal class QRCodeViewModel(
 
     sealed interface State {
         data object Scanning : State
+
+        data class AskForSingleSensorBinding(
+            val sensorId: Int,
+            val locations: Set<Vehicle.Kind.Location>
+        ) : State
 
         sealed interface AskForBinding : State {
             val qrCodeSensors: QrCodeSensors
@@ -60,7 +68,6 @@ internal class QRCodeViewModel(
             @JvmInline
             value class DuplicateId(val ids: Collection<Int>) : Error
 
-            data object UnsupportedWircarlinkQrCode : Error
         }
     }
 
@@ -79,7 +86,9 @@ internal class QRCodeViewModel(
         stateFlow
             .flatMapLatest { state ->
                 when (state) {
-                    is State.AskForBinding, is State.Error -> emptyFlow()
+                    is State.AskForBinding,
+                    is State.AskForSingleSensorBinding,
+                    is State.Error -> emptyFlow()
 
                     State.Scanning -> qrCodeSensorUseCase
                         .analyse(controller)
@@ -94,8 +103,13 @@ internal class QRCodeViewModel(
                                 is CameraAnalyser.CameraUnavailable ->
                                     channel.send(Event.LeaveBecauseCameraUnavailable)
 
-                                is QrCodeSensorUseCase.UnsupportedWircarlinkQrCode ->
-                                    emit(State.Error.UnsupportedWircarlinkQrCode)
+                                is QrCodeSensorUseCase.SingleSensorQrCode ->
+                                    emit(
+                                        State.AskForSingleSensorBinding(
+                                            sensorId = exc.sensorId,
+                                            locations = currentVehicleUseCase.value.vehicle.kind.locations
+                                        )
+                                    )
 
                                 is QrCodeSensors.DuplicateWheelLocation -> exc
                                     .wheels
@@ -123,6 +137,30 @@ internal class QRCodeViewModel(
         if (state !is State.AskForBinding)
             return@launch
         boundSensorMapUseCase.bind(state.qrCodeSensors)
+        channel.send(Event.Leave)
+    }
+
+    fun enterSensorId(value: String) {
+        val sensorId = SensorIdParser.parse(value) ?: return
+
+        mutableStateFlow.value = State.AskForSingleSensorBinding(
+            sensorId = sensorId,
+            locations = currentVehicleUseCase.value.vehicle.kind.locations
+        )
+    }
+
+    fun bindSingleSensor(location: Vehicle.Kind.Location) = viewModelScope.launch {
+        val state = mutableStateFlow.value
+
+        if (state !is State.AskForSingleSensorBinding) {
+            return@launch
+        }
+
+        boundSensorMapUseCase.bind(
+            state.sensorId,
+            location
+        )
+
         channel.send(Event.Leave)
     }
 
