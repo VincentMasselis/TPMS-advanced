@@ -23,4 +23,6 @@ dependencies {
     implementation(libs.androidx.camera2.core)
     implementation(libs.androidx.camera2.lifecycle)
     implementation(libs.androidx.camera2.mlkitvision)
+	
+	testImplementation(project(":core:test"))
 }
