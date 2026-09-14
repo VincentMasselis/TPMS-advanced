@@ -42,8 +42,14 @@ internal class QrCodeSensorUseCase(
             fourSensorRegex.find(it)?.groupValues?.subList(1, 5)
                 ?: twoSensorRegex.find(it)?.groupValues?.subList(1, 3)
                 ?: run {
-                    if (wicarlinkSensorRegex.matches(it)) throw UnsupportedWircarlinkQrCode()
-                    else null
+                    if (wicarlinkSensorRegex.matches(it)) {
+						val sensorId = SensorIdParser.parse(it)
+							?: return@mapNotNull null
+
+						throw SingleSensorQrCode(sensorId)
+					} else {
+						null
+					}
                 }
         }
         .map { stringHexs ->
@@ -129,7 +135,9 @@ internal class QrCodeSensorUseCase(
         }
         .flowOn(Default)
 
-    class UnsupportedWircarlinkQrCode : IllegalArgumentException()
+    data class SingleSensorQrCode(
+		val sensorId: Int
+	) : IllegalArgumentException()
 
     companion object {
         // Test available here: https://regex101.com/r/aLJ0o6/1

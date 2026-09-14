@@ -35,6 +35,15 @@ import com.masselis.tpmsadvanced.feature.qrcode.R
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel.Event
 import com.masselis.tpmsadvanced.feature.qrcode.interfaces.QRCodeViewModel.State
 import com.masselis.tpmsadvanced.feature.qrcode.ioc.Bindings.Companion.QrCodeViewModel
+import androidx.compose.foundation.layout.Column
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.unit.dp
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -84,32 +93,63 @@ private fun Preview(
             }
         }
 
-    Box(modifier) {
-        AndroidView(
-            { context -> PreviewView(context).apply { this.controller = controller } },
-            Modifier.fillMaxSize()
-        )
-        QrCodeOverlay(Modifier.fillMaxSize())
-    }
+	var showSensorIdEntry by remember { mutableStateOf(false) }
+	
+	Box(modifier) {
+		AndroidView(
+			{ context -> PreviewView(context).apply { this.controller = controller } },
+			Modifier.fillMaxSize()
+		)
+
+		QrCodeOverlay(Modifier.fillMaxSize())
+
+		TextButton(
+			onClick = { showSensorIdEntry = true },
+			modifier = Modifier
+				.align(Alignment.BottomCenter)
+				.padding(16.dp)
+		) {
+			Text("Enter sensor ID")
+		}
+	}
 
     val viewModel = remember(controller) { QrCodeViewModel(controller) }
+	
+	if (showSensorIdEntry) {
+		EnterSensorIdDialog(
+			onDismissRequest = {
+				showSensorIdEntry = false
+			},
+			onSubmit = { sensorId ->
+				viewModel.enterSensorId(sensorId)
+				showSensorIdEntry = false
+			}
+		)
+	}
+
     val navController = LocalHomeNavController.current
     val state by viewModel.stateFlow.collectAsState()
-    when (val state = state) {
-        State.Scanning -> {}
+	when (val state = state) {
+		State.Scanning -> {}
 
-        is State.AskForBinding -> BindingAlert(
-            state = state,
-            onDismissRequest = viewModel::scanAgain,
-            onBind = viewModel::bindSensors
-        )
+		is State.AskForBinding -> BindingAlert(
+			state = state,
+			onDismissRequest = viewModel::scanAgain,
+			onBind = viewModel::bindSensors
+		)
 
-        is State.Error -> ErrorAlert(
-            state = state,
-            onDismissRequest = viewModel::scanAgain,
-            openUnlocatedSensorBinding = openUnlocatedSensorBinding,
-        )
-    }
+		is State.AskForSingleSensorBinding -> SingleSensorBindingAlert(
+			state = state,
+			onDismissRequest = viewModel::scanAgain,
+			onBind = viewModel::bindSingleSensor,
+		)
+
+		is State.Error -> ErrorAlert(
+			state = state,
+			onDismissRequest = viewModel::scanAgain,
+			openUnlocatedSensorBinding = openUnlocatedSensorBinding,
+		)
+	}
 
     LaunchedEffect(viewModel) {
         for (event in viewModel.eventChannel) {
@@ -123,6 +163,68 @@ private fun Preview(
             }
         }
     }
+}
+
+@Composable
+private fun EnterSensorIdDialog(
+    onDismissRequest: () -> Unit,
+    onSubmit: (String) -> Unit,
+) {
+    var sensorId by remember { mutableStateOf("") }
+
+    val isValid = sensorId.matches(
+        Regex("^[0-9A-F]{6}$")
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text("Enter sensor ID")
+        },
+        text = {
+            Column {
+                Text("Enter the 6-character hexadecimal ID printed on the sensor.")
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = sensorId,
+                    onValueChange = { value ->
+                        sensorId = value
+                            .uppercase()
+                            .filter { char ->
+                                char in '0'..'9' || char in 'A'..'F'
+                            }
+                            .take(6)
+                    },
+                    singleLine = true,
+                    label = {
+                        Text("Sensor ID")
+                    },
+                    placeholder = {
+                        Text("002D56")
+                    }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = isValid,
+                onClick = {
+                    onSubmit(sensorId)
+                }
+            ) {
+                Text("Continue")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Suppress("CyclomaticComplexMethod", "LongMethod")
@@ -174,6 +276,53 @@ private fun BindingAlert(
     )
 }
 
+@Composable
+private fun SingleSensorBindingAlert(
+    state: State.AskForSingleSensorBinding,
+    onDismissRequest: () -> Unit,
+    onBind: (Vehicle.Kind.Location) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text("Bind sensor")
+        },
+        text = {
+            Column {
+                Text(
+                    "Sensor ID: ${
+                        "%02X%02X%02X".format(
+                            state.sensorId and 0xFF,
+                            (state.sensorId shr 8) and 0xFF,
+                            (state.sensorId shr 16) and 0xFF,
+                        )
+                    }"
+                )
+
+                Text("Choose where to bind this sensor:")
+
+                state.locations.forEach { location ->
+                    TextButton(
+                        onClick = { onBind(location) }
+                    ) {
+                        Text(
+                            StringBuilder()
+                                .appendLoc(location)
+                                .toString()
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
 @Suppress("MaxLineLength")
 @Composable
 private fun ErrorAlert(
@@ -187,23 +336,19 @@ private fun ErrorAlert(
                 text = StringBuilder("Detected inconsistency with the QR Code")
                     .apply {
                         when (state) {
-
                             is State.Error.DuplicateWheelLocation -> {
-                                append("\n\n⚠️ Filled QR Code contains different sensors associated to the same wheel, ")
+                                append("\n\nFilled QR Code contains different sensors associated to the same wheel, ")
                                 if (state.wheels.size == 1) append("duplication:")
                                 else append("duplications:")
+
                                 state.wheels.forEach { location ->
-                                    append("\n   · ")
+                                    append("\n   - ")
                                     appendLoc(location)
                                 }
                             }
 
                             is State.Error.DuplicateId -> {
-                                append("\n\n⚠️ Filled QR Code contains the same sensor id multiple time")
-                            }
-
-                            State.Error.UnsupportedWircarlinkQrCode -> {
-                                append("\n\n⚠️ QR Codes manufactured by Wicarlink are not handled by this app\nYou have to bind manually each of them")
+                                append("\n\nFilled QR Code contains the same sensor id multiple times")
                             }
                         }
                     }
@@ -211,14 +356,6 @@ private fun ErrorAlert(
             )
         },
         onDismissRequest = onDismissRequest,
-        dismissButton =
-            if (state is State.Error.UnsupportedWircarlinkQrCode) {
-                {
-                    TextButton(onClick = openUnlocatedSensorBinding) {
-                        Text(text = "Bind manually")
-                    }
-                }
-            } else null,
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
                 Text(text = "OK")

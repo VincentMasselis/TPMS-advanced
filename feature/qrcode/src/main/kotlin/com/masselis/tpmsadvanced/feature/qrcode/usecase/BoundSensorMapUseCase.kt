@@ -13,6 +13,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRA
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.qrcode.model.QrCodeSensors
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -21,6 +22,14 @@ internal class BoundSensorMapUseCase(
     private val sensorDatabase: SensorDatabase,
     private val currentVehicleUseCase: CurrentVehicleUseCase,
 ) {
+	suspend fun bind(sensorId: Int, location: Location) {
+		val currentUuid = currentVehicleUseCase.value.vehicle.uuid
+		sensorDatabase.upsert(
+			Sensor(sensorId, location),
+			currentUuid
+		)
+	}
+	
     suspend fun bind(qrCodeSensors: QrCodeSensors) = coroutineScope {
         val currentUuid = currentVehicleUseCase.value.vehicle.uuid
         val kind = currentVehicleUseCase.value.vehicle.kind
