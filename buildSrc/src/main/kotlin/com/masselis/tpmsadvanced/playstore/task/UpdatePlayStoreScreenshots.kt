@@ -31,7 +31,7 @@ public abstract class UpdatePlayStoreScreenshots : DefaultTask(), ServiceHolder 
         val packageName by packageName
         androidPublisher
             .edits()
-            .withEdit(this, packageName) { edit ->
+            .withEdit(this, packageName, false) { edit ->
                 if (screenshotDirectory.asFileTree.isEmpty)
                     throw GradleException("Screenshot's directory is empty")
 

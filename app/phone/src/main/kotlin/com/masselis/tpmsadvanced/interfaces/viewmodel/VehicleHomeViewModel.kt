@@ -16,7 +16,7 @@ internal class VehicleHomeViewModel(
     sealed class Event {
         data object ManualMonitorDropdown : Event()
 
-        data object WicarlinkSupport: Event()
+        data object WicarlinkSupportAndAndroidAuto: Event()
     }
 
     private val channel = Channel<Event>(BUFFERED)
@@ -25,7 +25,7 @@ internal class VehicleHomeViewModel(
     init {
         viewModelScope.launch {
             if(noveltyUseCase.consume("wicarlink_support", 1_06_00_000L..1_06_00_999L)) {
-                channel.send(Event.WicarlinkSupport)
+                channel.send(Event.WicarlinkSupportAndAndroidAuto)
                 return@launch
             }
             if (noveltyUseCase.consume("manual_monitor", 1022L..1022L)) {

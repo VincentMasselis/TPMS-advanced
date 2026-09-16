@@ -5,7 +5,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,11 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,8 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -107,6 +102,7 @@ internal fun VehicleHome(
     ) {
         var offsetToFocus by remember { mutableStateOf<Offset?>(null) }
         var showManualMonitoringSpotlight by remember { mutableStateOf(false) }
+        var showAndroidAutoSupportAlert by remember { mutableStateOf(false) }
         var showWicarlinkSupportAlert by remember { mutableStateOf(false) }
         val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
@@ -206,8 +202,14 @@ internal fun VehicleHome(
             }
         if (showWicarlinkSupportAlert) {
             WicarlinkSupportAlert(
-                onDismissRequest = { showWicarlinkSupportAlert = false }
+                onDismissRequest = {
+                    showWicarlinkSupportAlert = false
+                    showAndroidAutoSupportAlert = true
+                }
             )
+        }
+        if (showAndroidAutoSupportAlert) {
+            AndroidAutoSupportAlert(onDismissRequest = { showAndroidAutoSupportAlert = false })
         }
         LaunchedEffect(viewModel) {
             for (event in viewModel.eventChannel) {
@@ -215,7 +217,7 @@ internal fun VehicleHome(
                     Event.ManualMonitorDropdown ->
                         showManualMonitoringSpotlight = true
 
-                    Event.WicarlinkSupport ->
+                    Event.WicarlinkSupportAndAndroidAuto ->
                         showWicarlinkSupportAlert = true
                 }
             }
@@ -338,6 +340,44 @@ private fun WicarlinkSupportAlert(
                 Text(
                     "Sensors manufactured by \"Wicarlink\" shown within their app \"LYTPMS\" are now " +
                             "supported by TPMS Advanced",
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("I want more !")
+            }
+        },
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun AndroidAutoSupportAlert(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("Great news !") },
+        text = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Card(
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier.size(56.dp)
+                ) {
+                    Image(
+                        bitmap = ImageBitmap.imageResource(id = R.drawable.android_auto_icon),
+                        contentDescription = "Android Auto",
+                    )
+                }
+
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "Android auto is now fully supported! Connect this device to your car radio and open TPMS Advanced",
                     modifier = Modifier.fillMaxWidth()
                 )
             }
