@@ -26,6 +26,8 @@ public data class Vehicle(
     public val lowTemp: Temperature,
     public val normalTemp: Temperature,
     public val highTemp: Temperature,
+    public val rearLowPressure: Pressure? = null,
+    public val rearHighPressure: Pressure? = null,
 ) : Parcelable {
 
     /**
@@ -34,7 +36,10 @@ public data class Vehicle(
      * For each [Kind], the property [locations] represent the current layout with a [Set] of
      * [Location].
      */
-    public enum class Kind(public val locations: Set<Location>) {
+    public enum class Kind(
+        public val locations: Set<Location>,
+        public val defaultsToSeparateFrontRearPressure: Boolean = false,
+    ) {
         /**
          * ```
          * N-N
@@ -65,7 +70,7 @@ public data class Vehicle(
          *  N
          * ```
          */
-        MOTORCYCLE(setOf(Axle(FRONT), Axle(REAR))),
+        MOTORCYCLE(setOf(Axle(FRONT), Axle(REAR)), defaultsToSeparateFrontRearPressure = true),
 
         /**
          * ```
@@ -73,7 +78,10 @@ public data class Vehicle(
          *  N
          * ```
          */
-        TADPOLE_THREE_WHEELER(setOf(Wheel(FRONT_LEFT), Wheel(FRONT_RIGHT), Axle(REAR))),
+        TADPOLE_THREE_WHEELER(
+            setOf(Wheel(FRONT_LEFT), Wheel(FRONT_RIGHT), Axle(REAR)),
+            defaultsToSeparateFrontRearPressure = true,
+        ),
 
         /**
          * ```
@@ -81,27 +89,45 @@ public data class Vehicle(
          * N-N
          * ```
          */
-        DELTA_THREE_WHEELER(setOf(Axle(FRONT), Wheel(REAR_LEFT), Wheel(REAR_RIGHT)));
+        DELTA_THREE_WHEELER(
+            setOf(Axle(FRONT), Wheel(REAR_LEFT), Wheel(REAR_RIGHT)),
+            defaultsToSeparateFrontRearPressure = true,
+        );
+
+        /**
+         * `true` when this [Kind]'s [locations] distinguish a front axle from a rear one, i.e.
+         * every kind except [SINGLE_AXLE_TRAILER] which only has [Location.Side] left/right
+         * locations. Used to decide whether a separate front/rear pressure target makes sense.
+         */
+        public val hasFrontRearAxles: Boolean
+            get() = locations.any { it.toAxleOrNull() != null }
 
         /**
          * Unlike [SensorLocation] which represents a location from the sensor standpoint, a
          * [Location] represents a location from a [Vehicle] standpoint.
          */
         public sealed interface Location : Parcelable {
+            public fun toAxleOrNull(): Axle?
+
             @JvmInline
             @Parcelize
             public value class Wheel(public val location: SensorLocation) : Location {
                 public fun toAxle(): Axle = Axle(location.axle)
                 public fun toSide(): Side = Side(location.side)
+                override fun toAxleOrNull(): Axle = toAxle()
             }
 
             @JvmInline
             @Parcelize
-            public value class Axle(public val axle: SensorLocation.Axle) : Location
+            public value class Axle(public val axle: SensorLocation.Axle) : Location {
+                override fun toAxleOrNull(): Axle = this
+            }
 
             @JvmInline
             @Parcelize
-            public value class Side(public val side: SensorLocation.Side) : Location
+            public value class Side(public val side: SensorLocation.Side) : Location {
+                override fun toAxleOrNull(): Axle? = null
+            }
         }
     }
 }

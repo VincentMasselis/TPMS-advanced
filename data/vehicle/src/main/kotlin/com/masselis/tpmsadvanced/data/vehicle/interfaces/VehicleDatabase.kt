@@ -27,9 +27,20 @@ public class VehicleDatabase internal constructor(database: Database) {
         id: UUID,
         kind: Vehicle.Kind,
         name: String,
-        isCurrent: Boolean
+        isCurrent: Boolean,
+        defaultsToSeparateFrontRearPressure: Boolean = false,
     ): Unit = withContext(IO) {
-        queries.insert(id, kind, name, isCurrent)
+        // Runs as a single transaction so a reactive observer (e.g. a settings screen navigated
+        // to right after creation) never sees the row with the rear override half-applied.
+        queries.transaction {
+            queries.insert(id, kind, name, isCurrent)
+            if (defaultsToSeparateFrontRearPressure) {
+                val lowPressure = queries.selectLowPressureByVehicleId(id).executeAsOne()
+                val highPressure = queries.selectHighPressureByVehicleId(id).executeAsOne()
+                queries.updateRearLowPressure(lowPressure, id)
+                queries.updateRearHighPressure(highPressure, id)
+            }
+        }
     }
 
     public suspend fun setIsCurrent(uuid: UUID, isCurrent: Boolean): Unit = withContext(IO) {
@@ -50,6 +61,22 @@ public class VehicleDatabase internal constructor(database: Database) {
     public suspend fun updateHighPressure(highPressure: Pressure, uuid: UUID): Unit =
         withContext(IO) {
             queries.updateHighPressure(highPressure, uuid)
+        }
+
+    public fun selectRearLowPressure(vehicleId: UUID): Pressure? =
+        queries.selectRearLowPressureByVehicleId(vehicleId).executeAsOne().rearLowPressure
+
+    public suspend fun updateRearLowPressure(rearLowPressure: Pressure?, uuid: UUID): Unit =
+        withContext(IO) {
+            queries.updateRearLowPressure(rearLowPressure, uuid)
+        }
+
+    public fun selectRearHighPressure(vehicleId: UUID): Pressure? =
+        queries.selectRearHighPressureByVehicleId(vehicleId).executeAsOne().rearHighPressure
+
+    public suspend fun updateRearHighPressure(rearHighPressure: Pressure?, uuid: UUID): Unit =
+        withContext(IO) {
+            queries.updateRearHighPressure(rearHighPressure, uuid)
         }
 
     public fun selectLowTemp(vehicleId: UUID): Temperature =
@@ -110,8 +137,11 @@ public class VehicleDatabase internal constructor(database: Database) {
             Temperature,
             Vehicle.Kind,
             Boolean,
+            Pressure?,
+            Pressure?,
         ) -> Vehicle =
-            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _ ->
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _,
+              rearLowPressure, rearHighPressure ->
                 Vehicle(
                     uuid,
                     kind,
@@ -121,6 +151,8 @@ public class VehicleDatabase internal constructor(database: Database) {
                     lowTemp,
                     normalTemp,
                     highTemp,
+                    rearLowPressure,
+                    rearHighPressure,
                 )
             }
     }
