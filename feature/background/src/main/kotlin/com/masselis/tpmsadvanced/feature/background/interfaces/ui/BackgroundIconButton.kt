@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
+import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -64,25 +66,35 @@ internal fun BackgroundIconButton(
             .toList()
     }
     val permissionState = rememberMultiplePermissionsState(permissions)
+    val powerManager = activity?.getSystemService<PowerManager>()
+
+    fun openAppSettings() = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        .apply { addCategory(Intent.CATEGORY_DEFAULT) }
+        .apply { data = "package:${activity!!.packageName}".toUri() }
+        .apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+        .apply { addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY) }
+        .apply { addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
+        .also { activity!!.startActivity(it) }
 
     AnimatedContent(state) { state ->
         when (state) {
             State.Idle -> IconButton(
                 onClick = {
                     when {
-                        permissionState.allPermissionsGranted -> viewModel.monitor()
-
-                        permissionState.shouldShowRationale ->
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                .apply { addCategory(Intent.CATEGORY_DEFAULT) }
-                                .apply { data = "package:${activity!!.packageName}".toUri() }
-                                .apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
-                                .apply { addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY) }
-                                .apply { addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) }
-                                .also { activity!!.startActivity(it) }
+                        permissionState.allPermissionsGranted.not() &&
+                                permissionState.shouldShowRationale -> openAppSettings()
 
                         permissionState.allPermissionsGranted.not() ->
                             permissionState.launchMultiplePermissionRequest()
+
+                        // Unrestricted battery usage isn't a runtime permission, so it can't be
+                        // requested directly; sending the user to the app's settings page is the
+                        // same fallback already used above for the rationale case. Without this,
+                        // the foreground service can be killed by the OS shortly after starting.
+                        powerManager?.isIgnoringBatteryOptimizations(activity.packageName) == false ->
+                            openAppSettings()
+
+                        else -> viewModel.monitor()
                     }
                 },
                 modifier.testTag("put_in_background_button")
