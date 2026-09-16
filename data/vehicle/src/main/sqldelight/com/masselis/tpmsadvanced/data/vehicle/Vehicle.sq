@@ -14,7 +14,9 @@ CREATE TABLE Vehicle(
     normalTemp REAL AS Temperature NOT NULL DEFAULT 45,
     highTemp REAL AS Temperature NOT NULL DEFAULT 90,
     kind TEXT AS Kind NOT NULL DEFAULT "CAR",
-    isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0
+    isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0,
+    rearLowPressure REAL AS Pressure,
+    rearHighPressure REAL AS Pressure
 );
 
 -- This succession of triggers ensure there is always exactly 1 car with isFavourite set to 1
@@ -84,6 +86,18 @@ SELECT highPressure FROM Vehicle WHERE uuid = ?;
 
 updateHighPressure:
 UPDATE Vehicle SET highPressure = ? WHERE uuid = ?;
+
+selectRearLowPressureByVehicleId:
+SELECT rearLowPressure FROM Vehicle WHERE uuid = ?;
+
+updateRearLowPressure:
+UPDATE Vehicle SET rearLowPressure = ? WHERE uuid = ?;
+
+selectRearHighPressureByVehicleId:
+SELECT rearHighPressure FROM Vehicle WHERE uuid = ?;
+
+updateRearHighPressure:
+UPDATE Vehicle SET rearHighPressure = ? WHERE uuid = ?;
 
 selectLowTempByVehicleId:
 SELECT lowTemp FROM Vehicle WHERE uuid = ?;

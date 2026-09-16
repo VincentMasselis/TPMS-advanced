@@ -1,0 +1,2 @@
+ALTER TABLE Vehicle ADD rearLowPressure REAL AS Pressure;
+ALTER TABLE Vehicle ADD rearHighPressure REAL AS Pressure;
