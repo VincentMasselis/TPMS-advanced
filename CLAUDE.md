@@ -19,10 +19,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew recordPaparazzi       # record new snapshots
 
 # Instrumented tests (requires emulator/device)
-./gradlew pixel2api34DemoDebugAndroidTest
+./gradlew pixel2api34DebugAndroidTest
 
 # Full CI-equivalent run
-./gradlew build verifyPaparazzi pixel2api34DemoDebugAndroidTest
+./gradlew build verifyPaparazzi pixel2api34DebugAndroidTest
 ```
 
 ## Architecture
@@ -60,8 +60,8 @@ internal interface InternalComponent : FeatureComponent {
 ### Database — SQLDelight
 Room is not used. SQLDelight generates type-safe Kotlin from `.sq` files. Migrations use `.sqm` files alongside `.db` snapshot files in `data/vehicle/src/main/sqldelight/`. Every new migration must be accompanied by an updated schema snapshot.
 
-### Build Flavors
-Two flavors: `demo` (for Play Store screenshots/testing) and `normal` (production).
+### Demo Mode
+No build flavors — a single build. Demo mode (used for Play Store screenshots/testing) is a runtime setting toggled from the app's settings screen, backed by `ScannerDatabase.isDemo` in `data/vehicle`.
 
 ### Convention Plugins
 Reusable Gradle config lives in `buildSrc/src/main/kotlin/` as convention plugins (`android-app`, `android-lib`, `compose`, `detekt`, `gitflow`, `monitor-resource`). Apply these to new modules rather than duplicating config.

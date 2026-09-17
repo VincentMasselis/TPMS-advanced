@@ -23,6 +23,11 @@ import org.gradle.kotlin.dsl.registerIfAbsent
 public class PlayStorePlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = with(project) {
         val ext = extensions.create<PlayStoreExtension>("playStore")
+        ext.changesNotSentForReview.convention(
+            providers.gradleProperty("playStore.changesNotSentForReview")
+                .map(String::toBoolean)
+                .orElse(false)
+        )
         gradle.sharedServices.registerIfAbsent(
             "android-publisher-service", AndroidPublisherService::class
         ) {
@@ -31,7 +36,7 @@ public class PlayStorePlugin : Plugin<Project> {
 
         configure<ApplicationAndroidComponentsExtension> {
             onVariants { variant ->
-                if (variant.name != "normalRelease")
+                if (variant.name != "release")
                     return@onVariants
                 if (variant.isMinifyEnabled.not())
                     throw GradleException("Release variant doesn't have minify enabled")
@@ -39,7 +44,7 @@ public class PlayStorePlugin : Plugin<Project> {
                 project
                     .layout
                     .projectDirectory
-                    .dir("src/${variant.flavorName}/play/release-notes/en-US/")
+                    .dir("src/main/play/release-notes/en-US/")
                     .also(ext.releaseNotesDir::convention)
 
                 val packageName = variant.applicationId
@@ -58,6 +63,7 @@ public class PlayStorePlugin : Plugin<Project> {
                 }
                 val releaseNotes = providers.from(ReleaseNote::class) {
                     releaseNotesDir = ext.releaseNotesDir
+                    version = ext.version
                 }
                 tasks.register<PublishToPlayStore>("publishToPlayStoreBeta${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")
@@ -66,6 +72,7 @@ public class PlayStorePlugin : Plugin<Project> {
                     this.versionName = versionName
                     this.releaseBundle = releaseBundle
                     this.releaseNotes = releaseNotes
+                    this.changesNotSentForReview = ext.changesNotSentForReview
                 }
                 tasks.register<PublishToPlayStore>("publishToPlayStoreProduction${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")
@@ -74,13 +81,14 @@ public class PlayStorePlugin : Plugin<Project> {
                     this.versionName = versionName
                     this.releaseBundle = releaseBundle
                     this.releaseNotes = releaseNotes
+                    this.changesNotSentForReview = ext.changesNotSentForReview
                 }
                 tasks.register<UpdatePlayStoreScreenshots>("updatePlayStoreScreenshots${variant.name.capitalized()}") {
                     this.packageName = packageName
                     screenshotDirectory = project
                         .layout
                         .projectDirectory
-                        .dir("src/${variant.flavorName}/play/listings/en-US/graphics/phone-screenshots")
+                        .dir("src/main/play/listings/en-US/graphics/phone-screenshots")
                 }
             }
         }

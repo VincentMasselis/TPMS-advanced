@@ -1,0 +1,2 @@
+- Support for Wicarlink sensors (LYTPMS app)
+- Demo mode

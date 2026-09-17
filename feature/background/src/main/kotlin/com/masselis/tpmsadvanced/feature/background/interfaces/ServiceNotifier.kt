@@ -20,8 +20,7 @@ import androidx.core.app.ServiceCompat.STOP_FOREGROUND_REMOVE
 import androidx.core.app.ServiceCompat.stopForeground
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
-import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.crashlytics
+import co.touchlab.kermit.Logger
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
@@ -59,6 +58,7 @@ internal class ServiceNotifier(
     service: Service,
 ) {
     private val notificationManager = NotificationManagerCompat.from(appContext)
+    private val logger = Logger.withTag("ServiceNotifier")
 
     init {
         notificationManager.createNotificationChannel(
@@ -96,7 +96,7 @@ internal class ServiceNotifier(
                         ?: NoAlert
                 }
             }
-            .catch { Firebase.crashlytics.recordException(it); emit(ScanFailure) }
+            .catch { logger.e("Failed to listen for atmospheres", it); emit(ScanFailure) }
             .distinctUntilChanged()
             .map { state ->
                 NotificationCompat

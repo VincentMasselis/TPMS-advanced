@@ -1,7 +1,7 @@
 import com.masselis.tpmsadvanced.github.GithubExtension
+import Keys.Companion.keys
+import com.masselis.tpmsadvanced.bitwarden.BitwardenExtension
 import com.masselis.tpmsadvanced.github.GithubPlugin
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
 import org.gradle.internal.os.OperatingSystem
 import java.util.Properties
 
@@ -9,6 +9,11 @@ plugins {
     gitflow
     `monitor-resource`
     bitwarden
+}
+
+val keysFile = layout.projectDirectory.file("secrets/keys.json")
+configure<BitwardenExtension> {
+    files.put("keys.json", keysFile)
 }
 
 gitflow {
@@ -24,21 +29,7 @@ tasks.register<BumpVersionTask>("bumpVersion") {
     this.versionCatalog = layout.projectDirectory.file("gradle/libs.versions.toml")
 }
 
-val keys = file("secrets/keys.json")
-    .takeIf { it.exists() }
-    ?.inputStream()
-    ?.use {
-        @Suppress("OPT_IN_USAGE")
-        Json.decodeFromStream<Keys>(it)
-    }
-    ?.also { println("Project secrets available") }
-    ?.also { extra.set("keys", it) }
-    ?: run {
-        println("Project secrets are missing")
-        null
-    }
-
-if (keys != null) {
+keys(keysFile.asFile)?.also { keys ->
     apply<GithubPlugin>()
     configure<GithubExtension> {
         githubToken = keys.githubToken

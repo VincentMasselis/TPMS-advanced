@@ -1,8 +1,7 @@
 package com.masselis.tpmsadvanced.feature.main.usecase
 
 import android.os.Parcelable
-import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.crashlytics
+import co.touchlab.kermit.Logger
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
@@ -92,7 +91,7 @@ public class TyreIconStateFlow internal constructor(
             emit(State.NotDetected)
         }
         .catch {
-            Firebase.crashlytics.recordException(it)
+            Logger.withTag("TyreIconStateFlow").e("Failed to listen for atmosphere", it)
             emit(State.DetectionIssue)
         }
         .stateIn(scope, WhileSubscribed(), State.NotDetected),

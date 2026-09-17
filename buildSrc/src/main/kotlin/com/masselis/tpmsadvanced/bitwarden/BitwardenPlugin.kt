@@ -53,12 +53,7 @@ public abstract class BitwardenPlugin : Plugin<Project> {
         tasks.register<FetchAttachmentsTask>("downloadBitwardenSecretFiles") {
             this.session = session
             this.itemName = ext.item
-            this.files = mapOf(
-                "app-keystore" to rootProject.layout.projectDirectory.file("secrets/app-keystore"),
-                "publisher-service-account.json" to rootProject.layout.projectDirectory.file("secrets/publisher-service-account.json"),
-                "google-services.json" to rootProject.layout.projectDirectory.file("app/phone/google-services.json"),
-                "keys.json" to rootProject.layout.projectDirectory.file("secrets/keys.json"),
-            )
+            this.files = ext.files
         }
     }
 }

@@ -40,6 +40,9 @@ runs:
       uses: android-actions/setup-android@v4
       with:
         log-accepted-android-sdk-licenses: false # Cleans the log output
+        # The default "tools platform-tools" package set fails: Google removed
+        # the legacy standalone "tools" package from the SDK repository.
+        packages: platform-tools
 
     - name: Install Bitwarden CLI
       shell: bash

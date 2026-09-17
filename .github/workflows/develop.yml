@@ -38,7 +38,7 @@ jobs:
           ./gradlew
           build
           verifyPaparazzi
-          pixel2api34DemoDebugAndroidTest
+          pixel2api34DebugAndroidTest
           copyScreenshot
           -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
           --scan

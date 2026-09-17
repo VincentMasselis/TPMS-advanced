@@ -4,6 +4,7 @@ import com.masselis.tpmsadvanced.core.common.appGraph
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
+import com.masselis.tpmsadvanced.data.vehicle.usecase.DemoOrBleScannerUseCase
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModelImpl
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModelImpl
 import com.masselis.tpmsadvanced.feature.unlocated.usecase.BindSensorToVehicleUseCase
@@ -24,9 +25,12 @@ public interface Bindings {
 
     @Provides
     private fun bindSensorToVehicleUseCase(
+        demoOrBleScannerUseCase: DemoOrBleScannerUseCase,
         sensorDatabase: SensorDatabase,
         tyreDatabase: TyreDatabase,
-    ): BindSensorToVehicleUseCase = BindSensorToVehicleUseCase(sensorDatabase, tyreDatabase)
+    ): BindSensorToVehicleUseCase =
+        if (demoOrBleScannerUseCase.isDemo.value) BindSensorToVehicleUseCase.NoOp
+        else BindSensorToVehicleUseCase.Impl(sensorDatabase, tyreDatabase)
 
     public val featureUnlocatedInternal: Internal
 

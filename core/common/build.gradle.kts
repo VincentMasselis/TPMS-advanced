@@ -9,6 +9,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.google.firebase.crashlytics)
     implementation(libs.kermit.crashlytics)
 
     api(libs.androidx.core)
@@ -21,6 +22,5 @@ dependencies {
     api(libs.kotlinx.coroutines.playservices)
     api(libs.kotlinx.coroutines.guava)
     api(platform(libs.google.firebase.bom))
-    api(libs.google.firebase.crashlytics)
     api(platform(libs.androidx.compose.bom))
 }

@@ -68,7 +68,7 @@ internal class TabScreenViewModel(
         ) { list, current -> list to current }
             .flatMapLatest { (list, current) ->
                 current
-                    .vehicle.kind.locations.map{ current.TyreComponent(it) }
+                    .vehicle.kind.locations.map { current.TyreComponent(it) }
                     .map { tyreComponent ->
                         combine(
                             tyreComponent.tyreIconStateFlow,

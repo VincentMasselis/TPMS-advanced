@@ -2,8 +2,7 @@ package com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.crashlytics
+import co.touchlab.kermit.Logger
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModel.State
@@ -44,6 +43,7 @@ internal class ListSensorViewModelImpl(
         operator fun invoke(vehicleUuid: UUID): ListSensorViewModelImpl
     }
 
+    private val logger = Logger.withTag("ListSensorViewModelImpl")
     private val searchingUnlocatedTyresUseCase = searchingUnlocatedTyresUseCaseFactory(vehicleUuid)
     private val boundSensorUseCase = boundSensorUseCaseFactory(vehicleUuid)
     override val stateFlow = MutableStateFlow(
@@ -102,7 +102,7 @@ internal class ListSensorViewModelImpl(
             }
         }
         .catch {
-            Firebase.crashlytics.recordException(it)
+            logger.e("Failed to listen for atmosphere", it)
             emit(State.Issue)
         }
         .onEach { stateFlow.value = it }

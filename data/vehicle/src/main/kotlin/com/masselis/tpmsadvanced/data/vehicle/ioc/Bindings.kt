@@ -24,8 +24,10 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.UUID
 
+@OptIn(DelicateCoroutinesApi::class)
 @Suppress("unused")
 @ContributesTo(AppScope::class)
 public interface Bindings {

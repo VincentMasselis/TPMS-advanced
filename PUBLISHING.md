@@ -3,9 +3,11 @@
 Git-flow is enforced by the `gitflow` buildSrc plugin, backed by the `git` CLI. Every step below is
 a plain Gradle task - the `workflow_dispatch` entry points just run the same tasks in CI.
 
-From `develop`, run each as its own `./gradlew` invocation (required: `bumpVersion` and
-`writeReleaseNote` write the version and the release note to disk, and each following task reads
-the version catalog fresh - combining them in one command line would use stale values):
+Before cutting a release, add the Play Store release note for the new version under
+`app/phone/src/main/play/release-notes/en-US/<version>.txt` - `createRelease`/`createHotfix`
+check it exists before doing anything else.
+
+To create a release from `develop`, run:
 
 ```shell
 ./gradlew bumpVersion -Pversion.bump=minor            # or major / patch
@@ -29,16 +31,24 @@ If the version bump and release note are already committed to `develop` yourself
 [Cut a version branch](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/gitflow-cut-branch.yml)
 (`gh workflow run gitflow-cut-branch.yml -f flow=release`).
 
-Pushing the release branch triggers
-[beta.yml](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/beta.yml):
-`assertReleaseBranchIsValid` (checks the branch was cut from `develop`, its version isn't already
-tagged/branched, and `main` is fully merged into `develop`), `build` + `verifyPaparazzi`,
-`createGithubPreRelease`, then `publishToPlayStoreBetaNormalRelease`.
+- `assertReleaseBranchIsValid`: checks the release branch was actually cut from `develop` (not
+  `main` or a feature branch), that its version isn't already tagged or branched elsewhere, and
+  that `main` is fully merged into `develop`
+- `build` and `verifyPaparazzi`: build the app and run unit tests
+- `createGithubPreRelease`: create a GitHub pre-release with release notes and attached APKs
+- `publishToPlayStoreBetaRelease`: send the AAB to the Play Store beta track
+
+`publishToPlayStoreBetaRelease` and `publishToPlayStoreProductionRelease` (below) both read
+`-PplayStore.changesNotSentForReview`, wired to the `PLAY_STORE_CHANGES_NOT_SENT_FOR_REVIEW` repo
+variable in CI. Leave it `false` normally; set it to `true` after a Play Store rejection, since the
+console then forces this flag until someone manually re-submits the app for review from the
+console.
 
 Hotfixes use the same workflows/tasks from `main` with `flow=hotfix` (pick `bump=patch` yourself -
 nothing enforces it), cutting `hotfix/<version>`. Pushing it triggers
 [hotfix.yml](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/hotfix.yml), which
-only runs `assertHotfixBranchIsValid`, `build` and `verifyPaparazzi` - no beta publish or
+runs the buildSrc unit tests, `assertHotfixBranchIsValid`, `build`, `verifyPaparazzi` and the
+instrumented tests (`pixel2api34DebugAndroidTest`, `copyScreenshot`) - no beta publish or
 pre-release; a hotfix only reaches users once merged into `main`.
 
 ## Publish in production
@@ -46,7 +56,15 @@ pre-release; a hotfix only reaches users once merged into `main`.
 Pushing to `main` (via merging a `hotfix/*` or `release/*` branch) triggers
 [production.yml](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/production.yml):
 `assertVersionWasNotPushInProductionYet`, `createGithubRelease`,
-`publishToPlayStoreProductionNormalRelease`, `updatePlayStoreScreenshotsNormalRelease`.
+`publishToPlayStoreProductionRelease`, `updatePlayStoreScreenshotsRelease`,
+`openBackMergePullRequest`.
 
-A second job then opens (or reuses) a merge-commit PR back into `develop` with auto-merge enabled,
-keeping `develop` from drifting behind `main`.
+- `assertVersionWasNotPushInProductionYet`: ensure the version to upload is a new version
+- `createGithubRelease`: create a GitHub release with release notes and attached APKs
+- `publishToPlayStoreProductionRelease`: send the AAB to the Play Store production track
+- `updatePlayStoreScreenshotsRelease`: update the listing's screenshots
+- `openBackMergePullRequest`: open (or reuse) a pull request merging `main` back into `develop` and
+  enable GitHub's auto-merge with a merge commit (never squash/rebase, so both branches stay alive)
+  - this is what keeps `develop` from silently drifting behind `main`
+
+All four tasks run in the same CI job, one after another.

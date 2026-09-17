@@ -15,27 +15,33 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 
-internal class ListenTyreWithDatabaseUseCase(
-    private val vehicle: Vehicle,
-    private val location: Location,
-    private val tyreDatabase: TyreDatabase,
-    listenTyreUseCase: ListenTyreUseCase,
-    scope: CoroutineScope,
-) : ListenTyreUseCase {
+internal interface ListenTyreWithDatabaseUseCase : ListenTyreUseCase {
+    class Impl(
+        vehicle: Vehicle,
+        location: Location,
+        tyreDatabase: TyreDatabase,
+        listenTyreUseCase: ListenTyreUseCase,
+        scope: CoroutineScope,
+    ) : ListenTyreWithDatabaseUseCase {
 
-    private val flow = listenTyreUseCase
-        .listen()
-        .onEach { tyre -> tyreDatabase.insert(tyre, vehicle.uuid) }
-        .materializeCompletion()
-        .shareIn(scope, WhileSubscribed())
-        .dematerializeCompletion()
-        .onStart {
-            tyreDatabase
-                .latestByTyreLocationByVehicle(location, vehicle.uuid)
-                .execute()
-                ?.also { emit(it) }
-        }
-        .flowOn(Dispatchers.IO)
+        private val flow = listenTyreUseCase
+            .listen()
+            .onEach { tyre -> tyreDatabase.insert(tyre, vehicle.uuid) }
+            .materializeCompletion()
+            .shareIn(scope, WhileSubscribed())
+            .dematerializeCompletion()
+            .onStart {
+                tyreDatabase
+                    .latestByTyreLocationByVehicle(location, vehicle.uuid)
+                    .execute()
+                    ?.also { emit(it) }
+            }
+            .flowOn(Dispatchers.IO)
 
-    override fun listen(): Flow<Tyre.Located> = flow
+        override fun listen(): Flow<Tyre.Located> = flow
+    }
+
+    class Wrapper(private val source: ListenTyreUseCase) : ListenTyreWithDatabaseUseCase {
+        override fun listen(): Flow<Tyre.Located> = source.listen()
+    }
 }
