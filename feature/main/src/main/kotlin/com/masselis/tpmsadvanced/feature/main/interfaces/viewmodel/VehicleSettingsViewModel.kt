@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 internal interface VehicleSettingsViewModel {
     val lowPressure: MutableStateFlow<Pressure>
     val highPressure: MutableStateFlow<Pressure>
+    val rearLowPressure: MutableStateFlow<Pressure?>
+    val rearHighPressure: MutableStateFlow<Pressure?>
     val pressureUnit: StateFlow<PressureUnit>
 
     val highTemp: MutableStateFlow<Temperature>
@@ -17,4 +19,6 @@ internal interface VehicleSettingsViewModel {
     val lowTemp: MutableStateFlow<Temperature>
 
     val temperatureUnit: StateFlow<TemperatureUnit>
+
+    fun setRearOverrideEnabled(enabled: Boolean)
 }
