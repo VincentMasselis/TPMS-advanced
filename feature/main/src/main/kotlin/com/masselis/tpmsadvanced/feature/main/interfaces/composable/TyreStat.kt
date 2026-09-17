@@ -131,11 +131,16 @@ private fun TyreStat(
         )
 
         if (sensorId != null && timestamp != null) {
-            val displaySensorId = "%02X%02X%02X".format(
-                sensorId and 0xFF,
-                (sensorId shr 8) and 0xFF,
-                (sensorId shr 16) and 0xFF,
-            )
+            val displaySensorId =
+                if ((sensorId ushr 24) == 0) {
+                    "%02X%02X%02X".format(
+                        sensorId and 0xFF,
+                        (sensorId shr 8) and 0xFF,
+                        (sensorId shr 16) and 0xFF,
+                    )
+                } else {
+                    "0x%08X".format(sensorId)
+                }
 
             val lastReceived = SimpleDateFormat(
                 "dd/MM/yyyy h:mma",
