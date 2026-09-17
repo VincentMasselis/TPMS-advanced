@@ -20,8 +20,6 @@ public class VehicleDatabase internal constructor(database: Database) {
     private val queries = database.vehicleQueries
 
     init {
-        // Cleanup the database at launch. There is no risk of useless multiples calls since
-        // VehicleDatabase is annotated `@Reusable`.
         queries.deleteIsDeleting()
     }
 

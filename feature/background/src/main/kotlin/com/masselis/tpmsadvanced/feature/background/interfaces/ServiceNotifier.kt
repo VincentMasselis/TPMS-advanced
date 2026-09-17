@@ -31,7 +31,8 @@ import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.S
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.PressureAlert
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.ScanFailure
 import com.masselis.tpmsadvanced.feature.background.interfaces.ServiceNotifier.State.TemperatureAlert
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -51,8 +52,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @SuppressLint("MissingPermission")
 internal class ServiceNotifier(
     vehicle: Vehicle,
+    vehicleComponent: VehicleComponent,
     scope: CoroutineScope,
-    tyreComponent: (Vehicle.Kind.Location) -> TyreComponent,
     vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
     service: Service,
@@ -76,7 +77,7 @@ internal class ServiceNotifier(
         vehicle
             .kind
             .locations
-            .map { tyreComponent(it) }
+            .map { vehicleComponent.TyreComponent(it) }
             .let { comps ->
                 combine(
                     combine(comps.map { it.tyreAtmosphereUseCase.listen() }) { it }

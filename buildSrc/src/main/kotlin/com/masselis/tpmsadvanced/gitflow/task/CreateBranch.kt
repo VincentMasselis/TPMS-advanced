@@ -22,13 +22,6 @@ internal abstract class CreateBranch : DefaultTask() {
 
     @TaskAction
     internal fun process() {
-        execOperations.exec {
-            commandLine(
-                "git",
-                "checkout",
-                "-b",
-                branch.get(),
-            )
-        }
+        execOperations.exec { commandLine("git", "checkout", "-b", branch.get()) }
     }
 }

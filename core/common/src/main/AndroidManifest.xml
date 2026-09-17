@@ -8,7 +8,15 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="com.masselis.tpmsadvanced.core.common.AppContextInitializer"
+                android:name="com.masselis.tpmsadvanced.core.common.CoreCommonInitializer"
+                android:value="androidx.startup" />
+            <!--
+             This Initializer is declared here but not implemented, It's up to the top level
+             Gradle module to implement this class. It is mandatory otherwise the app will crash at
+             runtime.
+            -->
+            <meta-data
+                android:name="com.masselis.tpmsadvanced.ioc.AppGraph$Initializer"
                 android:value="androidx.startup" />
         </provider>
         <provider

@@ -21,28 +21,18 @@ internal abstract class CommitCountBetweenBranch : ValueSource<Int, Parameters> 
 
     private val logger = Logging.getLogger(CommitCountBetweenBranch::class.java)
 
-    override fun obtain(): Int? = ByteArrayOutputStream()
-        .use { stdout ->
-            val errout = ByteArrayOutputStream()
-            execOperations.exec {
-                commandLine(
-                    "git",
-                    "rev-list",
-                    "--count",
-                    parameters.toBranch.get(),
-                    "^${parameters.fromBranch.get()}",
-                )
-                standardOutput = stdout
-                errorOutput = errout
-                isIgnoreExitValue = true
-            }.also { execResult ->
-                if (execResult.exitValue != -1) {
-                    errout.use { it.toString() }.also(logger::warn)
-                    execResult.rethrowFailure()
-                }
-            }
-            stdout.toString()
+    override fun obtain(): Int? {
+        val stdout = ByteArrayOutputStream()
+        val stderr = ByteArrayOutputStream()
+        execOperations.exec {
+            commandLine("git", "rev-list", "--count", parameters.toBranch.get(), "^${parameters.fromBranch.get()}")
+            standardOutput = stdout
+            errorOutput = stderr
+            isIgnoreExitValue = true
+        }.also { result ->
+            stderr.use(ByteArrayOutputStream::toString).also(logger::warn)
+            result.rethrowFailure()
         }
-        .trimIndent()
-        .toIntOrNull()
+        return stdout.use(ByteArrayOutputStream::toString).trim().toIntOrNull()
+    }
 }

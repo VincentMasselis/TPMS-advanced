@@ -1,6 +1,5 @@
 plugins {
     `android-lib`
-    `android-test`
     compose
 }
 

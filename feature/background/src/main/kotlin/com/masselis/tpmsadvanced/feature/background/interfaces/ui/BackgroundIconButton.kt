@@ -29,9 +29,10 @@ import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.Backgro
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.BackgroundViewModel.Event
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.BackgroundViewModel.State
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundComponent
+import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundComponent.Companion.BackgroundViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Companion.key
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Factory.Companion.key
 
 @Composable
 public fun BackgroundIconButton(
@@ -41,7 +42,7 @@ public fun BackgroundIconButton(
     BackgroundIconButton(
         modifier = modifier,
         keyed = vehicleComponent.key(),
-        component = BackgroundComponent.Factory(vehicleComponent),
+        component = BackgroundComponent(vehicleComponent),
     )
 }
 

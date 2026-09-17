@@ -13,6 +13,7 @@ android {
 
 dependencies {
     implementation(project(":core:common"))
+    implementation(project(":core:ui"))
     api(project(":core:database"))
     implementation(project(":data:unit"))
 
@@ -51,7 +52,7 @@ sqldelight {
             }
             // Check a snapshot exists after the latest migration
             if (snapshots.last() == migrations.last()) {
-                throw GradleException("The latest migration exists but no snapshot is available, run \"generateNormalDebugDatabaseSchema\"")
+                throw GradleException("The latest migration exists but no snapshot is available, run \"generateDebugDatabaseSchema\"")
             }
         }
     }

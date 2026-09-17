@@ -4,10 +4,9 @@ import android.content.Context
 import android.content.Intent
 
 public fun Context.restartApp() {
-    packageManager
-        .getLaunchIntentForPackage(packageName)
+    packageManager.getLaunchIntentForPackage(packageName)
         ?.component
-        ?.let { Intent.makeRestartActivityTask(it) }
-        ?.also { startActivity(it) }
+        ?.let(Intent::makeRestartActivityTask)
+        ?.also(::startActivity)
     Runtime.getRuntime().exit(0)
 }

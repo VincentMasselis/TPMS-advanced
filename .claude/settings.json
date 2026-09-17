@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./secrets/**)",
+      "Grep(./secrets/**)"
+    ]
+  }
+}

@@ -24,7 +24,7 @@ internal class MonitorService : LifecycleService() {
     ): Int {
         requireNotNull(intent)
         super.onStartCommand(intent, flags, startId)
-        component = ServiceComponent.Factory(
+        component = ServiceComponent(
             getParcelableExtra(intent, paramVehicle, Vehicle::class.java)!!,
             this,
             lifecycleScope,

@@ -11,8 +11,11 @@ import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.DeltaThreeWheel
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.MotorcyclePreview
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.SingleAxleTrailerPreview
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.TadpoleThreeWheelerPreview
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
+import java.util.TimeZone
 
 internal class VehicleTyresTest {
     @get:Rule
@@ -21,6 +24,11 @@ internal class VehicleTyresTest {
         theme = "android:Theme.Material3.DayNight.NoActionBar",
     )
 
+    @Before
+    fun setup() {
+        Locale.setDefault(Locale.FRANCE)
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"))
+    }
 
     @Test
     fun car() {

@@ -34,7 +34,13 @@ internal class BindDialogViewModelImpl(
 ) : ViewModel(), BindDialogViewModel {
 
     @AssistedFactory
-    interface Factory : (UUID, Tyre, SavedStateHandle) -> BindDialogViewModelImpl
+    interface Factory {
+        operator fun invoke(
+            vehicleUuid: UUID,
+            tyre: Tyre,
+            savedStateHandle: SavedStateHandle
+        ): BindDialogViewModelImpl
+    }
 
     override val stateFlow: StateFlow<State>
 

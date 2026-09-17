@@ -38,3 +38,5 @@ buildSrc/build/**
 .idea/AndroidProjectSystem.xml
 .kotlin/errors/*.log
 .idea/markdown.xml
+secrets/**
+app/phone/google-services.json

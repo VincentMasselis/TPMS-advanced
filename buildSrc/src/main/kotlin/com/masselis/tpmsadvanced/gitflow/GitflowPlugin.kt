@@ -2,17 +2,17 @@ package com.masselis.tpmsadvanced.gitflow
 
 import CommitSha
 import SemanticVersion
-import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryPlugin
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.masselis.tpmsadvanced.gitflow.model.HeadState
+import com.masselis.tpmsadvanced.gitflow.task.AssertBranchHasNoForeignCommits
+import com.masselis.tpmsadvanced.gitflow.task.AssertBranchIsAncestor
 import com.masselis.tpmsadvanced.gitflow.task.AssertBranchIsUnique
+import com.masselis.tpmsadvanced.gitflow.task.AssertBranchProvenance
 import com.masselis.tpmsadvanced.gitflow.task.AssertCurrentBranch
-import com.masselis.tpmsadvanced.gitflow.task.AssertGitDiffIsEmpty
-import com.masselis.tpmsadvanced.gitflow.task.AssertNearestParent
-import com.masselis.tpmsadvanced.gitflow.task.AssertNoCommitDiff
 import com.masselis.tpmsadvanced.gitflow.task.AssertTagIsUnique
+import com.masselis.tpmsadvanced.gitflow.task.CommitAddedFiles
 import com.masselis.tpmsadvanced.gitflow.task.CreateBranch
+import com.masselis.tpmsadvanced.gitflow.task.FetchGitRefs
+import com.masselis.tpmsadvanced.gitflow.task.PushGitflowBranch
 import com.masselis.tpmsadvanced.gitflow.task.TagCommit
 import com.masselis.tpmsadvanced.gitflow.valuesource.CommitCountBetweenBranch
 import com.masselis.tpmsadvanced.gitflow.valuesource.CurrentBranch
@@ -20,8 +20,8 @@ import com.masselis.tpmsadvanced.gitflow.valuesource.VersionCode
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.assign
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.from
 import org.gradle.kotlin.dsl.property
@@ -29,187 +29,223 @@ import org.gradle.kotlin.dsl.register
 
 public class GitflowPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = with(project) {
+        val versionCode = objects.property<Int>()
         val currentReleaseTag = objects.property<SemanticVersion>()
         val lastReleaseCommitSha = objects.property<String>()
         val ext = extensions.create<GitflowExtension>(
             "gitflow",
+            versionCode,
             currentReleaseTag,
-            lastReleaseCommitSha
+            lastReleaseCommitSha,
         )
 
-        val currentBranch = providers.from(CurrentBranch::class)
-        val releaseBuildCount = providers.from(CommitCountBetweenBranch::class) {
-            fromBranch = ext.developBranch
-            toBranch = ext.releaseBranch
+        // Every consumer of a branch name has to pick one of two things: "which local branch am I
+        // on" (a LocalBranch, e.g. `release/1.6.0`) or "what has actually been pushed" (a
+        // remote-tracking ref, e.g. `origin/release/1.6.0`). ext.*Branch are always the former;
+        // this helper is the only place a "origin/" prefix ever gets glued on.
+        fun Provider<String>.asRemoteRef(): Provider<String> =
+            ext.remote.zip(this) { remote, branch -> "$remote/$branch" }
+
+        val developRef = ext.developBranch.asRemoteRef()
+        val mainRef = ext.mainBranch.asRemoteRef()
+        val releaseRef = ext.releaseBranch.asRemoteRef()
+        val hotfixRef = ext.hotfixBranch.asRemoteRef()
+
+        // Empty string never matches a real branch name - a safe "detached HEAD" sentinel for the
+        // plain string comparisons below (VersionCode, currentReleaseTag, lastReleaseCommitSha).
+        val currentBranchName = providers.from(CurrentBranch::class).map {
+            when (it) {
+                is HeadState.OnBranch -> it.branch
+                is HeadState.Detached -> ""
+            }
         }
-        val versionCode = providers.from(VersionCode::class) {
+
+        val releaseBuildCount = providers.from(CommitCountBetweenBranch::class) {
+            fromBranch = developRef
+            toBranch = releaseRef
+        }
+        versionCode.set(providers.from(VersionCode::class) {
             version = ext.version
-            this.currentBranch = currentBranch
+            currentBranch = currentBranchName
             releaseBranch = ext.releaseBranch
             mainBranch = ext.mainBranch
             this.releaseBuildCount = releaseBuildCount
-        }
+        })
         currentReleaseTag.set(versionCode.flatMap { vc ->
-            if (currentBranch.get() == ext.releaseBranch.get())
+            if (currentBranchName.get() == ext.releaseBranch.get())
                 provider { SemanticVersion("${ext.version.get()}+vc$vc") }
             else
                 ext.version.map { SemanticVersion(it) }
         })
-
         lastReleaseCommitSha.set(providers.from(CommitSha::class) {
-            argument = currentBranch.flatMap { currentBranch ->
-                when (currentBranch) {
+            argument = currentBranchName.flatMap { branch ->
+                when (branch) {
                     // We're working on main, latest release was the previous commit on main
-                    ext.mainBranch.get() -> ext.mainBranch.map { "$it^1" }
+                    ext.mainBranch.get() -> mainRef.map { "$it^1" }
 
                     // We're working on release, if this is the first commit of this branch, the
                     // latest release is main, if not, the latest release is the previous commit
                     // from the current release branch
                     ext.releaseBranch.get() -> releaseBuildCount.flatMap { commitCount ->
-                        if (commitCount == 0) ext.mainBranch
-                        else ext.releaseBranch.map { "$it^1" }
+                        if (commitCount == 0) mainRef else releaseRef.map { "$it^1" }
                     }
 
-                    else -> providers.provider { throw GradleException("Cannot compute the latest release commit because the current branch is not a releasable branch. Current branch \"$currentBranch\"") }
+                    else -> providers.provider {
+                        throw GradleException(
+                            "Cannot compute the latest release commit because the current " +
+                                    "branch is not a releasable branch. Current branch \"$branch\""
+                        )
+                    }
                 }
             }
         })
-        subprojects {
-            plugins.all {
-                if (this is LibraryPlugin) configure<BaseExtension> {
-                    afterEvaluate {
-                        if (buildFeatures.buildConfig == true) productFlavors.all {
-                            buildConfigField(
-                                "int",
-                                "VERSION_CODE",
-                                versionCode.get().toString()
-                            )
-                            buildConfigField(
-                                "String",
-                                "VERSION_NAME",
-                                "\"${currentReleaseTag.get()}\""
-                            )
-                        }
-                    }
-                }
-                if (this is AppPlugin) configure<BaseAppModuleExtension> {
-                    defaultConfig.versionCode = versionCode.get()
-                    defaultConfig.versionName = currentReleaseTag.get().toString()
-                }
-            }
-        }
 
-        val assertGitDiffIsEmpty = tasks.register<AssertGitDiffIsEmpty>("assertGitDiffIsEmpty")
+        val fetchGitRefs = tasks.register<FetchGitRefs>("fetchGitRefs") {
+            remote = ext.remote
+        }
 
         // A release branch must:
         // - Start from develop
-        // - No tag with the same version exists and no branch hotfix with the same version exists too
-        // - Being up to date with develop and main
+        // - No tag with the same version exists and no branch (release or hotfix) with the same
+        //   version exists either
+        // - main must already be fully merged into develop
 
-        // Release branch creation
         val assertCurrentBranchIsDevelop =
             tasks.register<AssertCurrentBranch>("assertCurrentBranchIsDevelop") {
                 expectedBranch = ext.developBranch
             }
-        val assertProductionTagWasNotCreatedYet =
-            tasks.register<AssertTagIsUnique>("assertProductionTagWasNotCreatedYet") {
+        val assertVersionIsUnreleased =
+            tasks.register<AssertTagIsUnique>("assertVersionIsUnreleased") {
                 tagFilter = ext.version.map { it.toString() }
             }
-        val assertHotfixBranchWasNotCreatedYet =
-            tasks.register<AssertBranchIsUnique>("assertVersionedBranchWasNotCreatedYet") {
-                branchFilter = ext.version.map { "hotfix/$it" }
+        val assertReleaseBranchIsAvailable =
+            tasks.register<AssertBranchIsUnique>("assertReleaseBranchIsAvailable") {
+                branchFilter = releaseRef
             }
-        val assertDevelopIsUpToDateWithMain =
-            tasks.register<AssertNoCommitDiff>("assertDevelopIsUpToDateWithMain") {
-                fromBranch = ext.mainBranch
-                toBranch = ext.developBranch
+        val assertHotfixBranchIsAvailable =
+            tasks.register<AssertBranchIsUnique>("assertHotfixBranchIsAvailable") {
+                branchFilter = hotfixRef
             }
-        tasks.register<CreateBranch>("createRelease") {
+        val assertDevelopContainsMain =
+            tasks.register<AssertBranchIsAncestor>("assertDevelopContainsMain") {
+                ancestor = mainRef
+                descendant = developRef
+            }
+
+        val createRelease = tasks.register<CreateBranch>("createRelease") {
+            group = "gitflow"
+            description = "Cuts a new release branch from develop and bumps its version"
             dependsOn(
+                fetchGitRefs,
                 assertCurrentBranchIsDevelop,
-                assertGitDiffIsEmpty,
-                assertProductionTagWasNotCreatedYet, assertHotfixBranchWasNotCreatedYet,
-                assertDevelopIsUpToDateWithMain,
+                assertVersionIsUnreleased,
+                assertReleaseBranchIsAvailable,
+                assertHotfixBranchIsAvailable,
+                assertDevelopContainsMain,
             )
-            branch = ext.releaseBranch.map {
-                // Ignores the <remote> part of the branch name
-                // More info: https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches
-                it.substringAfter('/')
-            }
+            branch = ext.releaseBranch
         }
+
         // Release branch post-creation checks
         val assertCurrentBranchIsRelease =
             tasks.register<AssertCurrentBranch>("assertCurrentBranchIsRelease") {
                 expectedBranch = ext.releaseBranch
             }
-        val assertReleaseSourceIsDevelop =
-            tasks.register<AssertNearestParent>("assertReleaseSourceIsDevelop") {
+        val assertReleaseBranchPointIsDevelop =
+            tasks.register<AssertBranchProvenance>("assertReleaseBranchPointIsDevelop") {
                 dependsOn(assertCurrentBranchIsRelease)
-                parentBranch = ext.developBranch
-                this.currentBranch = ext.releaseBranch
+                subjectBranch = releaseRef
+                developBranch = developRef
+                mainBranch = mainRef
+            }
+        val assertReleaseHasNoForeignCommits =
+            tasks.register<AssertBranchHasNoForeignCommits>("assertReleaseHasNoForeignCommits") {
+                dependsOn(assertCurrentBranchIsRelease)
+                remote = ext.remote
+                subjectBranch = releaseRef
+                baseBranch = developRef
             }
         tasks.register("assertReleaseBranchIsValid") {
+            group = "gitflow"
+            description = "Checks the release branch follows the gitflow branching model"
             dependsOn(
-                assertReleaseSourceIsDevelop,
-                assertProductionTagWasNotCreatedYet, assertHotfixBranchWasNotCreatedYet,
-                assertDevelopIsUpToDateWithMain,
+                assertReleaseBranchPointIsDevelop,
+                assertReleaseHasNoForeignCommits,
+                assertVersionIsUnreleased,
+                assertHotfixBranchIsAvailable,
+                assertDevelopContainsMain,
             )
         }
 
         // A hotfix branch must:
-        // - Start form main
+        // - Start from main
         // - No tag with the same version exists
-        // - Being up to date with main
+        // - main must already be fully merged into it, and it must contain no commit exclusive to
+        //   any other branch (including develop - the dangerous case of hotfixing unreleased work)
 
-        // Hotfix branch creation
         val assertCurrentBranchIsMain =
             tasks.register<AssertCurrentBranch>("assertCurrentBranchIsMain") {
                 expectedBranch = ext.mainBranch
             }
-        tasks.register<CreateBranch>("createHotfix") {
+        val createHotfix = tasks.register<CreateBranch>("createHotfix") {
+            group = "gitflow"
+            description = "Cuts a new hotfix branch from main and bumps its version"
             dependsOn(
+                fetchGitRefs,
                 assertCurrentBranchIsMain,
-                assertGitDiffIsEmpty,
-                assertProductionTagWasNotCreatedYet,
+                assertVersionIsUnreleased,
+                assertHotfixBranchIsAvailable,
+                assertReleaseBranchIsAvailable,
             )
-            branch = ext.hotfixBranch.map {
-                // Ignores the <remote> part of the branch name
-                // More info: https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches
-                it.substringAfter('/')
-            }
+            branch = ext.hotfixBranch
         }
-        // Hotfix branch post-creation checks
+
         val assertCurrentBranchIsHotfix =
             tasks.register<AssertCurrentBranch>("assertCurrentBranchIsHotfix") {
                 expectedBranch = ext.hotfixBranch
             }
-        val assertHotfixSourceIsMain =
-            tasks.register<AssertNearestParent>("assertHotfixSourceIsMain") {
+        val assertHotfixContainsMain =
+            tasks.register<AssertBranchIsAncestor>("assertHotfixContainsMain") {
                 dependsOn(assertCurrentBranchIsHotfix)
-                parentBranch = ext.mainBranch
-                this.currentBranch = ext.hotfixBranch
+                ancestor = mainRef
+                descendant = hotfixRef
             }
-        val assertHotfixIsUpToDateWithMain =
-            tasks.register<AssertNoCommitDiff>("assertHotfixIsUpToDateWithMain") {
-                fromBranch = ext.mainBranch
-                toBranch = ext.hotfixBranch
+        val assertHotfixHasNoForeignCommits =
+            tasks.register<AssertBranchHasNoForeignCommits>("assertHotfixHasNoForeignCommits") {
+                dependsOn(assertCurrentBranchIsHotfix)
+                remote = ext.remote
+                subjectBranch = hotfixRef
+                baseBranch = mainRef
             }
         tasks.register("assertHotfixBranchIsValid") {
+            group = "gitflow"
+            description = "Checks the hotfix branch follows the gitflow branching model"
             dependsOn(
-                assertHotfixSourceIsMain,
-                assertProductionTagWasNotCreatedYet,
-                assertHotfixIsUpToDateWithMain,
+                assertHotfixHasNoForeignCommits,
+                assertVersionIsUnreleased,
+                assertHotfixContainsMain,
             )
         }
 
         // A main commit must:
+        // - Come from a branch actually checked out as main
         // - No tag with the same version exists
         tasks.register<AssertTagIsUnique>("assertVersionWasNotPushInProductionYet") {
+            dependsOn(assertCurrentBranchIsMain)
             tagFilter = ext.version.map { it.toString() }
         }
 
         tasks.register<TagCommit>("tagCommitWithCurrentVersion") {
             tag = currentReleaseTag
+        }
+
+        val commitAddedFiles = tasks.register<CommitAddedFiles>("commitAddedFiles") {
+            mustRunAfter(createRelease, createHotfix)
+            commitMessage = providers.gradleProperty("gitflow.gitflowBranchCommitMessage")
+        }
+        tasks.register<PushGitflowBranch>("pushGitflowBranch") {
+            mustRunAfter(createRelease, createHotfix, commitAddedFiles)
+            remote = ext.remote
         }
     }
 }

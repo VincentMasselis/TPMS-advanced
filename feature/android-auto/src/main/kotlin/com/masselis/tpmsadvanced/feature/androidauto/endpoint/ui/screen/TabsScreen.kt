@@ -16,7 +16,7 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.lifecycleScope
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.androidauto.R
-import com.masselis.tpmsadvanced.feature.androidauto.di.InternalComponent.Companion.TabScreenViewModel
+import com.masselis.tpmsadvanced.feature.androidauto.ioc.Bindings.Companion.TabScreenViewModel
 import com.masselis.tpmsadvanced.feature.androidauto.endpoint.ui.viewmodel.TabScreenViewModel.State
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn

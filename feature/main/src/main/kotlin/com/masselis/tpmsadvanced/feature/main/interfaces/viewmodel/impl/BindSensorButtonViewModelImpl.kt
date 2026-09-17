@@ -32,7 +32,9 @@ internal class BindSensorButtonViewModelImpl(
     @Assisted savedStateHandle: SavedStateHandle
 ) : ViewModel(), BindSensorButtonViewModel {
     @AssistedFactory
-    interface Factory : (SavedStateHandle) -> BindSensorButtonViewModelImpl
+    interface Factory {
+        operator fun invoke(savedStateHandle: SavedStateHandle): BindSensorButtonViewModelImpl
+    }
 
     private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>("STATE", State.Empty)
     override val stateFlow = mutableStateFlow.asStateFlow()

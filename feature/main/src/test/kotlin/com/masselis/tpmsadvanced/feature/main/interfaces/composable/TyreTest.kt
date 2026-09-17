@@ -21,8 +21,11 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.GreenToRed2P
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.GreenToRed3Preview
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.GreenToRedPreview
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.NotDetectedPreview
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
+import java.util.TimeZone
 
 internal class TyreTest {
 
@@ -36,6 +39,12 @@ internal class TyreTest {
     val paparazzi = Paparazzi(
         theme = "android:Theme.Material3.DayNight.NoActionBar"
     )
+
+    @Before
+    fun setup() {
+        Locale.setDefault(Locale.FRANCE)
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"))
+    }
 
     @OptIn(ExperimentalLayoutApi::class)
     @Test

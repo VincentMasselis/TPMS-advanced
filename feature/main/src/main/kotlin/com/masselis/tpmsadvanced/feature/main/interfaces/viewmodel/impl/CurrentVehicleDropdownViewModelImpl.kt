@@ -28,8 +28,9 @@ internal class CurrentVehicleDropdownViewModelImpl(
 ) : ViewModel(), CurrentVehicleDropdownViewModel {
 
     @AssistedFactory
-    interface Factory : (SavedStateHandle) -> CurrentVehicleDropdownViewModelImpl
-
+    interface Factory {
+        operator fun invoke(savedStateHandle: SavedStateHandle): CurrentVehicleDropdownViewModelImpl
+    }
 
     private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>(
         "STATE",

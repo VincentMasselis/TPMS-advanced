@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.feature.unlocated.usecase
 
 import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -31,7 +32,9 @@ internal class SearchingUnlocatedTyresUseCase(
 ) {
 
     @AssistedFactory
-    internal interface Factory : (UUID) -> SearchingUnlocatedTyresUseCase
+    internal interface Factory {
+        operator fun invoke(vehicleUuid: UUID): SearchingUnlocatedTyresUseCase
+    }
 
 
     /**

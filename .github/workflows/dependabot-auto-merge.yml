@@ -1,0 +1,50 @@
+name: Dependabot auto-merge
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+    branches: [develop]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge trusted vendor updates
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      # Trusted vendors: JetBrains, Google, Gradle, Square.
+      # Everything else (e.g. Metro, mockk, detekt rule sets) is left for manual review.
+      - name: Check dependency is from a trusted vendor
+        id: vendor-check
+        env:
+          DEP_NAMES: ${{ steps.metadata.outputs.dependency-names }}
+        run: |
+          trusted=true
+          IFS=',' read -ra deps <<< "$DEP_NAMES"
+          for dep in "${deps[@]}"; do
+            dep="$(echo "$dep" | xargs)"
+            case "$dep" in
+              androidx.*|com.google.*|com.android.*|org.jetbrains.*|com.gradle.*|app.cash.*|com.squareup.*|kotlin|gradle-wrapper|gradle)
+                ;;
+              *)
+                trusted=false
+                ;;
+            esac
+          done
+          echo "trusted=$trusted" >> "$GITHUB_OUTPUT"
+
+      - name: Enable auto-merge
+        if: steps.vendor-check.outputs.trusted == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --squash "$PR_URL"

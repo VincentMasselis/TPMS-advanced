@@ -4,18 +4,18 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.savedstate.serialization.saved
 import com.masselis.tpmsadvanced.core.ui.LocalKeepScreenOnCounter
 import com.masselis.tpmsadvanced.core.ui.ScreenOnCounter
-import com.masselis.tpmsadvanced.core.ui.saveable
 import com.masselis.tpmsadvanced.interfaces.composable.Main
 import com.masselis.tpmsadvanced.interfaces.composable.TpmsAdvancedTheme
 import java.util.UUID
 
-internal class RootActivity : AppCompatActivity() {
+public class RootActivity : AppCompatActivity() {
 
     private val counter = ScreenOnCounter.Activity()
 
-    private var hasConsumedIntent by saveable { false }
+    private var hasConsumedIntent by saved { false }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

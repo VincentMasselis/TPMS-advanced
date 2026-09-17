@@ -1,18 +1,12 @@
 package com.masselis.tpmsadvanced.feature.shortcut.interfaces
 
 import android.content.Context
-import androidx.startup.Initializer
-import com.masselis.tpmsadvanced.core.common.AppContextInitializer
-import com.masselis.tpmsadvanced.feature.shortcut.ioc.FeatureShortcutComponent
+import com.masselis.tpmsadvanced.core.common.AppGraphReadyInitializer
+import com.masselis.tpmsadvanced.feature.shortcut.ioc.Bindings.Companion.ShortcutUseCase
 
-public class FeatureShortcutInitializer : Initializer<Unit> {
+public class FeatureShortcutInitializer : AppGraphReadyInitializer<Unit> {
     override fun create(context: Context) {
-        // Calling FeatureShortcutComponent initializes it
-        FeatureShortcutComponent
+        // Initializes shortcutUseCase
+        ShortcutUseCase()
     }
-
-    override fun dependencies(): List<Class<out Initializer<*>>> = listOf(
-        AppContextInitializer::class.java
-    )
-
 }

@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.playstore
 
-import StricSemanticVersion
 import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.VariantOutputConfiguration.OutputType.SINGLE
@@ -24,6 +23,11 @@ import org.gradle.kotlin.dsl.registerIfAbsent
 public class PlayStorePlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = with(project) {
         val ext = extensions.create<PlayStoreExtension>("playStore")
+        ext.changesNotSentForReview.convention(
+            providers.gradleProperty("playStore.changesNotSentForReview")
+                .map(String::toBoolean)
+                .orElse(false)
+        )
         gradle.sharedServices.registerIfAbsent(
             "android-publisher-service", AndroidPublisherService::class
         ) {
@@ -32,8 +36,16 @@ public class PlayStorePlugin : Plugin<Project> {
 
         configure<ApplicationAndroidComponentsExtension> {
             onVariants { variant ->
-                if (variant.isMinifyEnabled.not())
+                if (variant.name != "release")
                     return@onVariants
+                if (variant.isMinifyEnabled.not())
+                    throw GradleException("Release variant doesn't have minify enabled")
+
+                project
+                    .layout
+                    .projectDirectory
+                    .dir("src/main/play/release-notes/en-US/")
+                    .also(ext.releaseNotesDir::convention)
 
                 val packageName = variant.applicationId
                 val output = variant
@@ -50,19 +62,8 @@ public class PlayStorePlugin : Plugin<Project> {
                     )
                 }
                 val releaseNotes = providers.from(ReleaseNote::class) {
-                    releaseNotesDir = project
-                        .layout
-                        .projectDirectory
-                        .dir("src/${variant.flavorName}/play/release-notes/en-US/")
-                    // Preconditions
-                    releaseNotesDir.get()
-                        .asFileTree
-                        .firstOrNull { runCatching { StricSemanticVersion(it.nameWithoutExtension) }.isFailure }
-                        ?.also { throw GradleException("This release note file name is invalid: $it") }
-                    releaseNotesDir.get()
-                        .asFileTree
-                        .firstOrNull { it.nameWithoutExtension == ext.version.get().toString() }
-                        ?: throw GradleException("The release note file associated to the version ${ext.version.get()} is missing, add it to continue: ${releaseNotesDir.get()}/${ext.version.get()}.txt")
+                    releaseNotesDir = ext.releaseNotesDir
+                    version = ext.version
                 }
                 tasks.register<PublishToPlayStore>("publishToPlayStoreBeta${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")
@@ -71,6 +72,7 @@ public class PlayStorePlugin : Plugin<Project> {
                     this.versionName = versionName
                     this.releaseBundle = releaseBundle
                     this.releaseNotes = releaseNotes
+                    this.changesNotSentForReview = ext.changesNotSentForReview
                 }
                 tasks.register<PublishToPlayStore>("publishToPlayStoreProduction${variant.name.capitalized()}") {
                     dependsOn("bundle${variant.name.capitalized()}")
@@ -79,13 +81,14 @@ public class PlayStorePlugin : Plugin<Project> {
                     this.versionName = versionName
                     this.releaseBundle = releaseBundle
                     this.releaseNotes = releaseNotes
+                    this.changesNotSentForReview = ext.changesNotSentForReview
                 }
                 tasks.register<UpdatePlayStoreScreenshots>("updatePlayStoreScreenshots${variant.name.capitalized()}") {
                     this.packageName = packageName
                     screenshotDirectory = project
                         .layout
                         .projectDirectory
-                        .dir("src/${variant.flavorName}/play/listings/en-US/graphics/phone-screenshots")
+                        .dir("src/main/play/listings/en-US/graphics/phone-screenshots")
                 }
             }
         }

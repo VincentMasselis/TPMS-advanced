@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.github.task
 
 import CommitSha
 import SemanticVersion
+import com.android.build.api.variant.BuiltArtifactsLoader
 import com.masselis.tpmsadvanced.github.valuesource.ReleaseNoteBetweenCommit
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -9,16 +10,19 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.Directory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.from
 import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
+import java.io.File
 import javax.inject.Inject
 
 internal abstract class CreateRelease : DefaultTask() {
@@ -42,7 +46,10 @@ internal abstract class CreateRelease : DefaultTask() {
     abstract val lastReleaseCommitSha: Property<String>
 
     @get:InputFiles
-    abstract val assets: ConfigurableFileCollection
+    abstract val apkFolders: ListProperty<Directory>
+
+    @get:Internal
+    abstract val builtArtifactsLoader: Property<BuiltArtifactsLoader>
 
     private val releaseNotes
         get() = providerFactory.from(ReleaseNoteBetweenCommit::class) {
@@ -85,20 +92,31 @@ internal abstract class CreateRelease : DefaultTask() {
             .jsonPrimitive
             .int
             .also { releaseId ->
-                assets.forEach { file ->
-                    execOperations.exec {
-                        commandLine(
-                            "curl", "-L",
-                            "-X", "POST",
-                            "-H", "Accept: application/vnd.github+json",
-                            "-H", "Authorization: Bearer ${githubToken.get()}",
-                            "-H", "X-GitHub-Api-Version: 2022-11-28",
-                            "-H", "Content-Type: application/octet-stream",
-                            "https://uploads.github.com/repos/VincentMasselis/TPMS-advanced/releases/$releaseId/assets?name=${file.name}",
-                            "--data-binary", "@${file.absolutePath}"
-                        )
+                apkFolders
+                    .zip(builtArtifactsLoader) { folders, loader ->
+                        folders.flatMap { folder ->
+                            loader
+                                .load(folder)
+                                ?.elements
+                                ?.map { File(it.outputFile) }
+                                ?: error("No APK built in $folder")
+                        }
                     }
-                }
+                    .get()
+                    .forEach { apk ->
+                        execOperations.exec {
+                            commandLine(
+                                "curl", "-L",
+                                "-X", "POST",
+                                "-H", "Accept: application/vnd.github+json",
+                                "-H", "Authorization: Bearer ${githubToken.get()}",
+                                "-H", "X-GitHub-Api-Version: 2022-11-28",
+                                "-H", "Content-Type: application/octet-stream",
+                                "https://uploads.github.com/repos/VincentMasselis/TPMS-advanced/releases/$releaseId/assets?name=${apk.name}",
+                                "--data-binary", "@${apk.absolutePath}"
+                            )
+                        }
+                    }
             }
     }
 }

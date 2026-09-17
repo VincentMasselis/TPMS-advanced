@@ -20,17 +20,13 @@ internal abstract class GitTagList : ValueSource<List<String>, Parameters> {
     override fun obtain(): List<String> = ByteArrayOutputStream()
         .also {
             execOperations.exec {
-                commandLine(
-                    "git",
-                    "tag",
-                    "-l",
-                    parameters.inputFilter.get(),
-                )
+                commandLine("git", "tag", "-l", parameters.inputFilter.get())
                 standardOutput = it
             }
         }
         .use { it.toString() }
-        .trimIndent()
-        .split('\n')
-        .filter { it.isNotBlank() }
+        .lineSequence()
+        .map(String::trim)
+        .filter(String::isNotBlank)
+        .toList()
 }

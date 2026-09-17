@@ -2,7 +2,7 @@ package com.masselis.tpmsadvanced.feature.main.usecase
 
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.InternalVehicleComponent
+import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.GlobalScope
@@ -17,9 +17,9 @@ import java.util.concurrent.ConcurrentHashMap
 @OptIn(DelicateCoroutinesApi::class)
 internal class VehicleComponentCacheUseCase internal constructor(
     vehicleDatabase: VehicleDatabase,
-    private val vehicleComponentFactory: InternalVehicleComponent.Factory,
-) : (Vehicle) -> InternalVehicleComponent {
-    private val cache = ConcurrentHashMap<UUID, InternalVehicleComponent>()
+    private val factory: VehicleComponent.Factory,
+) {
+    private val cache = ConcurrentHashMap<UUID, VehicleComponent>()
 
     init {
         vehicleDatabase
@@ -35,7 +35,7 @@ internal class VehicleComponentCacheUseCase internal constructor(
             .launchIn(GlobalScope + Default)
     }
 
-    override fun invoke(vehicle: Vehicle) = cache.computeIfAbsent(vehicle.uuid) {
-        vehicleComponentFactory.build(vehicle)
+    fun get(vehicle: Vehicle) = cache.computeIfAbsent(vehicle.uuid) {
+        factory.build(vehicle)
     }
 }

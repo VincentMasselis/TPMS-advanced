@@ -18,7 +18,9 @@ internal class HomeViewModel(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface Factory : (UUID?) -> HomeViewModel
+    interface Factory {
+        operator fun invoke(expectedVehicle: UUID?): HomeViewModel
+    }
 
     init {
         expectedVehicle?.also {
