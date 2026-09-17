@@ -21,11 +21,16 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: Run buildSrc unit tests
+        run: ./gradlew -p buildSrc test --stacktrace
+
       - name: Analyse code, build and test everything
         run: >
           ./gradlew
           assertHotfixBranchIsValid
           build
           verifyPaparazzi
+          pixel2api34DebugAndroidTest
+          copyScreenshot
+          -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
           --stacktrace
-
