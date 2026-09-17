@@ -30,31 +30,17 @@ jobs:
           BITWARDEN_ITEM: ${{ secrets.BITWARDEN_CI_ITEM }}
         run: ./gradlew downloadBitwardenSecretFiles
 
-      - name: Promotes the github release, promotes from the beta channel to production, updates the screenshots
+      - name: Promotes the github release, promotes from the beta channel to production, updates the screenshots and open back-merge PR
         run: >
           ./gradlew
           assertVersionWasNotPushInProductionYet
           createGithubRelease
           publishToPlayStoreProductionRelease
           updatePlayStoreScreenshotsRelease
+          openBackMergePullRequest
           -PplayStore.changesNotSentForReview=${{ vars.PLAY_STORE_CHANGES_NOT_SENT_FOR_REVIEW }}
           --stacktrace
 
-  back-merge:
-    name: Back-merge main into develop
-    needs: promotion
-    # A failed Play Store upload is retryable on its own; a silently-skipped back-merge would
-    # permanently block the next release (assertDevelopContainsMain would fail forever), so it
-    # must not be conditioned on the promotion job's outcome.
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: ./.github/actions/setup
-
       - name: Open (or reuse) the back-merge pull request and enable merge-commit auto-merge
+        if: always()
         run: ./gradlew openBackMergePullRequest --stacktrace
