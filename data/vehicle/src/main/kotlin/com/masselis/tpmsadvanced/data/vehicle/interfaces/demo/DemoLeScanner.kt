@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 @Suppress("MagicNumber")
-internal class DemoLeScanner : BluetoothLeScanner {
+public class DemoLeScanner : BluetoothLeScanner {
 
     private val frontLeft = listOf(
         Tyre.SensorLocated(
@@ -114,5 +114,5 @@ internal class DemoLeScanner : BluetoothLeScanner {
 
     override fun missingPermission(): List<String> = emptyList()
 
-    override val isBluetoothRequired = false
+    override val isBluetoothRequired: Boolean = false
 }
