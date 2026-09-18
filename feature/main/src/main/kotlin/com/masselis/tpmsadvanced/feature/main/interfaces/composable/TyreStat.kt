@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -35,7 +36,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.Date
 
 @Composable
@@ -142,12 +142,13 @@ private fun TyreStat(
                     "0x%08X".format(sensorId)
                 }
 
+            val locale = LocalLocale.current.platformLocale
             val lastReceived = SimpleDateFormat(
                 "dd/MM/yyyy h:mma",
-                Locale.getDefault()
+                locale
             )
                 .format(Date((timestamp * 1000).toLong()))
-                .lowercase()
+                .lowercase(locale)
 
             Text(
                 text = "$displaySensorId  Last: $lastReceived",
