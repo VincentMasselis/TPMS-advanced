@@ -57,19 +57,19 @@ internal fun VehicleSettings(
     Column(modifier) {
         with(viewModel) {
             val pressureUnit by pressureUnit.collectAsState()
+            val rearLowPressureValue = if (hasFrontRearAxles) rearLowPressure.collectAsState().value else null
             PressureRange(
                 lowPressure.collectAsState().value,
                 highPressure.collectAsState().value,
                 pressureUnit,
                 { lowPressure.value = it },
                 { highPressure.value = it },
-                title = if (hasFrontRearAxles)
+                title = if (rearLowPressureValue != null)
                     "Front tyres expected pressure range: "
                 else
                     "Expected pressure range: ",
             )
             if (hasFrontRearAxles) {
-                val rearLowPressureValue = rearLowPressure.collectAsState().value
                 val rearHighPressureValue = rearHighPressure.collectAsState().value
                 RearPressureToggle(
                     checked = rearLowPressureValue != null,
