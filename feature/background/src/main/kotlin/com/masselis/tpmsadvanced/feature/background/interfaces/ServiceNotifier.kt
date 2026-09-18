@@ -77,19 +77,29 @@ internal class ServiceNotifier(
         vehicle
             .kind
             .locations
-            .map { vehicleComponent.TyreComponent(it) }
-            .let { comps ->
+            .toList()
+            .let { locations ->
+                val comps = locations.map { vehicleComponent.TyreComponent(it) }
                 combine(
                     combine(comps.map { it.tyreAtmosphereUseCase.listen() }) { it }
                         .onStart { emit(emptyArray()) }
                         .debounce(100.milliseconds),
+                    combine(
+                        locations.map {
+                            combine(
+                                vehicleRangesUseCase.resolvedLowPressure(it),
+                                vehicleRangesUseCase.resolvedHighPressure(it),
+                            ) { low, high -> low..high }
+                        }
+                    ) { it },
                     vehicleRangesUseCase.highTemp,
-                    vehicleRangesUseCase.lowPressure,
-                    vehicleRangesUseCase.highPressure,
-                ) { atmospheres, highTemp, lowPressure, highPressure ->
+                ) { atmospheres, pressureRanges, highTemp ->
                     atmospheres
-                        .firstOrNull { it.pressure !in lowPressure..highPressure }
-                        ?.let(::PressureAlert)
+                        .withIndex()
+                        .firstOrNull { (index, atmosphere) ->
+                            atmosphere.pressure !in pressureRanges[index]
+                        }
+                        ?.let { (_, atmosphere) -> PressureAlert(atmosphere) }
                         ?: atmospheres
                             .firstOrNull { it.temperature > highTemp }
                             ?.let(::TemperatureAlert)
