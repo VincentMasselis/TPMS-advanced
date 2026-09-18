@@ -5,6 +5,7 @@ import com.masselis.tpmsadvanced.data.app.interfaces.AppPreferences
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.PreconditionsViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreDisplaySettingsViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.CurrentVehicleDropdownViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
@@ -44,6 +45,10 @@ public interface Bindings {
     private fun preconditionsViewModel(bluetoothLeScanner: BluetoothLeScanner): PreconditionsViewModel =
         PreconditionsViewModel(bluetoothLeScanner)
 
+    @Provides
+    private fun tyreDisplaySettingsViewModel(appPreferences: AppPreferences): TyreDisplaySettingsViewModel =
+        TyreDisplaySettingsViewModel(appPreferences)
+
     @SingleIn(AppScope::class)
     @Provides
     private fun vehicleComponentCacheUseCase(
@@ -61,12 +66,14 @@ public interface Bindings {
     public class Internal internal constructor(
         internal val vehicleComponentCache: () -> VehicleComponentCacheUseCase,
         internal val preconditionsViewModel: () -> PreconditionsViewModel,
+        internal val tyreDisplaySettingsViewModel: () -> TyreDisplaySettingsViewModel,
         internal val currentVehicleDropdownViewModel: CurrentVehicleDropdownViewModelImpl.Factory,
     )
 
     public companion object : Bindings by appGraph as Bindings {
         internal val vehicleComponentCache get() = featureMainInternal.vehicleComponentCache()
         internal fun PreconditionsViewModel() = featureMainInternal.preconditionsViewModel()
+        internal fun TyreDisplaySettingsViewModel() = featureMainInternal.tyreDisplaySettingsViewModel()
         internal val CurrentVehicleDropdownViewModel
             get() = featureMainInternal.currentVehicleDropdownViewModel
     }

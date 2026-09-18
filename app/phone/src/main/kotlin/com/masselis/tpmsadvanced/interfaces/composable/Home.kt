@@ -126,6 +126,11 @@ internal fun VehicleHome(
                             modifier = modifier
                         )
                     }
+                    composable("${Path.AppSettings}") {
+                        AppSettings(
+                            modifier = modifier
+                        )
+                    }
                     composable("${Path.BindingMethod(vehicleComponent.vehicle.uuid)}") {
                         ChooseBindingMethod(
                             scanQrCode = {
@@ -213,7 +218,8 @@ private fun TopAppBar(
         title = {
             when (currentPath) {
                 is Path.Home -> CurrentVehicleDropdown(Modifier.testTag(carListDropdownMenu))
-                is Path.Settings -> Text(text = "Settings")
+                is Path.Settings -> Text(text = "Vehicle settings")
+                is Path.AppSettings -> Text(text = "App settings")
                 is Path.BindingMethod -> Text(text = "Binding method")
                 is Path.Unlocated -> Text(text = "Binding")
                 is Path.QrCode, null -> {}
@@ -221,7 +227,7 @@ private fun TopAppBar(
         },
         navigationIcon = {
             when (currentPath) {
-                is Path.Settings, is Path.BindingMethod, is Path.QrCode, is Path.Unlocated -> {
+                is Path.Settings, is Path.AppSettings, is Path.BindingMethod, is Path.QrCode, is Path.Unlocated -> {
                     IconButton(
                         onClick = { navController.popBackStack() },
                         content = {
@@ -268,17 +274,30 @@ private fun TopAppBar(
                             modifier = Modifier.testTag(HomeTags.Overflow.bindingMethod)
                         )
                         DropdownMenuItem(
-                            text = { Text("Settings") },
+                            text = { Text("Vehicle settings") },
                             onClick = {
                                 showMenu = false
                                 navController.navigate("${Path.Settings(currentPath.vehicleUUID)}")
                             },
                             modifier = Modifier.testTag(HomeTags.Overflow.settings)
                         )
+                        DropdownMenuItem(
+                            text = { Text("App settings") },
+                            onClick = {
+                                showMenu = false
+                                navController.navigate("${Path.AppSettings}")
+                            },
+                            modifier = Modifier.testTag(HomeTags.Overflow.appSettings)
+                        )
                     }
                 }
 
-                is Path.Settings, is Path.BindingMethod, is Path.QrCode, is Path.Unlocated, null -> {}
+                is Path.Settings,
+                is Path.AppSettings,
+                is Path.BindingMethod,
+                is Path.QrCode,
+                is Path.Unlocated,
+                null -> {}
             }
         },
         modifier = modifier
@@ -300,5 +319,6 @@ internal object HomeTags {
         const val root = "HomeTags_Overflow_root"
         const val bindingMethod = "HomeTags_Overflow_bindingMethod"
         const val settings = "HomeTags_Overflow_settings"
+        const val appSettings = "HomeTags_Overflow_appSettings"
     }
 }
