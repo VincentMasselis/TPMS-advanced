@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.masselis.tpmsadvanced.core.test.MainDispatcherRule
 import org.junit.Before
@@ -19,6 +20,7 @@ internal class TyreStatTest {
 
     @get:Rule
     val paparazzi = Paparazzi(
+        deviceConfig = DeviceConfig.NEXUS_5.copy(locale = "fr-rFR"),
         theme = "android:Theme.Material3.DayNight.NoActionBar",
     )
 

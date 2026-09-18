@@ -63,7 +63,7 @@ internal class TyreIconStateFlowTest {
 
     private fun setAtmosphere(pressure: Pressure, temperature: Temperature) =
         every { tyreAtmosphereUseCase.listen() }.returns(
-            flowOf(TyreAtmosphere(now(), pressure, temperature))
+            flowOf(TyreAtmosphere(now(), 0x562D00, pressure, temperature))
         )
 
     @Test
