@@ -1,6 +1,8 @@
 package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
 import android.annotation.SuppressLint
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.S
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,11 +49,16 @@ internal fun InternalPreconditions(
     val bluetoothState = rememberBluetoothState()
     when {
         permissionState.allPermissionsGranted.not() -> Scaffold { padding ->
+            // Bluetooth scan permission is granted under "Nearby devices" on API 31+, but under
+            // "Location" on older versions (see BluetoothLeScanner.missingPermission()) — match
+            // whichever label the system's own Settings screen actually uses.
+            val permissionName = if (SDK_INT >= S) "Nearby devices" else "Location"
             @Suppress("MaxLineLength")
             MissingPermission(
                 text = "TPMS Advanced needs some permission to continue.\nTheses are required by the system in order to make BLE scan",
-                refusedText = "Failed to obtain permission, please update this in the app's system settings",
+                refusedText = "This app requires \"$permissionName\" permission in order to scan for sensors, please enable it",
                 permissionState = permissionState,
+                autoRequest = true,
                 modifier = modifier
                     .padding(padding)
                     .fillMaxSize()
