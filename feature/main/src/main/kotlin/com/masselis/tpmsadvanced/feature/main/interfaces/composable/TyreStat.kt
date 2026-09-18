@@ -90,12 +90,14 @@ private fun TyreStat(
         is State.Normal -> state.timestamp
         is State.Alerting -> state.timestamp
     }
-    val color = when (state) {
-        State.NotDetected, is State.Normal -> MaterialTheme.colorScheme.onSurface
-        is State.Alerting -> MaterialTheme.colorScheme.error
-    }
+    val isPressureAlert = state is State.Alerting && state.isPressureAlert
+    val isTemperatureAlert = state is State.Alerting && state.isTemperatureAlert
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+    val errorColor = MaterialTheme.colorScheme.error
+    val pressureColor = if (isPressureAlert) errorColor else onSurfaceColor
+    val temperatureColor = if (isTemperatureAlert) errorColor else onSurfaceColor
     var isVisible by remember { mutableStateOf(true) }
-    if (state is State.Alerting) {
+    if (isPressureAlert || isTemperatureAlert) {
         LaunchedEffect(key1 = isVisible) {
             launch {
                 repeat(Int.MAX_VALUE) {
@@ -120,15 +122,15 @@ private fun TyreStat(
             }
         }
     }
-    Column(
-        modifier = modifier.alpha(if (isVisible) 1f else 0f)
-    ) {
+    Column(modifier = modifier) {
         Text(
             pressure?.let { (value, unit) -> value.string(unit) } ?: "-.--",
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
-            color = color,
-            modifier = Modifier.align(alignment),
+            color = pressureColor,
+            modifier = Modifier
+                .align(alignment)
+                .alpha(if (isPressureAlert.not() || isVisible) 1f else 0f),
         )
 
         Text(
@@ -136,8 +138,10 @@ private fun TyreStat(
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             fontSize = 16.sp,
-            color = color,
-            modifier = Modifier.align(alignment),
+            color = temperatureColor,
+            modifier = Modifier
+                .align(alignment)
+                .alpha(if (isTemperatureAlert.not() || isVisible) 1f else 0f),
         )
 
         if (showTimeSinceUpdate && timestamp != null) {
@@ -146,7 +150,7 @@ private fun TyreStat(
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 fontSize = 16.sp,
-                color = color,
+                color = onSurfaceColor,
                 modifier = Modifier.align(alignment),
             )
         }
@@ -176,7 +180,7 @@ private fun TyreStat(
                 text = listOfNotNull(displaySensorId, lastReceived).joinToString("  "),
                 fontSize = 9.sp,
                 maxLines = 1,
-                color = color,
+                color = onSurfaceColor,
                 modifier = Modifier.align(alignment),
             )
         }
@@ -280,7 +284,49 @@ internal fun TyreStatAlertingPreview() {
             0.5f.bar,
             PressureUnit.BAR,
             150f.celsius,
-            TemperatureUnit.CELSIUS
+            TemperatureUnit.CELSIUS,
+            isPressureAlert = true,
+            isTemperatureAlert = true,
+        ),
+        showTimeSinceUpdate = false,
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatPressureAlertingPreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state = State.Alerting(
+            0.0,
+            0,
+            0.5f.bar,
+            PressureUnit.BAR,
+            30f.celsius,
+            TemperatureUnit.CELSIUS,
+            isPressureAlert = true,
+            isTemperatureAlert = false,
+        ),
+        showTimeSinceUpdate = false,
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatTemperatureAlertingPreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state = State.Alerting(
+            0.0,
+            0,
+            2f.bar,
+            PressureUnit.BAR,
+            150f.celsius,
+            TemperatureUnit.CELSIUS,
+            isPressureAlert = false,
+            isTemperatureAlert = true,
         ),
         showTimeSinceUpdate = false,
     )

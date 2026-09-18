@@ -44,37 +44,26 @@ public class TyreStatsStateFlow internal constructor(
         ))
     }
         .map { (atmosphere, highTemp, lowPressure, highPressure, pressureUnit, temperatureUnit) ->
-            if (atmosphere.pressure.hasPressure().not() ||
+            val isPressureAlert = atmosphere.pressure.hasPressure().not() ||
                 atmosphere.pressure !in lowPressure..highPressure
-            ) State.Alerting(
+            val isTemperatureAlert = atmosphere.temperature.celsius > highTemp.celsius
+            if (isPressureAlert || isTemperatureAlert) State.Alerting(
+                atmosphere.timestamp,
+                atmosphere.sensorId,
+                atmosphere.pressure,
+                pressureUnit,
+                atmosphere.temperature,
+                temperatureUnit,
+                isPressureAlert,
+                isTemperatureAlert,
+            ) else State.Normal(
                 atmosphere.timestamp,
                 atmosphere.sensorId,
                 atmosphere.pressure,
                 pressureUnit,
                 atmosphere.temperature,
                 temperatureUnit
-            ) else
-                when (atmosphere.temperature.celsius) {
-                    in Float.NEGATIVE_INFINITY..highTemp.celsius -> State.Normal(
-                        atmosphere.timestamp,
-                        atmosphere.sensorId,
-                        atmosphere.pressure,
-                        pressureUnit,
-                        atmosphere.temperature,
-                        temperatureUnit
-                    )
-
-                    in highTemp.celsius..Float.POSITIVE_INFINITY -> State.Alerting(
-                        atmosphere.timestamp,
-                        atmosphere.sensorId,
-                        atmosphere.pressure,
-                        pressureUnit,
-                        atmosphere.temperature,
-                        temperatureUnit
-                    )
-
-                    else -> error("Unreachable state")
-                }
+            )
         }
         .catch { emit(State.NotDetected) }
         .stateIn(scope, WhileSubscribed(), State.NotDetected),
@@ -105,7 +94,7 @@ public class TyreStatsStateFlow internal constructor(
             public val temperatureUnit: TemperatureUnit,
         ) : State()
 
-        // Show the read values from the tyre in red
+        // Show the read values from the tyre, with the offending item(s) in red
         @Parcelize
         public data class Alerting(
             public val timestamp: Double,
@@ -114,6 +103,8 @@ public class TyreStatsStateFlow internal constructor(
             public val pressureUnit: PressureUnit,
             public val temperature: Temperature,
             public val temperatureUnit: TemperatureUnit,
+            public val isPressureAlert: Boolean,
+            public val isTemperatureAlert: Boolean,
         ) : State()
     }
 }
