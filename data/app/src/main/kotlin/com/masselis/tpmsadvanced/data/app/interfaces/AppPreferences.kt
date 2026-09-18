@@ -29,6 +29,12 @@ public class AppPreferences internal constructor(
         sharedPreferences.edit { putBoolean("SHOW_SENSOR_ID", newValue) }
     }
 
+    public val showTimeSinceUpdate: MutableStateFlow<Boolean> = observableStateFlow(
+        sharedPreferences.getBoolean("SHOW_TIME_SINCE_UPDATE", true)
+    ) { _, newValue ->
+        sharedPreferences.edit { putBoolean("SHOW_TIME_SINCE_UPDATE", newValue) }
+    }
+
     private val packageInfo
         get() = appContext
             .packageManager

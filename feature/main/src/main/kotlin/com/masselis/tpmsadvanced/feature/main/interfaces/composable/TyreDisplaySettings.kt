@@ -31,11 +31,14 @@ internal fun TyreDisplaySettings(
 ) {
     val showTimestamp by viewModel.showTimestamp.collectAsState()
     val showSensorId by viewModel.showSensorId.collectAsState()
+    val showTimeSinceUpdate by viewModel.showTimeSinceUpdate.collectAsState()
     TyreDisplaySettings(
         showTimestamp = showTimestamp,
         onShowTimestamp = { viewModel.showTimestamp.value = it },
         showSensorId = showSensorId,
         onShowSensorId = { viewModel.showSensorId.value = it },
+        showTimeSinceUpdate = showTimeSinceUpdate,
+        onShowTimeSinceUpdate = { viewModel.showTimeSinceUpdate.value = it },
         modifier = modifier,
     )
 }
@@ -46,8 +49,16 @@ private fun TyreDisplaySettings(
     onShowTimestamp: (Boolean) -> Unit,
     showSensorId: Boolean,
     onShowSensorId: (Boolean) -> Unit,
+    showTimeSinceUpdate: Boolean,
+    onShowTimeSinceUpdate: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) = Column(modifier) {
+    CheckboxRow(
+        text = "Show time since update",
+        checked = showTimeSinceUpdate,
+        onCheckedChange = onShowTimeSinceUpdate,
+        modifier = Modifier.testTag(TyreDisplaySettingsTags.showTimeSinceUpdate),
+    )
     CheckboxRow(
         text = "Show timestamp",
         checked = showTimestamp,
@@ -85,6 +96,8 @@ internal fun TyreDisplaySettingsPreview() {
         onShowTimestamp = {},
         showSensorId = true,
         onShowSensorId = {},
+        showTimeSinceUpdate = true,
+        onShowTimeSinceUpdate = {},
     )
 }
 
@@ -92,4 +105,5 @@ internal fun TyreDisplaySettingsPreview() {
 internal object TyreDisplaySettingsTags {
     const val showTimestamp = "TyreDisplaySettingsTags_showTimestamp"
     const val showSensorId = "TyreDisplaySettingsTags_showSensorId"
+    const val showTimeSinceUpdate = "TyreDisplaySettingsTags_showTimeSinceUpdate"
 }

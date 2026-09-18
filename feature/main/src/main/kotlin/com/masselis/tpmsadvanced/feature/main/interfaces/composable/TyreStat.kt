@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -17,6 +18,7 @@ import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.ui.viewModel
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
@@ -34,7 +36,9 @@ import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreStatsStateFlow.State
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -50,7 +54,8 @@ internal fun TyreStat(
     val state by viewModel.stateFlow.collectAsState()
     val showTimestamp by viewModel.showTimestamp.collectAsState()
     val showSensorId by viewModel.showSensorId.collectAsState()
-    TyreStat(location, state, showTimestamp, showSensorId, modifier)
+    val showTimeSinceUpdate by viewModel.showTimeSinceUpdate.collectAsState()
+    TyreStat(location, state, showTimestamp, showSensorId, showTimeSinceUpdate, modifier)
 }
 
 @Suppress("NAME_SHADOWING", "LongMethod", "CyclomaticComplexMethod", "ComplexCondition")
@@ -60,6 +65,7 @@ private fun TyreStat(
     state: State,
     showTimestamp: Boolean = false,
     showSensorId: Boolean = false,
+    showTimeSinceUpdate: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val (pressure, temperature) = when (val state = state) {
@@ -134,6 +140,17 @@ private fun TyreStat(
             modifier = Modifier.align(alignment),
         )
 
+        if (showTimeSinceUpdate && timestamp != null) {
+            Text(
+                elapsedSinceUpdateLabel(timestamp),
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                fontSize = 16.sp,
+                color = color,
+                modifier = Modifier.align(alignment),
+            )
+        }
+
         if (sensorId != null && timestamp != null && (showSensorId || showTimestamp)) {
             val displaySensorId = if (showSensorId) {
                 if ((sensorId ushr 24) == 0) {
@@ -166,6 +183,61 @@ private fun TyreStat(
     }
 }
 
+// Re-emits on every tier boundary crossed (each minute, then each hour, then each day) so the
+// label stays live without waiting for a new sensor packet. A new `timestamp` (new packet)
+// restarts this from scratch via the `key1` change, cancelling any pending delay.
+@Composable
+private fun elapsedSinceUpdateLabel(timestamp: Double): String {
+    val label by produceState(initialValue = elapsedLabel(timestamp, now()), key1 = timestamp) {
+        // produceState's underlying mutableStateOf survives across key1 changes, only the
+        // producer coroutine restarts - so `value` must be set immediately here (not after the
+        // first delay) or a new packet would leave the stale label showing until the next tick.
+        while (true) {
+            value = elapsedLabel(timestamp, now())
+            delay(nextElapsedTick(timestamp, now()))
+        }
+    }
+    return label
+}
+
+private fun elapsedLabel(timestamp: Double, now: Double): String {
+    val totalMinutes = totalMinutesSince(timestamp, now)
+    val totalHours = totalMinutes / MINUTES_PER_HOUR
+    return when {
+        totalMinutes == 0L -> "<1 min"
+        totalMinutes < HOUR_TIER_START_MINUTES -> "$totalMinutes min"
+        totalHours < DAY_TIER_START_HOURS -> "$totalHours hour"
+        else -> "${totalHours / HOURS_PER_DAY} days"
+    }
+}
+
+// Delay until the label's next tier boundary: every minute while under 2 hours, every hour
+// while under 2 days, every day after that.
+private fun nextElapsedTick(timestamp: Double, now: Double): Duration {
+    val totalMinutes = totalMinutesSince(timestamp, now)
+    val totalHours = totalMinutes / MINUTES_PER_HOUR
+    val nextBoundarySeconds = when {
+        totalMinutes < HOUR_TIER_START_MINUTES ->
+            (totalMinutes + 1) * SECONDS_PER_MINUTE
+
+        totalHours < DAY_TIER_START_HOURS ->
+            (totalHours + 1) * MINUTES_PER_HOUR * SECONDS_PER_MINUTE
+
+        else ->
+            (totalHours / HOURS_PER_DAY + 1) * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE
+    }
+    return (timestamp + nextBoundarySeconds - now).seconds.coerceAtLeast(Duration.ZERO)
+}
+
+private fun totalMinutesSince(timestamp: Double, now: Double): Long =
+    ((now - timestamp) / SECONDS_PER_MINUTE).toLong().coerceAtLeast(0L)
+
+private const val SECONDS_PER_MINUTE = 60L
+private const val MINUTES_PER_HOUR = 60L
+private const val HOURS_PER_DAY = 24L
+private const val HOUR_TIER_START_MINUTES = 120L
+private const val DAY_TIER_START_HOURS = 48L
+
 
 @Preview
 @Composable
@@ -173,6 +245,7 @@ internal fun TyreStatNotDetectedPreview() {
     TyreStat(
         location = Location.Wheel(SensorLocation.REAR_RIGHT),
         state = State.NotDetected,
+        showTimeSinceUpdate = false,
     )
 }
 
@@ -191,6 +264,7 @@ internal fun TyreStatNormalPreview() {
                 30f.celsius,
                 TemperatureUnit.CELSIUS
             ),
+        showTimeSinceUpdate = false,
     )
 }
 
@@ -208,5 +282,60 @@ internal fun TyreStatAlertingPreview() {
             150f.celsius,
             TemperatureUnit.CELSIUS
         ),
+        showTimeSinceUpdate = false,
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatTimeSinceUpdateMinutesPreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state = State.Normal(
+            now() - 5 * SECONDS_PER_MINUTE,
+            0,
+            2f.bar,
+            PressureUnit.BAR,
+            30f.celsius,
+            TemperatureUnit.CELSIUS
+        ),
+        showTimeSinceUpdate = true,
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatTimeSinceUpdateHoursPreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state = State.Normal(
+            now() - 5 * MINUTES_PER_HOUR * SECONDS_PER_MINUTE,
+            0,
+            2f.bar,
+            PressureUnit.BAR,
+            30f.celsius,
+            TemperatureUnit.CELSIUS
+        ),
+        showTimeSinceUpdate = true,
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatTimeSinceUpdateDaysPreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state = State.Normal(
+            now() - 5 * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE,
+            0,
+            2f.bar,
+            PressureUnit.BAR,
+            30f.celsius,
+            TemperatureUnit.CELSIUS
+        ),
+        showTimeSinceUpdate = true,
     )
 }
