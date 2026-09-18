@@ -7,9 +7,11 @@ import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.test.MainDispatcherRule
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Wheel
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
 import io.mockk.every
 import io.mockk.mockk
@@ -48,8 +50,8 @@ internal class TyreIconStateFlowTest {
             every { lowTemp } returns MutableStateFlow(20f.celsius)
             every { normalTemp } returns MutableStateFlow(45f.celsius)
             every { highTemp } returns MutableStateFlow(90f.celsius)
-            every { lowPressure } returns MutableStateFlow(1f.bar)
-            every { highPressure } returns MutableStateFlow(3f.bar)
+            every { resolvedLowPressure(Wheel(FRONT_LEFT)) } returns MutableStateFlow(1f.bar)
+            every { resolvedHighPressure(Wheel(FRONT_LEFT)) } returns MutableStateFlow(3f.bar)
         }
         savedStateHandle = SavedStateHandle()
     }
@@ -58,6 +60,7 @@ internal class TyreIconStateFlowTest {
     private fun test() = TyreIconStateFlow(
         tyreAtmosphereUseCase,
         vehicleRangesUseCase,
+        Wheel(FRONT_LEFT),
         scope.backgroundScope,
     )
 
