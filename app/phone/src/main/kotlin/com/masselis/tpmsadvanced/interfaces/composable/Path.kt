@@ -15,6 +15,10 @@ internal sealed interface Path {
         override fun toString(): String = "vehicle/$vehicleUUID/settings"
     }
 
+    data object AppSettings : Path {
+        override fun toString(): String = "app_settings"
+    }
+
     @JvmInline
     value class BindingMethod(val vehicleUUID: UUID) : Path {
         override fun toString(): String = "vehicle/$vehicleUUID/binding_method"
@@ -32,19 +36,21 @@ internal sealed interface Path {
 
     companion object {
         @Suppress("NAME_SHADOWING")
-        fun from(route: String): Path = route
-            .split('/')
-            .let { (host, uuid, screen) ->
-                assert(host == "vehicle")
-                val uuid = UUID.fromString(uuid)
-                when (screen) {
-                    "home" -> Home(uuid)
-                    "settings" -> Settings(uuid)
-                    "binding_method" -> BindingMethod(uuid)
-                    "qrcode" -> QrCode(uuid)
-                    "unlocated" -> Unlocated(uuid)
-                    else -> error("Unrecognized route: \"$route\"")
+        fun from(route: String): Path =
+            if (route == "app_settings") AppSettings
+            else route
+                .split('/')
+                .let { (host, uuid, screen) ->
+                    assert(host == "vehicle")
+                    val uuid = UUID.fromString(uuid)
+                    when (screen) {
+                        "home" -> Home(uuid)
+                        "settings" -> Settings(uuid)
+                        "binding_method" -> BindingMethod(uuid)
+                        "qrcode" -> QrCode(uuid)
+                        "unlocated" -> Unlocated(uuid)
+                        else -> error("Unrecognized route: \"$route\"")
+                    }
                 }
-            }
     }
 }

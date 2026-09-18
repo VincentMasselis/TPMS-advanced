@@ -48,14 +48,18 @@ internal fun TyreStat(
         .let { viewModel(it.keyed()) { it.TyreStatsViewModel() } },
 ) {
     val state by viewModel.stateFlow.collectAsState()
-    TyreStat(location, state, modifier)
+    val showTimestamp by viewModel.showTimestamp.collectAsState()
+    val showSensorId by viewModel.showSensorId.collectAsState()
+    TyreStat(location, state, showTimestamp, showSensorId, modifier)
 }
 
-@Suppress("NAME_SHADOWING", "LongMethod", "CyclomaticComplexMethod")
+@Suppress("NAME_SHADOWING", "LongMethod", "CyclomaticComplexMethod", "ComplexCondition")
 @Composable
 private fun TyreStat(
     location: Location,
     state: State,
+    showTimestamp: Boolean = false,
+    showSensorId: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val (pressure, temperature) = when (val state = state) {
@@ -130,8 +134,8 @@ private fun TyreStat(
             modifier = Modifier.align(alignment),
         )
 
-        if (sensorId != null && timestamp != null) {
-            val displaySensorId =
+        if (sensorId != null && timestamp != null && (showSensorId || showTimestamp)) {
+            val displaySensorId = if (showSensorId) {
                 if ((sensorId ushr 24) == 0) {
                     "%02X%02X%02X".format(
                         sensorId and 0xFF,
@@ -141,17 +145,18 @@ private fun TyreStat(
                 } else {
                     "0x%08X".format(sensorId)
                 }
+            } else null
 
-            val locale = LocalLocale.current.platformLocale
-            val lastReceived = SimpleDateFormat(
-                "dd/MM/yyyy h:mma",
-                locale
-            )
-                .format(Date((timestamp * 1000).toLong()))
-                .lowercase(locale)
+            val lastReceived = if (showTimestamp) {
+                val locale = LocalLocale.current.platformLocale
+                SimpleDateFormat("dd/MM/yyyy h:mma", locale)
+                    .format(Date((timestamp * 1000).toLong()))
+                    .lowercase(locale)
+                    .let { "Last: $it" }
+            } else null
 
             Text(
-                text = "$displaySensorId  Last: $lastReceived",
+                text = listOfNotNull(displaySensorId, lastReceived).joinToString("  "),
                 fontSize = 9.sp,
                 maxLines = 1,
                 color = color,

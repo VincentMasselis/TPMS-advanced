@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.feature.main.ioc.tyre
 
+import com.masselis.tpmsadvanced.data.app.interfaces.AppPreferences
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
@@ -124,8 +125,10 @@ public interface TyreBindings {
     )
 
     @Provides
-    private fun tyreStatsViewModelImpl(uc: TyreStatsStateFlow): TyreStatsViewModelImpl =
-        TyreStatsViewModelImpl(uc)
+    private fun tyreStatsViewModelImpl(
+        uc: TyreStatsStateFlow,
+        appPreferences: AppPreferences,
+    ): TyreStatsViewModelImpl = TyreStatsViewModelImpl(uc, appPreferences)
 
     @Provides
     private fun tyreStatsViewModel(vm: TyreStatsViewModelImpl): TyreStatsViewModel = vm
