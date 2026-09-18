@@ -25,7 +25,7 @@ public value class Pressure(public val kpa: Float) : Parcelable, Comparable<Pres
     public fun string(unit: PressureUnit, compact: Boolean = false): String = when (unit) {
         KILO_PASCAL -> (if (compact) "%.0fk" else "%.0f kpa").format(kpa)
         BAR -> (if (compact) "%.1fb" else "%.2f bar").format(asBar())
-        PSI -> (if (compact) "%.0fp" else "%.0f psi").format(asPsi())
+        PSI -> (if (compact) "%.0fp" else "%.1f psi").format(asPsi())
     }
 
     public fun hasPressure(): Boolean = kpa > 0f
