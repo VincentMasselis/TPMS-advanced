@@ -25,6 +25,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -62,10 +63,14 @@ internal class TyreStatsStateFlowTest {
         scope.backgroundScope,
     )
 
-    private fun setAtmosphere(pressure: Pressure, temperature: Temperature) =
-        every { tyreAtmosphereUseCase.listen() }.returns(
-            flowOf(TyreAtmosphere(now(), pressure, temperature))
-        )
+    private fun setAtmosphere(
+        pressure: Pressure,
+        temperature: Temperature,
+        timestamp: Double = now(),
+        sensorId: Int = 0,
+    ) = every { tyreAtmosphereUseCase.listen() }.returns(
+        flowOf(TyreAtmosphere(timestamp, sensorId, pressure, temperature))
+    )
 
     @Test
     fun notDetected(): Unit = runTest {
@@ -96,6 +101,25 @@ internal class TyreStatsStateFlowTest {
         test().test {
             assertIs<State.NotDetected>(awaitItem())
             assertIs<State.Alerting>(awaitItem())
+        }
+    }
+
+    @Test
+    fun `preserves sensor id and timestamp`() = runTest {
+        val timestamp = 1_726_483_200.0
+        val sensorId = 0x562D00
+
+        setAtmosphere(2f.bar, 25f.celsius, timestamp, sensorId)
+        test().test {
+            assertIs<State.NotDetected>(awaitItem())
+
+            val state = awaitItem()
+            assertIs<State.Normal>(state)
+
+            assertEquals(timestamp, state.timestamp)
+            assertEquals(sensorId, state.sensorId)
+
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }
