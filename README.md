@@ -1,6 +1,8 @@
 [![Develop](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/develop.yml/badge.svg)](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/develop.yml)
 
-# TPMS-advanced
+# TPMS-advanced-NE
+
+> **NE = Nerd Edition.** A fork of [VincentMasselis/TPMS-advanced](https://github.com/VincentMasselis/TPMS-advanced). Playing around with Claude Code, adding features that won't necessarily make it into the main TPMS Advanced.
 
 Android app for Bluetooth Low Energy TPMS sensors made by the manufacturers Sysgration and Pecham 
 
