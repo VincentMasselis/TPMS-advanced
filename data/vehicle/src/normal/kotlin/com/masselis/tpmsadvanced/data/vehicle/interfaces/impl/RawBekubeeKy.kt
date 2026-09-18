@@ -29,8 +29,8 @@ internal data class RawBekubeeKy private constructor(
 
     fun pressure() = (((data[3].toInt() and 0xFF) shl 8) or (data[4].toInt() and 0xFF))
         .minus(146)
-        .div(10)
         .toFloat()
+        .div(10)
         .psi
 
     fun battery() = data[1].toUShort() // Returns 27 for 2.7 volts
