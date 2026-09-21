@@ -56,7 +56,7 @@ google-android-publisher = "com.google.apis:google-api-services-androidpublisher
 google-firebase-bom = "com.google.firebase:firebase-bom:34.19.0"
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 google-mlkit-barecode = "com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1"
-google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.51.0"
+google-oauth2-http = "com.google.auth:google-auth-library-oauth2-http:1.52.0"
 junit = "junit:junit:4.13.2"
 kermit = "co.touchlab:kermit:2.2.0"
 kermit-crashlytics = "co.touchlab:kermit-crashlytics:2.2.0"
