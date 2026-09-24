@@ -34,6 +34,9 @@ import com.masselis.tpmsadvanced.feature.main.usecase.TyreStatsStateFlow.State
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.Date
 
 @Composable
 internal fun TyreStat(
@@ -66,6 +69,16 @@ private fun TyreStat(
             Pair(state.pressure, state.pressureUnit),
             Pair(state.temperature, state.temperatureUnit)
         )
+    }
+    val sensorId = when (state) {
+        State.NotDetected -> null
+        is State.Normal -> state.sensorId
+        is State.Alerting -> state.sensorId
+    }
+    val timestamp = when (state) {
+        State.NotDetected -> null
+        is State.Normal -> state.timestamp
+        is State.Alerting -> state.timestamp
     }
     val color = when (state) {
         State.NotDetected, is State.Normal -> MaterialTheme.colorScheme.onSurface
@@ -107,6 +120,7 @@ private fun TyreStat(
             color = color,
             modifier = Modifier.align(alignment),
         )
+
         Text(
             temperature?.let { (value, unit) -> value.string(unit) } ?: "-.-",
             fontWeight = FontWeight.SemiBold,
@@ -115,6 +129,34 @@ private fun TyreStat(
             color = color,
             modifier = Modifier.align(alignment),
         )
+
+        if (sensorId != null && timestamp != null) {
+            val displaySensorId =
+                if ((sensorId ushr 24) == 0) {
+                    "%02X%02X%02X".format(
+                        sensorId and 0xFF,
+                        (sensorId shr 8) and 0xFF,
+                        (sensorId shr 16) and 0xFF,
+                    )
+                } else {
+                    "0x%08X".format(sensorId)
+                }
+
+            val lastReceived = SimpleDateFormat(
+                "dd/MM/yyyy h:mma",
+                Locale.getDefault()
+            )
+                .format(Date((timestamp * 1000).toLong()))
+                .lowercase()
+
+            Text(
+                text = "$displaySensorId  Last: $lastReceived",
+                fontSize = 9.sp,
+                maxLines = 1,
+                color = color,
+                modifier = Modifier.align(alignment),
+            )
+        }
     }
 }
 
@@ -136,8 +178,11 @@ internal fun TyreStatNormalPreview() {
         location = Location.Wheel(SensorLocation.REAR_RIGHT),
         state =
             State.Normal(
+                0.0,
+                0,
                 2f.bar,
-                PressureUnit.BAR, 30f.celsius,
+                PressureUnit.BAR,
+                30f.celsius,
                 TemperatureUnit.CELSIUS
             ),
     )
@@ -150,8 +195,11 @@ internal fun TyreStatAlertingPreview() {
     TyreStat(
         location = Location.Wheel(SensorLocation.REAR_RIGHT),
         state = State.Alerting(
+            0.0,
+            0,
             0.5f.bar,
-            PressureUnit.BAR, 150f.celsius,
+            PressureUnit.BAR,
+            150f.celsius,
             TemperatureUnit.CELSIUS
         ),
     )
