@@ -33,31 +33,44 @@ public class VehicleRangesUseCase internal constructor(
         MutableStateFlow(database.selectNormalTemp(vehicle.uuid))
     public val highTemp: MutableStateFlow<Temperature> =
         MutableStateFlow(database.selectHighTemp(vehicle.uuid))
+    /** Only used while [separateRearPressure] is on, but kept when it's turned off */
     public val rearLowPressure: MutableStateFlow<Pressure?> =
         MutableStateFlow(database.selectRearLowPressure(vehicle.uuid))
     public val rearHighPressure: MutableStateFlow<Pressure?> =
         MutableStateFlow(database.selectRearHighPressure(vehicle.uuid))
+    public val separateRearPressure: MutableStateFlow<Boolean> =
+        MutableStateFlow(database.selectSeparateRearPressure(vehicle.uuid))
 
+    /**
+     * Turning the override off keeps the rear range, so an accidental toggle loses nothing. The
+     * front range is only copied the first time, when there is no rear range yet.
+     */
     public fun setRearOverrideEnabled(enabled: Boolean) {
-        if (enabled) {
+        if (enabled && (rearLowPressure.value == null || rearHighPressure.value == null)) {
             rearLowPressure.value = lowPressure.value
             rearHighPressure.value = highPressure.value
-        } else {
-            rearLowPressure.value = null
-            rearHighPressure.value = null
         }
+        separateRearPressure.value = enabled
     }
 
     public fun resolvedLowPressure(location: Location): Flow<Pressure> = location
         .toAxleOrNull()
         ?.takeIf { it.axle == REAR }
-        ?.let { combine(rearLowPressure, lowPressure) { rear, front -> rear ?: front } }
+        ?.let {
+            combine(separateRearPressure, rearLowPressure, lowPressure) { separate, rear, front ->
+                rear?.takeIf { separate } ?: front
+            }
+        }
         ?: lowPressure
 
     public fun resolvedHighPressure(location: Location): Flow<Pressure> = location
         .toAxleOrNull()
         ?.takeIf { it.axle == REAR }
-        ?.let { combine(rearHighPressure, highPressure) { rear, front -> rear ?: front } }
+        ?.let {
+            combine(separateRearPressure, rearHighPressure, highPressure) { separate, rear, front ->
+                rear?.takeIf { separate } ?: front
+            }
+        }
         ?: highPressure
 
     init {
@@ -94,6 +107,11 @@ public class VehicleRangesUseCase internal constructor(
         rearHighPressure
             .debounce(100.milliseconds)
             .onEach { database.updateRearHighPressure(it, vehicle.uuid) }
+            .launchIn(scope)
+
+        separateRearPressure
+            .debounce(100.milliseconds)
+            .onEach { database.updateSeparateRearPressure(it, vehicle.uuid) }
             .launchIn(scope)
     }
 }

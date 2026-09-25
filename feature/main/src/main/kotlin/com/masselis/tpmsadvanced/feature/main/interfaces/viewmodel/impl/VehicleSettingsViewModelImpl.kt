@@ -15,6 +15,7 @@ internal class VehicleSettingsViewModelImpl(
     override val highPressure = vehicleRangesUseCase.highPressure
     override val rearLowPressure = vehicleRangesUseCase.rearLowPressure
     override val rearHighPressure = vehicleRangesUseCase.rearHighPressure
+    override val separateRearPressure = vehicleRangesUseCase.separateRearPressure.asStateFlow()
 
     override val pressureUnit = unitPreferences.pressure.asStateFlow()
 

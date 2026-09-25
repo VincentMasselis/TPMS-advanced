@@ -39,6 +39,7 @@ public class VehicleDatabase internal constructor(database: Database) {
                 val highPressure = queries.selectHighPressureByVehicleId(id).executeAsOne()
                 queries.updateRearLowPressure(lowPressure, id)
                 queries.updateRearHighPressure(highPressure, id)
+                queries.updateSeparateRearPressure(true, id)
             }
         }
     }
@@ -77,6 +78,14 @@ public class VehicleDatabase internal constructor(database: Database) {
     public suspend fun updateRearHighPressure(rearHighPressure: Pressure?, uuid: UUID): Unit =
         withContext(IO) {
             queries.updateRearHighPressure(rearHighPressure, uuid)
+        }
+
+    public fun selectSeparateRearPressure(vehicleId: UUID): Boolean =
+        queries.selectSeparateRearPressureByVehicleId(vehicleId).executeAsOne()
+
+    public suspend fun updateSeparateRearPressure(separate: Boolean, uuid: UUID): Unit =
+        withContext(IO) {
+            queries.updateSeparateRearPressure(separate, uuid)
         }
 
     public fun selectLowTemp(vehicleId: UUID): Temperature =
@@ -139,9 +148,10 @@ public class VehicleDatabase internal constructor(database: Database) {
             Boolean,
             Pressure?,
             Pressure?,
+            Boolean,
         ) -> Vehicle =
             { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _,
-              rearLowPressure, rearHighPressure ->
+              rearLowPressure, rearHighPressure, separateRearPressure ->
                 Vehicle(
                     uuid,
                     kind,
@@ -153,6 +163,7 @@ public class VehicleDatabase internal constructor(database: Database) {
                     highTemp,
                     rearLowPressure,
                     rearHighPressure,
+                    separateRearPressure,
                 )
             }
     }

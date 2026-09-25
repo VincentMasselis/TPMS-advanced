@@ -48,6 +48,7 @@ internal class VehicleRangesUseCaseTest {
             every { selectHighTemp(uuid) } returns 90f.celsius
             every { selectRearLowPressure(uuid) } returns null
             every { selectRearHighPressure(uuid) } returns null
+            every { selectSeparateRearPressure(uuid) } returns false
             coEvery { updateLowPressure(any(), any()) } returns Unit
             coEvery { updateHighPressure(any(), any()) } returns Unit
             coEvery { updateLowTemp(any(), any()) } returns Unit
@@ -55,6 +56,7 @@ internal class VehicleRangesUseCaseTest {
             coEvery { updateHighTemp(any(), any()) } returns Unit
             coEvery { updateRearLowPressure(any(), any()) } returns Unit
             coEvery { updateRearHighPressure(any(), any()) } returns Unit
+            coEvery { updateSeparateRearPressure(any(), any()) } returns Unit
         }
     }
 
@@ -92,6 +94,7 @@ internal class VehicleRangesUseCaseTest {
     @Test
     fun `rear location resolves to the override once set`() = runTest {
         val useCase = test()
+        useCase.setRearOverrideEnabled(true)
         useCase.rearLowPressure.value = 1.5f.bar
         useCase.rearHighPressure.value = 3.5f.bar
         useCase.resolvedLowPressure(Wheel(REAR_LEFT)).test {
@@ -111,12 +114,43 @@ internal class VehicleRangesUseCaseTest {
     }
 
     @Test
-    fun `disabling the rear override clears both values`() = runTest {
+    fun `disabling the rear override keeps both values`() = runTest {
         val useCase = test()
         useCase.setRearOverrideEnabled(true)
+        useCase.rearLowPressure.value = 1.5f.bar
+        useCase.rearHighPressure.value = 3.5f.bar
         useCase.setRearOverrideEnabled(false)
-        assertEquals(null, useCase.rearLowPressure.value)
-        assertEquals(null, useCase.rearHighPressure.value)
+        assertEquals(false, useCase.separateRearPressure.value)
+        assertEquals(1.5f.bar, useCase.rearLowPressure.value)
+        assertEquals(3.5f.bar, useCase.rearHighPressure.value)
+    }
+
+    @Test
+    fun `rear location ignores the kept values while the override is disabled`() = runTest {
+        val useCase = test()
+        useCase.setRearOverrideEnabled(true)
+        useCase.rearLowPressure.value = 1.5f.bar
+        useCase.rearHighPressure.value = 3.5f.bar
+        useCase.setRearOverrideEnabled(false)
+        useCase.resolvedLowPressure(Wheel(REAR_LEFT)).test {
+            assertEquals(1f.bar, awaitItem())
+        }
+        useCase.resolvedHighPressure(Wheel(REAR_LEFT)).test {
+            assertEquals(3f.bar, awaitItem())
+        }
+    }
+
+    @Test
+    fun `re-enabling the rear override restores the kept values`() = runTest {
+        val useCase = test()
+        useCase.setRearOverrideEnabled(true)
+        useCase.rearLowPressure.value = 1.5f.bar
+        useCase.rearHighPressure.value = 3.5f.bar
+        useCase.setRearOverrideEnabled(false)
+        useCase.lowPressure.value = 2f.bar
+        useCase.setRearOverrideEnabled(true)
+        assertEquals(1.5f.bar, useCase.rearLowPressure.value)
+        assertEquals(3.5f.bar, useCase.rearHighPressure.value)
     }
 
     @Test
@@ -128,5 +162,14 @@ internal class VehicleRangesUseCaseTest {
         runCurrent()
         coVerify { database.updateRearLowPressure(1.5f.bar, uuid) }
         coVerify { database.updateRearHighPressure(3.5f.bar, uuid) }
+    }
+
+    @Test
+    fun `rear override switch is persisted after the debounce`() = runTest {
+        val useCase = test()
+        useCase.setRearOverrideEnabled(true)
+        advanceTimeBy(100.milliseconds)
+        runCurrent()
+        coVerify { database.updateSeparateRearPressure(true, uuid) }
     }
 }
