@@ -37,13 +37,14 @@ internal fun PressureRangeSlider(
     openInfo: () -> Unit,
     unit: PressureUnit,
     modifier: Modifier = Modifier,
+    title: String = "Expected pressure range: ",
 ) {
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
             Text(
                 text = AnnotatedString(
-                    "Expected pressure range: ",
+                    title,
                     SpanStyle(fontWeight = FontWeight.Medium)
                 ) + AnnotatedString(
                     "${values.start.string(unit)} to ${values.endInclusive.string(unit)}",
