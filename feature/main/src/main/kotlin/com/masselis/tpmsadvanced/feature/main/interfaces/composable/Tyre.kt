@@ -91,7 +91,7 @@ private fun Tyre(
         isVisible = true
     Box(
         modifier
-            .alpha(if (isVisible) 1f else 0f)
+            .alpha(if (state !is State.Alerting || isVisible) 1f else 0f)
             .clip(RoundedCornerShape(percent = 20))
             .aspectRatio(15f / 40f)
             .run {

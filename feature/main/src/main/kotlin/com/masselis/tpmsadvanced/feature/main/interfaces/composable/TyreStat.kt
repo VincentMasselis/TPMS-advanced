@@ -98,7 +98,7 @@ private fun TyreStat(
         }
     }
     Column(
-        modifier = modifier.alpha(if (isVisible) 1f else 0f)
+        modifier = modifier.alpha(if (state !is State.Alerting || isVisible) 1f else 0f)
     ) {
         Text(
             pressure?.let { (value, unit) -> value.string(unit) } ?: "-.--",
