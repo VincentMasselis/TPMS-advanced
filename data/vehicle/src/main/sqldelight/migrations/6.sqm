@@ -1,0 +1,3 @@
+ALTER TABLE Vehicle ADD pressureCalibration INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE Vehicle ADD pressureOffset REAL NOT NULL DEFAULT 0;
+ALTER TABLE Vehicle ADD pressureMultiplier REAL NOT NULL DEFAULT 1;
