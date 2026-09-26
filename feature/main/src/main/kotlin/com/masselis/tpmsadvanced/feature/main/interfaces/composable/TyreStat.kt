@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.ui.viewModel
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
@@ -33,7 +35,9 @@ import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreStatsStateFlow.State
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 internal fun TyreStat(
@@ -66,6 +70,11 @@ private fun TyreStat(
             Pair(state.pressure, state.pressureUnit),
             Pair(state.temperature, state.temperatureUnit)
         )
+    }
+    val timestamp = when (state) {
+        State.NotDetected -> null
+        is State.Normal -> state.timestamp
+        is State.Alerting -> state.timestamp
     }
     val color = when (state) {
         State.NotDetected, is State.Normal -> MaterialTheme.colorScheme.onSurface
@@ -115,8 +124,76 @@ private fun TyreStat(
             color = color,
             modifier = Modifier.align(alignment),
         )
+        if (timestamp != null)
+            Text(
+                elapsedSinceUpdateLabel(timestamp),
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                fontSize = 16.sp,
+                color = color,
+                modifier = Modifier.align(alignment),
+            )
     }
 }
+
+// Re-emits on every tier boundary crossed (each minute, then each hour, then each day) so the
+// label stays live without waiting for a new sensor packet. A new `timestamp` (new packet)
+// restarts this from scratch via the `key1` change, cancelling any pending delay.
+@Composable
+private fun elapsedSinceUpdateLabel(timestamp: Double): String {
+    val label by produceState(initialValue = elapsedLabel(timestamp, now()), key1 = timestamp) {
+        // produceState's underlying mutableStateOf survives across key1 changes, only the
+        // producer coroutine restarts - so `value` must be set immediately here (not after the
+        // first delay) or a new packet would leave the stale label showing until the next tick.
+        while (true) {
+            value = elapsedLabel(timestamp, now())
+            delay(nextElapsedTick(timestamp, now()))
+        }
+    }
+    return label
+}
+
+private fun elapsedLabel(timestamp: Double, now: Double): String {
+    val totalMinutes = totalMinutesSince(timestamp, now)
+    val totalHours = totalMinutes / MINUTES_PER_HOUR
+    return when {
+        totalMinutes == 0L -> "<1 min"
+        totalMinutes < HOUR_TIER_START_MINUTES -> "$totalMinutes min"
+        totalHours < DAY_TIER_START_HOURS -> "$totalHours hours"
+        totalHours / HOURS_PER_DAY > MAX_DAYS -> "$MAX_DAYS+ days"
+        else -> "${totalHours / HOURS_PER_DAY} days"
+    }
+}
+
+// Delay until the label's next tier boundary: every minute while under 2 hours, every hour
+// while under 2 days, every day after that.
+private fun nextElapsedTick(timestamp: Double, now: Double): Duration {
+    val totalMinutes = totalMinutesSince(timestamp, now)
+    val totalHours = totalMinutes / MINUTES_PER_HOUR
+    val nextBoundarySeconds = when {
+        totalMinutes < HOUR_TIER_START_MINUTES ->
+            (totalMinutes + 1) * SECONDS_PER_MINUTE
+
+        totalHours < DAY_TIER_START_HOURS ->
+            (totalHours + 1) * MINUTES_PER_HOUR * SECONDS_PER_MINUTE
+
+        else ->
+            (totalHours / HOURS_PER_DAY + 1) * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE
+    }
+    return (timestamp + nextBoundarySeconds - now).seconds.coerceAtLeast(Duration.ZERO)
+}
+
+private fun totalMinutesSince(timestamp: Double, now: Double): Long =
+    ((now - timestamp) / SECONDS_PER_MINUTE).toLong().coerceAtLeast(0L)
+
+private const val SECONDS_PER_MINUTE = 60L
+private const val MINUTES_PER_HOUR = 60L
+private const val HOURS_PER_DAY = 24L
+private const val HOUR_TIER_START_MINUTES = 120L
+private const val DAY_TIER_START_HOURS = 48L
+
+// Keeps the label short, as wide as "47 hours"
+private const val MAX_DAYS = 99L
 
 
 @Preview
@@ -136,6 +213,7 @@ internal fun TyreStatNormalPreview() {
         location = Location.Wheel(SensorLocation.REAR_RIGHT),
         state =
             State.Normal(
+                now(),
                 2f.bar,
                 PressureUnit.BAR, 30f.celsius,
                 TemperatureUnit.CELSIUS
@@ -150,8 +228,39 @@ internal fun TyreStatAlertingPreview() {
     TyreStat(
         location = Location.Wheel(SensorLocation.REAR_RIGHT),
         state = State.Alerting(
+            now(),
             0.5f.bar,
             PressureUnit.BAR, 150f.celsius,
+            TemperatureUnit.CELSIUS
+        ),
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatHoursSinceUpdatePreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state = State.Normal(
+            now() - 5 * MINUTES_PER_HOUR * SECONDS_PER_MINUTE,
+            2f.bar,
+            PressureUnit.BAR, 30f.celsius,
+            TemperatureUnit.CELSIUS
+        ),
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatDaysSinceUpdatePreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state = State.Normal(
+            now() - 5 * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE,
+            2f.bar,
+            PressureUnit.BAR, 30f.celsius,
             TemperatureUnit.CELSIUS
         ),
     )
