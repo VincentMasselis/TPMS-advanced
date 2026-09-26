@@ -53,22 +53,14 @@ internal fun PressureCalibrationSettings(
     onMultiplier: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showInfo by remember { mutableStateOf(false) }
+    // The explanation of whichever slider's info button was tapped, null while no dialog is open
+    var info: String? by remember { mutableStateOf(null) }
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "Pressure calibration",
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
-            )
-            IconButton(
-                onClick = { showInfo = true },
-                content = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.info_24px),
-                        contentDescription = "More information about the pressure calibration"
-                    )
-                }
             )
             Switch(checked = enabled, onCheckedChange = onEnabled)
         }
@@ -81,6 +73,12 @@ internal fun PressureCalibrationSettings(
                 valueRange = (-OffsetLimit).convert(unit)..OffsetLimit.convert(unit),
                 // Snapped to a gauge's resolution, a raw slider value would read like 1.4837 psi
                 onValue = { onOffset(it.roundTo(unit.offsetStep).toPressure(unit)) },
+                openInfo = {
+                    info = "The offset is added to the pressure a sensor sends, after the multiplier. " +
+                        "Use it for a sensor which reads the same amount too high or too low at any " +
+                        "pressure.\n\n" +
+                        "A calibrated pressure is marked with an asterisk, like ${example.string(unit)}*."
+                },
             )
             CalibrationSlider(
                 title = "Multiplier: ",
@@ -89,6 +87,11 @@ internal fun PressureCalibrationSettings(
                 value = calibration.multiplier,
                 valueRange = MultiplierLimits,
                 onValue = { onMultiplier(it.roundTo(MULTIPLIER_STEP)) },
+                openInfo = {
+                    info = "The pressure a sensor sends is multiplied by the multiplier, before the " +
+                        "offset is added. Use it for a sensor whose error grows with the pressure.\n\n" +
+                        "A calibrated pressure is marked with an asterisk, like ${example.string(unit)}*."
+                },
             )
             Text(
                 "Example: ${example.string(unit)} read by a sensor is shown as " +
@@ -96,18 +99,13 @@ internal fun PressureCalibrationSettings(
             )
         }
     }
-    if (showInfo) AlertDialog(
-        text = {
-            Text(
-                "Some sensors read a bit too high or too low. Once calibrated, the pressure they " +
-                    "send is multiplied by the multiplier, then the offset is added, before being " +
-                    "displayed and checked against the expected pressure range.\n\n" +
-                    "A calibrated pressure is marked with an asterisk, like ${example.string(unit)}*."
-            )
-        },
-        onDismissRequest = { showInfo = false },
-        confirmButton = { TextButton(onClick = { showInfo = false }) { Text(text = "OK") } }
-    )
+    info?.let { text ->
+        AlertDialog(
+            text = { Text(text) },
+            onDismissRequest = { info = null },
+            confirmButton = { TextButton(onClick = { info = null }) { Text(text = "OK") } }
+        )
+    }
 }
 
 @Composable
@@ -118,13 +116,26 @@ private fun CalibrationSlider(
     value: Float,
     valueRange: ClosedFloatingPointRange<Float>,
     onValue: (Float) -> Unit,
+    openInfo: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        Text(
-            text = AnnotatedString(title, SpanStyle(fontWeight = FontWeight.Medium)) +
-                AnnotatedString(valueText, SpanStyle(fontWeight = FontWeight.Bold)),
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = AnnotatedString(title, SpanStyle(fontWeight = FontWeight.Medium)) +
+                    AnnotatedString(valueText, SpanStyle(fontWeight = FontWeight.Bold)),
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(
+                onClick = openInfo,
+                content = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.info_24px),
+                        contentDescription = "More information about the ${title.trimEnd(' ', ':').lowercase()}"
+                    )
+                }
+            )
+        }
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(bounds.first, Modifier.align(Alignment.TopStart))
             Text(bounds.second, Modifier.align(Alignment.TopEnd))
