@@ -21,6 +21,8 @@ import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
+import com.masselis.tpmsadvanced.data.vehicle.model.PressureCalibration
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.VehicleSettingsViewModel
@@ -43,6 +45,7 @@ public fun VehicleSettings(
     )
 }
 
+@Suppress("LongMethod")
 @Composable
 internal fun VehicleSettings(
     modifier: Modifier = Modifier,
@@ -88,6 +91,21 @@ internal fun VehicleSettings(
                         title = "Rear pressure range: ",
                     )
             }
+            val low by lowPressure.collectAsState()
+            val high by highPressure.collectAsState()
+            PressureCalibrationSettings(
+                enabled = pressureCalibration.collectAsState().value,
+                calibration = PressureCalibration(
+                    pressureOffset.collectAsState().value,
+                    pressureMultiplier.collectAsState().value,
+                ),
+                // Somewhere the user expects their tyres to be, so the example speaks to them
+                example = ((low.kpa + high.kpa) / 2).kpa,
+                unit = pressureUnit,
+                onEnabled = { pressureCalibration.value = it },
+                onOffset = { pressureOffset.value = it },
+                onMultiplier = { pressureMultiplier.value = it },
+            )
         }
         Separator()
         HighTemp(highTemp, normalTemp, tempUnit, { viewModel.highTemp.value = it })
