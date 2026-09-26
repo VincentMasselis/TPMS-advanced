@@ -2,33 +2,17 @@
 
 package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.content.Intent.ACTION_VIEW
-import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.masselis.tpmsadvanced.feature.main.R
@@ -230,8 +214,7 @@ private fun SingleAxleTrailer(
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
-            askHelp,
-            tyreBox,
+            vehicleImage,
             tyreLeft,
             leftStats,
             leftBinding,
@@ -239,29 +222,28 @@ private fun SingleAxleTrailer(
             rightStats,
             rightBinding,
         ) = createRefs()
-        BackgroundImageAskHelp(
-            Modifier.constrainAs(askHelp) {
-                end.linkTo(parent.end, 8.dp)
-                bottom.linkTo(parent.bottom, 4.dp)
-            }
-        )
-        Box(
-            Modifier
-                .aspectRatio(235f / 462f)
-                .constrainAs(tyreBox) {
+        Image(
+            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_single_axle_trailer_top_view),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+            contentDescription = "Image of your trailer",
+            modifier = Modifier
+                .aspectRatio(208f / 462f)
+                .constrainAs(vehicleImage) {
                     centerTo(parent)
-                    height = Dimension.percent(.55f)
+                    height = Dimension.percent(.7f)
                 }
         )
+        // The image is centered and takes 70% of the height, a wheel drawn at `y` (0..1) in the
+        // image is at `.15f + .7f * y` in the parent.
+        val axle = createGuidelineFromTop(.15f + .7f * .686f)
         with(Location.Side(LEFT)) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreLeft) {
-                        start.linkTo(tyreBox.start)
-                        top.linkTo(tyreBox.top)
-                        bottom.linkTo(tyreBox.bottom)
+                        start.linkTo(vehicleImage.start)
+                        centerAround(axle)
                         width = Dimension.value(30.dp)
                         height = Dimension.value(100.dp)
                     }
@@ -290,9 +272,8 @@ private fun SingleAxleTrailer(
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreRight) {
-                        end.linkTo(tyreBox.end)
-                        top.linkTo(tyreBox.top)
-                        bottom.linkTo(tyreBox.bottom)
+                        end.linkTo(vehicleImage.end)
+                        centerAround(axle)
                         width = Dimension.value(30.dp)
                         height = Dimension.value(100.dp)
                     }
@@ -423,8 +404,8 @@ private fun TadpoleThreadWheeler(
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
-            askHelp,
-            tyreBox,
+            vehicleImage,
+            frontTrack,
             frontLeft,
             frontLeftStats,
             frontLeftBinding,
@@ -435,27 +416,39 @@ private fun TadpoleThreadWheeler(
             rearStats,
             rearBinding,
         ) = createRefs()
-        BackgroundImageAskHelp(
-            Modifier.constrainAs(askHelp) {
-                end.linkTo(parent.end, 8.dp)
-                bottom.linkTo(parent.bottom, 4.dp)
-            }
-        )
-        Box(
-            Modifier
-                .aspectRatio(235f / 462f)
-                .constrainAs(tyreBox) {
+        Image(
+            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_tadpole_three_wheeler_top_view),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+            contentDescription = "Image of your three-wheeler",
+            modifier = Modifier
+                .aspectRatio(208f / 462f)
+                .constrainAs(vehicleImage) {
                     centerTo(parent)
-                    height = Dimension.percent(.55f)
+                    height = Dimension.percent(.7f)
                 }
         )
+        // Spans between the centers of the two front wheels and is centered like the image.
+        // Tyres are centered on its edges so they stay on the drawn wheels whatever the
+        // screen width.
+        Box(
+            Modifier
+                .aspectRatio(.58f * 208f / 462f)
+                .constrainAs(frontTrack) {
+                    centerTo(parent)
+                    height = Dimension.percent(.7f)
+                }
+        )
+        // The image is centered and takes 70% of the height, a wheel drawn at `y` (0..1) in the
+        // image is at `.15f + .7f * y` in the parent.
+        val frontAxle = createGuidelineFromTop(.15f + .7f * .1005f)
+        val rearAxle = createGuidelineFromTop(.15f + .7f * .845f)
         with(Location.Wheel(FRONT_LEFT)) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(frontLeft) {
-                    top.linkTo(tyreBox.top)
-                    start.linkTo(tyreBox.start)
+                    centerAround(frontTrack.start)
+                    centerAround(frontAxle)
                     width = Dimension.value(30.dp)
                     height = Dimension.value(100.dp)
                 }
@@ -464,7 +457,7 @@ private fun TadpoleThreadWheeler(
                 location = this,
                 modifier = Modifier.constrainAs(frontLeftStats) {
                     top.linkTo(frontLeft.top)
-                    end.linkTo(frontLeft.start, 8.dp)
+                    end.linkTo(vehicleImage.start, 8.dp)
                     // If not, the word "bar" for "1,50 bar" is not displayed 🤷
                     width = Dimension.value(100.dp)
                 }
@@ -472,8 +465,8 @@ private fun TadpoleThreadWheeler(
             BindSensorButton(
                 location = this,
                 modifier = Modifier.constrainAs(frontLeftBinding) {
-                    top.linkTo(frontLeft.top)
-                    start.linkTo(frontLeft.end)
+                    top.linkTo(frontLeft.bottom)
+                    centerHorizontallyTo(frontLeft)
                 }
             )
         }
@@ -482,8 +475,8 @@ private fun TadpoleThreadWheeler(
                 location = this,
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(frontRight) {
-                    top.linkTo(tyreBox.top)
-                    end.linkTo(tyreBox.end)
+                    centerAround(frontTrack.end)
+                    centerAround(frontAxle)
                     width = Dimension.value(30.dp)
                     height = Dimension.value(100.dp)
                 }
@@ -492,14 +485,14 @@ private fun TadpoleThreadWheeler(
                 location = this,
                 modifier = Modifier.constrainAs(frontRightStats) {
                     top.linkTo(frontRight.top)
-                    start.linkTo(frontRight.end, 8.dp)
+                    start.linkTo(vehicleImage.end, 8.dp)
                 }
             )
             BindSensorButton(
                 location = this,
                 modifier = Modifier.constrainAs(frontRightBinding) {
-                    top.linkTo(frontRight.top)
-                    end.linkTo(frontRight.start)
+                    top.linkTo(frontRight.bottom)
+                    centerHorizontallyTo(frontRight)
                 }
             )
         }
@@ -509,9 +502,8 @@ private fun TadpoleThreadWheeler(
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreRear) {
-                        start.linkTo(tyreBox.start)
-                        end.linkTo(tyreBox.end)
-                        bottom.linkTo(tyreBox.bottom)
+                        centerHorizontallyTo(vehicleImage)
+                        centerAround(rearAxle)
                         width = Dimension.value(30.dp)
                         height = Dimension.value(100.dp)
                     }
@@ -519,9 +511,8 @@ private fun TadpoleThreadWheeler(
             TyreStat(
                 location = this,
                 modifier = Modifier.constrainAs(rearStats) {
-                    top.linkTo(tyreRear.top)
-                    bottom.linkTo(tyreRear.bottom)
-                    start.linkTo(tyreRear.end, 8.dp)
+                    centerHorizontallyTo(tyreRear)
+                    top.linkTo(vehicleImage.bottom, 8.dp)
                 }
             )
             BindSensorButton(
@@ -544,8 +535,8 @@ private fun DeltaThreeWheeler(
 ) {
     ConstraintLayout(modifier = modifier) {
         val (
-            askHelp,
-            tyreBox,
+            vehicleImage,
+            rearTrack,
             tyreFront,
             frontStats,
             frontBinding,
@@ -556,29 +547,40 @@ private fun DeltaThreeWheeler(
             rearRightStats,
             rearRightBinding
         ) = createRefs()
-        BackgroundImageAskHelp(
-            Modifier.constrainAs(askHelp) {
-                end.linkTo(parent.end, 8.dp)
-                bottom.linkTo(parent.bottom, 4.dp)
-            }
-        )
-        Box(
-            Modifier
-                .aspectRatio(235f / 462f)
-                .constrainAs(tyreBox) {
+        Image(
+            bitmap = ImageBitmap.imageResource(id = R.drawable.schema_delta_three_wheeler_top_view),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+            contentDescription = "Image of your three-wheeler",
+            modifier = Modifier
+                .aspectRatio(208f / 462f)
+                .constrainAs(vehicleImage) {
                     centerTo(parent)
-                    height = Dimension.percent(.55f)
+                    height = Dimension.percent(.7f)
                 }
         )
+        // Spans between the centers of the two rear fenders and is centered like the image.
+        // Tyres are centered on its edges so they stay on the drawn wheels whatever the
+        // screen width.
+        Box(
+            Modifier
+                .aspectRatio(.713f * 208f / 462f)
+                .constrainAs(rearTrack) {
+                    centerTo(parent)
+                    height = Dimension.percent(.7f)
+                }
+        )
+        // The image is centered and takes 70% of the height, a wheel drawn at `y` (0..1) in the
+        // image is at `.15f + .7f * y` in the parent.
+        val frontAxle = createGuidelineFromTop(.15f + .7f * .0865f)
+        val rearAxle = createGuidelineFromTop(.15f + .7f * .835f)
         with(Location.Axle(FRONT)) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .constrainAs(tyreFront) {
-                        start.linkTo(tyreBox.start)
-                        end.linkTo(tyreBox.end)
-                        top.linkTo(tyreBox.top)
+                        centerHorizontallyTo(vehicleImage)
+                        centerAround(frontAxle)
                         width = Dimension.value(30.dp)
                         height = Dimension.value(100.dp)
                     }
@@ -586,9 +588,8 @@ private fun DeltaThreeWheeler(
             TyreStat(
                 location = this,
                 modifier = Modifier.constrainAs(frontStats) {
-                    top.linkTo(tyreFront.top)
-                    bottom.linkTo(tyreFront.bottom)
-                    start.linkTo(tyreFront.end, 8.dp)
+                    centerHorizontallyTo(tyreFront)
+                    bottom.linkTo(tyreFront.top, 8.dp)
                 }
             )
             BindSensorButton(
@@ -605,8 +606,8 @@ private fun DeltaThreeWheeler(
                 location = this,
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(rearLeft) {
-                    bottom.linkTo(tyreBox.bottom)
-                    start.linkTo(tyreBox.start)
+                    centerAround(rearTrack.start)
+                    centerAround(rearAxle)
                     width = Dimension.value(30.dp)
                     height = Dimension.value(100.dp)
                 }
@@ -615,15 +616,15 @@ private fun DeltaThreeWheeler(
                 location = this,
                 modifier = Modifier.constrainAs(rearLeftStats) {
                     bottom.linkTo(rearLeft.bottom)
-                    end.linkTo(rearLeft.start, 8.dp)
+                    end.linkTo(vehicleImage.start, 8.dp)
                     width = Dimension.value(100.dp)
                 }
             )
             BindSensorButton(
                 location = this,
                 modifier = Modifier.constrainAs(rearLeftBinding) {
-                    bottom.linkTo(rearLeft.bottom)
-                    start.linkTo(rearLeft.end)
+                    bottom.linkTo(rearLeft.top)
+                    centerHorizontallyTo(rearLeft)
                 }
             )
         }
@@ -632,8 +633,8 @@ private fun DeltaThreeWheeler(
                 location = this,
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier.constrainAs(rearRight) {
-                    bottom.linkTo(tyreBox.bottom)
-                    end.linkTo(tyreBox.end)
+                    centerAround(rearTrack.end)
+                    centerAround(rearAxle)
                     width = Dimension.value(30.dp)
                     height = Dimension.value(100.dp)
                 }
@@ -642,69 +643,16 @@ private fun DeltaThreeWheeler(
                 location = this,
                 modifier = Modifier.constrainAs(rearRightStats) {
                     bottom.linkTo(rearRight.bottom)
-                    start.linkTo(rearRight.end, 8.dp)
+                    start.linkTo(vehicleImage.end, 8.dp)
                 }
             )
             BindSensorButton(
                 location = this,
                 modifier = Modifier.constrainAs(rearRightBinding) {
-                    bottom.linkTo(rearRight.bottom)
-                    end.linkTo(rearRight.start)
+                    bottom.linkTo(rearRight.top)
+                    centerHorizontallyTo(rearRight)
                 }
             )
         }
-    }
-}
-
-@Composable
-private fun BackgroundImageAskHelp(
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-    ) {
-        Text(
-            text = "This app is built by its community,\nThis screen needs a background image",
-            fontWeight = FontWeight.Light,
-            fontSize = 10.sp,
-            lineHeight = 13.sp,
-            textAlign = TextAlign.End,
-        )
-        Spacer(Modifier.width(8.dp))
-        OutlinedButton(
-            onClick = {
-                try {
-                    context.startActivity(
-                        Intent(
-                            ACTION_VIEW,
-                            Uri.parse(
-                                "https://github.com/" +
-                                        "VincentMasselis/" +
-                                        "TPMS-advanced/" +
-                                        "issues/" +
-                                        "new?" +
-                                        "labels=enhancement&template=vehicle-background-image-proposal.md"
-                            )
-                        )
-                    )
-                } catch (_: ActivityNotFoundException) {
-                    Toast.makeText(context, "No web browser found", Toast.LENGTH_LONG).show()
-                }
-            },
-            contentPadding = PaddingValues(
-                top = 4.dp,
-                bottom = 4.dp,
-                start = 12.dp,
-                end = 12.dp
-            ),
-            content = {
-                Text(
-                    text = "Help us",
-                    fontSize = 12.sp,
-                )
-            }
-        )
     }
 }
