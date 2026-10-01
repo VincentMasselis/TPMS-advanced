@@ -7,6 +7,7 @@ import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreStatsStateFlow.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
@@ -21,13 +22,14 @@ import kotlinx.parcelize.Parcelize
 public class TyreStatsStateFlow internal constructor(
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: VehicleRangesUseCase,
+    location: Location,
     unitPreferences: UnitPreferences,
     scope: CoroutineScope,
     stateFlow: StateFlow<State> = combine(
         atmosphereUseCase.listen(),
         rangeUseCase.highTemp,
-        rangeUseCase.lowPressure,
-        rangeUseCase.highPressure,
+        rangeUseCase.resolvedLowPressure(location),
+        rangeUseCase.resolvedHighPressure(location),
         unitPreferences.pressure,
         unitPreferences.temperature,
     ) { values ->

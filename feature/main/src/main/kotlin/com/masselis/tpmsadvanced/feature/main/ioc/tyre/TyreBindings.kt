@@ -117,11 +117,13 @@ public interface TyreBindings {
     private fun tyreStatsUseCase(
         atmosphereUseCase: TyreAtmosphereUseCase,
         rangeUseCase: VehicleRangesUseCase,
+        location: Location,
         unitPreferences: UnitPreferences,
         @VehicleLifecycle scope: CoroutineScope,
     ): TyreStatsStateFlow = TyreStatsStateFlow(
         atmosphereUseCase,
         rangeUseCase,
+        location,
         unitPreferences,
         scope
     )
@@ -131,10 +133,12 @@ public interface TyreBindings {
     private fun tyreIconUseCase(
         atmosphereUseCase: TyreAtmosphereUseCase,
         rangeUseCase: VehicleRangesUseCase,
+        location: Location,
         @VehicleLifecycle scope: CoroutineScope,
     ): TyreIconStateFlow = TyreIconStateFlow(
         atmosphereUseCase,
         rangeUseCase,
+        location,
         scope
     )
 

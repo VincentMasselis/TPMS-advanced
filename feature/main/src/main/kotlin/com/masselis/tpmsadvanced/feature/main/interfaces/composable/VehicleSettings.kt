@@ -1,14 +1,19 @@
 package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.ui.Separator
 import com.masselis.tpmsadvanced.core.ui.viewModel
@@ -49,15 +54,40 @@ internal fun VehicleSettings(
     val normalTemp by viewModel.normalTemp.collectAsState()
     val lowTemp by viewModel.lowTemp.collectAsState()
     val tempUnit by viewModel.temperatureUnit.collectAsState()
+    val hasFrontRearAxles = component.vehicle.kind.hasFrontRearAxles
     Column(modifier) {
         with(viewModel) {
+            val pressureUnit by pressureUnit.collectAsState()
+            val separateRear = hasFrontRearAxles && separateRearPressure.collectAsState().value
+            if (hasFrontRearAxles)
+                RearPressureToggle(
+                    checked = separateRear,
+                    onCheckedChange = { setRearOverrideEnabled(it) },
+                )
             PressureRange(
                 lowPressure.collectAsState().value,
                 highPressure.collectAsState().value,
-                pressureUnit.collectAsState().value,
+                pressureUnit,
                 { lowPressure.value = it },
                 { highPressure.value = it },
+                title = if (separateRear)
+                    "Front pressure range: "
+                else
+                    "Expected pressure range: ",
             )
+            if (separateRear) {
+                val rearLowPressureValue = rearLowPressure.collectAsState().value
+                val rearHighPressureValue = rearHighPressure.collectAsState().value
+                if (rearLowPressureValue != null && rearHighPressureValue != null)
+                    PressureRange(
+                        rearLowPressureValue,
+                        rearHighPressureValue,
+                        pressureUnit,
+                        { rearLowPressure.value = it },
+                        { rearHighPressure.value = it },
+                        title = "Rear pressure range: ",
+                    )
+            }
         }
         Separator()
         HighTemp(highTemp, normalTemp, tempUnit, { viewModel.highTemp.value = it })
@@ -83,7 +113,8 @@ private fun PressureRange(
     unit: PressureUnit,
     onLowPressure: (Pressure) -> Unit,
     onHighPressure: (Pressure) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    title: String = "Expected pressure range: ",
 ) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
     PressureRangeSlider(
@@ -95,7 +126,8 @@ private fun PressureRange(
         },
         openInfo = { showLowPressureDialog = true },
         unit = unit,
-        modifier = modifier
+        modifier = modifier,
+        title = title,
     )
     if (showLowPressureDialog)
         PressureInfo(
@@ -103,6 +135,22 @@ private fun PressureRange(
             unit = unit,
             onDismissRequest = { showLowPressureDialog = false }
         )
+}
+
+@Composable
+private fun RearPressureToggle(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = "Set rear pressure separately",
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
 }
 
 @Composable
