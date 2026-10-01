@@ -67,6 +67,11 @@ private fun TyreStat(
             Pair(state.temperature, state.temperatureUnit)
         )
     }
+    val isPressureCalibrated = when (state) {
+        State.NotDetected -> false
+        is State.Normal -> state.isPressureCalibrated
+        is State.Alerting -> state.isPressureCalibrated
+    }
     val color = when (state) {
         State.NotDetected, is State.Normal -> MaterialTheme.colorScheme.onSurface
         is State.Alerting -> MaterialTheme.colorScheme.error
@@ -101,7 +106,11 @@ private fun TyreStat(
         modifier = modifier.alpha(if (isVisible) 1f else 0f)
     ) {
         Text(
-            pressure?.let { (value, unit) -> value.string(unit) } ?: "-.--",
+            pressure
+                ?.let { (value, unit) -> value.string(unit) }
+                // Explained in the vehicle settings, next to the calibration
+                ?.let { if (isPressureCalibrated) "$it*" else it }
+                ?: "-.--",
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             color = color,
@@ -139,6 +148,22 @@ internal fun TyreStatNormalPreview() {
                 2f.bar,
                 PressureUnit.BAR, 30f.celsius,
                 TemperatureUnit.CELSIUS
+            ),
+    )
+}
+
+
+@Preview
+@Composable
+internal fun TyreStatCalibratedPreview() {
+    TyreStat(
+        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        state =
+            State.Normal(
+                2f.bar,
+                PressureUnit.BAR, 30f.celsius,
+                TemperatureUnit.CELSIUS,
+                isPressureCalibrated = true,
             ),
     )
 }
