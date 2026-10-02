@@ -5,6 +5,7 @@ import android.os.ParcelUuid
 import androidx.core.util.size
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
+import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.util.UUID.fromString
@@ -38,7 +39,7 @@ internal data class RawBekubeeTpms private constructor(
     // Returns 2.97 for 2.97 volts
     fun voltage() = (manufacturerData[0].toInt() and 0xFF) * 0.01f + 1.22f
 
-    override fun asTyre(): Tyre.SensorInput = Tyre.Unlocated(
+    override fun asTyre(): ScannerRecord = Tyre.Unlocated(
         now(),
         rssi,
         id(),

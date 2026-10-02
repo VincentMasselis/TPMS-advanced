@@ -1,11 +1,11 @@
 package com.masselis.tpmsadvanced.feature.qrcode.usecase
 
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
@@ -38,12 +38,12 @@ internal interface BoundSensorMapUseCase {
 
                             MOTORCYCLE -> it.wheel.toAxle()
 
-                            TADPOLE_THREE_WHEELER -> when (it.wheel.location) {
+                            TADPOLE_THREE_WHEELER -> when (it.wheel) {
                                 FRONT_LEFT, FRONT_RIGHT -> it.wheel
                                 REAR_LEFT, REAR_RIGHT -> it.wheel.toAxle()
                             }
 
-                            DELTA_THREE_WHEELER -> when (it.wheel.location) {
+                            DELTA_THREE_WHEELER -> when (it.wheel) {
                                 FRONT_LEFT, FRONT_RIGHT -> it.wheel.toAxle()
                                 REAR_LEFT, REAR_RIGHT -> it.wheel
                             }

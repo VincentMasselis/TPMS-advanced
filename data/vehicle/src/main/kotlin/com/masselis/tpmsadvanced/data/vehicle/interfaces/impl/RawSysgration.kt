@@ -4,8 +4,8 @@ import android.bluetooth.le.ScanResult
 import android.os.ParcelUuid
 import androidx.core.util.size
 import com.masselis.tpmsadvanced.core.common.now
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.nio.ByteBuffer
@@ -22,7 +22,15 @@ internal data class RawSysgration private constructor(
 
     fun location() = manufacturerData[0]
         .toUByte()
-        .let { raw -> SensorLocation.entries.first { it.byte == raw } }
+        .let { byte ->
+            when (byte.toUInt()) {
+                0x80u -> Location.Wheel.FRONT_LEFT
+                0x81u -> Location.Wheel.FRONT_RIGHT
+                0x82u -> Location.Wheel.REAR_LEFT
+                0x83u -> Location.Wheel.REAR_RIGHT
+                else -> error("Unknown location byte: \"$byte\"")
+            }
+        }
 
     fun address() = manufacturerData.copyOfRange(1, 3)
 
@@ -49,7 +57,7 @@ internal data class RawSysgration private constructor(
 
     fun isAlarm() = manufacturerData[15] == PRESSURE_ALARM_BYTE
 
-    override fun asTyre() = Tyre.SensorLocated(
+    override fun asTyre() = Tyre.Located(
         now(),
         rssi,
         id(),

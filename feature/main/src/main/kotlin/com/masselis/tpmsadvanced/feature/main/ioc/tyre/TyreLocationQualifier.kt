@@ -1,13 +1,13 @@
 package com.masselis.tpmsadvanced.feature.main.ioc.tyre
 
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import dev.zacsweers.metro.Qualifier
 
 @Qualifier
-internal annotation class WheelLocationQualifier(val location: SensorLocation)
+internal annotation class WheelLocationQualifier(val location: Location.Wheel)
 
 @Qualifier
-internal annotation class AxleQualifier(val axle: SensorLocation.Axle)
+internal annotation class AxleQualifier(val axle: Location.Axle)
 
 @Qualifier
-internal annotation class SideQualifier(val side: SensorLocation.Side)
+internal annotation class SideQualifier(val side: Location.Side)

@@ -12,7 +12,7 @@ import androidx.compose.ui.test.performClick
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 
 @OptIn(ExperimentalTestApi::class)
 public class BindDialog private constructor(
@@ -29,7 +29,7 @@ public class BindDialog private constructor(
     private val bindButtonNode
         get() = onNodeWithTag(BindDialogTags.bindButton)
 
-    private fun locationNode(location: Vehicle.Kind.Location) =
+    private fun locationNode(location: Location) =
         onAllNodesWithTag(VehicleTyresTags.tyreLocation(location)).filterToOne(
             hasAnyAncestor(hasTestTag(BindDialogTags.root))
         )
@@ -43,7 +43,7 @@ public class BindDialog private constructor(
         return exitToken
     }
 
-    public fun tapLocation(location: Vehicle.Kind.Location) {
+    public fun tapLocation(location: Location) {
         locationNode(location).performClick()
     }
 

@@ -13,7 +13,7 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.ExitToken
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
 import com.masselis.tpmsadvanced.core.androidtest.onEnterAndOnExit
 import com.masselis.tpmsadvanced.core.androidtest.process
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 
 @OptIn(ExperimentalTestApi::class)
 public class UnlocatedSensorsList private constructor(
@@ -44,7 +44,7 @@ public class UnlocatedSensorsList private constructor(
         bindDialogTest.process(instructions)
     }
 
-    public fun assertAllLocationBound(vararg locations: Pair<Int, Vehicle.Kind.Location>) {
+    public fun assertAllLocationBound(vararg locations: Pair<Int, Location>) {
         locations.forEach { (sensorId, location) ->
             onAllNodesWithTag(VehicleTyresTags.tyreLocation(location)).filterToOne(
                 hasAnyAncestor(

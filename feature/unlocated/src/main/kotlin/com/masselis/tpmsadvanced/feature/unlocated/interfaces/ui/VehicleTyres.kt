@@ -17,14 +17,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Axle.FRONT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Axle.REAR
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Side.LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Side.RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.VehicleTyresTags.tyreLocation
 import kotlinx.collections.immutable.ImmutableMap
@@ -34,47 +35,47 @@ import kotlinx.collections.immutable.persistentMapOf
 @Composable
 internal fun Vehicle(
     kind: Vehicle.Kind,
-    states: ImmutableMap<Vehicle.Kind.Location, WheelState>,
+    states: ImmutableMap<Location, WheelState>,
     modifier: Modifier = Modifier,
-    onWheelTap: (Vehicle.Kind.Location?) -> Unit = onWheelTapPlaceholder,
+    onWheelTap: (Location?) -> Unit = onWheelTapPlaceholder,
 ) {
     val modifier = modifier.aspectRatio(.5f)
     when (kind) {
         Vehicle.Kind.CAR -> Car(
-            frontLeft = states.getValue(Vehicle.Kind.Location.Wheel(FRONT_LEFT)),
-            frontRight = states.getValue(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)),
-            rearLeft = states.getValue(Vehicle.Kind.Location.Wheel(REAR_LEFT)),
-            rearRight = states.getValue(Vehicle.Kind.Location.Wheel(REAR_RIGHT)),
+            frontLeft = states.getValue(FRONT_LEFT),
+            frontRight = states.getValue(FRONT_RIGHT),
+            rearLeft = states.getValue(REAR_LEFT),
+            rearRight = states.getValue(REAR_RIGHT),
             onWheelTap = onWheelTap,
             modifier = modifier,
         )
 
         Vehicle.Kind.SINGLE_AXLE_TRAILER -> SingleAxleTrailer(
-            left = states.getValue(Vehicle.Kind.Location.Side(LEFT)),
-            right = states.getValue(Vehicle.Kind.Location.Side(RIGHT)),
+            left = states.getValue(LEFT),
+            right = states.getValue(RIGHT),
             onWheelTap = onWheelTap,
             modifier = modifier
         )
 
         Vehicle.Kind.MOTORCYCLE -> Motorcycle(
-            front = states.getValue(Vehicle.Kind.Location.Axle(FRONT)),
-            rear = states.getValue(Vehicle.Kind.Location.Axle(REAR)),
+            front = states.getValue(FRONT),
+            rear = states.getValue(REAR),
             onWheelTap = onWheelTap,
             modifier = modifier
         )
 
         Vehicle.Kind.TADPOLE_THREE_WHEELER -> TadpoleThreeWheeler(
-            frontLeft = states.getValue(Vehicle.Kind.Location.Wheel(FRONT_LEFT)),
-            frontRight = states.getValue(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)),
-            rear = states.getValue(Vehicle.Kind.Location.Axle(REAR)),
+            frontLeft = states.getValue(FRONT_LEFT),
+            frontRight = states.getValue(FRONT_RIGHT),
+            rear = states.getValue(REAR),
             onWheelTap = onWheelTap,
             modifier = modifier
         )
 
         Vehicle.Kind.DELTA_THREE_WHEELER -> DeltaThreeWheeler(
-            front = states.getValue(Vehicle.Kind.Location.Axle(FRONT)),
-            rearLeft = states.getValue(Vehicle.Kind.Location.Wheel(REAR_LEFT)),
-            rearRight = states.getValue(Vehicle.Kind.Location.Wheel(REAR_RIGHT)),
+            front = states.getValue(FRONT),
+            rearLeft = states.getValue(REAR_LEFT),
+            rearRight = states.getValue(REAR_RIGHT),
             onWheelTap = onWheelTap,
             modifier = modifier
         )
@@ -93,37 +94,37 @@ private fun Car(
     frontRight: WheelState,
     rearLeft: WheelState,
     rearRight: WheelState,
-    onWheelTap: (Vehicle.Kind.Location?) -> Unit,
+    onWheelTap: (Location?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         Tyre(
             state = frontLeft,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(FRONT_LEFT)),
+            onTap = onWheelTap.takeIfImplemented(FRONT_LEFT),
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(FRONT_LEFT)))
+                .testTag(tyreLocation(FRONT_LEFT))
         )
         Tyre(
             state = frontRight,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)),
+            onTap = onWheelTap.takeIfImplemented(FRONT_RIGHT),
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)))
+                .testTag(tyreLocation(FRONT_RIGHT))
         )
         Tyre(
             state = rearLeft,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(REAR_LEFT)),
+            onTap = onWheelTap.takeIfImplemented(REAR_LEFT),
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(REAR_LEFT)))
+                .testTag(tyreLocation(REAR_LEFT))
         )
         Tyre(
             state = rearRight,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(REAR_RIGHT)),
+            onTap = onWheelTap.takeIfImplemented(REAR_RIGHT),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(REAR_RIGHT)))
+                .testTag(tyreLocation(REAR_RIGHT))
         )
     }
 }
@@ -132,23 +133,23 @@ private fun Car(
 private fun SingleAxleTrailer(
     left: WheelState,
     right: WheelState,
-    onWheelTap: (Vehicle.Kind.Location?) -> Unit,
+    onWheelTap: (Location?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         Tyre(
             state = left,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Side(LEFT)),
+            onTap = onWheelTap.takeIfImplemented(LEFT),
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Side(LEFT))),
+                .testTag(tyreLocation(LEFT)),
         )
         Tyre(
             state = right,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Side(RIGHT)),
+            onTap = onWheelTap.takeIfImplemented(RIGHT),
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Side(RIGHT))),
+                .testTag(tyreLocation(RIGHT)),
         )
     }
 }
@@ -157,23 +158,23 @@ private fun SingleAxleTrailer(
 private fun Motorcycle(
     front: WheelState,
     rear: WheelState,
-    onWheelTap: (Vehicle.Kind.Location?) -> Unit,
+    onWheelTap: (Location?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         Tyre(
             state = front,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Axle(FRONT)),
+            onTap = onWheelTap.takeIfImplemented(FRONT),
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Axle(FRONT))),
+                .testTag(tyreLocation(FRONT)),
         )
         Tyre(
             state = rear,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Axle(REAR)),
+            onTap = onWheelTap.takeIfImplemented(REAR),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Axle(REAR))),
+                .testTag(tyreLocation(REAR)),
         )
     }
 }
@@ -183,30 +184,30 @@ private fun TadpoleThreeWheeler(
     frontLeft: WheelState,
     frontRight: WheelState,
     rear: WheelState,
-    onWheelTap: (Vehicle.Kind.Location?) -> Unit,
+    onWheelTap: (Location?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         Tyre(
             state = frontLeft,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(FRONT_LEFT)),
+            onTap = onWheelTap.takeIfImplemented(FRONT_LEFT),
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(FRONT_LEFT)))
+                .testTag(tyreLocation(FRONT_LEFT))
         )
         Tyre(
             state = frontRight,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)),
+            onTap = onWheelTap.takeIfImplemented(FRONT_RIGHT),
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(FRONT_RIGHT)))
+                .testTag(tyreLocation(FRONT_RIGHT))
         )
         Tyre(
             state = rear,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Axle(REAR)),
+            onTap = onWheelTap.takeIfImplemented(REAR),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Axle(REAR)))
+                .testTag(tyreLocation(REAR))
         )
     }
 }
@@ -216,30 +217,30 @@ private fun DeltaThreeWheeler(
     front: WheelState,
     rearLeft: WheelState,
     rearRight: WheelState,
-    onWheelTap: (Vehicle.Kind.Location?) -> Unit,
+    onWheelTap: (Location?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         Tyre(
             state = front,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Axle(FRONT)),
+            onTap = onWheelTap.takeIfImplemented(FRONT),
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Axle(FRONT)))
+                .testTag(tyreLocation(FRONT))
         )
         Tyre(
             state = rearLeft,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(REAR_LEFT)),
+            onTap = onWheelTap.takeIfImplemented(REAR_LEFT),
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(REAR_LEFT)))
+                .testTag(tyreLocation(REAR_LEFT))
         )
         Tyre(
             state = rearRight,
-            onTap = onWheelTap.takeIfImplemented(Vehicle.Kind.Location.Wheel(REAR_RIGHT)),
+            onTap = onWheelTap.takeIfImplemented(REAR_RIGHT),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .testTag(tyreLocation(Vehicle.Kind.Location.Wheel(REAR_RIGHT)))
+                .testTag(tyreLocation(REAR_RIGHT))
         )
     }
 }
@@ -279,8 +280,8 @@ private fun Tyre(
 }
 
 private val onTapPlaceholder: () -> Unit = {}
-private val onWheelTapPlaceholder: (Vehicle.Kind.Location?) -> Unit = {}
-private fun ((Vehicle.Kind.Location?) -> Unit).takeIfImplemented(location: Vehicle.Kind.Location): () -> Unit =
+private val onWheelTapPlaceholder: (Location?) -> Unit = {}
+private fun ((Location?) -> Unit).takeIfImplemented(location: Location): () -> Unit =
     if (this === onWheelTapPlaceholder) onTapPlaceholder
     else {
         { invoke(location) }
@@ -292,10 +293,10 @@ internal fun CarPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(
-            Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
-            Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
-            Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,
-            Vehicle.Kind.Location.Wheel(REAR_RIGHT) to WheelState.Empty
+            FRONT_LEFT to WheelState.Highlighted,
+            FRONT_RIGHT to WheelState.Fade,
+            REAR_LEFT to WheelState.Empty,
+            REAR_RIGHT to WheelState.Empty
         )
     )
 }
@@ -306,8 +307,8 @@ internal fun SingleAxleTrailerPreview() {
     Vehicle(
         kind = Vehicle.Kind.SINGLE_AXLE_TRAILER,
         states = persistentMapOf(
-            Vehicle.Kind.Location.Side(LEFT) to WheelState.Highlighted,
-            Vehicle.Kind.Location.Side(RIGHT) to WheelState.Empty,
+            LEFT to WheelState.Highlighted,
+            RIGHT to WheelState.Empty,
         )
     )
 }
@@ -318,8 +319,8 @@ internal fun MotorcyclePreview() {
     Vehicle(
         kind = Vehicle.Kind.MOTORCYCLE,
         states = persistentMapOf(
-            Vehicle.Kind.Location.Axle(FRONT) to WheelState.Highlighted,
-            Vehicle.Kind.Location.Axle(REAR) to WheelState.Empty,
+            FRONT to WheelState.Highlighted,
+            REAR to WheelState.Empty,
         )
     )
 }
@@ -330,9 +331,9 @@ internal fun TadpoleThreeWheelerPreview() {
     Vehicle(
         kind = Vehicle.Kind.TADPOLE_THREE_WHEELER,
         states = persistentMapOf(
-            Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
-            Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
-            Vehicle.Kind.Location.Axle(REAR) to WheelState.Empty,
+            FRONT_LEFT to WheelState.Highlighted,
+            FRONT_RIGHT to WheelState.Fade,
+            REAR to WheelState.Empty,
         )
     )
 }
@@ -343,9 +344,9 @@ internal fun DeltaThreeWheelerPreview() {
     Vehicle(
         kind = Vehicle.Kind.DELTA_THREE_WHEELER,
         states = persistentMapOf(
-            Vehicle.Kind.Location.Axle(FRONT) to WheelState.Highlighted,
-            Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Fade,
-            Vehicle.Kind.Location.Wheel(REAR_RIGHT) to WheelState.Empty,
+            FRONT to WheelState.Highlighted,
+            REAR_LEFT to WheelState.Fade,
+            REAR_RIGHT to WheelState.Empty,
         )
     )
 }
@@ -356,10 +357,10 @@ internal fun CarNanoPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(
-            Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
-            Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
-            Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,
-            Vehicle.Kind.Location.Wheel(REAR_RIGHT) to WheelState.Empty
+            FRONT_LEFT to WheelState.Highlighted,
+            FRONT_RIGHT to WheelState.Fade,
+            REAR_LEFT to WheelState.Empty,
+            REAR_RIGHT to WheelState.Empty
         ),
         modifier = Modifier.height(48.dp),
     )
@@ -371,10 +372,10 @@ internal fun CarMinusPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(
-            Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
-            Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
-            Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,
-            Vehicle.Kind.Location.Wheel(REAR_RIGHT) to WheelState.Empty
+            FRONT_LEFT to WheelState.Highlighted,
+            FRONT_RIGHT to WheelState.Fade,
+            REAR_LEFT to WheelState.Empty,
+            REAR_RIGHT to WheelState.Empty
         ),
         modifier = Modifier.height(100.dp),
     )
@@ -386,10 +387,10 @@ internal fun CarAveragePreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(
-            Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
-            Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
-            Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,
-            Vehicle.Kind.Location.Wheel(REAR_RIGHT) to WheelState.Empty
+            FRONT_LEFT to WheelState.Highlighted,
+            FRONT_RIGHT to WheelState.Fade,
+            REAR_LEFT to WheelState.Empty,
+            REAR_RIGHT to WheelState.Empty
         ),
         modifier = Modifier.height(200.dp),
     )
@@ -401,15 +402,15 @@ internal fun CarBigPreview() {
     Vehicle(
         kind = Vehicle.Kind.CAR,
         states = persistentMapOf(
-            Vehicle.Kind.Location.Wheel(FRONT_LEFT) to WheelState.Highlighted,
-            Vehicle.Kind.Location.Wheel(FRONT_RIGHT) to WheelState.Fade,
-            Vehicle.Kind.Location.Wheel(REAR_LEFT) to WheelState.Empty,
-            Vehicle.Kind.Location.Wheel(REAR_RIGHT) to WheelState.Empty
+            FRONT_LEFT to WheelState.Highlighted,
+            FRONT_RIGHT to WheelState.Fade,
+            REAR_LEFT to WheelState.Empty,
+            REAR_RIGHT to WheelState.Empty
         ),
         modifier = Modifier.height(400.dp),
     )
 }
 
 internal object VehicleTyresTags {
-    fun tyreLocation(location: Vehicle.Kind.Location) = "tyreLocation_$location"
+    fun tyreLocation(location: Location) = "tyreLocation_$location"
 }

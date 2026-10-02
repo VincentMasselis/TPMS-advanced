@@ -3,8 +3,7 @@ package com.masselis.tpmsadvanced.feature.qrcode.interfaces
 import androidx.camera.view.CameraController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Wheel
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.feature.qrcode.model.QrCodeSensors
 import com.masselis.tpmsadvanced.feature.qrcode.usecase.BoundSensorMapUseCase
 import com.masselis.tpmsadvanced.feature.qrcode.usecase.QrCodeSensorUseCase
@@ -49,13 +48,13 @@ internal class QRCodeViewModel(
 
             data class Missing(
                 override val qrCodeSensors: QrCodeSensors,
-                val locations: Set<Vehicle.Kind.Location>
+                val locations: Set<Location>
             ) : AskForBinding
         }
 
         sealed interface Error : State {
             @JvmInline
-            value class DuplicateWheelLocation(val wheels: Collection<Wheel>) : Error
+            value class DuplicateWheelLocation(val wheels: Collection<Location.Wheel>) : Error
 
             @JvmInline
             value class DuplicateId(val ids: Collection<Int>) : Error

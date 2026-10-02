@@ -21,12 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
@@ -139,7 +136,7 @@ private fun BindDialogCarPreview() {
         viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(),
-                setOf(Location.Wheel(FRONT_LEFT))
+                setOf(Location.Wheel.FRONT_LEFT)
             )
         ),
         onBind = {},
@@ -156,7 +153,7 @@ private fun BindDialogTrailerPreview() {
         viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(kind = SINGLE_AXLE_TRAILER),
-                setOf(Location.Side(LEFT))
+                setOf(Location.Side.LEFT)
             )
         ),
         onBind = {},
@@ -173,7 +170,7 @@ private fun BindDialogMotorcyclePreview() {
         viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(kind = MOTORCYCLE),
-                setOf(Location.Axle(FRONT))
+                setOf(Location.Axle.FRONT)
             )
         ),
         onBind = {},
@@ -190,7 +187,7 @@ private fun BindDialogTadpolePreview() {
         viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(kind = TADPOLE_THREE_WHEELER),
-                setOf(Location.Wheel(FRONT_LEFT))
+                setOf(Location.Wheel.FRONT_LEFT)
             )
         ),
         onBind = {},
@@ -207,7 +204,7 @@ private fun BindDialogDeltaPreview() {
         viewModel = MockBindDialogViewModel(
             State.ReadyToBind(
                 mockVehicle(kind = DELTA_THREE_WHEELER),
-                setOf(Location.Axle(FRONT))
+                setOf(Location.Axle.FRONT)
             )
         ),
         onBind = {},
@@ -226,7 +223,7 @@ private fun BindDialogAlreadyBoundPreview() {
                 mockVehicle(),
                 emptySet(),
                 mockVehicle(),
-                Location.Wheel(FRONT_LEFT)
+                Location.Wheel.FRONT_LEFT
             )
         ),
         onBind = {},

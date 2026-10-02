@@ -16,10 +16,9 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.afterVersion3
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
@@ -47,15 +46,6 @@ public interface Bindings {
         override fun decode(databaseValue: String): UUID = UUID.fromString(databaseValue)
         override fun encode(value: UUID): String = value.toString()
     }
-
-    @Provides
-    private fun tyreLocationAdapter(): ColumnAdapter<SensorLocation, Long> =
-        object : ColumnAdapter<SensorLocation, Long> {
-            override fun decode(databaseValue: Long): SensorLocation = SensorLocation.entries
-                .first { it.ordinal.toLong() == databaseValue }
-
-            override fun encode(value: SensorLocation): Long = value.ordinal.toLong()
-        }
 
     @Provides
     private fun pressureAdapter(): ColumnAdapter<Pressure, Double> =
@@ -86,25 +76,22 @@ public interface Bindings {
         object : ColumnAdapter<Location, Long> {
 
             override fun encode(value: Location): Long = when (value) {
-                is Location.Axle -> 0L + value.axle.ordinal.toLong()
-                is Location.Side -> 10L + value.side.ordinal
-                is Location.Wheel -> 20L + value.location.ordinal
+                is Location.Axle -> 0L + value.ordinal.toLong()
+                is Location.Side -> 10L + value.ordinal
+                is Location.Wheel -> 20L + value.ordinal
             }
 
             override fun decode(databaseValue: Long): Location {
                 val ordinal = databaseValue.toInt() % 10
                 return when (databaseValue) {
-                    in 0..9 -> Location.Axle(
-                        SensorLocation.Axle.entries.first { it.ordinal == ordinal }
-                    )
+                    in 0..9 ->
+                        Location.Axle.entries.first { it.ordinal == ordinal }
 
-                    in 10..19 -> Location.Side(
-                        SensorLocation.Side.entries.first { it.ordinal == ordinal }
-                    )
+                    in 10..19 ->
+                        Location.Side.entries.first { it.ordinal == ordinal }
 
-                    in 20..29 -> Location.Wheel(
-                        SensorLocation.entries.first { it.ordinal == ordinal }
-                    )
+                    in 20..29 ->
+                        Location.Wheel.entries.first { it.ordinal == ordinal }
 
                     else -> error("Unable to parse this input $databaseValue")
                 }

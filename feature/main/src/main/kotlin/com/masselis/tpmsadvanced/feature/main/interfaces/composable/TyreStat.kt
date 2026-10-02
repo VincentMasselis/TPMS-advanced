@@ -19,12 +19,11 @@ import androidx.compose.ui.unit.sp
 import com.masselis.tpmsadvanced.core.ui.viewModel
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Side.LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreBindings.Companion.TyreStatsViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
@@ -86,12 +85,12 @@ private fun TyreStat(
     val alignment = remember {
         when (location) {
             is Location.Axle -> Alignment.Start
-            is Location.Wheel -> when (location.location.side) {
+            is Location.Wheel -> when (location.toSide()) {
                 LEFT -> Alignment.End
                 RIGHT -> Alignment.Start
             }
 
-            is Location.Side -> when (location.side) {
+            is Location.Side -> when (location) {
                 LEFT -> Alignment.End
                 RIGHT -> Alignment.Start
             }
@@ -123,7 +122,7 @@ private fun TyreStat(
 @Composable
 internal fun TyreStatNotDetectedPreview() {
     TyreStat(
-        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        location = Location.Wheel.REAR_RIGHT,
         state = State.NotDetected,
     )
 }
@@ -133,7 +132,7 @@ internal fun TyreStatNotDetectedPreview() {
 @Composable
 internal fun TyreStatNormalPreview() {
     TyreStat(
-        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        location = Location.Wheel.REAR_RIGHT,
         state =
             State.Normal(
                 2f.bar,
@@ -148,7 +147,7 @@ internal fun TyreStatNormalPreview() {
 @Composable
 internal fun TyreStatAlertingPreview() {
     TyreStat(
-        location = Location.Wheel(SensorLocation.REAR_RIGHT),
+        location = Location.Wheel.REAR_RIGHT,
         state = State.Alerting(
             0.5f.bar,
             PressureUnit.BAR, 150f.celsius,

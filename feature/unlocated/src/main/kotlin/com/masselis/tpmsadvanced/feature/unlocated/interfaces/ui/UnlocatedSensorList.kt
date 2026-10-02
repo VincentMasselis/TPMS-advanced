@@ -59,12 +59,12 @@ import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit.BAR
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit.CELSIUS
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
@@ -729,7 +729,7 @@ internal fun SearchingFoundMultipleTyrePreview() {
                 Vehicle.Kind.CAR,
                 listOf(
                     Pair(
-                        Sensor(0, Vehicle.Kind.Location.Wheel(FRONT_LEFT)),
+                        Sensor(0, FRONT_LEFT),
                         Tyre.Unlocated(ts, -20, 0, 1.5f.bar, 20f.celsius, 20u, false),
                     )
                 ),
@@ -772,7 +772,7 @@ internal fun SearchingFoundOnlyBoundTyrePreview() {
             State.Searching(
                 "MOCK",
                 Vehicle.Kind.CAR,
-                listOf(Sensor(0, Vehicle.Kind.Location.Wheel(FRONT_LEFT)) to null),
+                listOf(Sensor(0, FRONT_LEFT) to null),
                 emptyList(),
                 listOf(
                     Triple(
@@ -809,13 +809,13 @@ internal fun CompletedPreview() {
                 "MOCK",
                 Vehicle.Kind.CAR,
                 listOf(
-                    Sensor(0, Vehicle.Kind.Location.Wheel(FRONT_LEFT)) to null,
+                    Sensor(0, FRONT_LEFT) to null,
                     Pair(
-                        Sensor(1, Vehicle.Kind.Location.Wheel(FRONT_RIGHT)),
+                        Sensor(1, FRONT_RIGHT),
                         Tyre.Unlocated(ts, -20, 1, 1.5f.bar, 20f.celsius, 20u, false),
                     ),
-                    Sensor(2, Vehicle.Kind.Location.Wheel(REAR_LEFT)) to null,
-                    Sensor(3, Vehicle.Kind.Location.Wheel(REAR_RIGHT)) to null
+                    Sensor(2, REAR_LEFT) to null,
+                    Sensor(3, REAR_RIGHT) to null
                 ),
                 BAR,
                 CELSIUS,

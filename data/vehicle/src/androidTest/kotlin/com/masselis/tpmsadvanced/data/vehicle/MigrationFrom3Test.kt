@@ -6,7 +6,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.core.common.appGraph
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.afterVersion3
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import io.requery.android.database.sqlite.SQLiteDatabase
@@ -20,10 +20,10 @@ internal class MigrationFrom3Test {
 
     @ContributesTo(AppScope::class)
     internal interface Extractor {
-        val locationAdapter: ColumnAdapter<Vehicle.Kind.Location, Long>
+        val locationAdapter: ColumnAdapter<Location, Long>
     }
 
-    private lateinit var locationAdapter: ColumnAdapter<Vehicle.Kind.Location, Long>
+    private lateinit var locationAdapter: ColumnAdapter<Location, Long>
 
     @Before
     fun setup() {

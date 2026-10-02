@@ -1,8 +1,8 @@
 package com.masselis.tpmsadvanced.feature.main.ioc.tyre
 
 import com.masselis.tpmsadvanced.core.ui.Keyed
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreSubcomponentBindings.Companion.findTyreComponentUseCase
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreAtmosphereUseCase

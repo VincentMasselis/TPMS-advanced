@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.feature.androidauto.endpoint.ui.viewmodel
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
@@ -51,7 +52,7 @@ internal class TabScreenViewModel(
 
                 data class Displayed(
                     override val vehicle: Vehicle,
-                    val tyres: Map<Vehicle.Kind.Location, Pair<TyreIconStateFlow.State, TyreStatsStateFlow.State>>
+                    val tyres: Map<Location, Pair<TyreIconStateFlow.State, TyreStatsStateFlow.State>>
                 ) : Tab
             }
         }
@@ -79,7 +80,7 @@ internal class TabScreenViewModel(
                     }
                     .asFlow()
                     .flattenMerge()
-                    .runningFold(mutableMapOf<Vehicle.Kind.Location, Pair<TyreIconStateFlow.State, TyreStatsStateFlow.State>>()) { acc, (location, pairOfStates) ->
+                    .runningFold(mutableMapOf<Location, Pair<TyreIconStateFlow.State, TyreStatsStateFlow.State>>()) { acc, (location, pairOfStates) ->
                         acc[location] = pairOfStates
                         acc
                     }

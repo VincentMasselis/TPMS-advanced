@@ -21,8 +21,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.createSavedStateHandle
 import com.masselis.tpmsadvanced.core.ui.viewModel
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorTags.Button.tag
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorTags.Dialog.addToFavoritesButton
@@ -121,7 +120,7 @@ private fun BindSensorDialog(
 @Composable
 private fun BindSensorButtonNewBindingPreview() {
     BindSensorButton(
-        location = Location.Wheel(SensorLocation.REAR_LEFT),
+        location = Location.Wheel.REAR_LEFT,
         state = State.RequestBond.NewBinding(previewSensor),
         onBind = {}
     )
@@ -131,7 +130,7 @@ private fun BindSensorButtonNewBindingPreview() {
 @Composable
 private fun BindSensorButtonAlreadyBoundPreview() {
     BindSensorButton(
-        location = Location.Wheel(SensorLocation.REAR_LEFT),
+        location = Location.Wheel.REAR_LEFT,
         state = State.RequestBond.AlreadyBound(
             previewSensor,
             previewVehicle,

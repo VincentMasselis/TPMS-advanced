@@ -2,15 +2,15 @@ package com.masselis.tpmsadvanced.feature.qrcode.usecase
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Side.RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Wheel
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
@@ -55,10 +55,10 @@ internal class QrCodeSensorUseCaseTest {
             val (qrCodeSensor, missingLocations) = awaitItem()
             assertEquals(
                 QrCodeSensors.FourWheel(
-                    QrCodeSensor(-1951592192, Wheel(FRONT_LEFT)),
-                    QrCodeSensor(1029054720, Wheel(FRONT_RIGHT)),
-                    QrCodeSensor(-257675008, Wheel(REAR_LEFT)),
-                    QrCodeSensor(1386561792, Wheel(REAR_RIGHT)),
+                    QrCodeSensor(-1951592192, FRONT_LEFT),
+                    QrCodeSensor(1029054720, FRONT_RIGHT),
+                    QrCodeSensor(-257675008, REAR_LEFT),
+                    QrCodeSensor(1386561792, REAR_RIGHT),
                 ),
                 qrCodeSensor
             )
@@ -74,12 +74,12 @@ internal class QrCodeSensorUseCaseTest {
             val (qrCodeSensor, missingLocations) = awaitItem()
             assertEquals(
                 QrCodeSensors.TwoWheel(
-                    QrCodeSensor(-1951592192, Wheel(FRONT_LEFT)),
-                    QrCodeSensor(1029054720, Wheel(FRONT_RIGHT)),
+                    QrCodeSensor(-1951592192, FRONT_LEFT),
+                    QrCodeSensor(1029054720, FRONT_RIGHT),
                 ),
                 qrCodeSensor
             )
-            assertContentEquals(listOf(Wheel(REAR_LEFT), Wheel(REAR_RIGHT)), missingLocations)
+            assertContentEquals(listOf(REAR_LEFT, REAR_RIGHT), missingLocations)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -94,8 +94,8 @@ internal class QrCodeSensorUseCaseTest {
             val (qrCodeSensor, missingLocations) = awaitItem()
             assertEquals(
                 QrCodeSensors.TwoWheel(
-                    QrCodeSensor(-1951592192, Wheel(FRONT_LEFT)),
-                    QrCodeSensor(1386561792, Wheel(REAR_RIGHT)),
+                    QrCodeSensor(-1951592192, FRONT_LEFT),
+                    QrCodeSensor(1386561792, REAR_RIGHT),
                 ),
                 qrCodeSensor
             )
@@ -114,12 +114,12 @@ internal class QrCodeSensorUseCaseTest {
             val (qrCodeSensor, missingLocations) = awaitItem()
             assertEquals(
                 QrCodeSensors.TwoWheel(
-                    QrCodeSensor(-1951592192, Wheel(FRONT_LEFT)),
-                    QrCodeSensor(-257675008, Wheel(REAR_LEFT)),
+                    QrCodeSensor(-1951592192, FRONT_LEFT),
+                    QrCodeSensor(-257675008, REAR_LEFT),
                 ),
                 qrCodeSensor
             )
-            assertContentEquals(listOf(Location.Side(RIGHT)), missingLocations)
+            assertContentEquals(listOf(Location.Side.RIGHT), missingLocations)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -134,10 +134,10 @@ internal class QrCodeSensorUseCaseTest {
             val (qrCodeSensor, missingLocations) = awaitItem()
             assertEquals(
                 QrCodeSensors.FourWheel(
-                    QrCodeSensor(-1951592192, Wheel(FRONT_LEFT)),
-                    QrCodeSensor(1029054720, Wheel(FRONT_RIGHT)),
-                    QrCodeSensor(-257675008, Wheel(REAR_LEFT)),
-                    QrCodeSensor(1386561792, Wheel(REAR_RIGHT)),
+                    QrCodeSensor(-1951592192, FRONT_LEFT),
+                    QrCodeSensor(1029054720, FRONT_RIGHT),
+                    QrCodeSensor(-257675008, REAR_LEFT),
+                    QrCodeSensor(1386561792, REAR_RIGHT),
                 ),
                 qrCodeSensor
             )
@@ -156,10 +156,10 @@ internal class QrCodeSensorUseCaseTest {
             val (qrCodeSensor, missingLocations) = awaitItem()
             assertEquals(
                 QrCodeSensors.FourWheel(
-                    QrCodeSensor(-1951592192, Wheel(FRONT_LEFT)),
-                    QrCodeSensor(1029054720, Wheel(FRONT_RIGHT)),
-                    QrCodeSensor(-257675008, Wheel(REAR_LEFT)),
-                    QrCodeSensor(1386561792, Wheel(REAR_RIGHT)),
+                    QrCodeSensor(-1951592192, FRONT_LEFT),
+                    QrCodeSensor(1029054720, FRONT_RIGHT),
+                    QrCodeSensor(-257675008, REAR_LEFT),
+                    QrCodeSensor(1386561792, REAR_RIGHT),
                 ),
                 qrCodeSensor
             )

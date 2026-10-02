@@ -1,10 +1,10 @@
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle;
+import com.masselis.tpmsadvanced.data.vehicle.model.Location;
 import java.util.UUID;
 import kotlin.Int;
 
 CREATE TABLE Sensor(
     id INTEGER AS Int NOT NULL PRIMARY KEY,
-    location INTEGER AS Vehicle.Kind.Location NOT NULL,
+    location INTEGER AS Location NOT NULL,
     vehicleId TEXT AS UUID NOT NULL,
     FOREIGN KEY(vehicleId) REFERENCES Vehicle(uuid) ON DELETE CASCADE,
     UNIQUE(location, vehicleId)
