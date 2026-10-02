@@ -21,7 +21,7 @@ internal class TeslaTest {
         manufacturerData: String,
         manufacturerId: Int = RawTesla.MANUFACTURER_ID,
         address: String = "BC:6A:29:00:00:01",
-    ) = RawTesla(
+    ) = RawTeslaAwake(
         mockScanResult(
             mockScanRecord = mockScanRecord(
                 mockManufacturerData = manufacturerData.hexToByteArray(),
