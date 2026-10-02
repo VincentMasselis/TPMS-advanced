@@ -84,7 +84,7 @@ oshi = "com.github.oshi:oshi-core-java11:7.0.0"
 placeholder = "io.github.fornewid:placeholder-material3:2.0.0"
 relinker = "com.getkeepsafe.relinker:relinker:1.4.5"
 requery = "com.github.requery:sqlite-android:3.49.0"
-robolectric = "org.robolectric:robolectric:4.16.1"
+robolectric = "org.robolectric:robolectric:4.17"
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 sqldelight-coroutines-ext = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqlDelight" }
 sqldelight-coroutines-jvm = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqlDelight" }
