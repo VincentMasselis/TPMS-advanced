@@ -1,6 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
-import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
+import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
 import kotlinx.coroutines.flow.Flow
 
 public interface BluetoothLeScanner {
@@ -12,8 +12,8 @@ public interface BluetoothLeScanner {
         public class Scan(reason: Int) : Exception("Failure.Scan(reason=$reason)")
     }
 
-    public fun highDutyScan(): Flow<Tyre.SensorInput>
-    public fun normalScan(): Flow<Tyre.SensorInput>
+    public fun highDutyScan(): Flow<ScannerRecord>
+    public fun normalScan(): Flow<ScannerRecord>
 
     public fun missingPermission(): List<String>
 

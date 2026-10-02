@@ -2,12 +2,12 @@ package com.masselis.tpmsadvanced.interfaces
 
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.interfaces.screens.Home.Companion.home
 import org.junit.Before
@@ -61,7 +61,7 @@ internal class MainFeatureTest {
         dropdownMenu {
             select("Car")
         }
-        bindSensorButton(Location.Wheel(FRONT_LEFT)) {
+        bindSensorButton(FRONT_LEFT) {
             assertIsDisplayed()
             tap {
                 cancel()
@@ -110,38 +110,38 @@ internal class MainFeatureTest {
                     tapSensorUnplugged()
                     tapSensor(2) {
                         assertBindButtonIsNotEnabled()
-                        tapLocation(Location.Wheel(FRONT_LEFT))
+                        tapLocation(FRONT_LEFT)
                         tapCancel()
                     }
                     tapSensor(2) {
-                        tapLocation(Location.Wheel(FRONT_LEFT))
+                        tapLocation(FRONT_LEFT)
                         tapBindButton()
                     }
                     tapSensor(4) {
-                        tapLocation(Location.Wheel(FRONT_RIGHT))
+                        tapLocation(FRONT_RIGHT)
                         tapBindButton()
                     }
                     tapSensor(6) {
-                        tapLocation(Location.Wheel(REAR_LEFT))
+                        tapLocation(REAR_LEFT)
                         tapBindButton()
                     }
                     tapSensor(8) {
-                        tapLocation(Location.Wheel(REAR_RIGHT))
+                        tapLocation(REAR_RIGHT)
                         tapBindButton()
                     }
                     assertAllLocationBound(
-                        2 to Location.Wheel(FRONT_LEFT),
-                        4 to Location.Wheel(FRONT_RIGHT),
-                        6 to Location.Wheel(REAR_LEFT),
-                        8 to Location.Wheel(REAR_RIGHT),
+                        2 to FRONT_LEFT,
+                        4 to FRONT_RIGHT,
+                        6 to REAR_LEFT,
+                        8 to REAR_RIGHT,
                     )
                     tapGoBack()
                 }
             }
         }
-        bindSensorButton(Location.Wheel(FRONT_LEFT)) { assertIsNotDisplayed() }
-        bindSensorButton(Location.Wheel(FRONT_RIGHT)) { assertIsNotDisplayed() }
-        bindSensorButton(Location.Wheel(REAR_LEFT)) { assertIsNotDisplayed() }
-        bindSensorButton(Location.Wheel(REAR_RIGHT)) { assertIsNotDisplayed() }
+        bindSensorButton(FRONT_LEFT) { assertIsNotDisplayed() }
+        bindSensorButton(FRONT_RIGHT) { assertIsNotDisplayed() }
+        bindSensorButton(REAR_LEFT) { assertIsNotDisplayed() }
+        bindSensorButton(REAR_RIGHT) { assertIsNotDisplayed() }
     }
 }

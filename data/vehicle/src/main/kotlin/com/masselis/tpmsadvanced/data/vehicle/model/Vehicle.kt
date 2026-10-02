@@ -1,18 +1,14 @@
 package com.masselis.tpmsadvanced.data.vehicle.model
 
 import android.os.Parcelable
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Axle
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Side
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Wheel
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Axle.FRONT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Axle.REAR
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Side.LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Side.RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
@@ -42,21 +38,14 @@ public data class Vehicle(
          * N-N
          * ```
          */
-        CAR(
-            setOf(
-                Wheel(FRONT_LEFT),
-                Wheel(FRONT_RIGHT),
-                Wheel(REAR_LEFT),
-                Wheel(REAR_RIGHT)
-            )
-        ),
+        CAR(setOf(FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT)),
 
         /**
          * ```
          * N-N
          * ```
          */
-        SINGLE_AXLE_TRAILER(setOf(Side(LEFT), Side(RIGHT))),
+        SINGLE_AXLE_TRAILER(setOf(LEFT, RIGHT)),
 
         /**
          * ```
@@ -65,7 +54,7 @@ public data class Vehicle(
          *  N
          * ```
          */
-        MOTORCYCLE(setOf(Axle(FRONT), Axle(REAR))),
+        MOTORCYCLE(setOf(FRONT, REAR)),
 
         /**
          * ```
@@ -73,7 +62,7 @@ public data class Vehicle(
          *  N
          * ```
          */
-        TADPOLE_THREE_WHEELER(setOf(Wheel(FRONT_LEFT), Wheel(FRONT_RIGHT), Axle(REAR))),
+        TADPOLE_THREE_WHEELER(setOf(FRONT_LEFT, FRONT_RIGHT, REAR)),
 
         /**
          * ```
@@ -81,27 +70,7 @@ public data class Vehicle(
          * N-N
          * ```
          */
-        DELTA_THREE_WHEELER(setOf(Axle(FRONT), Wheel(REAR_LEFT), Wheel(REAR_RIGHT)));
+        DELTA_THREE_WHEELER(setOf(FRONT, REAR_LEFT, REAR_RIGHT));
 
-        /**
-         * Unlike [SensorLocation] which represents a location from the sensor standpoint, a
-         * [Location] represents a location from a [Vehicle] standpoint.
-         */
-        public sealed interface Location : Parcelable {
-            @JvmInline
-            @Parcelize
-            public value class Wheel(public val location: SensorLocation) : Location {
-                public fun toAxle(): Axle = Axle(location.axle)
-                public fun toSide(): Side = Side(location.side)
-            }
-
-            @JvmInline
-            @Parcelize
-            public value class Axle(public val axle: SensorLocation.Axle) : Location
-
-            @JvmInline
-            @Parcelize
-            public value class Side(public val side: SensorLocation.Side) : Location
-        }
     }
 }

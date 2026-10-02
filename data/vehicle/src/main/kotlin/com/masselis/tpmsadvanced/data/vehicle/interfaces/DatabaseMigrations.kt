@@ -5,15 +5,11 @@ import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.db.AfterVersion
 import app.cash.sqldelight.db.QueryResult
 import com.masselis.tpmsadvanced.data.vehicle.Database
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorLocation.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorLocation.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
@@ -23,7 +19,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_W
 
 @Suppress("LongMethod", "CyclomaticComplexMethod", "MagicNumber")
 internal fun Database.Companion.afterVersion3(
-    locationAdapter: ColumnAdapter<Vehicle.Kind.Location, Long>
+    locationAdapter: ColumnAdapter<Location, Long>
 ) = AfterVersion(3) { driver ->
     driver
         .executeQuery(
@@ -58,27 +54,26 @@ internal fun Database.Companion.afterVersion3(
                 .value
                 .let { kind ->
                     when (kind) {
-                        CAR ->
-                            Vehicle.Kind.Location.Wheel(sensorLocation)
+                        CAR -> sensorLocation.asWheelLocation()
 
                         SINGLE_AXLE_TRAILER -> when (sensorLocation) {
-                            FRONT_LEFT, REAR_LEFT -> Vehicle.Kind.Location.Side(LEFT)
-                            FRONT_RIGHT, REAR_RIGHT -> Vehicle.Kind.Location.Side(RIGHT)
+                            FRONT_LEFT, REAR_LEFT -> Location.Side.LEFT
+                            FRONT_RIGHT, REAR_RIGHT -> Location.Side.RIGHT
                         }
 
                         MOTORCYCLE -> when (sensorLocation) {
-                            FRONT_LEFT, FRONT_RIGHT -> Vehicle.Kind.Location.Axle(FRONT)
-                            REAR_LEFT, REAR_RIGHT -> Vehicle.Kind.Location.Axle(REAR)
+                            FRONT_LEFT, FRONT_RIGHT -> Location.Axle.FRONT
+                            REAR_LEFT, REAR_RIGHT -> Location.Axle.REAR
                         }
 
                         TADPOLE_THREE_WHEELER -> when (sensorLocation) {
-                            FRONT_LEFT, FRONT_RIGHT -> Vehicle.Kind.Location.Wheel(sensorLocation)
-                            REAR_LEFT, REAR_RIGHT -> Vehicle.Kind.Location.Axle(REAR)
+                            FRONT_LEFT, FRONT_RIGHT -> sensorLocation.asWheelLocation()
+                            REAR_LEFT, REAR_RIGHT -> Location.Axle.REAR
                         }
 
                         DELTA_THREE_WHEELER -> when (sensorLocation) {
-                            FRONT_LEFT, FRONT_RIGHT -> Vehicle.Kind.Location.Axle(FRONT)
-                            REAR_LEFT, REAR_RIGHT -> Vehicle.Kind.Location.Wheel(sensorLocation)
+                            FRONT_LEFT, FRONT_RIGHT -> Location.Axle.FRONT
+                            REAR_LEFT, REAR_RIGHT -> sensorLocation.asWheelLocation()
                         }
                     }
                 }
@@ -109,4 +104,32 @@ internal fun Database.Companion.afterVersion3(
                     }
                 }
         }
+}
+
+// Copy/pasted from previous version of the code. The enum is kept here for database migration needs
+private enum class SensorLocation(
+    val axle: Axle,
+    val side: Side,
+) {
+    FRONT_LEFT(Axle.FRONT, Side.LEFT),
+    FRONT_RIGHT(Axle.FRONT, Side.RIGHT),
+    REAR_LEFT(Axle.REAR, Side.LEFT),
+    REAR_RIGHT(Axle.REAR, Side.RIGHT);
+
+    enum class Axle {
+        FRONT,
+        REAR;
+    }
+
+    enum class Side {
+        LEFT,
+        RIGHT;
+    }
+
+    fun asWheelLocation() = when (this) {
+        FRONT_LEFT -> Location.Wheel.FRONT_LEFT
+        FRONT_RIGHT -> Location.Wheel.FRONT_RIGHT
+        REAR_LEFT -> Location.Wheel.REAR_LEFT
+        REAR_RIGHT -> Location.Wheel.REAR_RIGHT
+    }
 }

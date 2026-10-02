@@ -17,6 +17,8 @@ internal fun mockScanRecord(
     containsServiceUuids: Boolean = true,
     mockAdvertiseFlags: Int = 0x06,
     mockManufacturerData: ByteArray = byteArrayOf(),
+    // 0xFFFF is reserved by the Bluetooth SIG for internal and test use
+    mockManufacturerId: Int = 0xFFFF,
     mockBytes: ByteArray = byteArrayOf(),
 ): ScanRecord = mockk {
     every { deviceName } returns mockDeviceName
@@ -31,14 +33,18 @@ internal fun mockScanRecord(
         every { size() } returns 1
         every { valueAt(0) } returns mockManufacturerData
     }
+    every { getManufacturerSpecificData(any()) } answers {
+        mockManufacturerData.takeIf { firstArg<Int>() == mockManufacturerId }
+    }
     every { bytes } returns mockBytes
 }
 
 internal fun mockScanResult(
     mockScanRecord: ScanRecord = mockScanRecord(),
     mockRssi: Int = -60,
+    mockAddress: String = "00:00:00:00:00",
 ): ScanResult = mockk {
     every { rssi } returns mockRssi
     every { scanRecord } returns mockScanRecord
-    every { device } returns mockBluetoothDevice()
+    every { device } returns mockBluetoothDevice(mockAddress)
 }

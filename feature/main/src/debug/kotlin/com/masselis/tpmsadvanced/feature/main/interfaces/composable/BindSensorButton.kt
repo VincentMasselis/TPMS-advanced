@@ -12,11 +12,11 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructio
 import com.masselis.tpmsadvanced.core.androidtest.isDisplayed
 import com.masselis.tpmsadvanced.core.androidtest.onEnter
 import com.masselis.tpmsadvanced.core.androidtest.process
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 
 @OptIn(ExperimentalTestApi::class)
 public class BindSensorButton private constructor(
-    private val location: Vehicle.Kind.Location,
+    private val location: Location,
     composeTestRule: ComposeTestRule,
 ) :
     ComposeTestRule by composeTestRule,
@@ -49,7 +49,7 @@ public class BindSensorButton private constructor(
 
     public companion object {
         context(rule: ComposeTestRule)
-        public operator fun invoke(location: Vehicle.Kind.Location): BindSensorButton =
+        public operator fun invoke(location: Location): BindSensorButton =
             BindSensorButton(location, rule)
     }
 }

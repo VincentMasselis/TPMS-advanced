@@ -2,8 +2,9 @@ package com.masselis.tpmsadvanced.data.vehicle.interfaces.demo
 
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
+import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import kotlinx.coroutines.awaitCancellation
@@ -13,8 +14,8 @@ import kotlinx.coroutines.flow.flow
 @Suppress("MagicNumber")
 public class DemoLeScanner : BluetoothLeScanner {
 
-    private val frontLeft = listOf(
-        Tyre.SensorLocated(
+    private val frontLeft = listOf<ScannerRecord>(
+        Tyre.Located(
             now(),
             -20,
             1,
@@ -22,7 +23,7 @@ public class DemoLeScanner : BluetoothLeScanner {
             15f.celsius,
             100u,
             false,
-            SensorLocation.FRONT_LEFT,
+            Location.Wheel.FRONT_LEFT,
         ),
         Tyre.Unlocated(
             now(),
@@ -35,8 +36,8 @@ public class DemoLeScanner : BluetoothLeScanner {
         )
     )
 
-    private val frontRight = listOf(
-        Tyre.SensorLocated(
+    private val frontRight = listOf<ScannerRecord>(
+        Tyre.Located(
             now(),
             -20,
             3,
@@ -44,7 +45,7 @@ public class DemoLeScanner : BluetoothLeScanner {
             20f.celsius,
             75u,
             false,
-            SensorLocation.FRONT_RIGHT,
+            Location.Wheel.FRONT_RIGHT,
         ),
         Tyre.Unlocated(
             now(),
@@ -57,8 +58,8 @@ public class DemoLeScanner : BluetoothLeScanner {
         )
     )
 
-    private val rearLeft = listOf(
-        Tyre.SensorLocated(
+    private val rearLeft = listOf<ScannerRecord>(
+        Tyre.Located(
             now(),
             -20,
             5,
@@ -66,7 +67,7 @@ public class DemoLeScanner : BluetoothLeScanner {
             35f.celsius,
             50u,
             false,
-            SensorLocation.REAR_LEFT,
+            Location.Wheel.REAR_LEFT,
         ),
         Tyre.Unlocated(
             now(),
@@ -79,8 +80,8 @@ public class DemoLeScanner : BluetoothLeScanner {
         ),
     )
 
-    private val rearRight = listOf(
-        Tyre.SensorLocated(
+    private val rearRight = listOf<ScannerRecord>(
+        Tyre.Located(
             now(),
             -20,
             7,
@@ -88,7 +89,7 @@ public class DemoLeScanner : BluetoothLeScanner {
             95f.celsius,
             25u,
             false,
-            SensorLocation.REAR_RIGHT,
+            Location.Wheel.REAR_RIGHT,
         ),
         Tyre.Unlocated(
             now(),
@@ -108,9 +109,9 @@ public class DemoLeScanner : BluetoothLeScanner {
         awaitCancellation()
     }
 
-    override fun highDutyScan(): Flow<Tyre.SensorInput> = source
+    override fun highDutyScan(): Flow<ScannerRecord> = source
 
-    override fun normalScan(): Flow<Tyre.SensorInput> = source
+    override fun normalScan(): Flow<ScannerRecord> = source
 
     override fun missingPermission(): List<String> = emptyList()
 

@@ -1,14 +1,13 @@
 package com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui
 
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Sensor
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import java.util.UUID
 
 @Suppress("MagicNumber", "TopLevelPropertyNaming")
@@ -34,7 +33,7 @@ internal fun mockTyre(
 )
 
 internal fun mockSensor(
-    id: Int, location: Location = Location.Wheel(FRONT_LEFT)
+    id: Int, location: Location = Location.Wheel.FRONT_LEFT
 ) = Sensor(id, location)
 
 internal fun mockVehicle(

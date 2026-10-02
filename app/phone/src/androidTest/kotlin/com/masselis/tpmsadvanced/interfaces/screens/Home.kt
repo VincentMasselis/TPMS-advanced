@@ -11,6 +11,7 @@ import com.masselis.tpmsadvanced.core.androidtest.EnterComposable
 import com.masselis.tpmsadvanced.core.androidtest.EnterExitComposable.Instructions
 import com.masselis.tpmsadvanced.core.androidtest.onEnter
 import com.masselis.tpmsadvanced.core.androidtest.process
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.BindSensorButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.DropdownMenu
@@ -38,7 +39,7 @@ internal class Home private constructor(
     }
 
     fun bindSensorButton(
-        location: Vehicle.Kind.Location,
+        location: Location,
         instructions: EnterComposable.Instructions<BindSensorButton>
     ) {
         BindSensorButton(location).process(instructions)

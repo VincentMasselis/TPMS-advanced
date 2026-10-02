@@ -5,11 +5,11 @@ import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.test.mockkQueryOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -47,7 +47,7 @@ internal class ListenTyreWithDatabaseUseCaseTest {
             val uuid = UUID.randomUUID()
             every { this@mockk.uuid } returns uuid
         }
-        location = Location.Wheel(FRONT_LEFT)
+        location = FRONT_LEFT
         tyreDatabase = mockk {
             coEvery { insert(any(), any()) } returns Unit
             every { latestByTyreLocationByVehicle(any<Location.Wheel>(), any()) } returns
@@ -61,8 +61,8 @@ internal class ListenTyreWithDatabaseUseCaseTest {
     @Test
     fun `2 tyres emit with same id at front left`() = runTest {
         val tyresToEmit = listOf(
-            Tyre.Located(now(), -20, 1, 1f.bar, 1f.celsius, 50u, false, Location.Wheel(FRONT_LEFT)),
-            Tyre.Located(now(), -30, 1, 2f.bar, 2f.celsius, 25u, false, Location.Wheel(FRONT_LEFT))
+            Tyre.Located(now(), -20, 1, 1f.bar, 1f.celsius, 50u, false, FRONT_LEFT),
+            Tyre.Located(now(), -30, 1, 2f.bar, 2f.celsius, 25u, false, FRONT_LEFT)
         )
         every { listenTyreUseCase.listen() } returns tyresToEmit
             .asFlow()
@@ -78,7 +78,7 @@ internal class ListenTyreWithDatabaseUseCaseTest {
     @Test
     fun `No tyre emit but a cache exists`() = runTest {
         val savedTyre =
-            Tyre.Located(now(), -20, 1, 1f.bar, 1f.celsius, 1u, false, Location.Wheel(FRONT_LEFT))
+            Tyre.Located(now(), -20, 1, 1f.bar, 1f.celsius, 1u, false, FRONT_LEFT)
         every { tyreDatabase.latestByTyreLocationByVehicle(location, any()) } returns
                 mockkQueryOneOrNull(savedTyre)
         test().listen().test {

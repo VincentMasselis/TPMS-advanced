@@ -14,10 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreIconViewModel
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +35,7 @@ internal fun PressureInfo(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Tyre(
-                    location = Location.Side(SensorLocation.Side.LEFT),
+                    location = Location.Side.LEFT,
                     snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
                     vehicleComponent = lazy { error("Shouldn't be called") },
@@ -72,7 +71,7 @@ internal fun TemperatureInfo(
             ) {
                 val demoTyreViewModel = remember(state) { DemoTyreIconViewModel(state) }
                 Tyre(
-                    location = Location.Side(SensorLocation.Side.LEFT),
+                    location = Location.Side.LEFT,
                     snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
                     vehicleComponent = lazy { error("Shouldn't be called") },

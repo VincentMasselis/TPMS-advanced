@@ -11,10 +11,10 @@ import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit.BAR
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit.CELSIUS
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location.Wheel
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel
 import com.masselis.tpmsadvanced.feature.androidauto.endpoint.ui.viewmodel.TabScreenViewModel.State
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreStatsStateFlow
@@ -69,7 +69,7 @@ internal class VehicleTemplateTest {
         statsState: TyreStatsStateFlow.State,
     ) = Vehicle.Kind.CAR.locations
         .associateWith { location ->
-            if (location == Wheel(FRONT_LEFT)) iconState to statsState
+            if (location == FRONT_LEFT) iconState to statsState
             else TyreIconStateFlow.State.NotDetected to TyreStatsStateFlow.State.NotDetected
         }
         .let { tyres -> State.Tabs.Tab.Displayed(mockVehicle(), tyres) }

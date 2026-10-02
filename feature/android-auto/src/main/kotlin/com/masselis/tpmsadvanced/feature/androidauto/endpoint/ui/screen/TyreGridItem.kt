@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.drawable.IconCompat.createWithResource
 import com.masselis.tpmsadvanced.core.ui.DarkColors
 import com.masselis.tpmsadvanced.core.ui.LightColors
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.feature.androidauto.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.appendLoc
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow
@@ -22,7 +22,7 @@ import com.masselis.tpmsadvanced.feature.main.usecase.TyreStatsStateFlow
 context(screen: Screen)
 @Suppress("FunctionName", "FunctionNaming")
 internal fun TyreGridItem(
-    location: Vehicle.Kind.Location,
+    location: Location,
     iconState: TyreIconStateFlow.State,
     statsState: TyreStatsStateFlow.State
 ) = GridItem

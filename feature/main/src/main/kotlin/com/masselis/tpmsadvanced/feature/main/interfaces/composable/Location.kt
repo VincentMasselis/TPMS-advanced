@@ -1,41 +1,49 @@
 package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Axle.FRONT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Axle.REAR
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Side.LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Side.RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
 import java.util.Locale
 
 public fun StringBuilder.appendLoc(
-    location: Vehicle.Kind.Location,
+    location: Location,
     withType: Boolean = true,
     capitalized: Boolean = false,
 ): StringBuilder = when (location) {
-    is Vehicle.Kind.Location.Wheel -> {
+    is Wheel -> {
         append(
-            when (location.location) {
-                SensorLocation.FRONT_LEFT -> "front left".capitalizeIf(capitalized)
-                SensorLocation.FRONT_RIGHT -> "front right".capitalizeIf(capitalized)
-                SensorLocation.REAR_LEFT -> "rear left".capitalizeIf(capitalized)
-                SensorLocation.REAR_RIGHT -> "rear right".capitalizeIf(capitalized)
+            when (location) {
+                FRONT_LEFT -> "front left".capitalizeIf(capitalized)
+                FRONT_RIGHT -> "front right".capitalizeIf(capitalized)
+                REAR_LEFT -> "rear left".capitalizeIf(capitalized)
+                REAR_RIGHT -> "rear right".capitalizeIf(capitalized)
             }
         )
         appendIf(withType, " wheel")
     }
 
-    is Vehicle.Kind.Location.Axle -> {
+    is Location.Axle -> {
         append(
-            when (location.axle) {
-                SensorLocation.Axle.FRONT -> "front".capitalizeIf(capitalized)
-                SensorLocation.Axle.REAR -> "rear".capitalizeIf(capitalized)
+            when (location) {
+                FRONT -> "front".capitalizeIf(capitalized)
+                REAR -> "rear".capitalizeIf(capitalized)
             }
         )
         appendIf(withType, " axle")
     }
 
-    is Vehicle.Kind.Location.Side -> {
+    is Location.Side -> {
         append(
-            when (location.side) {
-                SensorLocation.Side.LEFT -> "left".capitalizeIf(capitalized)
-                SensorLocation.Side.RIGHT -> "right".capitalizeIf(capitalized)
+            when (location) {
+                LEFT -> "left".capitalizeIf(capitalized)
+                RIGHT -> "right".capitalizeIf(capitalized)
             }
         )
         appendIf(withType, " side")

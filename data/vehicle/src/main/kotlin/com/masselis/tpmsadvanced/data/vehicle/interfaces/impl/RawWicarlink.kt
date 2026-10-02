@@ -4,6 +4,7 @@ import android.bluetooth.le.ScanResult
 import android.os.ParcelUuid
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
+import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.util.UUID.fromString
@@ -29,7 +30,7 @@ internal data class RawWicarlink private constructor(
 
     fun temperature() = ((data[13].toInt() and 0xFF) - 55).toFloat().celsius
 
-    override fun asTyre(): Tyre.SensorInput = Tyre.Unlocated(
+    override fun asTyre(): ScannerRecord = Tyre.Unlocated(
         now(),
         rssi,
         id(),

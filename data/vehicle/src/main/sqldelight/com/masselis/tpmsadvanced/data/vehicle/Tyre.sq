@@ -1,6 +1,6 @@
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure;
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle;
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature;
+import com.masselis.tpmsadvanced.data.vehicle.model.Location;
 import java.util.UUID;
 import kotlin.Boolean;
 import kotlin.Int;
@@ -10,7 +10,7 @@ CREATE TABLE Tyre(
     id INTEGER AS Int NOT NULL,
     timestamp REAL NOT NULL,
     rssi INTEGER AS Int NOT NULL,
-    location INTEGER AS Vehicle.Kind.Location NOT NULL,
+    location INTEGER AS Location NOT NULL,
     pressure REAL AS Pressure NOT NULL,
     temperature REAL AS Temperature NOT NULL,
     battery INTEGER AS UShort NOT NULL,

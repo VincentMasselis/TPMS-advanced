@@ -1,13 +1,13 @@
 package com.masselis.tpmsadvanced.feature.qrcode.model
 
 import android.os.Parcelable
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 internal data class QrCodeSensor(
     val id: Int,
-    val wheel: Vehicle.Kind.Location.Wheel
+    val wheel: Location.Wheel
 ) : Parcelable
 
 @Suppress("MagicNumber")
@@ -41,7 +41,7 @@ internal sealed interface QrCodeSensors : Set<QrCodeSensor>, Parcelable {
     }
 
     data class DuplicateWheelLocation(
-        val wheels: Collection<Vehicle.Kind.Location.Wheel>
+        val wheels: Collection<Location.Wheel>
     ) : IllegalArgumentException()
 
     data class DuplicateId(

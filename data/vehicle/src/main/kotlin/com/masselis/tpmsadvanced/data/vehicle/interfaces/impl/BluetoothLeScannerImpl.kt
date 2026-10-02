@@ -23,7 +23,7 @@ import com.masselis.tpmsadvanced.core.common.dematerializeCompletion
 import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner.Failure
-import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
+import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -84,7 +84,11 @@ internal class BluetoothLeScannerImpl(
             awaitCancellation()
         }
         leScanner.startScan(
-            SERVICES.map { ScanFilter.Builder().setServiceUuid(it).build() },
+            SERVICES.map {
+                ScanFilter.Builder().setServiceUuid(it).build()
+            } + MANUFACTURER_IDS.map {
+                ScanFilter.Builder().setManufacturerData(it, byteArrayOf()).build()
+            },
             ScanSettings
                 .Builder()
                 .setScanMode(mode)
@@ -120,15 +124,15 @@ internal class BluetoothLeScannerImpl(
 
     private val lowLatencyScanFlow = scan(ScanSettings.SCAN_MODE_LOW_LATENCY).shared()
 
-    override fun highDutyScan(): Flow<Tyre.SensorInput> = lowLatencyScanFlow
+    override fun highDutyScan(): Flow<ScannerRecord> = lowLatencyScanFlow
 
     @SuppressLint("MissingPermission")
     private val balancedScanFlow = scan(ScanSettings.SCAN_MODE_BALANCED).shared()
 
-    override fun normalScan(): Flow<Tyre.SensorInput> = balancedScanFlow
+    override fun normalScan(): Flow<ScannerRecord> = balancedScanFlow
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun Flow<Tyre.SensorInput>.shared() = this
+    private fun Flow<ScannerRecord>.shared() = this
         .materializeCompletion()
         .shareIn(GlobalScope + Dispatchers.Default, WhileSubscribed())
         .dematerializeCompletion()
@@ -153,5 +157,7 @@ internal class BluetoothLeScannerImpl(
             RawBekubeeKy.SERVICE_UUID,
             RawBekubeeTpms.SERVICE_UUID
         )
+
+        private val MANUFACTURER_IDS = emptyList<Int>()
     }
 }

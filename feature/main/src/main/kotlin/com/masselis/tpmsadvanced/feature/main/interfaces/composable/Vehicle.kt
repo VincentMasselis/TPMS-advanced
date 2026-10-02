@@ -31,19 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind
 import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
-import com.masselis.tpmsadvanced.core.ui.KeepScreenOn
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.FRONT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Axle.REAR
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.Side.RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 
 @Composable
 public fun CurrentVehicle(
@@ -113,7 +105,7 @@ private fun Car(
                     height = Dimension.percent(.55f)
                 }
         )
-        with(Location.Wheel(FRONT_LEFT)) {
+        with(Location.Wheel.FRONT_LEFT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -141,7 +133,7 @@ private fun Car(
                 }
             )
         }
-        with(Location.Wheel(FRONT_RIGHT)) {
+        with(Location.Wheel.FRONT_RIGHT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -167,7 +159,7 @@ private fun Car(
                 }
             )
         }
-        with(Location.Wheel(REAR_LEFT)) {
+        with(Location.Wheel.REAR_LEFT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -194,7 +186,7 @@ private fun Car(
                 }
             )
         }
-        with(Location.Wheel(REAR_RIGHT)) {
+        with(Location.Wheel.REAR_RIGHT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -253,7 +245,7 @@ private fun SingleAxleTrailer(
                     height = Dimension.percent(.55f)
                 }
         )
-        with(Location.Side(LEFT)) {
+        with(Location.Side.LEFT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -284,7 +276,7 @@ private fun SingleAxleTrailer(
                 }
             )
         }
-        with(Location.Side(RIGHT)) {
+        with(Location.Side.RIGHT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -354,7 +346,7 @@ private fun Motorcycle(
                     height = Dimension.percent(.65f)
                 }
         )
-        with(Location.Axle(FRONT)) {
+        with(Location.Axle.FRONT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -383,7 +375,7 @@ private fun Motorcycle(
                 }
             )
         }
-        with(Location.Axle(REAR)) {
+        with(Location.Axle.REAR) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -449,7 +441,7 @@ private fun TadpoleThreadWheeler(
                     height = Dimension.percent(.55f)
                 }
         )
-        with(Location.Wheel(FRONT_LEFT)) {
+        with(Location.Wheel.FRONT_LEFT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -477,7 +469,7 @@ private fun TadpoleThreadWheeler(
                 }
             )
         }
-        with(Location.Wheel(FRONT_RIGHT)) {
+        with(Location.Wheel.FRONT_RIGHT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -503,7 +495,7 @@ private fun TadpoleThreadWheeler(
                 }
             )
         }
-        with(Location.Axle(REAR)) {
+        with(Location.Axle.REAR) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -570,7 +562,7 @@ private fun DeltaThreeWheeler(
                     height = Dimension.percent(.55f)
                 }
         )
-        with(Location.Axle(FRONT)) {
+        with(Location.Axle.FRONT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -600,7 +592,7 @@ private fun DeltaThreeWheeler(
                 }
             )
         }
-        with(Location.Wheel(REAR_LEFT)) {
+        with(Location.Wheel.REAR_LEFT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,
@@ -627,7 +619,7 @@ private fun DeltaThreeWheeler(
                 }
             )
         }
-        with(Location.Wheel(REAR_RIGHT)) {
+        with(Location.Wheel.REAR_RIGHT) {
             Tyre(
                 location = this,
                 snackbarHostState = snackbarHostState,

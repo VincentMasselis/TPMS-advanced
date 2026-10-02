@@ -1,13 +1,13 @@
 package com.masselis.tpmsadvanced.feature.qrcode.usecase
 
 import androidx.camera.view.CameraController
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.FRONT_RIGHT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_LEFT
-import com.masselis.tpmsadvanced.data.vehicle.model.SensorLocation.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
-import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.SINGLE_AXLE_TRAILER
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.TADPOLE_THREE_WHEELER
@@ -52,10 +52,10 @@ internal class QrCodeSensorUseCase(
                     Pair(
                         // Trying to recognize the location with the id of the sensor
                         when (stringHex.first()) {
-                            '1' -> Location.Wheel(FRONT_LEFT)
-                            '2' -> Location.Wheel(FRONT_RIGHT)
-                            '3' -> Location.Wheel(REAR_LEFT)
-                            '4' -> Location.Wheel(REAR_RIGHT)
+                            '1' -> FRONT_LEFT
+                            '2' -> FRONT_RIGHT
+                            '3' -> REAR_LEFT
+                            '4' -> REAR_RIGHT
                             else -> null
                         },
                         // Converts the hexadecimal id to an int
@@ -72,13 +72,13 @@ internal class QrCodeSensorUseCase(
                 .mapIndexed { index, (location, id) ->
                     QrCodeSensor(
                         id,
-                        // The sensor id didn't provided the location, let's determine it with the
+                        // The sensor id didn't provide the location, let's determine it with the
                         // list index
                         location ?: when (index) {
-                            0 -> Location.Wheel(FRONT_LEFT)
-                            1 -> Location.Wheel(FRONT_RIGHT)
-                            2 -> Location.Wheel(REAR_LEFT)
-                            3 -> Location.Wheel(REAR_RIGHT)
+                            0 -> FRONT_LEFT
+                            1 -> FRONT_RIGHT
+                            2 -> REAR_LEFT
+                            3 -> REAR_RIGHT
                             else -> error("Filled list cannot have more than 4 entries")
                         }
                     )
@@ -110,7 +110,7 @@ internal class QrCodeSensorUseCase(
 
                             TADPOLE_THREE_WHEELER -> qrCodeSensors
                                 .map {
-                                    when (it.wheel.location) {
+                                    when (it.wheel) {
                                         FRONT_LEFT, FRONT_RIGHT -> it.wheel
                                         REAR_LEFT, REAR_RIGHT -> it.wheel.toAxle()
                                     }
@@ -118,7 +118,7 @@ internal class QrCodeSensorUseCase(
 
                             DELTA_THREE_WHEELER -> qrCodeSensors
                                 .map {
-                                    when (it.wheel.location) {
+                                    when (it.wheel) {
                                         FRONT_LEFT, FRONT_RIGHT -> it.wheel.toAxle()
                                         REAR_LEFT, REAR_RIGHT -> it.wheel
                                     }
