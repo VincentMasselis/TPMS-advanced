@@ -28,6 +28,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.fahrenheit
 import com.masselis.tpmsadvanced.feature.main.R
+import kotlin.math.roundToInt
 
 @Composable
 internal fun PressureRangeSlider(
@@ -40,7 +41,6 @@ internal fun PressureRangeSlider(
 ) {
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-
             Text(
                 text = AnnotatedString(
                     "Expected pressure range: ",
@@ -74,17 +74,27 @@ internal fun PressureRangeSlider(
         RangeSlider(
             value = values.start.convert(unit)..values.endInclusive.convert(unit),
             valueRange = minMaxRange.start.convert(unit)..minMaxRange.endInclusive.convert(unit),
-            onValueChange = {
-                onValue(
-                    when (unit) {
-                        PressureUnit.KILO_PASCAL -> it.start.kpa..it.endInclusive.kpa
-                        PressureUnit.BAR -> it.start.bar..it.endInclusive.bar
-                        PressureUnit.PSI -> it.start.psi..it.endInclusive.psi
-                    }
-                )
-            }
+            onValueChange = { range ->
+                    onValue(
+                        range.start.roundTo(unit.increment).asPressure(unit).coerceIn(minMaxRange)..
+                            range.endInclusive.roundTo(unit.increment).asPressure(unit).coerceIn(minMaxRange)
+                    )
+                }
         )
     }
+}
+
+private fun Float.roundTo(increment: Float): Float = div(increment).roundToInt().times(increment)
+@Suppress("MagicNumber")
+private val PressureUnit.increment get() = when(this) {
+    PressureUnit.KILO_PASCAL -> 5f
+    PressureUnit.BAR -> 0.05f
+    PressureUnit.PSI -> 1f
+}
+private fun Float.asPressure(unit: PressureUnit) = when(unit)   {
+    PressureUnit.KILO_PASCAL -> this.kpa
+    PressureUnit.BAR -> this.bar
+    PressureUnit.PSI -> this.psi
 }
 
 @Preview
@@ -92,7 +102,7 @@ internal fun PressureRangeSlider(
 internal fun PressureRangeSliderPreview() {
     PressureRangeSlider(
         values = 1.5f.bar..2.5f.bar,
-        minMaxRange = 0.5f.bar..5f.bar,
+        minMaxRange = 0.5f.bar..7f.bar,
         onValue = {},
         openInfo = {},
         unit = PressureUnit.BAR,
