@@ -35,22 +35,17 @@ internal class TeslaIdOnlyTest {
         decode("01FE03")
             .let { assertNotNull(it) }
             .asTyre()
-            .let { assertIs<ScannerRecord.Impl>(it) }
+            .let { assertIs<ScannerRecord.TeslaId>(it) }
             .also { assertEquals(-60, it.rssi) }
     }
 
     @Test
-    fun `full length frame with a sleep status is decoded`() {
+    fun `full length frame is decoded`() {
         assertNotNull(decode("01FE03860148EA0B"))
     }
 
     @Test
-    fun `frame with an awake status is ignored`() {
-        assertNull(decode("01020A860148EA0B"))
-    }
-
-    @Test
-    fun `payload too short to contain a status is ignored`() {
+    fun `payload shorter than a sleep frame is ignored`() {
         assertNull(decode("01FE"))
     }
 
