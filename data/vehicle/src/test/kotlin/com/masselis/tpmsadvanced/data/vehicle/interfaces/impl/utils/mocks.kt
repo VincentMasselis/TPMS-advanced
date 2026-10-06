@@ -43,8 +43,10 @@ internal fun mockScanResult(
     mockScanRecord: ScanRecord = mockScanRecord(),
     mockRssi: Int = -60,
     mockAddress: String = "00:00:00:00:00",
+    mockIsConnectable: Boolean = true,
 ): ScanResult = mockk {
     every { rssi } returns mockRssi
+    every { isConnectable } returns mockIsConnectable
     every { scanRecord } returns mockScanRecord
     every { device } returns mockBluetoothDevice(mockAddress)
 }
