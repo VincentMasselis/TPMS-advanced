@@ -87,7 +87,7 @@ private fun PressureRange(
 ) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
     PressureRangeSlider(
-        minMaxRange = 0.5f.bar..5f.bar,
+        minMaxRange = 0.5f.bar..7f.bar,
         values = lowPressure..highPressure,
         onValue = {
             onLowPressure(it.start)
