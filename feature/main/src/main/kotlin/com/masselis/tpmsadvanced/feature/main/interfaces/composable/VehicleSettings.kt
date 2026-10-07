@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +34,8 @@ import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleBindings.Compan
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Factory.Companion.key
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
+import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase.RearPressures
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 public fun VehicleSettings(
@@ -62,17 +65,13 @@ internal fun VehicleSettings(
     Column(modifier) {
         with(viewModel) {
             PressureRange(
-                showRearPressureRange = separateFrontRearPressure.collectAsState().value,
-                onShowRearPressureRange = { separateFrontRearPressure.value = it },
-                lowPressure = lowPressure.collectAsState().value,
-                highPressure = highPressure.collectAsState().value,
-                rearLowPressure = rearLowPressure.collectAsState().value,
-                rearHighPressure = rearHighPressure.collectAsState().value,
                 unit = pressureUnit.collectAsState().value,
+                lowPressure = lowPressure.collectAsState().value,
                 onLowPressure = { lowPressure.value = it },
+                highPressure = highPressure.collectAsState().value,
                 onHighPressure = { highPressure.value = it },
-                onRearLowPressure = { rearLowPressure.value = it },
-                onRearHighPressure = { rearHighPressure.value = it }
+                rearState = rearPressures.collectAsState().value,
+                onSeparatePressureEnabled = { separated -> rearPressure(separated) },
             )
         }
         Separator()
@@ -94,23 +93,22 @@ internal fun VehicleSettings(
 
 @Composable
 private fun PressureRange(
-    showRearPressureRange: Boolean,
-    onShowRearPressureRange: (Boolean) -> Unit,
-    lowPressure: Pressure,
-    highPressure: Pressure,
-    rearLowPressure: Pressure,
-    rearHighPressure: Pressure,
     unit: PressureUnit,
+    lowPressure: Pressure,
     onLowPressure: (Pressure) -> Unit,
+    highPressure: Pressure,
     onHighPressure: (Pressure) -> Unit,
-    onRearLowPressure: (Pressure) -> Unit,
-    onRearHighPressure: (Pressure) -> Unit,
+    onSeparatePressureEnabled: (Boolean) -> Unit,
+    rearState: RearPressures,
     modifier: Modifier = Modifier
 ) {
     var showLowPressureDialog by remember { mutableStateOf(false) }
     Column(modifier) {
         PressureRangeSlider(
-            axle = if (showRearPressureRange) Location.Axle.FRONT else null,
+            axle = when (rearState) {
+                is RearPressures.Enabled -> Location.Axle.FRONT
+                RearPressures.Unavailable, is RearPressures.Disabled -> null
+            },
             minMaxRange = 0.5f.bar..7f.bar,
             values = lowPressure..highPressure,
             onValue = {
@@ -120,28 +118,11 @@ private fun PressureRange(
             openInfo = { showLowPressureDialog = true },
             unit = unit,
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text("Use a different front/rear pressure")
-            Spacer(Modifier.width(8.dp))
-            Switch(
-                showRearPressureRange,
-                onCheckedChange = onShowRearPressureRange,
-            )
-        }
-        AnimatedVisibility(showRearPressureRange) {
-            PressureRangeSlider(
-                axle = Location.Axle.REAR,
-                minMaxRange = 0.5f.bar..7f.bar,
-                values = rearLowPressure..rearHighPressure,
-                onValue = {
-                    onRearLowPressure(it.start)
-                    onRearHighPressure(it.endInclusive)
-                },
-                openInfo = { showLowPressureDialog = true },
+        if (rearState is RearPressures.Available) {
+            RearPressureRange(
                 unit = unit,
+                state = rearState,
+                onSeparatePressureEnabled = onSeparatePressureEnabled
             )
         }
     }
@@ -153,21 +134,66 @@ private fun PressureRange(
         )
 }
 
+@Composable
+private fun ColumnScope.RearPressureRange(
+    unit: PressureUnit,
+    state: RearPressures.Available,
+    onSeparatePressureEnabled: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var showLowPressureDialog by remember { mutableStateOf(false) }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.align(Alignment.End)
+    ) {
+        Text("Use a different front/rear pressure")
+        Spacer(Modifier.width(8.dp))
+        Switch(
+            when (state) {
+                is RearPressures.Enabled -> true
+                is RearPressures.Disabled -> false
+            },
+            onCheckedChange = onSeparatePressureEnabled,
+        )
+    }
+    AnimatedVisibility(
+        when (state) {
+            is RearPressures.Enabled -> true
+            is RearPressures.Disabled -> false
+        }
+    ) {
+        PressureRangeSlider(
+            axle = Location.Axle.REAR,
+            minMaxRange = 0.5f.bar..7f.bar,
+            values = state.lowPressure.collectAsState().value..state.highPressure.collectAsState().value,
+            onValue = {
+                state.lowPressure.value = it.start
+                state.highPressure.value = it.endInclusive
+            },
+            openInfo = { showLowPressureDialog = true },
+            unit = unit,
+        )
+    }
+
+    if (showLowPressureDialog)
+        PressureInfo(
+            pressureRange = state.lowPressure.collectAsState().value..state.highPressure.collectAsState().value,
+            unit = unit,
+            onDismissRequest = { showLowPressureDialog = false }
+        )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun PressureRangePreview() {
     PressureRange(
-        showRearPressureRange = true,
-        onShowRearPressureRange = {},
-        1f.bar,
-        3f.bar,
-        rearLowPressure = 1.2f.bar,
-        rearHighPressure = 3.2f.bar,
-        PressureUnit.BAR,
+        lowPressure = 1f.bar,
+        highPressure = 3f.bar,
+        rearState = RearPressures.Enabled(MutableStateFlow(1f.bar), MutableStateFlow(3F.bar)),
+        onSeparatePressureEnabled = {},
+        unit = PressureUnit.BAR,
         onLowPressure = {},
         onHighPressure = {},
-        onRearLowPressure = {},
-        onRearHighPressure = {}
     )
 }
 

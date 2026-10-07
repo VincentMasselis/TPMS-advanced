@@ -46,9 +46,9 @@ internal fun PressureRangeSlider(
             Text(
                 text = AnnotatedString(
                     when(axle)  {
-                        Location.Axle.FRONT -> "Expected front pressure range: "
-                        Location.Axle.REAR -> "Expected rear pressure range: "
-                        null -> "Expected pressure range: "
+                        Location.Axle.FRONT -> "Front pressure range: "
+                        Location.Axle.REAR -> "Rear pressure range: "
+                        null -> "Pressure range: "
                     },
                     SpanStyle(fontWeight = FontWeight.Medium)
                 ) + AnnotatedString(

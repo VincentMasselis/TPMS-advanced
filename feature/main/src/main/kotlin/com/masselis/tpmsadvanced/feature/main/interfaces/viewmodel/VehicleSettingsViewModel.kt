@@ -4,16 +4,14 @@ import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
+import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 internal interface VehicleSettingsViewModel {
     val lowPressure: MutableStateFlow<Pressure>
     val highPressure: MutableStateFlow<Pressure>
-
-    val separateFrontRearPressure: MutableStateFlow<Boolean>
-     val rearLowPressure: MutableStateFlow<Pressure>
-     val rearHighPressure: MutableStateFlow<Pressure>
+    val rearPressures: StateFlow<VehicleRangesUseCase.RearPressures>
 
     val pressureUnit: StateFlow<PressureUnit>
 
@@ -22,4 +20,6 @@ internal interface VehicleSettingsViewModel {
     val lowTemp: MutableStateFlow<Temperature>
 
     val temperatureUnit: StateFlow<TemperatureUnit>
+
+    fun rearPressure(enabled: Boolean)
 }

@@ -19,6 +19,7 @@ public data class Vehicle(
     public val name: String,
     public val lowPressure: Pressure,
     public val highPressure: Pressure,
+    /** Setting this property to `true` when [kind] equals [Kind.SINGLE_AXLE_TRAILER] is illegal */
     public val separateFrontRearPressure: Boolean,
     public val rearLowPressure: Pressure,
     public val rearHighPressure: Pressure,

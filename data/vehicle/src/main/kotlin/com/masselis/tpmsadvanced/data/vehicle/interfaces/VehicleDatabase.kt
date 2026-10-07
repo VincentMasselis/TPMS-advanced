@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
+import app.cash.sqldelight.Query
 import com.masselis.tpmsadvanced.core.database.QueryList
 import com.masselis.tpmsadvanced.core.database.QueryList.Companion.asList
 import com.masselis.tpmsadvanced.core.database.QueryOne
@@ -36,8 +37,8 @@ public class VehicleDatabase internal constructor(database: Database) {
         queries.setAsFavourite(isCurrent, uuid)
     }
 
-    public fun selectSeparateFrontRearPressure(vehicleId: UUID): Boolean =
-        queries.selectSeparateFrontRearPressureByVehicleId(vehicleId).executeAsOne()
+    public fun selectSeparateFrontRearPressure(vehicleId: UUID): Query<Boolean> = queries
+        .selectSeparateFrontRearPressureByVehicleId(vehicleId)
 
     public suspend fun updateSeparateFrontRearPressure(
         separateFrontRearPressure: Boolean,
@@ -131,16 +132,16 @@ public class VehicleDatabase internal constructor(database: Database) {
             Boolean,
             Pressure,
             Pressure,
-            Boolean,
-            Pressure,
-            Pressure,
             Temperature,
             Temperature,
             Temperature,
             Vehicle.Kind,
             Boolean,
+            Boolean,
+            Pressure,
+            Pressure,
         ) -> Vehicle =
-            { uuid, name, _, lowPressure, highPressure, separateFrontRearPressure, rearLowPressure, rearHighPressure, lowTemp, normalTemp, highTemp, kind, _ ->
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _, separateFrontRearPressure, rearLowPressure, rearHighPressure ->
                 Vehicle(
                     uuid,
                     kind,
