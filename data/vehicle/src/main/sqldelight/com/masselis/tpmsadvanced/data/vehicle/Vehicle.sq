@@ -10,6 +10,9 @@ CREATE TABLE Vehicle(
     isFavourite INTEGER AS Boolean NOT NULL,
     lowPressure REAL AS Pressure NOT NULL DEFAULT 100,
     highPressure REAL AS Pressure NOT NULL DEFAULT 300,
+    separateFrontRearPressure INTEGER AS Boolean NOT NULL DEFAULT 0,
+    rearLowPressure REAL AS Pressure NOT NULL DEFAULT 100,
+    rearHighPressure REAL AS Pressure NOT NULL DEFAULT 300,
     lowTemp REAL AS Temperature NOT NULL DEFAULT 20,
     normalTemp REAL AS Temperature NOT NULL DEFAULT 45,
     highTemp REAL AS Temperature NOT NULL DEFAULT 90,
@@ -84,6 +87,24 @@ SELECT highPressure FROM Vehicle WHERE uuid = ?;
 
 updateHighPressure:
 UPDATE Vehicle SET highPressure = ? WHERE uuid = ?;
+
+selectSeparateFrontRearPressureByVehicleId:
+SELECT separateFrontRearPressure FROM Vehicle WHERE uuid = ?;
+
+updateSeparateFrontRearPressure:
+UPDATE Vehicle SET separateFrontRearPressure = ? WHERE uuid = ?;
+
+selectRearLowPressureByVehicleId:
+SELECT rearLowPressure FROM Vehicle WHERE uuid = ?;
+
+updateRearLowPressure:
+UPDATE Vehicle SET rearLowPressure = ? WHERE uuid = ?;
+
+selectRearHighPressureByVehicleId:
+SELECT rearHighPressure FROM Vehicle WHERE uuid = ?;
+
+updateRearHighPressure:
+UPDATE Vehicle SET rearHighPressure = ? WHERE uuid = ?;
 
 selectLowTempByVehicleId:
 SELECT lowTemp FROM Vehicle WHERE uuid = ?;

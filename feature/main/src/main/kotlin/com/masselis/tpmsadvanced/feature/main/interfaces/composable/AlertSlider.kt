@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
@@ -38,12 +39,17 @@ internal fun PressureRangeSlider(
     openInfo: () -> Unit,
     unit: PressureUnit,
     modifier: Modifier = Modifier,
+    axle: Location.Axle? = null
 ) {
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = AnnotatedString(
-                    "Expected pressure range: ",
+                    when(axle)  {
+                        Location.Axle.FRONT -> "Expected front pressure range: "
+                        Location.Axle.REAR -> "Expected rear pressure range: "
+                        null -> "Expected pressure range: "
+                    },
                     SpanStyle(fontWeight = FontWeight.Medium)
                 ) + AnnotatedString(
                     "${values.start.string(unit)} to ${values.endInclusive.string(unit)}",
@@ -97,7 +103,7 @@ private fun Float.asPressure(unit: PressureUnit) = when(unit)   {
     PressureUnit.PSI -> this.psi
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 internal fun PressureRangeSliderPreview() {
     PressureRangeSlider(
@@ -167,7 +173,7 @@ internal fun TemperatureSlider(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 internal fun TemperatureSliderPreview() {
     TemperatureSlider(

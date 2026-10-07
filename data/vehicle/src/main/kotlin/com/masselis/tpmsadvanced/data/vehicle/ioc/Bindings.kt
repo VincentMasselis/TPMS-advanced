@@ -139,6 +139,8 @@ public interface Bindings {
             uuidAdapter,
             pressureAdapter,
             pressureAdapter,
+            pressureAdapter,
+            pressureAdapter,
             temperatureAdapter,
             temperatureAdapter,
             temperatureAdapter,

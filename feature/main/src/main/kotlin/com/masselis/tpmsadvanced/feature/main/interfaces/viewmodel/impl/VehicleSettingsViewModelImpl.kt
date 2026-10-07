@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class VehicleSettingsViewModelImpl(
@@ -13,6 +14,11 @@ internal class VehicleSettingsViewModelImpl(
 
     override val lowPressure = vehicleRangesUseCase.lowPressure
     override val highPressure = vehicleRangesUseCase.highPressure
+
+    override val separateFrontRearPressure: MutableStateFlow<Boolean> =
+        vehicleRangesUseCase.separateFrontRearPressure
+    override val rearLowPressure = vehicleRangesUseCase.rearLowPressure
+    override val rearHighPressure = vehicleRangesUseCase.rearHighPressure
 
     override val pressureUnit = unitPreferences.pressure.asStateFlow()
 

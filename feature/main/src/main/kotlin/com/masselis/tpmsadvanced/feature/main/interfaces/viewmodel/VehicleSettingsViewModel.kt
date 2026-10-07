@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 internal interface VehicleSettingsViewModel {
     val lowPressure: MutableStateFlow<Pressure>
     val highPressure: MutableStateFlow<Pressure>
+
+    val separateFrontRearPressure: MutableStateFlow<Boolean>
+     val rearLowPressure: MutableStateFlow<Pressure>
+     val rearHighPressure: MutableStateFlow<Pressure>
+
     val pressureUnit: StateFlow<PressureUnit>
 
     val highTemp: MutableStateFlow<Temperature>
