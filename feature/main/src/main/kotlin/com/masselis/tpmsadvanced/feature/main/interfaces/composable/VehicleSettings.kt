@@ -145,7 +145,7 @@ private fun ColumnScope.RearPressureRange(
     var showLowPressureDialog by remember { mutableStateOf(false) }
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.align(Alignment.End)
+        modifier = modifier.align(Alignment.End)
     ) {
         Text("Use a different front/rear pressure")
         Spacer(Modifier.width(8.dp))

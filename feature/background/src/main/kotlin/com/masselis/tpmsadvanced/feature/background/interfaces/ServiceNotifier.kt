@@ -103,6 +103,7 @@ internal class ServiceNotifier(
                                     Location.Axle.FRONT -> pressure.pressure !in lowPressure..highPressure
                                     Location.Axle.REAR -> pressure.pressure !in rearLowPressure..rearHighPressure
                                 }
+                                @Suppress("MaxLineLength")
                                 when (location) {
                                     is Location.Axle -> compare(location)
                                     is Location.Wheel -> compare(location.toAxle())

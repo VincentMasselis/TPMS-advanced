@@ -39,6 +39,7 @@ public class TyreStatsStateFlow internal constructor(
                     Location.Axle.FRONT -> low to high
                     Location.Axle.REAR -> rearLow to rearHigh
                 }
+                @Suppress("MaxLineLength")
                 when (location) {
                     is Location.Axle -> rangeFor(location)
                     is Location.Wheel -> rangeFor(location.toAxle())

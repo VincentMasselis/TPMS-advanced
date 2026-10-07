@@ -126,6 +126,7 @@ public class VehicleDatabase internal constructor(database: Database) {
         .asOneOrNull()
 
     private companion object {
+        @Suppress("MaxLineLength")
         val mapper: (
             UUID,
             String,

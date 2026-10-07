@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
-@Suppress("OPT_IN_TO_INHERITANCE", "UNCHECKED_CAST")
+@Suppress("OPT_IN_TO_INHERITANCE", "UNCHECKED_CAST", "MagicNumber")
 @OptIn(ExperimentalCoroutinesApi::class)
 public class TyreIconStateFlow internal constructor(
     location: Location,
@@ -46,6 +46,7 @@ public class TyreIconStateFlow internal constructor(
                     Location.Axle.FRONT -> low to high
                     Location.Axle.REAR -> rearLow to rearHigh
                 }
+                @Suppress("MaxLineLength")
                 when (location) {
                     is Location.Axle -> rangeFor(location)
                     is Location.Wheel -> rangeFor(location.toAxle())
@@ -57,7 +58,6 @@ public class TyreIconStateFlow internal constructor(
         }
     ) { values ->
         val (lowPressure, highPressure) = values[4] as Pair<Pressure, Pressure>
-        @Suppress("MagicNumber")
         (Data(
             values[0] as TyreAtmosphere,
             values[1] as Temperature,

@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
-
+@Suppress("MaxLineLength")
 @OptIn(FlowPreview::class)
 public class VehicleRangesUseCase internal constructor(
     private val vehicle: Vehicle,
