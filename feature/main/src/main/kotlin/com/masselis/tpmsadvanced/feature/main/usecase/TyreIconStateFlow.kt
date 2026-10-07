@@ -4,6 +4,7 @@ import android.os.Parcelable
 import co.touchlab.kermit.Logger
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.common.now
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
@@ -22,9 +23,10 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
-@Suppress("OPT_IN_TO_INHERITANCE")
+@Suppress("OPT_IN_TO_INHERITANCE", "UNCHECKED_CAST")
 @OptIn(ExperimentalCoroutinesApi::class)
 public class TyreIconStateFlow internal constructor(
+    location: Location,
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: VehicleRangesUseCase,
     scope: CoroutineScope,
@@ -33,17 +35,36 @@ public class TyreIconStateFlow internal constructor(
         rangeUseCase.highTemp,
         rangeUseCase.normalTemp,
         rangeUseCase.lowTemp,
-        rangeUseCase.lowPressure,
-        rangeUseCase.highPressure,
+        combine(
+            rangeUseCase.lowPressure,
+            rangeUseCase.highPressure,
+            rangeUseCase.rearPressuresIfSeparated()
+        ) { low, high, rearPressures ->
+            if (rearPressures != null) {
+                val (rearLow, rearHigh) = rearPressures
+                fun rangeFor(axle: Location.Axle) = when (axle) {
+                    Location.Axle.FRONT -> low to high
+                    Location.Axle.REAR -> rearLow to rearHigh
+                }
+                when (location) {
+                    is Location.Axle -> rangeFor(location)
+                    is Location.Wheel -> rangeFor(location.toAxle())
+                    is Location.Side -> error("Unable to find the right range to use when the location is a \"Side\" instance")
+                }
+            } else {
+                low to high
+            }
+        }
     ) { values ->
+        val (lowPressure, highPressure) = values[4] as Pair<Pressure, Pressure>
         @Suppress("MagicNumber")
         (Data(
             values[0] as TyreAtmosphere,
             values[1] as Temperature,
             values[2] as Temperature,
             values[3] as Temperature,
-            values[4] as Pressure,
-            values[5] as Pressure
+            lowPressure,
+            highPressure,
         ))
     }
         .transformLatest { (atmosphere, highTemp, normalTemp, lowTemp, lowPressure, highPressure) ->
@@ -103,7 +124,7 @@ public class TyreIconStateFlow internal constructor(
         val normalTemp: Temperature,
         val lowTemp: Temperature,
         val lowPressure: Pressure,
-        val highPressure: Pressure
+        val highPressure: Pressure,
     )
 
     public sealed interface State : Parcelable {

@@ -7,11 +7,16 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -103,6 +108,20 @@ public class VehicleRangesUseCase internal constructor(
         require(rearPressures.value !is RearPressures.Unavailable) { "Cannot separate rear and front on a single axle trailer" }
         withContext(IO) { database.updateSeparateFrontRearPressure(separated, vehicle.uuid) }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    public fun rearPressuresIfSeparated(): Flow<Pair<Pressure, Pressure>?> = rearPressures
+        .flatMapLatest {
+            when (it) {
+                RearPressures.Unavailable, is RearPressures.Disabled ->
+                    flowOf(null)
+
+                is RearPressures.Enabled ->
+                    combine(it.lowPressure, it.highPressure) { lowPress, highPress ->
+                        lowPress to highPress
+                    }
+            }
+        }
 
     private fun computeRearState(
         separateFrontRearPressure: Boolean?
