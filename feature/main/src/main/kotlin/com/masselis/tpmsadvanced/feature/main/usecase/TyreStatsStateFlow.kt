@@ -28,27 +28,7 @@ public class TyreStatsStateFlow internal constructor(
     stateFlow: StateFlow<State> = combine(
         atmosphereUseCase.listen(),
         rangeUseCase.highTemp,
-        combine(
-            rangeUseCase.lowPressure,
-            rangeUseCase.highPressure,
-            rangeUseCase.rearPressuresIfSeparated()
-        ) { low, high, rearPressures ->
-            if (rearPressures != null) {
-                val (rearLow, rearHigh) = rearPressures
-                fun rangeFor(axle: Location.Axle) = when (axle) {
-                    Location.Axle.FRONT -> low to high
-                    Location.Axle.REAR -> rearLow to rearHigh
-                }
-                @Suppress("MaxLineLength")
-                when (location) {
-                    is Location.Axle -> rangeFor(location)
-                    is Location.Wheel -> rangeFor(location.toAxle())
-                    is Location.Side -> error("Unable to find the right range to use when the location is a \"Side\" instance")
-                }
-            } else {
-                low to high
-            }
-        },
+        rangeUseCase.resolvePressures(location),
         unitPreferences.pressure,
         unitPreferences.temperature,
     ) { values ->

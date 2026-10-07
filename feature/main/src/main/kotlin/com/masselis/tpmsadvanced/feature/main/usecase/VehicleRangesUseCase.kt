@@ -2,6 +2,7 @@ package com.masselis.tpmsadvanced.feature.main.usecase
 
 import com.masselis.tpmsadvanced.core.database.QueryOne.Companion.asOne
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
@@ -122,6 +123,28 @@ public class VehicleRangesUseCase internal constructor(
                     }
             }
         }
+
+    public fun resolvePressures(location: Location): Flow<Pair<Pressure, Pressure>> = combine(
+        lowPressure,
+        highPressure,
+        rearPressuresIfSeparated()
+    ) { low, high, rearPressures ->
+        if (rearPressures != null) {
+            val (rearLow, rearHigh) = rearPressures
+            fun rangeFor(axle: Location.Axle) = when (axle) {
+                Location.Axle.FRONT -> low to high
+                Location.Axle.REAR -> rearLow to rearHigh
+            }
+            @Suppress("MaxLineLength")
+            when (location) {
+                is Location.Axle -> rangeFor(location)
+                is Location.Wheel -> rangeFor(location.toAxle())
+                is Location.Side -> error("Unable to find the right range to use when the location is a \"Side\" instance")
+            }
+        } else {
+            low to high
+        }
+    }
 
     private fun computeRearState(
         separateFrontRearPressure: Boolean?
