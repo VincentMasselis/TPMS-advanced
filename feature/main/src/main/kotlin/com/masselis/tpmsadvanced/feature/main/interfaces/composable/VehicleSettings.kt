@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.core.common.Fraction
@@ -149,11 +150,12 @@ private fun ColumnScope.RearPressureRange(
         Text("Use a different front/rear pressure")
         Spacer(Modifier.width(8.dp))
         Switch(
-            when (state) {
+            checked = when (state) {
                 is RearPressures.Enabled -> true
                 is RearPressures.Disabled -> false
             },
             onCheckedChange = onSeparatePressureEnabled,
+            modifier = Modifier.testTag(VehicleSettingsTag.separateFrontRearPressureSwitch)
         )
     }
     AnimatedVisibility(
@@ -172,6 +174,7 @@ private fun ColumnScope.RearPressureRange(
             },
             openInfo = { showLowPressureDialog = true },
             unit = unit,
+            modifier = Modifier.testTag(VehicleSettingsTag.rearPressureRangeSlider)
         )
     }
 
@@ -277,3 +280,8 @@ private fun LowTemp(
 }
 
 private val backgroundSettingsPlaceholder: @Composable (VehicleComponent) -> Unit = {}
+
+internal object VehicleSettingsTag {
+    const val separateFrontRearPressureSwitch = "VehicleSettingsTag_separateFrontRearPressureSwitch"
+    const val rearPressureRangeSlider = "VehicleSettingsTag_rearPressureRangeSlider"
+}

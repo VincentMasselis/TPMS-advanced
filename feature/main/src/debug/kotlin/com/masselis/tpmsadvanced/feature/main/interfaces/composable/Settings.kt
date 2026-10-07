@@ -2,7 +2,10 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.isNotEnabled
@@ -31,6 +34,12 @@ public class Settings(
     private val backButton
         get() = onNodeWithTag(backButtonTag)
 
+    private val separateFrontRearPressureSwitch
+        get() = onNodeWithTag(VehicleSettingsTag.separateFrontRearPressureSwitch)
+
+    private val rearPressureRangeSlider
+        get() = onNodeWithTag(VehicleSettingsTag.rearPressureRangeSlider)
+
     private val deleteVehicleButton
         get() = onNodeWithTag(DeleteVehicleButtonTags.Button.tag)
 
@@ -41,6 +50,26 @@ public class Settings(
 
     public fun assertVehicleSettingsDisplayed() {
         onNodeWithTag(containerTag).assertIsDisplayed()
+    }
+
+    public fun assertSeparateFrontRearSwitchIsDisplayed() {
+        separateFrontRearPressureSwitch.assertIsDisplayed()
+    }
+
+    public fun assertSeparateFrontRearSwitchIsNotDisplayed() {
+        separateFrontRearPressureSwitch.assertIsNotDisplayed()
+    }
+
+    public fun assertSeparateFrontRearSwitchIsOn() {
+        separateFrontRearPressureSwitch.assertIsOn()
+    }
+
+    public fun assertSeparateFrontRearSwitchIsOff() {
+        separateFrontRearPressureSwitch.assertIsOff()
+    }
+
+    public fun tapOnSeparateFrontRearSwitch() {
+        separateFrontRearPressureSwitch.performClick()
     }
 
     public fun deleteVehicle(instructions: Instructions<DeleteVehicleDialog>): ExitToken<Settings> {
