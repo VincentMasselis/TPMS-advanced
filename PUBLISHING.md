@@ -66,5 +66,8 @@ Pushing to `main` (via merging a `hotfix/*` or `release/*` branch) triggers
 - `openBackMergePullRequest`: open (or reuse) a pull request merging `main` back into `develop` and
   enable GitHub's auto-merge with a merge commit (never squash/rebase, so both branches stay alive)
   - this is what keeps `develop` from silently drifting behind `main`
+  - the pull request's head is a disposable `chore/back-merge-main-<sha>` branch pinned on `main`'s
+    head commit, never `main` itself, so GitHub's "automatically delete head branches" setting
+    deletes that branch instead of `main` once merged
 
 All four tasks run in the same CI job, one after another.

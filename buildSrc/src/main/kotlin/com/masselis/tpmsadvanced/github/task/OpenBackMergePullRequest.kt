@@ -19,7 +19,8 @@ import javax.inject.Inject
 /**
  * Opens (or reuses) a pull request merging [source] into [target] and enables GitHub's auto-merge
  * with a merge-commit strategy, so a production push automatically flows back into develop
- * without a human remembering to do it.
+ * without a human remembering to do it. The pull request's head is a disposable branch created on
+ * [source]'s head commit, so [source] itself is never deleted once the pull request is merged.
  *
  * REST has no "enable auto-merge" endpoint, and no way to pin the merge method at all - only the
  * `enablePullRequestAutoMerge` GraphQL mutation supports `mergeMethod: MERGE` (as opposed to
@@ -48,52 +49,93 @@ internal abstract class OpenBackMergePullRequest : DefaultTask() {
 
     @TaskAction
     internal fun process() = curl(
-        "-X", "POST",
-        "https://api.github.com/repos/VincentMasselis/TPMS-advanced/pulls",
-        "-d",
-        JsonObject(
-            mapOf(
-                "title" to JsonPrimitive("chore(gitflow): back-merge ${source.get()} into ${target.get()}"),
-                "head" to JsonPrimitive(source.get()),
-                "base" to JsonPrimitive(target.get()),
-                "body" to JsonPrimitive(
-                    "Automated git-flow back-merge. Merge as a merge commit only - " +
-                            "both branches must stay alive."
-                ),
-            )
-        ).toString(),
+        "-X", "GET",
+        "$REPOSITORY_API/git/ref/heads/${source.get()}",
     )
         .let { Json.decodeFromString<JsonObject>(it) }
-        .let { prCreationResponse ->
-            val errorMessages = prCreationResponse["errors"]
-                ?.jsonArray
-                .orEmpty()
-                .mapNotNull { it.jsonObject["message"]?.jsonPrimitive?.content }
-            when {
-                prCreationResponse["node_id"]?.jsonPrimitive?.contentOrNull != null ->
-                    prCreationResponse["node_id"]?.jsonPrimitive?.content
+        .let { sourceRef ->
+            sourceRef["object"]
+                ?.jsonObject["sha"]
+                ?.jsonPrimitive
+                ?.contentOrNull
+                ?: error("Failed to resolve the head commit of \"${source.get()}\": $sourceRef")
+        }
+        .let { sourceSha ->
+            // The pull request never uses `source` as its head: once merged, GitHub's "automatically
+            // delete head branches" setting would delete it (rulesets don't stop it, the deletion
+            // runs as the auto-merge enabler who may bypass them). A disposable branch pinned on
+            // the same commit produces the exact same merge commit and is free to be deleted.
+            "chore/back-merge-${source.get()}-${sourceSha.take(SHORT_SHA_LENGTH)}".also { head ->
+                curl(
+                    "-X", "POST",
+                    "$REPOSITORY_API/git/refs",
+                    "-d",
+                    JsonObject(
+                        mapOf(
+                            "ref" to JsonPrimitive("refs/heads/$head"),
+                            "sha" to JsonPrimitive(sourceSha),
+                        )
+                    ).toString(),
+                )
+                    .let { Json.decodeFromString<JsonObject>(it) }
+                    .also { refCreationResponse ->
+                        // A re-run of the job for the same `source` commit finds the branch already there
+                        check(
+                            refCreationResponse.containsKey("ref") ||
+                                    refCreationResponse["message"]?.jsonPrimitive?.contentOrNull == "Reference already exists"
+                        ) { "Failed to create the back-merge branch \"$head\": $refCreationResponse" }
+                    }
+            }
+        }
+        .let { head ->
+            curl(
+                "-X", "POST",
+                "$REPOSITORY_API/pulls",
+                "-d",
+                JsonObject(
+                    mapOf(
+                        "title" to JsonPrimitive("chore(gitflow): back-merge ${source.get()} into ${target.get()}"),
+                        "head" to JsonPrimitive(head),
+                        "base" to JsonPrimitive(target.get()),
+                        "body" to JsonPrimitive(
+                            "Automated git-flow back-merge of `${source.get()}` through the disposable " +
+                                    "branch `$head`. Merge as a merge commit only."
+                        ),
+                    )
+                ).toString(),
+            )
+                .let { Json.decodeFromString<JsonObject>(it) }
+                .let { prCreationResponse ->
+                    val errorMessages = prCreationResponse["errors"]
+                        ?.jsonArray
+                        .orEmpty()
+                        .mapNotNull { it.jsonObject["message"]?.jsonPrimitive?.content }
+                    when {
+                        prCreationResponse["node_id"]?.jsonPrimitive?.contentOrNull != null ->
+                            prCreationResponse["node_id"]?.jsonPrimitive?.content
 
-                errorMessages.any { "No commits between" in it } -> {
-                    logger.lifecycle("Nothing to back-merge: \"${source.get()}\" and \"${target.get()}\" are already in sync")
-                    null
-                }
-
-                errorMessages.any { "A pull request already exists" in it } ->
-                    curl(
-                        "-X", "GET",
-                        "https://api.github.com/repos/VincentMasselis/TPMS-advanced/pulls" +
-                                "?head=VincentMasselis:${source.get()}&base=${target.get()}&state=open",
-                    ).let { Json.decodeFromString<JsonArray>(it) }
-                        .let { prSearchResponse ->
-                            prSearchResponse.singleOrNull()
-                                ?.jsonObject["node_id"]
-                                ?.jsonPrimitive
-                                ?.content
-                                ?: error("Failed to find the existing pull request: $prSearchResponse")
+                        errorMessages.any { "No commits between" in it } -> {
+                            logger.lifecycle("Nothing to back-merge: \"${source.get()}\" and \"${target.get()}\" are already in sync")
+                            curl("-X", "DELETE", "$REPOSITORY_API/git/refs/heads/$head")
+                            null
                         }
 
-                else -> error("Failed to open the back-merge pull request: $prCreationResponse")
-            }
+                        errorMessages.any { "A pull request already exists" in it } ->
+                            curl(
+                                "-X", "GET",
+                                "$REPOSITORY_API/pulls?head=VincentMasselis:$head&base=${target.get()}&state=open",
+                            ).let { Json.decodeFromString<JsonArray>(it) }
+                                .let { prSearchResponse ->
+                                    prSearchResponse.singleOrNull()
+                                        ?.jsonObject["node_id"]
+                                        ?.jsonPrimitive
+                                        ?.content
+                                        ?: error("Failed to find the existing pull request: $prSearchResponse")
+                                }
+
+                        else -> error("Failed to open the back-merge pull request: $prCreationResponse")
+                    }
+                }
         }
         ?.let { pullRequestNodeId ->
             curl(
@@ -138,4 +180,9 @@ internal abstract class OpenBackMergePullRequest : DefaultTask() {
             }
         }
         .use { it.toString() }
+
+    private companion object {
+        private const val REPOSITORY_API = "https://api.github.com/repos/VincentMasselis/TPMS-advanced"
+        private const val SHORT_SHA_LENGTH = 7
+    }
 }
