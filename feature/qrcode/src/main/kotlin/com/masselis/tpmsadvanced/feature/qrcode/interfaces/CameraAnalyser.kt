@@ -40,9 +40,11 @@ internal class CameraAnalyser {
                         it.getValue(scanner)?.also { barcodes -> launch { send(barcodes) } }
                     }
                 )
-                // Fired by `CameraSelector.select(LinkedHashSet<CameraInternal> cameras)`
-            } catch (exc: IllegalArgumentException) {
-                throw CameraUnavailable(exc)
+            } catch (exc: IllegalStateException) {
+                // `CameraSelector.select(LinkedHashSet<CameraInternal> cameras)` fires an
+                // `IllegalArgumentException` that `LifecycleCameraController.startCamera()`
+                // (CameraX 1.6.1) wraps into an `IllegalStateException`
+                throw (exc.cause as? IllegalArgumentException)?.let(::CameraUnavailable) ?: exc
             }
             awaitClose { controller.clearImageAnalysisAnalyzer() }
         }.flowOn(Dispatchers.Main.immediate)
