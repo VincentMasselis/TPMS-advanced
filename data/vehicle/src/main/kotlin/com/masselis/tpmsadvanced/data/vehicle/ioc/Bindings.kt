@@ -100,6 +100,7 @@ public interface Bindings {
             }
         }
 
+    @Suppress("MagicNumber")
     @Provides
     private fun instantAdapter(): ColumnAdapter<Instant, Double> =
         object : ColumnAdapter<Instant, Double> {

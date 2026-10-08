@@ -41,11 +41,13 @@ internal class SwapFrontRearUseCase(
             .map { sensors -> sensors.map { it.location }.toSet() }
             .onEach { sensors -> logger.i { "Bound sensors locations: ${sensors.joinToString { it.toString() }}" } }
             .map { locations ->
+                @Suppress("MagicNumber")
                 locations.containsAll(listOf(FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT))
                         && locations.size == 4
             }
 
     suspend fun swap() {
+        @Suppress("MaxLineLength")
         require(canSwap().first()) { "Cannot swap because the bound sensors doesn't match the requirement or the vehicle is not a CAR" }
 
         fun MutableList<Sensor>.swap(first: Location.Wheel, second: Location.Wheel) {
