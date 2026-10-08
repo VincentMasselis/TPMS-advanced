@@ -46,5 +46,15 @@ internal fun mockVehicle(
     normalTemp: Temperature = 25f.celsius,
     highTemp: Temperature = 45f.celsius,
 ) = Vehicle(
-    uuid, kind, name, lowPressure, highPressure, lowTemp, normalTemp, highTemp
+    uuid,
+    kind,
+    name,
+    lowPressure,
+    highPressure,
+    false,
+    lowPressure,
+    highPressure,
+    lowTemp,
+    normalTemp,
+    highTemp
 )

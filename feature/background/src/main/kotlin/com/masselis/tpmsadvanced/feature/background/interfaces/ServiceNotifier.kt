@@ -23,6 +23,7 @@ import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
 import com.masselis.tpmsadvanced.core.common.appContext
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.R
@@ -47,6 +48,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlin.time.Duration.Companion.milliseconds
 
+@Suppress("OPT_IN_USAGE")
 @OptIn(FlowPreview::class)
 @SuppressLint("MissingPermission")
 internal class ServiceNotifier(
@@ -80,18 +82,42 @@ internal class ServiceNotifier(
             .map { vehicleComponent.TyreComponent(it) }
             .let { comps ->
                 combine(
-                    combine(comps.map { it.tyreAtmosphereUseCase.listen() }) { it }
+                    combine(
+                        comps.map { comp ->
+                            comp.tyreAtmosphereUseCase
+                                .listen()
+                                .map { atmosphere -> comp.location to atmosphere }
+                        }) { it }
                         .onStart { emit(emptyArray()) }
                         .debounce(100.milliseconds),
                     vehicleRangesUseCase.highTemp,
                     vehicleRangesUseCase.lowPressure,
                     vehicleRangesUseCase.highPressure,
-                ) { atmospheres, highTemp, lowPressure, highPressure ->
+                    vehicleRangesUseCase.rearPressuresIfSeparated(),
+                ) { atmospheres, highTemp, lowPressure, highPressure, rearPressures ->
                     atmospheres
-                        .firstOrNull { it.pressure !in lowPressure..highPressure }
+                        .firstOrNull { (location, pressure) ->
+                            if (rearPressures != null) {
+                                val (rearLowPressure, rearHighPressure) = rearPressures
+                                fun compare(axle: Location.Axle) = when (axle) {
+                                    Location.Axle.FRONT -> pressure.pressure !in lowPressure..highPressure
+                                    Location.Axle.REAR -> pressure.pressure !in rearLowPressure..rearHighPressure
+                                }
+                                @Suppress("MaxLineLength")
+                                when (location) {
+                                    is Location.Axle -> compare(location)
+                                    is Location.Wheel -> compare(location.toAxle())
+                                    is Location.Side -> error("Unable to compare front and rear pressure when the location is a \"Side\" instance")
+                                }
+                            } else {
+                                pressure.pressure !in lowPressure..highPressure
+                            }
+                        }
+                        ?.second
                         ?.let(::PressureAlert)
                         ?: atmospheres
-                            .firstOrNull { it.temperature > highTemp }
+                            .firstOrNull { it.second.temperature > highTemp }
+                            ?.second
                             ?.let(::TemperatureAlert)
                         ?: NoAlert
                 }

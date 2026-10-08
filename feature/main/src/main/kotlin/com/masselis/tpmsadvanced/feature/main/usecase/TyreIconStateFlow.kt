@@ -4,6 +4,7 @@ import android.os.Parcelable
 import co.touchlab.kermit.Logger
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.common.now
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
@@ -22,9 +23,10 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
-@Suppress("OPT_IN_TO_INHERITANCE")
+@Suppress("OPT_IN_TO_INHERITANCE", "UNCHECKED_CAST", "MagicNumber")
 @OptIn(ExperimentalCoroutinesApi::class)
 public class TyreIconStateFlow internal constructor(
+    location: Location,
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: VehicleRangesUseCase,
     scope: CoroutineScope,
@@ -33,17 +35,16 @@ public class TyreIconStateFlow internal constructor(
         rangeUseCase.highTemp,
         rangeUseCase.normalTemp,
         rangeUseCase.lowTemp,
-        rangeUseCase.lowPressure,
-        rangeUseCase.highPressure,
+        rangeUseCase.resolvePressures(location),
     ) { values ->
-        @Suppress("MagicNumber")
+        val (lowPressure, highPressure) = values[4] as Pair<Pressure, Pressure>
         (Data(
             values[0] as TyreAtmosphere,
             values[1] as Temperature,
             values[2] as Temperature,
             values[3] as Temperature,
-            values[4] as Pressure,
-            values[5] as Pressure
+            lowPressure,
+            highPressure,
         ))
     }
         .transformLatest { (atmosphere, highTemp, normalTemp, lowTemp, lowPressure, highPressure) ->
@@ -103,7 +104,7 @@ public class TyreIconStateFlow internal constructor(
         val normalTemp: Temperature,
         val lowTemp: Temperature,
         val lowPressure: Pressure,
-        val highPressure: Pressure
+        val highPressure: Pressure,
     )
 
     public sealed interface State : Parcelable {

@@ -36,7 +36,7 @@ public interface VehicleBindings {
         vehicle: Vehicle,
         @VehicleLifecycle scope: CoroutineScope,
         database: VehicleDatabase
-    ): VehicleRangesUseCase = VehicleRangesUseCase(vehicle, scope, database)
+    ): VehicleRangesUseCase = VehicleRangesUseCase(vehicle, database, scope)
 
     @Provides
     private fun vehicleSettingsViewModelImpl(

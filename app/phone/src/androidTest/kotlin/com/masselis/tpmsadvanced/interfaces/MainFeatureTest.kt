@@ -6,8 +6,8 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_RIGHT
 import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
+import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.CAR
-import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.MOTORCYCLE
 import com.masselis.tpmsadvanced.interfaces.screens.Home.Companion.home
 import org.junit.Before
@@ -143,5 +143,28 @@ internal class MainFeatureTest {
         bindSensorButton(FRONT_RIGHT) { assertIsNotDisplayed() }
         bindSensorButton(REAR_LEFT) { assertIsNotDisplayed() }
         bindSensorButton(REAR_RIGHT) { assertIsNotDisplayed() }
+        actionOverflow {
+            settings {
+                assertSeparateFrontRearSwitchIsDisplayed()
+                assertSeparateFrontRearSwitchIsOff()
+                tapOnSeparateFrontRearSwitch()
+                waitForIdle()
+                assertSeparateFrontRearSwitchIsOn()
+                leave()
+            }
+        }
+        dropdownMenu {
+            addVehicle {
+                setVehicleName("Trailer")
+                setKind(Vehicle.Kind.SINGLE_AXLE_TRAILER)
+                add()
+            }
+        }
+        actionOverflow {
+            settings {
+                assertSeparateFrontRearSwitchIsNotDisplayed()
+                leave()
+            }
+        }
     }
 }

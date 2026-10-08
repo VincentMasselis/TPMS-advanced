@@ -1,18 +1,21 @@
 package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 internal class VehicleSettingsViewModelImpl(
-    vehicleRangesUseCase: VehicleRangesUseCase,
+    private val vehicleRangesUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
 ) : ViewModel(), VehicleSettingsViewModel {
 
     override val lowPressure = vehicleRangesUseCase.lowPressure
     override val highPressure = vehicleRangesUseCase.highPressure
+    override val rearPressures = vehicleRangesUseCase.rearPressures
 
     override val pressureUnit = unitPreferences.pressure.asStateFlow()
 
@@ -22,4 +25,9 @@ internal class VehicleSettingsViewModelImpl(
 
     override val temperatureUnit = unitPreferences.temperature.asStateFlow()
 
+    override fun rearPressure(enabled: Boolean) {
+        viewModelScope.launch {
+            vehicleRangesUseCase.rearPressure(enabled)
+        }
+    }
 }

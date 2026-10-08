@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.TyreAtmosphere
@@ -17,8 +18,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.parcelize.Parcelize
 
-@Suppress("OPT_IN_TO_INHERITANCE")
+@Suppress("OPT_IN_TO_INHERITANCE", "UNCHECKED_CAST")
 public class TyreStatsStateFlow internal constructor(
+    location: Location,
     atmosphereUseCase: TyreAtmosphereUseCase,
     rangeUseCase: VehicleRangesUseCase,
     unitPreferences: UnitPreferences,
@@ -26,19 +28,19 @@ public class TyreStatsStateFlow internal constructor(
     stateFlow: StateFlow<State> = combine(
         atmosphereUseCase.listen(),
         rangeUseCase.highTemp,
-        rangeUseCase.lowPressure,
-        rangeUseCase.highPressure,
+        rangeUseCase.resolvePressures(location),
         unitPreferences.pressure,
         unitPreferences.temperature,
     ) { values ->
+        val (lowPressure, highPressure) = values[2] as Pair<Pressure, Pressure>
         @Suppress("MagicNumber")
         (Data(
             values[0] as TyreAtmosphere,
             values[1] as Temperature,
-            values[2] as Pressure,
-            values[3] as Pressure,
-            values[4] as PressureUnit,
-            values[5] as TemperatureUnit
+            lowPressure,
+            highPressure,
+            values[3] as PressureUnit,
+            values[4] as TemperatureUnit
         ))
     }
         .map { (atmosphere, highTemp, lowPressure, highPressure, pressureUnit, temperatureUnit) ->

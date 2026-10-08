@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.test.MainDispatcherRule
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
@@ -35,12 +36,14 @@ internal class TyreIconStateFlowTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
+    private lateinit var location: Location
     private lateinit var tyreAtmosphereUseCase: TyreAtmosphereUseCase
     private lateinit var vehicleRangesUseCase: VehicleRangesUseCase
     private lateinit var savedStateHandle: SavedStateHandle
 
     @Before
     fun setup() {
+        location = Location.Wheel.FRONT_LEFT
         tyreAtmosphereUseCase = mockk {
             every { listen() } returns emptyFlow()
         }
@@ -48,14 +51,14 @@ internal class TyreIconStateFlowTest {
             every { lowTemp } returns MutableStateFlow(20f.celsius)
             every { normalTemp } returns MutableStateFlow(45f.celsius)
             every { highTemp } returns MutableStateFlow(90f.celsius)
-            every { lowPressure } returns MutableStateFlow(1f.bar)
-            every { highPressure } returns MutableStateFlow(3f.bar)
+            every { resolvePressures(location) } returns flowOf(1f.bar to 3f.bar)
         }
         savedStateHandle = SavedStateHandle()
     }
 
     context(scope: TestScope)
     private fun test() = TyreIconStateFlow(
+        location,
         tyreAtmosphereUseCase,
         vehicleRangesUseCase,
         scope.backgroundScope,
@@ -140,6 +143,28 @@ internal class TyreIconStateFlowTest {
         test().test {
             assertIs<State.NotDetected>(awaitItem())
             assertIs<State.Normal>(awaitItem())
+        }
+    }
+
+    @Test
+    fun rearNormalPressure(): Unit = runTest {
+        location = Location.Wheel.REAR_LEFT
+        setAtmosphere(2f.bar, 45f.celsius)
+        every { vehicleRangesUseCase.resolvePressures(Location.Wheel.REAR_LEFT) } returns flowOf(0.5f.bar to 3f.bar)
+        test().test {
+            assertIs<State.NotDetected>(awaitItem())
+            assertIs<State.Normal>(awaitItem())
+        }
+    }
+
+    @Test
+    fun rearHighPressure(): Unit = runTest {
+        location = Location.Wheel.REAR_LEFT
+        setAtmosphere(4f.bar, 45f.celsius)
+        every { vehicleRangesUseCase.resolvePressures(Location.Wheel.REAR_LEFT) } returns flowOf(0.5f.bar to 2f.bar)
+        test().test {
+            assertIs<State.NotDetected>(awaitItem())
+            assertIs<State.Alerting>(awaitItem())
         }
     }
 

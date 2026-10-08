@@ -14,7 +14,10 @@ CREATE TABLE Vehicle(
     normalTemp REAL AS Temperature NOT NULL DEFAULT 45,
     highTemp REAL AS Temperature NOT NULL DEFAULT 90,
     kind TEXT AS Kind NOT NULL DEFAULT "CAR",
-    isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0
+    isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0,
+    separateFrontRearPressure INTEGER AS Boolean NOT NULL DEFAULT 0,
+    rearLowPressure REAL AS Pressure NOT NULL DEFAULT 100,
+    rearHighPressure REAL AS Pressure NOT NULL DEFAULT 300
 );
 
 -- This succession of triggers ensure there is always exactly 1 car with isFavourite set to 1
@@ -66,6 +69,22 @@ BEGIN
     SELECT RAISE(FAIL, 'Cannot update a vehicule which is currently deleting');
 END;
 
+CREATE TRIGGER IF NOT EXISTS cannot_enable_rear_monitoring_for_single_axle_trailer_create
+    BEFORE INSERT
+    ON Vehicle
+    WHEN new.kind = 'SINGLE_AXLE_TRAILER' AND new.separateFrontRearPressure = 1
+BEGIN
+    SELECT RAISE(FAIL, 'Cannot use a separate front/rear pressure on a single axle trailer');
+END;
+
+CREATE TRIGGER IF NOT EXISTS cannot_enable_rear_monitoring_for_single_axle_trailer_update
+    BEFORE UPDATE OF kind, separateFrontRearPressure
+    ON Vehicle
+    WHEN new.kind = 'SINGLE_AXLE_TRAILER' AND new.separateFrontRearPressure = 1
+BEGIN
+    SELECT RAISE(FAIL, 'Cannot use a separate front/rear pressure on a single axle trailer');
+END;
+
 -- This statement is put in the end because SQLDelight executes the triggers before the statements
 
 INSERT INTO Vehicle(uuid, kind, name, isFavourite) VALUES ("466b2e13-e33a-4adf-a101-a920140a29a1","CAR", "My car",1);
@@ -84,6 +103,24 @@ SELECT highPressure FROM Vehicle WHERE uuid = ?;
 
 updateHighPressure:
 UPDATE Vehicle SET highPressure = ? WHERE uuid = ?;
+
+selectSeparateFrontRearPressureByVehicleId:
+SELECT separateFrontRearPressure FROM Vehicle WHERE uuid = ?;
+
+updateSeparateFrontRearPressure:
+UPDATE Vehicle SET separateFrontRearPressure = ? WHERE uuid = ?;
+
+selectRearLowPressureByVehicleId:
+SELECT rearLowPressure FROM Vehicle WHERE uuid = ?;
+
+updateRearLowPressure:
+UPDATE Vehicle SET rearLowPressure = ? WHERE uuid = ?;
+
+selectRearHighPressureByVehicleId:
+SELECT rearHighPressure FROM Vehicle WHERE uuid = ?;
+
+updateRearHighPressure:
+UPDATE Vehicle SET rearHighPressure = ? WHERE uuid = ?;
 
 selectLowTempByVehicleId:
 SELECT lowTemp FROM Vehicle WHERE uuid = ?;

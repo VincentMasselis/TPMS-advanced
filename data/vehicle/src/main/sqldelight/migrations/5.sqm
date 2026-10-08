@@ -1,0 +1,19 @@
+ALTER TABLE Vehicle ADD separateFrontRearPressure INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE Vehicle ADD rearLowPressure REAL NOT NULL DEFAULT 100;
+ALTER TABLE Vehicle ADD rearHighPressure REAL NOT NULL DEFAULT 300;
+
+CREATE TRIGGER IF NOT EXISTS cannot_enable_rear_monitoring_for_single_axle_trailer_create
+    BEFORE INSERT
+    ON Vehicle
+    WHEN new.kind = 'SINGLE_AXLE_TRAILER' AND new.separateFrontRearPressure = 1
+BEGIN
+    SELECT RAISE(FAIL, 'Cannot use a separate front/rear pressure on a single axle trailer');
+END;
+
+CREATE TRIGGER IF NOT EXISTS cannot_enable_rear_monitoring_for_single_axle_trailer_update
+    BEFORE UPDATE OF kind, separateFrontRearPressure
+    ON Vehicle
+    WHEN new.kind = 'SINGLE_AXLE_TRAILER' AND new.separateFrontRearPressure = 1
+BEGIN
+    SELECT RAISE(FAIL, 'Cannot use a separate front/rear pressure on a single axle trailer');
+END;

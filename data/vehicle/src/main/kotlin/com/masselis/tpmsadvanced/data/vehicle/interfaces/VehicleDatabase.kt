@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces
 
+import app.cash.sqldelight.Query
 import com.masselis.tpmsadvanced.core.database.QueryList
 import com.masselis.tpmsadvanced.core.database.QueryList.Companion.asList
 import com.masselis.tpmsadvanced.core.database.QueryOne
@@ -36,6 +37,16 @@ public class VehicleDatabase internal constructor(database: Database) {
         queries.setAsFavourite(isCurrent, uuid)
     }
 
+    public fun selectSeparateFrontRearPressure(vehicleId: UUID): Query<Boolean> = queries
+        .selectSeparateFrontRearPressureByVehicleId(vehicleId)
+
+    public suspend fun updateSeparateFrontRearPressure(
+        separateFrontRearPressure: Boolean,
+        vehicleId: UUID
+    ): Unit = withContext(IO) {
+        queries.updateSeparateFrontRearPressure(separateFrontRearPressure, vehicleId)
+    }
+
     public fun selectLowPressure(vehicleId: UUID): Pressure =
         queries.selectLowPressureByVehicleId(vehicleId).executeAsOne()
 
@@ -50,6 +61,22 @@ public class VehicleDatabase internal constructor(database: Database) {
     public suspend fun updateHighPressure(highPressure: Pressure, uuid: UUID): Unit =
         withContext(IO) {
             queries.updateHighPressure(highPressure, uuid)
+        }
+
+    public fun selectRearLowPressure(vehicleId: UUID): Pressure =
+        queries.selectRearLowPressureByVehicleId(vehicleId).executeAsOne()
+
+    public suspend fun updateRearLowPressure(lowPressure: Pressure, vehicleId: UUID): Unit =
+        withContext(IO) {
+            queries.updateRearLowPressure(lowPressure, vehicleId)
+        }
+
+    public fun selectRearHighPressure(vehicleId: UUID): Pressure =
+        queries.selectRearHighPressureByVehicleId(vehicleId).executeAsOne()
+
+    public suspend fun updateRearHighPressure(highPressure: Pressure, uuid: UUID): Unit =
+        withContext(IO) {
+            queries.updateRearHighPressure(highPressure, uuid)
         }
 
     public fun selectLowTemp(vehicleId: UUID): Temperature =
@@ -99,6 +126,7 @@ public class VehicleDatabase internal constructor(database: Database) {
         .asOneOrNull()
 
     private companion object {
+        @Suppress("MaxLineLength")
         val mapper: (
             UUID,
             String,
@@ -110,14 +138,20 @@ public class VehicleDatabase internal constructor(database: Database) {
             Temperature,
             Vehicle.Kind,
             Boolean,
+            Boolean,
+            Pressure,
+            Pressure,
         ) -> Vehicle =
-            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _ ->
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _, separateFrontRearPressure, rearLowPressure, rearHighPressure ->
                 Vehicle(
                     uuid,
                     kind,
                     name,
                     lowPressure,
                     highPressure,
+                    separateFrontRearPressure,
+                    rearLowPressure,
+                    rearHighPressure,
                     lowTemp,
                     normalTemp,
                     highTemp,

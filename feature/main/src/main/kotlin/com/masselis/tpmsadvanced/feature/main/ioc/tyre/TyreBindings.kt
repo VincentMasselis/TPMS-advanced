@@ -115,11 +115,13 @@ public interface TyreBindings {
     @SingleIn(TyreComponent.Scope::class)
     @Provides
     private fun tyreStatsUseCase(
+        location: Location,
         atmosphereUseCase: TyreAtmosphereUseCase,
         rangeUseCase: VehicleRangesUseCase,
         unitPreferences: UnitPreferences,
         @VehicleLifecycle scope: CoroutineScope,
     ): TyreStatsStateFlow = TyreStatsStateFlow(
+        location,
         atmosphereUseCase,
         rangeUseCase,
         unitPreferences,
@@ -129,10 +131,12 @@ public interface TyreBindings {
     @SingleIn(TyreComponent.Scope::class)
     @Provides
     private fun tyreIconUseCase(
+        location: Location,
         atmosphereUseCase: TyreAtmosphereUseCase,
         rangeUseCase: VehicleRangesUseCase,
         @VehicleLifecycle scope: CoroutineScope,
     ): TyreIconStateFlow = TyreIconStateFlow(
+        location,
         atmosphereUseCase,
         rangeUseCase,
         scope
