@@ -40,7 +40,6 @@ import kotlin.math.roundToInt
 
 
 @Suppress("LongMethod")
-@OptIn(ExperimentalTextApi::class)
 @Composable
 public fun Spotlight(
     center: Offset,

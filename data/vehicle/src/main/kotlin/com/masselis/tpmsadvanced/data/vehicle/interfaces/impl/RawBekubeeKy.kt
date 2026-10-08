@@ -16,7 +16,6 @@ import java.util.UUID.fromString
  * Copied from [RawPecham], the only changes are name filtering ("KY" instead of "BR") and the CRC
  * tables
  */
-@OptIn(ExperimentalStdlibApi::class)
 @Suppress("MagicNumber")
 @ConsistentCopyVisibility
 internal data class RawBekubeeKy private constructor(

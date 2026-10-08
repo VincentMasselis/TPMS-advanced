@@ -5,7 +5,6 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.utils.mockScanResu
 import org.junit.Test
 
 @Suppress("MaxLineLength")
-@OptIn(ExperimentalStdlibApi::class)
 internal class PechamTest {
 
     // 0x03: Complete List of 16-bit Service Class UUIDs

@@ -6,18 +6,17 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.demo.DemoLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.BluetoothLeScannerImpl
 import com.masselis.tpmsadvanced.data.vehicle.usecase.DemoOrBleScannerUseCase
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
-import kotlinx.coroutines.DelicateCoroutinesApi
 
 
-@OptIn(DelicateCoroutinesApi::class)
 @Suppress("unused")
+@BindingContainer
 @ContributesTo(AppScope::class)
-public interface DemoOrBleScannerBinding {
+public object DemoOrBleScannerBinding {
 
-    @OptIn(DelicateCoroutinesApi::class)
     @Provides
     @SingleIn(AppScope::class)
     private fun demoOrBleScannerUseCase(context: Context): DemoOrBleScannerUseCase =

@@ -46,7 +46,6 @@ internal class TyreTest {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"))
     }
 
-    @OptIn(ExperimentalLayoutApi::class)
     @Test
     fun tyres() {
         paparazzi.snapshot {

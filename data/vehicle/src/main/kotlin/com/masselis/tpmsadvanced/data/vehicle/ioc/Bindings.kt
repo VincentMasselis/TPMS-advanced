@@ -20,18 +20,18 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
-import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.UUID
 import kotlin.math.roundToLong
 import kotlin.time.Instant
 
-@OptIn(DelicateCoroutinesApi::class)
 @Suppress("unused")
+@BindingContainer
 @ContributesTo(AppScope::class)
-public interface Bindings {
+public object Bindings {
 
     @Provides
     @SingleIn(AppScope::class)

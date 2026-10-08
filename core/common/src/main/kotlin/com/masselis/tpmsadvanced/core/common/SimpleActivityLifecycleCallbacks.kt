@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 
+@Suppress("EmptyFunctionBlock")
 public open class SimpleActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
     override fun onActivityDestroyed(activity: Activity) {}

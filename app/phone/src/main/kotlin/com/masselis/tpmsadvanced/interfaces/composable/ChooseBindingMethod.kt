@@ -101,7 +101,6 @@ internal fun ChooseBindingMethod(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Method(
     method: BindingMethod,

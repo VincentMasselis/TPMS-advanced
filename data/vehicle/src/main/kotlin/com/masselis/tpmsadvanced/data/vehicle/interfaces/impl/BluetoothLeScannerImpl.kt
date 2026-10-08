@@ -148,7 +148,6 @@ internal class BluetoothLeScannerImpl(
 
     override val isBluetoothRequired = true
 
-    @OptIn(ExperimentalUnsignedTypes::class)
     companion object {
         private val SERVICES = listOf(
             RawSysgration.SERVICE_UUID,
