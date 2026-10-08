@@ -51,9 +51,7 @@ internal class TyreIconStateFlowTest {
             every { lowTemp } returns MutableStateFlow(20f.celsius)
             every { normalTemp } returns MutableStateFlow(45f.celsius)
             every { highTemp } returns MutableStateFlow(90f.celsius)
-            every { lowPressure } returns MutableStateFlow(1f.bar)
-            every { highPressure } returns MutableStateFlow(3f.bar)
-            every { rearPressuresIfSeparated() } returns flowOf(null)
+            every { resolvePressures(location) } returns flowOf(1f.bar to 3f.bar)
         }
         savedStateHandle = SavedStateHandle()
     }
@@ -152,7 +150,7 @@ internal class TyreIconStateFlowTest {
     fun rearNormalPressure(): Unit = runTest {
         location = Location.Wheel.REAR_LEFT
         setAtmosphere(2f.bar, 45f.celsius)
-        every { vehicleRangesUseCase.rearPressuresIfSeparated() } returns flowOf(0.5f.bar to 3f.bar)
+        every { vehicleRangesUseCase.resolvePressures(Location.Wheel.REAR_LEFT) } returns flowOf(0.5f.bar to 3f.bar)
         test().test {
             assertIs<State.NotDetected>(awaitItem())
             assertIs<State.Normal>(awaitItem())
@@ -163,7 +161,7 @@ internal class TyreIconStateFlowTest {
     fun rearHighPressure(): Unit = runTest {
         location = Location.Wheel.REAR_LEFT
         setAtmosphere(4f.bar, 45f.celsius)
-        every { vehicleRangesUseCase.rearPressuresIfSeparated() } returns flowOf(0.5f.bar to 2f.bar)
+        every { vehicleRangesUseCase.resolvePressures(Location.Wheel.REAR_LEFT) } returns flowOf(0.5f.bar to 2f.bar)
         test().test {
             assertIs<State.NotDetected>(awaitItem())
             assertIs<State.Alerting>(awaitItem())
