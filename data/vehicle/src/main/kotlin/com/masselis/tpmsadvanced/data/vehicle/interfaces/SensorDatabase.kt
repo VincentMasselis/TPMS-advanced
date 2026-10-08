@@ -25,24 +25,36 @@ public class SensorDatabase internal constructor(
      * same location, it replaces it. This method also check the vehicle kind when before inserting
      * the sensor.
      */
-    @Suppress("CyclomaticComplexMethod")
     public suspend fun upsert(
         sensor: Sensor,
         vehicleId: UUID,
-    ): Unit = withContext(IO) {
-        database.transaction {
-            val kind = vehicleQueries.selectByUuid(vehicleId).executeAsOne().kind
-            require(kind.locations.any { it == sensor.location }) {
-                @Suppress("MaxLineLength")
-                "Filled sensor points to a location which is not handled by the vehicle kind. Kind: $kind, sensor: $sensor"
-            }
-            queries.deleteByVehicleAndLocation(vehicleId, sensor.location)
-            queries.upsert(sensor.id, sensor.location, vehicleId)
+    ): Unit = withContext(IO) { database.transaction { upsertSync(sensor, vehicleId) } }
+
+    private fun upsertSync(
+        sensor: Sensor,
+        vehicleId: UUID,
+    ) {
+        val kind = vehicleQueries.selectByUuid(vehicleId).executeAsOne().kind
+        require(kind.locations.any { it == sensor.location }) {
+            @Suppress("MaxLineLength")
+            "Filled sensor points to a location which is not handled by the vehicle kind. Kind: $kind, sensor: $sensor"
         }
+        queries.deleteByVehicleAndLocation(vehicleId, sensor.location)
+        queries.upsert(sensor.id, sensor.location, vehicleId)
     }
 
     public suspend fun deleteFromVehicle(vehicleId: UUID): Unit = withContext(IO) {
         queries.deleteByVehicle(vehicleId)
+    }
+
+    public suspend fun deleteFromVehicleAndUpsert(
+        sensors: List<Sensor>,
+        vehicleId: UUID
+    ): Unit = withContext(IO) {
+        database.transaction {
+            queries.deleteByVehicle(vehicleId)
+            sensors.forEach { upsertSync(it, vehicleId) }
+        }
     }
 
     public fun selectByVehicleAndLocation(

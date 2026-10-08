@@ -11,6 +11,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_LEFT
 import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.REAR_RIGHT
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
+import kotlin.time.Instant
 
 @Parcelize
 public data class Vehicle(
@@ -26,6 +27,7 @@ public data class Vehicle(
     public val lowTemp: Temperature,
     public val normalTemp: Temperature,
     public val highTemp: Temperature,
+    public val lastFrontRearTyreSwap: Instant?,
 ) : Parcelable {
 
     /**

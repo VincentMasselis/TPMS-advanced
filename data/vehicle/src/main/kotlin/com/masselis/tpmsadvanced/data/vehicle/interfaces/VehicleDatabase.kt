@@ -12,8 +12,11 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.UUID
+import kotlin.time.Instant
 
 @Suppress("TooManyFunctions")
 public class VehicleDatabase internal constructor(database: Database) {
@@ -101,6 +104,21 @@ public class VehicleDatabase internal constructor(database: Database) {
         queries.updateHighTemp(highTemp, uuid)
     }
 
+    public fun selectLastFrontRearTyreSwapFlow(
+        vehicleId: UUID
+    ): Flow<Instant?> = queries
+        .selectLastFrontRearTyreSwap(vehicleId)
+        .asOne()
+        .asFlow()
+        .map { it.lastFrontRearTyreSwap }
+
+    public suspend fun updateLastFrontRearTyreSwap(
+        lastFrontRearTyreSwap: Instant?,
+        vehicleId: UUID
+    ): Unit = withContext(IO) {
+        queries.updateLastFrontRearTyreSwap(lastFrontRearTyreSwap, vehicleId)
+    }
+
     public suspend fun setIsDeleting(uuid: UUID): Unit = withContext(IO) {
         queries.updateIsDeleting(true, uuid)
     }
@@ -141,8 +159,9 @@ public class VehicleDatabase internal constructor(database: Database) {
             Boolean,
             Pressure,
             Pressure,
+            Instant?,
         ) -> Vehicle =
-            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _, separateFrontRearPressure, rearLowPressure, rearHighPressure ->
+            { uuid, name, _, lowPressure, highPressure, lowTemp, normalTemp, highTemp, kind, _, separateFrontRearPressure, rearLowPressure, rearHighPressure, lastFrontRearTyreSwap ->
                 Vehicle(
                     uuid,
                     kind,
@@ -155,6 +174,7 @@ public class VehicleDatabase internal constructor(database: Database) {
                     lowTemp,
                     normalTemp,
                     highTemp,
+                    lastFrontRearTyreSwap,
                 )
             }
     }

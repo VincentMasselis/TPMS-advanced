@@ -21,6 +21,7 @@ dependencies {
     api(libs.kotlinx.coroutines.android)
     api(libs.kotlinx.coroutines.playservices)
     api(libs.kotlinx.coroutines.guava)
+    api(libs.kotlinx.datetime)
     api(platform(libs.google.firebase.bom))
     api(platform(libs.androidx.compose.bom))
 }

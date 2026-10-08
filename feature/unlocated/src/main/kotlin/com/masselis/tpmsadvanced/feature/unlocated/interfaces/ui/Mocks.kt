@@ -9,6 +9,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import java.util.UUID
+import kotlin.time.Instant
 
 @Suppress("MagicNumber", "TopLevelPropertyNaming")
 internal const val ts = 1642887240.0
@@ -45,6 +46,7 @@ internal fun mockVehicle(
     lowTemp: Temperature = 15f.celsius,
     normalTemp: Temperature = 25f.celsius,
     highTemp: Temperature = 45f.celsius,
+    lastFrontRearTyreSwap: Instant? = null,
 ) = Vehicle(
     uuid,
     kind,
@@ -56,5 +58,6 @@ internal fun mockVehicle(
     highPressure,
     lowTemp,
     normalTemp,
-    highTemp
+    highTemp,
+    lastFrontRearTyreSwap
 )

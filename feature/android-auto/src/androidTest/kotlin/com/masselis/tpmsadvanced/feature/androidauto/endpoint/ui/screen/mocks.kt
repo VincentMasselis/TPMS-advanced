@@ -18,4 +18,5 @@ internal fun mockVehicle() = Vehicle(
     15f.celsius,
     25f.celsius,
     45f.celsius,
+    null,
 )

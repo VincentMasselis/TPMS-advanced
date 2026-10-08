@@ -3,6 +3,7 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature;
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind;
 import java.util.UUID;
 import kotlin.Boolean;
+import kotlin.time.Instant;
 
 CREATE TABLE Vehicle(
     uuid TEXT AS UUID NOT NULL PRIMARY KEY,
@@ -17,7 +18,8 @@ CREATE TABLE Vehicle(
     isDeleting INTEGER AS Boolean NOT NULL DEFAULT 0,
     separateFrontRearPressure INTEGER AS Boolean NOT NULL DEFAULT 0,
     rearLowPressure REAL AS Pressure NOT NULL DEFAULT 100,
-    rearHighPressure REAL AS Pressure NOT NULL DEFAULT 300
+    rearHighPressure REAL AS Pressure NOT NULL DEFAULT 300,
+    lastFrontRearTyreSwap REAL AS Instant
 );
 
 -- This succession of triggers ensure there is always exactly 1 car with isFavourite set to 1
@@ -139,6 +141,12 @@ SELECT highTemp FROM Vehicle WHERE uuid = ?;
 
 updateHighTemp:
 UPDATE Vehicle SET highTemp = ? WHERE uuid = ?;
+
+selectLastFrontRearTyreSwap:
+SELECT lastFrontRearTyreSwap FROM Vehicle WHERE uuid = ?;
+
+updateLastFrontRearTyreSwap:
+UPDATE Vehicle SET lastFrontRearTyreSwap = ? WHERE uuid = ?;
 
 updateIsDeleting:
 UPDATE Vehicle SET isDeleting = ? WHERE uuid = ?;

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,11 +41,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 public fun VehicleSettings(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
     component: VehicleComponent = LocalVehicleComponent.current,
 ) {
     VehicleSettings(
+        snackbarHostState,
         modifier,
         backgroundSettings,
         component,
@@ -54,6 +57,7 @@ public fun VehicleSettings(
 
 @Composable
 internal fun VehicleSettings(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
     component: VehicleComponent = LocalVehicleComponent.current,
@@ -83,6 +87,7 @@ internal fun VehicleSettings(
             Separator()
             backgroundSettings(component)
         }
+        SwapFrontRearButton(snackbarHostState)
         Separator()
         ClearBoundSensorsButton(Modifier.fillMaxWidth())
         Separator()
