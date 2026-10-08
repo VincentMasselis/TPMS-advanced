@@ -19,6 +19,7 @@ internal val previewVehicle = Vehicle(
     5f.celsius,
     40f.celsius,
     90f.celsius,
+    null
 )
 
 internal val previewSensor = Sensor(

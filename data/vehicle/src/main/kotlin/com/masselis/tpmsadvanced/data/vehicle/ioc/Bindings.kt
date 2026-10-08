@@ -20,16 +20,18 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
-import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.UUID
+import kotlin.math.roundToLong
+import kotlin.time.Instant
 
-@OptIn(DelicateCoroutinesApi::class)
 @Suppress("unused")
+@BindingContainer
 @ContributesTo(AppScope::class)
-public interface Bindings {
+public object Bindings {
 
     @Provides
     @SingleIn(AppScope::class)
@@ -98,6 +100,18 @@ public interface Bindings {
             }
         }
 
+    @Suppress("MagicNumber")
+    @Provides
+    private fun instantAdapter(): ColumnAdapter<Instant, Double> =
+        object : ColumnAdapter<Instant, Double> {
+            override fun decode(databaseValue: Double): Instant = Instant
+                .fromEpochMilliseconds(databaseValue.times(1000).roundToLong())
+
+            override fun encode(value: Instant): Double = value
+                .toEpochMilliseconds()
+                .div(1000.0)
+        }
+
     @Provides
     @SingleIn(AppScope::class)
     private fun driver(
@@ -133,6 +147,7 @@ public interface Bindings {
         pressureAdapter: ColumnAdapter<Pressure, Double>,
         temperatureAdapter: ColumnAdapter<Temperature, Double>,
         uShortAdapter: ColumnAdapter<UShort, Long>,
+        instantAdapter: ColumnAdapter<Instant, Double>,
     ): Database = Database(
         driver,
         VehicleAdapter = Vehicle.Adapter(
@@ -145,6 +160,7 @@ public interface Bindings {
             EnumColumnAdapter(),
             pressureAdapter,
             pressureAdapter,
+            instantAdapter,
         ),
         SensorAdapter = Sensor.Adapter(IntColumnAdapter, sensorLocationAdapter, uuidAdapter),
         TyreAdapter = Tyre.Adapter(

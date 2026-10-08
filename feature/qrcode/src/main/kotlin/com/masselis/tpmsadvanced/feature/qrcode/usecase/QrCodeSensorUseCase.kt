@@ -32,7 +32,6 @@ internal class QrCodeSensorUseCase(
     private val currentVehicleUseCase: CurrentVehicleUseCase
 ) {
 
-    @OptIn(ExperimentalStdlibApi::class)
     @Suppress("MagicNumber", "CyclomaticComplexMethod", "LongMethod", "MaxLineLength")
     fun analyse(
         controller: CameraController

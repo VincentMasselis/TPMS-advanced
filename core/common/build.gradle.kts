@@ -17,10 +17,12 @@ dependencies {
     // instrumented test. To avoid crashes in this case, I manually add this dependency at the same
     // place than startup-runtime
     implementation(libs.lifecycle.common)
+    api(libs.androidx.appcompat)
     api(libs.androidx.startup)
     api(libs.kotlinx.coroutines.android)
     api(libs.kotlinx.coroutines.playservices)
     api(libs.kotlinx.coroutines.guava)
+    api(libs.kotlinx.datetime)
     api(platform(libs.google.firebase.bom))
     api(platform(libs.androidx.compose.bom))
 }

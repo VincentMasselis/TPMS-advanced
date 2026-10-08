@@ -439,7 +439,6 @@ private fun LazyListScope.allWheelsBoundMessage(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TyreCell(
     tyre: Tyre,

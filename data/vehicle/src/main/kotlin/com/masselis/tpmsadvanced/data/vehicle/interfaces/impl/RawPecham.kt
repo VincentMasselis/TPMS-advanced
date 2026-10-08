@@ -11,7 +11,6 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import java.util.UUID.fromString
 
 @Suppress("MagicNumber", "MaxLineLength")
-@OptIn(ExperimentalStdlibApi::class)
 @ConsistentCopyVisibility
 internal data class RawPecham private constructor(
     private val macAddress: String,

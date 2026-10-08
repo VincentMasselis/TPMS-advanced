@@ -4,7 +4,6 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.utils.mockScanReco
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.utils.mockScanResult
 import org.junit.Test
 
-@OptIn(ExperimentalStdlibApi::class)
 internal class BekubeeTpmsTest {
 
     // 0x08: Shortened Local Name ("TPMS")

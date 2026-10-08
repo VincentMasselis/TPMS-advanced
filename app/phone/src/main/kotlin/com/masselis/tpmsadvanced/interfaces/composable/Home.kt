@@ -138,6 +138,7 @@ internal fun VehicleHome(
                     }
                     composable("${Path.Settings(vehicleComponent.vehicle.uuid)}") {
                         Settings(
+                            snackbarHostState = snackbarHostState,
                             modifier = modifier
                         )
                     }

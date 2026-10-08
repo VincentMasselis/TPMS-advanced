@@ -6,10 +6,12 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.DeleteVehicleViewModelImpl
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.SwapFrontRearViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.usecase.ClearBoundSensorsUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.DeleteVehicleUseCase
+import com.masselis.tpmsadvanced.feature.main.usecase.SwapFrontRearUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleCountStateFlowUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleStateFlowUseCase
@@ -44,6 +46,18 @@ public interface VehicleBindings {
         unitPreferences: UnitPreferences,
     ): VehicleSettingsViewModelImpl =
         VehicleSettingsViewModelImpl(vehicleRangesUseCase, unitPreferences)
+
+    @Provides
+    private fun swapRearFrontUseCase(
+        vehicle: Vehicle,
+        vehicleDatabase: VehicleDatabase,
+        sensorDatabase: SensorDatabase,
+    ): SwapFrontRearUseCase = SwapFrontRearUseCase(vehicle, vehicleDatabase, sensorDatabase)
+
+    @Provides
+    private fun swapRearFrontViewModelImpl(
+        swapFrontRearUseCase: SwapFrontRearUseCase,
+    ): SwapFrontRearViewModelImpl = SwapFrontRearViewModelImpl(swapFrontRearUseCase)
 
     @Provides
     private fun deleteVehicleViewModelImpl(
@@ -85,6 +99,7 @@ public interface VehicleBindings {
 
     @Inject
     public class Internal internal constructor(
+        internal val swapFrontRearViewModel: () -> SwapFrontRearViewModelImpl,
         internal val clearBoundSensorsViewModel: ClearBoundSensorsViewModelImpl.Factory,
         internal val vehicleSettingsViewModel: () -> VehicleSettingsViewModelImpl,
         internal val deleteVehicleViewModel: () -> DeleteVehicleViewModelImpl,
@@ -93,6 +108,8 @@ public interface VehicleBindings {
     public companion object {
         private val VehicleComponent.internal
             get() = (this as VehicleBindings).internal
+
+        internal fun VehicleComponent.SwapFrontRearViewModel() = internal.swapFrontRearViewModel()
 
         internal val VehicleComponent.ClearBoundSensorsViewModel
             get() = internal.clearBoundSensorsViewModel
