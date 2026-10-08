@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -90,7 +91,8 @@ private fun ColumnScope.SwapFrontRearButton(
                 text = state.instant
                     .toLocalDateTime(currentSystemDefault())
                     .elapsedUntil(now)
-                    .let { "Last used: %s".format(it) }
+                    .let { "Last used: %s".format(it) },
+                style = MaterialTheme.typography.labelMedium,
             )
             Spacer(Modifier.width(8.dp))
         }
