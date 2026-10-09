@@ -25,4 +25,6 @@ dependencies {
     api(libs.kotlinx.datetime)
     api(platform(libs.google.firebase.bom))
     api(platform(libs.androidx.compose.bom))
+
+    testImplementation(project(":core:test"))
 }

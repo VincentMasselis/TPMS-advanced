@@ -88,8 +88,8 @@ relinker = "com.getkeepsafe.relinker:relinker:1.4.5"
 requery = "com.github.requery:sqlite-android:3.49.0"
 robolectric = "org.robolectric:robolectric:4.16.1"
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
-sqldelight-coroutines-ext = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqlDelight" }
-sqldelight-coroutines-jvm = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqlDelight" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqlDelight" }
+sqldelight-flows = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqlDelight" }
 sqldelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqlDelight" }
 sqldelight-dialect338 = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqlDelight" }
 test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "testServices" }

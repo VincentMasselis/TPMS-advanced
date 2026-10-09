@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
@@ -47,7 +46,7 @@ internal fun BindDialog(
     onBind: () -> Unit,
     onDismissRequest: () -> Unit,
     viewModel: BindDialogViewModel = viewModel(key = "BindSensorViewModel_${vehicleUuid}_${tyre}") {
-        BindDialogViewModel(vehicleUuid, tyre, createSavedStateHandle())
+        BindDialogViewModel(vehicleUuid, tyre)
     }
 ) {
     val state by viewModel.stateFlow.collectAsState()
