@@ -82,6 +82,15 @@ Chaining is the default control flow in this codebase, not an occasional idiom. 
       ?: error("Cannot delete the last vehicle in the database")
   ```
   Guard clauses / early returns don't need to be forced into a scope-function shape.
+- **Never parenthesize to keep chaining.** When an operator (typically elvis) would require wrapping part of a chain in parentheses to continue it, pipe it through `let` instead, so the expression stays a linear top-to-bottom pipeline:
+  ```kotlin
+  // ❌
+  (cache?.takeIf { it.isValid } ?: compute()).output
+  // ✅
+  cache?.takeIf { it.isValid }
+      .let { it ?: compute() }
+      .output
+  ```
 - **Extension functions are the chain-enabling tool.** When an API isn't chain-friendly, wrap it in a small extension function/property on its receiver instead of a free helper function, so the call site reads as a verb in the chain (e.g. `file.asToml()`, `Query.kt`'s `.asList()`/`.asOne()`, `Pressure.kt`'s `Float.kpa`/`.bar`). Put these in a file named after the receiver, never a generic `Extensions.kt`.
 - **Extraction bar: 2+ call sites, or a real conceptual boundary.** Don't extract a `private fun` (or local `fun`) that's only called from a single call site — inline that logic into the caller instead. Exception: in long Compose screens, splitting a giant composable into several single-call-site `private fun` helpers (one per list section/dialog/etc.) is fine when it measurably helps readability — the goal is minimizing reader context-switching, not a hard rule.
 - **Explicit visibility always.** Write `public`/`internal`/`private` explicitly, even on top-level declarations — never rely on the default.

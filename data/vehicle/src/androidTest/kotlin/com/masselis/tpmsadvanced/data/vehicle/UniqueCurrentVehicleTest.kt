@@ -1,14 +1,12 @@
 package com.masselis.tpmsadvanced.data.vehicle
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
 import com.masselis.tpmsadvanced.core.common.appGraph
+import com.masselis.tpmsadvanced.core.database.QueryList.Companion.asList
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -39,8 +37,8 @@ internal class UniqueCurrentVehicleTest {
         vehicleQueries = database.vehicleQueries
         debugVehicleQueries = database.debugVehicleQueries
         vehicleQueries.currentFavourite()
+            .asList()
             .asFlow()
-            .mapToList(IO)
             .onEach { assertEquals(1, it.size) }
             .launchIn(GlobalScope)
     }

@@ -11,8 +11,7 @@ dependencies {
     implementation(project(":core:common"))
 
     api(libs.sqldelight.android.driver)
-    api(libs.sqldelight.coroutines.ext)
-    api(libs.sqldelight.coroutines.jvm)
+    api(libs.sqldelight.coroutines)
     api(libs.sqldelight.primitive.adapters)
 
     // By default, sqldelight uses the sqlite engine bundled into the android framework which could
@@ -22,4 +21,5 @@ dependencies {
     // directly RequerySQLiteOpenHelperFactory
     implementation(libs.requery)
     implementation(libs.relinker)
+    implementation(libs.sqldelight.flows)
 }
