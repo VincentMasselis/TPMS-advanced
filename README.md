@@ -2,6 +2,11 @@
 [![Play Store Version](https://img.shields.io/endpoint?url=https://play.rajkumaar.co.in/version?id=com.masselis.tpmsadvanced&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=com.masselis.tpmsadvanced)
 [![Play Store Installs](https://img.shields.io/endpoint?url=https://play.rajkumaar.co.in/downloads?id=com.masselis.tpmsadvanced&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=com.masselis.tpmsadvanced)
 
+![Android Auto](https://img.shields.io/badge/Android%20Auto-supported-3DDC84?logo=androidauto&logoColor=white)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
+
+[![License](https://img.shields.io/github/license/VincentMasselis/TPMS-advanced)](LICENSE)
+
 # TPMS-advanced
 
 Android app for Bluetooth Low Energy TPMS sensors made by the manufacturers Sysgration, Pecham and Bekubee.
