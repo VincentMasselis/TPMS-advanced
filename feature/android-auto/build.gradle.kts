@@ -6,7 +6,6 @@ plugins {
 
 android {
     namespace = "com.masselis.tpmsadvanced.feature.androidauto"
-    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
