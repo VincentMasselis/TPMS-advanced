@@ -1,4 +1,6 @@
 [![Develop](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/develop.yml/badge.svg)](https://github.com/VincentMasselis/TPMS-advanced/actions/workflows/develop.yml)
+[![Play Store Version](https://img.shields.io/endpoint?url=https://play.rajkumaar.co.in/version?id=com.masselis.tpmsadvanced&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=com.masselis.tpmsadvanced)
+[![Play Store Installs](https://img.shields.io/endpoint?url=https://play.rajkumaar.co.in/downloads?id=com.masselis.tpmsadvanced&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=com.masselis.tpmsadvanced)
 
 # TPMS-advanced
 
