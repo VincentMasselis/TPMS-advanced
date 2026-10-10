@@ -18,56 +18,76 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew verifyPaparazzi       # verify
 ./gradlew recordPaparazzi       # record new snapshots
 
-# Instrumented tests (requires emulator/device)
+# Instrumented tests (Gradle managed device, defined by the `android-test` convention plugin)
 ./gradlew pixel2api34DebugAndroidTest
 
-# Full CI-equivalent run
-./gradlew build verifyPaparazzi pixel2api34DebugAndroidTest
+# buildSrc tests (gitflow/versioning plugins)
+./gradlew -p buildSrc test
+
+# Full CI-equivalent run (see .github/workflows/develop.yml)
+./gradlew -p buildSrc test
+./gradlew build verifyPaparazzi pixel2api34DebugAndroidTest copyScreenshot
 ```
 
 ## Architecture
 
-Multi-module Android app (Kotlin, Jetpack Compose, API 27–36) organized into three layers:
+Multi-module Android app (Kotlin, Jetpack Compose, API 28–37) organized into three layers:
 
-- **`core/`** — cross-cutting infrastructure: `common` (utilities), `database` (SQLDelight driver), `ui` (Compose/Material3/Navigation), `test` / `android-test` (shared test helpers)
+- **`core/`** — cross-cutting infrastructure: `common` (utilities, `appGraph` holder), `database` (SQLDelight driver, `Query.kt`), `ui` (Compose/Material3/Navigation), `debug-ui` (debug-only Compose tooling + MockK for previews), `test` / `android-test` (shared test helpers)
 - **`data/`** — domain models and persistence: `vehicle` (tyre/sensor/vehicle SQLDelight DB), `unit` (pressure/temperature conversions), `app` (app-level config)
 - **`feature/`** — UI features: `main` (BLE scanning + tyre monitoring), `background` (background service), `qrcode` (MLKit barcode), `unlocated`, `shortcut`, `unit`, `android-auto`
-- **`app/phone/`** — application entry point, wires everything together, Paparazzi tests live here
+- **`app/phone/`** — application entry point, owns the single Metro `AppGraph` that wires everything together
+
+Paparazzi screenshot tests live in `app/phone`, `feature/main` and `feature/unlocated`.
 
 ## Key Patterns
 
 ### Dependency Injection — Metro
-The project uses [Metro](https://github.com/ZacSweers/metro) (not Dagger/Hilt). The convention per module is:
+The project uses [Metro](https://github.com/ZacSweers/metro) (not Dagger/Hilt), with **a single dependency graph** and contribution-based wiring:
+
+- **The graph**: `app/phone/.../ioc/AppGraph.kt` is the only `@DependencyGraph(AppScope::class)`. An androidx-startup `Initializer` builds it from the `Context` and stores it in `core/common`'s `public lateinit var appGraph: Any`.
+- **Module bindings**: each module contributes its providers through a `@BindingContainer @ContributesTo(AppScope::class) public object Bindings` (e.g. `data/vehicle/.../ioc/Bindings.kt`). No module declares its own graph.
+- **Scoped sub-graphs**: per-vehicle/per-tyre/etc. components are `@GraphExtension`s whose `Factory` is contributed to `AppScope`, reached by casting `appGraph`:
 
 ```kotlin
-// Public surface — what other modules consume
-interface FeatureComponent {
-    val someUseCase: SomeUseCase
-    companion object : FeatureComponent by InternalComponent
-}
+@GraphExtension(BackgroundComponent.Scope::class)
+public interface BackgroundComponent {
+    public abstract class Scope private constructor()
 
-// Actual wiring — internal to the module
-@DependencyGraph(AppScope::class, bindingContainers = [Bindings::class])
-internal interface InternalComponent : FeatureComponent {
-    @DependencyGraph.Factory
-    interface Factory {
-        fun build(@Includes parent: ParentComponent): InternalComponent
+    @ContributesTo(AppScope::class)
+    @GraphExtension.Factory
+    public interface Factory {
+        public fun build(@Includes vehicleComponent: VehicleComponent): BackgroundComponent
     }
-    companion object : InternalComponent by createGraphFactory<Factory>().build(...)
+
+    public companion object {
+        public operator fun invoke(vehicle: VehicleComponent): BackgroundComponent =
+            (appGraph as Factory).build(vehicle)
+    }
 }
 ```
+
+`app/phone/src/androidTest` has its own `AppGraph` that replaces the production one in instrumented tests.
 
 ### Database — SQLDelight
 Room is not used. SQLDelight generates type-safe Kotlin from `.sq` files. Migrations use `.sqm` files alongside `.db` snapshot files in `data/vehicle/src/main/sqldelight/`. Every new migration must be accompanied by an updated schema snapshot.
 
 ### Demo Mode
-No build flavors — a single build. Demo mode (used for Play Store screenshots/testing) is a runtime setting toggled from the app's settings screen, backed by `ScannerDatabase.isDemo` in `data/vehicle`.
+No build flavors — a single build. Demo mode (used for Play Store screenshots/testing) is a runtime setting toggled from the app's settings screen, backed by `DemoOrBleScannerUseCase.isDemo` in `data/vehicle` (persisted in SharedPreferences). Switching between demo and BLE restarts the app, since the DI picks the `BluetoothLeScanner` implementation at graph creation.
 
 ### Convention Plugins
-Reusable Gradle config lives in `buildSrc/src/main/kotlin/` as convention plugins (`android-app`, `android-lib`, `compose`, `detekt`, `gitflow`, `monitor-resource`). Apply these to new modules rather than duplicating config.
+Reusable Gradle config lives in `buildSrc/src/main/kotlin/` as convention plugins (`android-app`, `android-lib`, `android-test`, `compose`, `detekt`, `gitflow`, `monitor-resource`, `bitwarden`). Apply these to new modules rather than duplicating config. `bitwarden` fetches release secrets and is optional — the project builds without them.
 
 ### Versioning
-A custom `GitflowPlugin` (git-cli backed, no JGit) manages semantic versioning automatically from the git-flow branch structure and validates the branch model (release must fork from `develop`, hotfix from `main`, no duplicate tags/branches, no foreign commits). Releases are cut via `./gradlew createRelease -Pgitflow.bump=major|minor|patch` on `develop` (`./gradlew createHotfix` from `main`, always patch), followed by `./gradlew pushGitflowBranch` — or via the `Gitflow` GitHub Actions `workflow_dispatch`, which runs the same tasks. A push to `main` also auto-opens a merge-commit back-merge PR into `develop`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full flow.
+A custom `GitflowPlugin` (git-cli backed, no JGit) derives the version from the git-flow branch structure and validates the branch model (release must fork from `develop`, hotfix from `main`, no duplicate tags/branches, no foreign commits). The version itself lives in `gradle/libs.versions.toml`. Cutting a release on `develop`:
+
+```bash
+./gradlew bumpVersion -Pversion.bump=minor   # or major / patch
+./gradlew writeReleaseNote -Pversion.releaseNote="..."
+./gradlew createRelease commitAddedFiles pushGitflowBranch -Pgitflow.gitflowBranchCommitMessage="Version bump"
+```
+
+Hotfixes use `createHotfix` from `main` instead (pick `patch` yourself, it isn't enforced). The same steps run in CI via the `gitflow-start-version.yml` `workflow_dispatch` (bump + release note + cut), or `gitflow-cut-branch.yml` when the bump is already committed (cut only). A push to `main` also auto-opens a merge-commit back-merge PR into `develop`. See [PUBLISHING.md](PUBLISHING.md) for the full flow.
 
 ## Code Style
 
