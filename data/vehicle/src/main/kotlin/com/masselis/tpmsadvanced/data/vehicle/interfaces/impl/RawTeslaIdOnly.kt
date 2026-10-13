@@ -26,8 +26,10 @@ import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
  * [anufryieu/tesla-tpms-ble](https://github.com/anufryieu/tesla-tpms-ble/blob/main/docs/PROTOCOL.md).
  *
  * The payload doesn't contain any sensor ID, bytes 0 and 1 are identical across sensors. The MAC
- * address is a public Texas Instruments address (`BC:6A:29`, `E4:FA:5B`) which never changes, the car itself
- * identifies its sensors with it, so [id] is derived from it.
+ * address doesn't change, the car itself identifies its sensors with it, so [id] is derived from it.
+ * The OEM sensor and the Autel MX-Sensor BLE use a public Texas Instruments address (`BC:6A:29`,
+ * `E4:FA:5B`) while a clone was seen with a random static address (`F8:39:F5`), which still stayed
+ * the same across days.
  */
 @ConsistentCopyVisibility
 @Suppress("MagicNumber")

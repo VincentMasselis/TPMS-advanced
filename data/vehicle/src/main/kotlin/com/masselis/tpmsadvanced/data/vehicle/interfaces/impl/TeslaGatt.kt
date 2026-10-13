@@ -1,12 +1,10 @@
 package com.masselis.tpmsadvanced.data.vehicle.interfaces.impl
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice.TRANSPORT_LE
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGatt.GATT_SUCCESS
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
 import android.bluetooth.BluetoothProfile.STATE_CONNECTED
@@ -18,10 +16,6 @@ import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.TeslaGatt.Companion.INDICATE_UUID
-import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.TeslaGatt.Companion.POLL_INTERVAL
-import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.TeslaGatt.Companion.WRITE_UUID
-import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.TeslaGatt.GenealogyRequest.GENEALOGYREQUEST_TPWHEELUNITINFO_READ
-import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.TeslaGatt.TPDataRequest.TP_DATAREQUEST_PRESSURE_TEMPERATURE
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
@@ -32,7 +26,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.catch
@@ -43,19 +36,16 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import kotlinx.serialization.protobuf.ProtoIntegerType
 import kotlinx.serialization.protobuf.ProtoNumber
 import kotlinx.serialization.protobuf.ProtoType
 import java.util.UUID.fromString
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -63,24 +53,27 @@ import kotlin.time.Duration.Companion.seconds
  *
  * A Tesla sensor never advertises its measurements, only its presence (see [RawTeslaIdOnly]). Every
  * [ScannerRecord.TeslaId] is forwarded as is, and in parallel, a GATT connection is opened to the
- * sensor and kept open. While connected, the sensor is asked for its measurements every
- * [POLL_INTERVAL], the same way the car does: it writes a `TPDataRequest` and the sensor answers a
- * `TPData` indication. Each answer is emitted as a [Tyre.Unlocated] with the same sensor ID.
+ * sensor and kept open. Once the indications are enabled, the sensor sends its measurements by
+ * itself as `TPData` indications, each one is emitted as a [Tyre.Unlocated] with the same sensor ID.
+ * The sensor sends `TPData` when the indications are enabled and when it moves, a static sensor only
+ * sends a `ConnectionMetrics` every 4 minutes. This heartbeat re-emits the last measurement with a
+ * new timestamp since the connection is still alive.
+ *
+ * Nothing is written to the sensor except the descriptor which enables the indications: an
+ * unpaired sensor ignores the requests the car sends (`TPDataRequest`, `GenealogyRequest`).
  *
  * Once the connection is lost, the sensor advertises again and its next [ScannerRecord.TeslaId]
  * opens a new connection.
- *
- * Only read requests are sent, nothing is enrolled, bonded or configured on the sensor.
  *
  * The sensor accepts a single connection at once, while the phone is connected, the car can't read
  * it.
  *
  * The messages come from the VCSEC protocol buffers definitions, see
- * [trifinite/vcsec-archive](https://github.com/trifinite/vcsec-archive). Every message is prefixed
- * by its size, as a 2 bytes big-endian integer.
+ * [trifinite/vcsec-archive](https://github.com/trifinite/vcsec-archive). Unlike the messages
+ * exchanged with the Tesla app, they are not prefixed by their size.
  */
-@OptIn(ExperimentalSerializationApi::class)
-@Suppress("TooManyFunctions", "MagicNumber", "MissingPermission")
+@OptIn(ExperimentalSerializationApi::class, ExperimentalStdlibApi::class)
+@Suppress("MagicNumber", "MissingPermission")
 internal class TeslaGatt(
     private val context: Context,
     private val source: BluetoothLeScanner,
@@ -114,11 +107,13 @@ internal class TeslaGatt(
         }
     }
 
-    // Emits a reading every [POLL_INTERVAL] until the connection is lost, which ends with an exception
+    // Emits every reading sent by the sensor until the connection is lost, which ends with an
+    // exception
     private fun ScannerRecord.TeslaId.connection(): Flow<Tyre.Unlocated> = flow {
         val events = Channel<GattEvent>(Channel.UNLIMITED)
         // The scanned device is used instead of rebuilding it from its address since it holds the
-        // address type (public or random) the connection requires
+        // address type the connection requires: OEM sensors use a public address but some clones use
+        // a random static one
         val gatt = device
             .connectGatt(context, false, GattEvent.Callback(events), TRANSPORT_LE)
             .let { checkNotNull(it) { "Unable to connect" } }
@@ -126,87 +121,50 @@ internal class TeslaGatt(
             // A sensor which accepts the connection answers within a second or two, waiting longer
             // mostly means an other device, like the car, is already connected to it
             withTimeout(CONNECTION_TIMEOUT) { events.await<GattEvent.Connected>() }
-            val write = withTimeout(REQUEST_TIMEOUT) {
+            withTimeout(SETUP_TIMEOUT) {
                 check(gatt.discoverServices()) { "Unable to discover services" }
                 events.await<GattEvent.ServicesDiscovered>()
-                val service = checkNotNull(gatt.getService(SERVICE_UUID)) { "Tesla service not found" }
-                service.getCharacteristic(INDICATE_UUID)
+                checkNotNull(gatt.getService(SERVICE_UUID)) { "Tesla service not found" }
+                    .getCharacteristic(INDICATE_UUID)
                     .let { checkNotNull(it) { "Indicate characteristic not found" } }
                     .also { check(gatt.setCharacteristicNotification(it, true)) { "Unable to enable indications" } }
                     .getDescriptor(CLIENT_CHARACTERISTIC_CONFIGURATION_UUID)
                     .let { checkNotNull(it) { "Indicate descriptor not found" } }
                     .also { gatt.writeIndicationDescriptor(it) }
                 events.await<GattEvent.DescriptorWritten>()
-                checkNotNull(service.getCharacteristic(WRITE_UUID)) { "Write characteristic not found" }
             }
-            // Read once per connection since the battery voltage barely changes. It's not mandatory,
-            // a sensor which doesn't answer still returns its pressure.
-            val battery = withTimeoutOrNull(BATTERY_TIMEOUT) {
-                gatt.request(
-                    write,
-                    events,
-                    ToTPWheelUnitMessage(genealogyRequest = GENEALOGYREQUEST_TPWHEELUNITINFO_READ)
-                ) { it.tpWheelUnitInfo }
-            }
-                ?.batteryVoltageMv
-                ?.div(100f)
-                ?.roundToInt()
-                ?.toUShort() // Returns 30 for 3.0 volts
-                ?: 0u // The battery couldn't be read
-            while (true) {
-                withTimeout(REQUEST_TIMEOUT) {
-                    gatt.request(
-                        write,
-                        events,
-                        ToTPWheelUnitMessage(tpDataRequest = TP_DATAREQUEST_PRESSURE_TEMPERATURE)
-                    ) { it.tpData }
-                }.let { data ->
+            // No timeout, the connection lasts until the sensor or the phone drops it. A dropped
+            // connection is received as a `GattEvent.Failure` which throws.
+            var lastData: TPData? = null
+            while (true) events
+                .await<GattEvent.Indication>()
+                .value
+                // Diagnostic: logs every message, even the ones which are not decoded
+                .also { logger.d { "Indication: ${it.toHexString()}, decoded: ${it.decode()}" } }
+                .decode()
+                ?.unsignedMessage
+                ?.let { message ->
+                    message.tpData
+                        ?.also { lastData = it }
+                        // The heartbeat confirms the last measurement is still the current one
+                        ?: lastData?.takeIf { message.connectionMetrics != null }
+                }
+                ?.let { data ->
                     Tyre.Unlocated(
                         now(),
                         rssi, // Measured on the advertisement which triggered the connection
                         sensorId,
                         data.gaugePressure(),
                         data.temperature.toFloat().celsius,
-                        battery,
+                        0u, // The battery is not sent by the sensor
                         false, // The alarms are not read
                     )
-                }.also { emit(it) }
-                delay(POLL_INTERVAL)
-            }
+                }
+                ?.also { emit(it) }
         } finally {
             gatt.disconnect()
             gatt.close()
         }
-    }
-
-    private suspend fun <T : Any> BluetoothGatt.request(
-        characteristic: BluetoothGattCharacteristic,
-        events: ReceiveChannel<GattEvent>,
-        message: ToTPWheelUnitMessage,
-        select: (UnsignedMessageTPWheelUnit) -> T?,
-    ): T {
-        writeCharacteristicCompat(characteristic, message.frame())
-        // The sensor could also send other messages, they are ignored until the expected one comes
-        while (true) events
-            .await<GattEvent.Indication>()
-            .value
-            .unframe()
-            ?.unsignedMessage
-            ?.let(select)
-            ?.let { return it }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun BluetoothGatt.writeCharacteristicCompat(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            check(writeCharacteristic(characteristic, value, WRITE_TYPE_DEFAULT) == GATT_SUCCESS) {
-                "Unable to write the request"
-            }
-        else
-            characteristic
-                .also { it.writeType = WRITE_TYPE_DEFAULT }
-                .also { it.value = value }
-                .let { check(writeCharacteristic(it)) { "Unable to write the request" } }
     }
 
     @Suppress("DEPRECATION")
@@ -226,7 +184,7 @@ internal class TeslaGatt(
         while (true) when (val event = receive()) {
             is T -> return event
             is GattEvent.Failure -> error(event.message)
-            else -> Unit
+            else -> logger.v { "Event skipped while waiting for ${T::class.simpleName}: $event" }
         }
     }
 
@@ -241,8 +199,9 @@ internal class TeslaGatt(
         data object Connected : GattEvent
         data object ServicesDiscovered : GattEvent
         data object DescriptorWritten : GattEvent
-        data object CharacteristicWritten : GattEvent
-        class Indication(val value: ByteArray) : GattEvent
+        class Indication(val value: ByteArray) : GattEvent {
+            override fun toString(): String = "Indication(${value.toHexString()})"
+        }
         class Failure(val message: String) : GattEvent
 
         class Callback(private val events: SendChannel<GattEvent>) : BluetoothGattCallback() {
@@ -267,17 +226,6 @@ internal class TeslaGatt(
                 )
             }
 
-            override fun onCharacteristicWrite(
-                gatt: BluetoothGatt,
-                characteristic: BluetoothGattCharacteristic,
-                status: Int
-            ) {
-                events.trySend(
-                    if (status == GATT_SUCCESS) CharacteristicWritten
-                    else Failure("Characteristic write failed, status: $status")
-                )
-            }
-
             override fun onCharacteristicChanged(
                 gatt: BluetoothGatt,
                 characteristic: BluetoothGattCharacteristic,
@@ -298,25 +246,6 @@ internal class TeslaGatt(
 
     // Subset of the VCSEC protocol buffers definitions, the unknown fields are skipped while decoding
 
-    /** Car → sensor, written on [WRITE_UUID]. Proto3 `oneof`, only one field must be set. */
-    @Serializable
-    internal data class ToTPWheelUnitMessage(
-        @ProtoNumber(31) val genealogyRequest: GenealogyRequest? = null,
-        @ProtoNumber(35) val tpDataRequest: TPDataRequest? = null,
-    )
-
-    @Serializable
-    internal enum class TPDataRequest {
-        @ProtoNumber(1)
-        TP_DATAREQUEST_PRESSURE_TEMPERATURE,
-    }
-
-    @Serializable
-    internal enum class GenealogyRequest {
-        @ProtoNumber(3)
-        GENEALOGYREQUEST_TPWHEELUNITINFO_READ,
-    }
-
     /** Sensor → car, received on [INDICATE_UUID] */
     @Serializable
     internal data class FromTPWheelUnitMessage(
@@ -326,7 +255,7 @@ internal class TeslaGatt(
     @Serializable
     internal data class UnsignedMessageTPWheelUnit(
         @ProtoNumber(28) val tpData: TPData? = null,
-        @ProtoNumber(29) val tpWheelUnitInfo: TPWheelUnitInfo? = null,
+        @ProtoNumber(34) val connectionMetrics: ConnectionMetrics? = null,
     )
 
     @Serializable
@@ -334,50 +263,38 @@ internal class TeslaGatt(
         @ProtoNumber(1) val pressure: Int = 0,
         @ProtoNumber(2) @ProtoType(ProtoIntegerType.SIGNED) val temperature: Int = 0,
     ) {
-        // `101` is the only value published, from a sensor on a bench, so the pressure is probably
-        // absolute like the advertisement's one. Removing 100 kPa (~1 atm) returns the gauge
-        // pressure. Still has to be checked against a reference gauge.
+        // The pressure is absolute, an unmounted sensor reads `100`. Removing one standard atmosphere
+        // returns the gauge pressure, checked against a gauge on 4 sensors by
+        // https://github.com/anufryieu/tesla-tpms-ble/blob/main/docs/PROTOCOL.md. Clamped because the
+        // atmospheric pressure is often slightly below the standard one.
         fun gaugePressure() = pressure
-            .minus(100)
-            .coerceAtLeast(0)
             .toFloat()
+            .minus(101.325f)
+            .coerceAtLeast(0f)
             .kpa
     }
 
+    /** Sent every 4 minutes by the sensor while connected */
     @Serializable
-    internal data class TPWheelUnitInfo(
-        @ProtoNumber(3) val batteryVoltageMv: Int = 0,
+    internal data class ConnectionMetrics(
+        @ProtoNumber(1) val goodConnEventCount: Int = 0,
+        @ProtoNumber(2) val missedConnEventCount: Int = 0,
+        @ProtoNumber(3) val badCRCConnEventCount: Int = 0,
     )
 
     internal companion object {
         private val SERVICE_UUID = fromString("00000211-b2d1-43f0-9b88-960cebf8b91e")
-        private val WRITE_UUID = fromString("00000212-b2d1-43f0-9b88-960cebf8b91e")
         private val INDICATE_UUID = fromString("00000213-b2d1-43f0-9b88-960cebf8b91e")
         private val CLIENT_CHARACTERISTIC_CONFIGURATION_UUID = fromString("00002902-0000-1000-8000-00805f9b34fb")
 
         private val CONNECTION_TIMEOUT = 5.seconds
-        private val REQUEST_TIMEOUT = 5.seconds
+        private val SETUP_TIMEOUT = 5.seconds
 
-        // The sensor is said to drop an idle connection after ~15 seconds (unverified), polling
-        // more often keeps the connection alive
-        private val POLL_INTERVAL = 10.seconds
-        private val BATTERY_TIMEOUT = 3.seconds
-
-        fun ToTPWheelUnitMessage.frame(): ByteArray = ProtoBuf
-            .encodeToByteArray(this)
-            .let { byteArrayOf((it.size shr 8).toByte(), it.size.toByte()) + it }
-
-        // Returns null if the size prefix doesn't match or if the content is not a valid message
-        fun ByteArray.unframe(): FromTPWheelUnitMessage? = this
-            .takeIf { it.size >= 2 }
-            ?.takeIf { (((it[0].toInt() and 0xFF) shl 8) or (it[1].toInt() and 0xFF)) == it.size - 2 }
-            ?.copyOfRange(2, size)
-            ?.let {
-                try {
-                    ProtoBuf.decodeFromByteArray<FromTPWheelUnitMessage>(it)
-                } catch (_: SerializationException) {
-                    null
-                }
-            }
+        // Returns null if the content is not a valid message
+        fun ByteArray.decode(): FromTPWheelUnitMessage? = try {
+            ProtoBuf.decodeFromByteArray<FromTPWheelUnitMessage>(this)
+        } catch (_: SerializationException) {
+            null
+        }
     }
 }
