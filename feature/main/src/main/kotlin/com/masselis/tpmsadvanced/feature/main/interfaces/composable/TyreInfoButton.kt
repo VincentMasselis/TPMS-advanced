@@ -35,14 +35,12 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreInfoButto
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreInfoButtonViewModel.State
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreBindings.Companion.TyreInfoButtonViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 
 @Composable
 internal fun TyreInfoButton(
     location: Location,
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewmodel: TyreInfoButtonViewModel = vehicleComponent
+    viewmodel: TyreInfoButtonViewModel = LocalVehicleComponent.current
         .TyreComponent(location)
         .viewModel { TyreInfoButtonViewModel(createSavedStateHandle()) }
 ) {
