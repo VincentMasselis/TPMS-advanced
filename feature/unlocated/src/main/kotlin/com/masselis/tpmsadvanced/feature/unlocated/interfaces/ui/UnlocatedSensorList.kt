@@ -706,7 +706,7 @@ internal fun SearchingFoundSingleTyrePreview() {
                 "MOCK",
                 Vehicle.Kind.CAR,
                 emptyList(),
-                listOf(Tyre.Unlocated(ts, -20, 1, 1.5f.bar, 20f.celsius, 20u, false)),
+                listOf(mockUnlocatedTyre()),
                 emptyList(),
                 BAR,
                 CELSIUS,
@@ -728,29 +728,29 @@ internal fun SearchingFoundMultipleTyrePreview() {
                 listOf(
                     Pair(
                         Sensor(0, FRONT_LEFT),
-                        Tyre.Unlocated(ts, -20, 0, 1.5f.bar, 20f.celsius, 20u, false),
+                        mockUnlocatedTyre(sensorId = 1, pressure = 1.5f.bar, temperature = 20f.celsius)
                     )
                 ),
                 listOf(
-                    Tyre.Unlocated(ts, -20, 1, 1.5f.bar, 20f.celsius, 20u, false),
-                    Tyre.Unlocated(ts, -20, 2, 1.75f.bar, 17f.celsius, 20u, false),
-                    Tyre.Unlocated(ts, -20, 3, 2f.bar, 18f.celsius, 20u, false),
+                    mockUnlocatedTyre(sensorId = 1, pressure = 1.5f.bar, temperature = 20f.celsius),
+                    mockUnlocatedTyre(sensorId = 2, pressure =  1.75f.bar, temperature =  17f.celsius),
+                    mockUnlocatedTyre( sensorId = 3, pressure = 2f.bar, temperature = 18f.celsius),
                 ),
                 listOf(
                     Triple(
                         mockVehicle(),
                         mockSensor(4),
-                        Tyre.Unlocated(ts, -20, 4, 1.5f.bar, 20f.celsius, 20u, false),
+                        mockUnlocatedTyre( sensorId = 4, pressure = 1.5f.bar, temperature = 20f.celsius),
                     ),
                     Triple(
                         mockVehicle(),
                         mockSensor(5),
-                        Tyre.Unlocated(ts, -20, 5, 1.75f.bar, 17f.celsius, 20u, false),
+                        mockUnlocatedTyre( sensorId = 5, pressure = 1.75f.bar, temperature = 17f.celsius),
                     ),
                     Triple(
                         mockVehicle(),
                         mockSensor(6),
-                        Tyre.Unlocated(ts, -20, 6, 2f.bar, 18f.celsius, 20u, false),
+                        mockUnlocatedTyre(sensorId = 6, pressure = 2f.bar, temperature = 18f.celsius),
                     ),
                 ),
                 BAR,
@@ -776,17 +776,17 @@ internal fun SearchingFoundOnlyBoundTyrePreview() {
                     Triple(
                         mockVehicle(),
                         mockSensor(4),
-                        Tyre.Unlocated(ts, -20, 4, 1.5f.bar, 20f.celsius, 20u, false),
+                        mockUnlocatedTyre(sensorId = 4, pressure = 1.5f.bar, temperature = 20f.celsius),
                     ),
                     Triple(
                         mockVehicle(),
                         mockSensor(5),
-                        Tyre.Unlocated(ts, -20, 5, 1.75f.bar, 17f.celsius, 20u, false),
+                        mockUnlocatedTyre(sensorId = 5, pressure = 1.75f.bar, temperature = 17f.celsius),
                     ),
                     Triple(
                         mockVehicle(),
                         mockSensor(6),
-                        Tyre.Unlocated(ts, -20, 6, 2f.bar, 18f.celsius, 20u, false),
+                        mockUnlocatedTyre(sensorId = 6, pressure = 2f.bar, temperature = 18f.celsius),
                     ),
                 ),
                 BAR,
@@ -810,7 +810,7 @@ internal fun CompletedPreview() {
                     Sensor(0, FRONT_LEFT) to null,
                     Pair(
                         Sensor(1, FRONT_RIGHT),
-                        Tyre.Unlocated(ts, -20, 1, 1.5f.bar, 20f.celsius, 20u, false),
+                        mockUnlocatedTyre(),
                     ),
                     Sensor(2, REAR_LEFT) to null,
                     Sensor(3, REAR_RIGHT) to null

@@ -8,7 +8,9 @@ import android.content.Intent.ACTION_VIEW
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -71,20 +73,21 @@ private fun Car(
     modifier: Modifier = Modifier
 ) {
     ConstraintLayout(modifier = modifier) {
-        val (carConst,
+        val (
+            carConst,
             tyreBox,
             frontLeft,
             frontLeftStats,
-            frontLeftBinding,
+            frontLeftIconContainer,
             frontRight,
             frontRightStats,
-            frontRightBinding,
+            frontRightIconContainer,
             rearLeft,
             rearLeftStats,
-            rearLeftBinding,
+            rearLeftIconContainer,
             rearRight,
             rearRightStats,
-            rearRightBinding
+            rearRightIconContainer,
         ) = createRefs()
         Image(
             bitmap = ImageBitmap.imageResource(id = R.drawable.schema_car_top_view),
@@ -125,13 +128,17 @@ private fun Car(
                     width = Dimension.value(100.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(frontLeftBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(frontLeftIconContainer) {
                     top.linkTo(frontLeft.top)
+                    bottom.linkTo(frontLeft.bottom)
                     start.linkTo(frontLeft.end)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
         with(Location.Wheel.FRONT_RIGHT) {
             Tyre(
@@ -151,13 +158,17 @@ private fun Car(
                     start.linkTo(frontRight.end, 8.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(frontRightBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(frontRightIconContainer) {
                     top.linkTo(frontRight.top)
+                    bottom.linkTo(frontRight.bottom)
                     end.linkTo(frontRight.start)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
         with(Location.Wheel.REAR_LEFT) {
             Tyre(
@@ -178,13 +189,17 @@ private fun Car(
                     width = Dimension.value(100.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(rearLeftBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(rearLeftIconContainer) {
+                    top.linkTo(rearLeft.top)
                     bottom.linkTo(rearLeft.bottom)
                     start.linkTo(rearLeft.end)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
         with(Location.Wheel.REAR_RIGHT) {
             Tyre(
@@ -204,13 +219,17 @@ private fun Car(
                     start.linkTo(rearRight.end, 8.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(rearRightBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(rearRightIconContainer) {
+                    top.linkTo(rearRight.top)
                     bottom.linkTo(rearRight.bottom)
                     end.linkTo(rearRight.start)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
     }
 }
@@ -226,10 +245,10 @@ private fun SingleAxleTrailer(
             tyreBox,
             tyreLeft,
             leftStats,
-            leftBinding,
+            leftIconContainer,
             tyreRight,
             rightStats,
-            rightBinding,
+            rightIconContainer,
         ) = createRefs()
         BackgroundImageAskHelp(
             Modifier.constrainAs(askHelp) {
@@ -267,14 +286,17 @@ private fun SingleAxleTrailer(
                     width = Dimension.value(100.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(leftBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(leftIconContainer) {
                     top.linkTo(tyreLeft.top)
                     bottom.linkTo(tyreLeft.bottom)
                     start.linkTo(tyreLeft.end)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
         with(Location.Side.RIGHT) {
             Tyre(
@@ -297,15 +319,17 @@ private fun SingleAxleTrailer(
                     start.linkTo(tyreRight.end, 8.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier
-                    .constrainAs(rightBinding) {
-                        top.linkTo(tyreRight.top)
-                        bottom.linkTo(tyreRight.bottom)
-                        end.linkTo(tyreRight.start)
-                    }
-            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(rightIconContainer) {
+                    top.linkTo(tyreRight.top)
+                    bottom.linkTo(tyreRight.bottom)
+                    end.linkTo(tyreRight.start)
+                }
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
     }
 }
@@ -322,9 +346,11 @@ private fun Motorcycle(
             tyreFront,
             frontStats,
             frontBinding,
+            frontIconInfo,
             tyreRear,
             rearStats,
             rearBinding,
+            rearIconInfo,
         ) = createRefs()
         Image(
             bitmap = ImageBitmap.imageResource(id = R.drawable.schema_motorcycle_top_view),
@@ -374,6 +400,14 @@ private fun Motorcycle(
                     end.linkTo(tyreFront.start)
                 }
             )
+            TyreInfoButton(
+                location = this,
+                modifier = Modifier.constrainAs(frontIconInfo) {
+                    top.linkTo(tyreFront.top)
+                    bottom.linkTo(tyreFront.bottom)
+                    start.linkTo(tyreFront.end)
+                }
+            )
         }
         with(Location.Axle.REAR) {
             Tyre(
@@ -404,6 +438,14 @@ private fun Motorcycle(
                         end.linkTo(tyreRear.start)
                     }
             )
+            TyreInfoButton(
+                location = this,
+                modifier = Modifier.constrainAs(rearIconInfo) {
+                    top.linkTo(tyreRear.top)
+                    bottom.linkTo(tyreRear.bottom)
+                    start.linkTo(tyreRear.end)
+                }
+            )
         }
     }
 }
@@ -419,13 +461,13 @@ private fun TadpoleThreadWheeler(
             tyreBox,
             frontLeft,
             frontLeftStats,
-            frontLeftBinding,
+            frontLeftIcons,
             frontRight,
             frontRightStats,
-            frontRightBinding,
+            frontRightIcons,
             tyreRear,
             rearStats,
-            rearBinding,
+            rearIcons,
         ) = createRefs()
         BackgroundImageAskHelp(
             Modifier.constrainAs(askHelp) {
@@ -461,13 +503,17 @@ private fun TadpoleThreadWheeler(
                     width = Dimension.value(100.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(frontLeftBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(frontLeftIcons) {
                     top.linkTo(frontLeft.top)
+                    bottom.linkTo(frontLeft.bottom)
                     start.linkTo(frontLeft.end)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
         with(Location.Wheel.FRONT_RIGHT) {
             Tyre(
@@ -487,13 +533,17 @@ private fun TadpoleThreadWheeler(
                     start.linkTo(frontRight.end, 8.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(frontRightBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(frontRightIcons) {
                     top.linkTo(frontRight.top)
+                    bottom.linkTo(frontRight.bottom)
                     end.linkTo(frontRight.start)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
         with(Location.Axle.REAR) {
             Tyre(
@@ -516,15 +566,17 @@ private fun TadpoleThreadWheeler(
                     start.linkTo(tyreRear.end, 8.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier
-                    .constrainAs(rearBinding) {
-                        top.linkTo(tyreRear.top)
-                        bottom.linkTo(tyreRear.bottom)
-                        end.linkTo(tyreRear.start)
-                    }
-            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(rearIcons) {
+                    top.linkTo(tyreRear.top)
+                    bottom.linkTo(tyreRear.bottom)
+                    end.linkTo(tyreRear.start)
+                }
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
     }
 }
@@ -540,13 +592,13 @@ private fun DeltaThreeWheeler(
             tyreBox,
             tyreFront,
             frontStats,
-            frontBinding,
+            frontIcons,
             rearLeft,
             rearLeftStats,
-            rearLeftBinding,
+            rearLeftIcons,
             rearRight,
             rearRightStats,
-            rearRightBinding
+            rearRightIcons
         ) = createRefs()
         BackgroundImageAskHelp(
             Modifier.constrainAs(askHelp) {
@@ -583,14 +635,17 @@ private fun DeltaThreeWheeler(
                     start.linkTo(tyreFront.end, 8.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(frontBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(frontIcons) {
                     top.linkTo(tyreFront.top)
                     bottom.linkTo(tyreFront.bottom)
                     end.linkTo(tyreFront.start)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
         with(Location.Wheel.REAR_LEFT) {
             Tyre(
@@ -611,13 +666,17 @@ private fun DeltaThreeWheeler(
                     width = Dimension.value(100.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(rearLeftBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(rearLeftIcons) {
+                    top.linkTo(rearLeft.top)
                     bottom.linkTo(rearLeft.bottom)
                     start.linkTo(rearLeft.end)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
         with(Location.Wheel.REAR_RIGHT) {
             Tyre(
@@ -637,13 +696,17 @@ private fun DeltaThreeWheeler(
                     start.linkTo(rearRight.end, 8.dp)
                 }
             )
-            BindSensorButton(
-                location = this,
-                modifier = Modifier.constrainAs(rearRightBinding) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.constrainAs(rearRightIcons) {
+                    top.linkTo(rearRight.top)
                     bottom.linkTo(rearRight.bottom)
                     end.linkTo(rearRight.start)
                 }
-            )
+            ) {
+                BindSensorButton(location = this@with)
+                TyreInfoButton(location = this@with)
+            }
         }
     }
 }

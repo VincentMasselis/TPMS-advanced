@@ -29,6 +29,6 @@ public object DemoOrBleScannerBinding {
         demoOrBleScannerUseCase: DemoOrBleScannerUseCase,
         context: Context
     ): BluetoothLeScanner =
-        (if (demoOrBleScannerUseCase.isDemo.value) DemoLeScanner() else BluetoothLeScannerImpl(context))
-            .let { TeslaGatt(context, it) }
+        if (demoOrBleScannerUseCase.isDemo.value) DemoLeScanner()
+        else TeslaGatt(context, BluetoothLeScannerImpl(context))
 }

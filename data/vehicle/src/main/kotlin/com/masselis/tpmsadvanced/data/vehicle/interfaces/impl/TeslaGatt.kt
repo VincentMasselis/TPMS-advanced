@@ -16,8 +16,10 @@ import com.masselis.tpmsadvanced.core.common.materializeCompletion
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.TeslaGatt.Companion.INDICATE_UUID
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.TeslaGatt.Companion.SUSPICIOUS_PRESSURE_DELTA
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.kpa
 import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
+import com.masselis.tpmsadvanced.data.vehicle.model.SuspiciousTeslaFixedTemperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -68,6 +70,10 @@ import kotlin.time.Duration.Companion.seconds
  * The sensor accepts a single connection at once, while the phone is connected, the car can't read
  * it.
  *
+ * Some clones always send the same temperature (29°C was seen). In a tyre, the pressure follows the
+ * temperature, so a pressure which moved by [SUSPICIOUS_PRESSURE_DELTA] while the temperature stayed
+ * exactly the same flags the reading with [ScannerRecord.SuspiciousTeslaFixedTemperature].
+ *
  * The messages come from the VCSEC protocol buffers definitions, see
  * [trifinite/vcsec-archive](https://github.com/trifinite/vcsec-archive). Unlike the messages
  * exchanged with the Tesla app, they are not prefixed by their size.
@@ -83,6 +89,9 @@ internal class TeslaGatt(
 
     // Shared by both scans so a sensor never gets two connections at the same time
     private val connectedSensors = ConcurrentHashMap.newKeySet<Int>()
+
+    // Kept across the connections since a static sensor sends very few measurements
+    private val temperatureObservations = ConcurrentHashMap<Int, TemperatureObservation>()
 
     private val highDutyScanFlow = source.highDutyScan().readTeslaSensors().shared()
 
@@ -109,6 +118,7 @@ internal class TeslaGatt(
 
     // Emits every reading sent by the sensor until the connection is lost, which ends with an
     // exception
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     private fun ScannerRecord.TeslaId.connection(): Flow<Tyre.Unlocated> = flow {
         val events = Channel<GattEvent>(Channel.UNLIMITED)
         // The scanned device is used instead of rebuilding it from its address since it holds the
@@ -158,6 +168,23 @@ internal class TeslaGatt(
                         data.temperature.toFloat().celsius,
                         0u, // The battery is not sent by the sensor
                         false, // The alarms are not read
+                        temperatureObservations
+                            .compute(sensorId) { _, observation ->
+                                observation
+                                    // A different temperature means the sensor measures it, the
+                                    // observation starts over
+                                    ?.takeIf { it.temperature == data.temperature }
+                                    ?.let {
+                                        it.copy(
+                                            minPressure = minOf(it.minPressure, data.pressure),
+                                            maxPressure = maxOf(it.maxPressure, data.pressure),
+                                        )
+                                    }
+                                    ?: TemperatureObservation(data.temperature, data.pressure, data.pressure)
+                            }
+                            ?.takeIf { it.maxPressure - it.minPressure >= SUSPICIOUS_PRESSURE_DELTA }
+                            ?.let { setOf(SuspiciousTeslaFixedTemperature(it.temperature.toFloat().celsius)) }
+                            ?: emptySet(),
                     )
                 }
                 ?.also { emit(it) }
@@ -193,6 +220,13 @@ internal class TeslaGatt(
         .materializeCompletion()
         .shareIn(GlobalScope + Dispatchers.Default, WhileSubscribed())
         .dematerializeCompletion()
+
+    /** Pressure range measured since the sensor sends [temperature], in absolute kPa */
+    private data class TemperatureObservation(
+        val temperature: Int,
+        val minPressure: Int,
+        val maxPressure: Int,
+    )
 
     /** Converts the callbacks of [BluetoothGattCallback] into events, only successes are sent. */
     private sealed interface GattEvent {
@@ -289,6 +323,11 @@ internal class TeslaGatt(
 
         private val CONNECTION_TIMEOUT = 5.seconds
         private val SETUP_TIMEOUT = 5.seconds
+
+        // The absolute pressure is proportional to the absolute temperature: 20 kPa on a tyre at
+        // ~350 kPa is +5.7%, which is ~+17°C, a working sensor can't miss it. Inflating the tyre
+        // also changes the pressure without changing the temperature but rarely by that much.
+        private const val SUSPICIOUS_PRESSURE_DELTA = 20
 
         // Returns null if the content is not a valid message
         fun ByteArray.decode(): FromTPWheelUnitMessage? = try {

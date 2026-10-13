@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanResult
 import co.touchlab.kermit.Logger
 import com.masselis.tpmsadvanced.core.common.now
-import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.RawTeslaIdOnly.Companion.MANUFACTURER_ID
 import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
 
 /**
