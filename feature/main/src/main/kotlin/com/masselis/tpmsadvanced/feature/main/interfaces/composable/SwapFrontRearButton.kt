@@ -27,7 +27,6 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.SwapFrontRear
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.SwapFrontRearViewModel.State
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleBindings.Companion.SwapFrontRearViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Factory.Companion.key
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -44,9 +43,7 @@ internal fun ColumnScope.SwapFrontRearButton(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     component: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: SwapFrontRearViewModel = component.viewModel(component.key()) {
-        it.SwapFrontRearViewModel()
-    }
+    viewModel: SwapFrontRearViewModel = component.viewModel { SwapFrontRearViewModel() }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     SwapFrontRearButton(

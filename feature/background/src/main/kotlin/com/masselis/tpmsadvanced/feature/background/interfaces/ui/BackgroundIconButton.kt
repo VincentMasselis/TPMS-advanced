@@ -32,7 +32,6 @@ import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundComponent
 import com.masselis.tpmsadvanced.feature.background.ioc.BackgroundComponent.Companion.BackgroundViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.LocalVehicleComponent
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Factory.Companion.key
 
 @Composable
 public fun BackgroundIconButton(
@@ -41,7 +40,6 @@ public fun BackgroundIconButton(
 ) {
     BackgroundIconButton(
         modifier = modifier,
-        keyed = vehicleComponent.key(),
         component = BackgroundComponent(vehicleComponent),
     )
 }
@@ -50,10 +48,9 @@ public fun BackgroundIconButton(
 @Suppress("CyclomaticComplexMethod")
 @Composable
 internal fun BackgroundIconButton(
-    keyed: Map<String, String>,
     component: BackgroundComponent,
     modifier: Modifier = Modifier,
-    viewModel: BackgroundViewModel = component.viewModel(keyed) { it.BackgroundViewModel() }
+    viewModel: BackgroundViewModel = component.viewModel { BackgroundViewModel() }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     val activity = LocalActivity.current

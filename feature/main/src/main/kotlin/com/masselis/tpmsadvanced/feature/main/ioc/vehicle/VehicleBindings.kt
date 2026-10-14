@@ -109,14 +109,17 @@ public interface VehicleBindings {
         private val VehicleComponent.internal
             get() = (this as VehicleBindings).internal
 
-        internal fun VehicleComponent.SwapFrontRearViewModel() = internal.swapFrontRearViewModel()
+        context(comp: VehicleComponent)
+        internal fun SwapFrontRearViewModel() = comp.internal.swapFrontRearViewModel()
 
-        internal val VehicleComponent.ClearBoundSensorsViewModel
-            get() = internal.clearBoundSensorsViewModel
+        context(comp: VehicleComponent)
+        internal val ClearBoundSensorsViewModel
+            get() = comp.internal.clearBoundSensorsViewModel
 
-        internal fun VehicleComponent.VehicleSettingsViewModel() =
-            internal.vehicleSettingsViewModel()
+        context(comp: VehicleComponent)
+        internal fun VehicleSettingsViewModel() = comp.internal.vehicleSettingsViewModel()
 
-        internal fun VehicleComponent.DeleteVehicleViewModel() = internal.deleteVehicleViewModel()
+        context(comp: VehicleComponent)
+        internal fun DeleteVehicleViewModel() = comp.internal.deleteVehicleViewModel()
     }
 }

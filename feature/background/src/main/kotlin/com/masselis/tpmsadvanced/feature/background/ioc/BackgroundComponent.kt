@@ -1,6 +1,7 @@
 package com.masselis.tpmsadvanced.feature.background.ioc
 
 import com.masselis.tpmsadvanced.core.common.appGraph
+import com.masselis.tpmsadvanced.core.ui.KeyHolder
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.background.interfaces.viewmodel.BackgroundViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
@@ -15,7 +16,7 @@ import dev.zacsweers.metro.Provides
 @GraphExtension(
     BackgroundComponent.Scope::class,
 )
-public interface BackgroundComponent {
+public interface BackgroundComponent : KeyHolder {
 
     public abstract class Scope private constructor()
 
@@ -40,6 +41,7 @@ public interface BackgroundComponent {
         public operator fun invoke(vehicle: VehicleComponent): BackgroundComponent =
             (appGraph as Factory).build(vehicle)
 
-        internal fun BackgroundComponent.BackgroundViewModel() = internal.backgroundViewModel()
+        context(comp: BackgroundComponent)
+        internal fun BackgroundViewModel() = comp.internal.backgroundViewModel()
     }
 }

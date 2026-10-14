@@ -47,7 +47,25 @@ public inline fun <HOST, reified VM : ViewModel> HOST.viewModel(
     viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     },
-    noinline initializer: CreationExtras.(HOST) -> VM
-): VM = androidxViewModel(viewModelStoreOwner, VM::class.key(keyed)) { initializer(this@viewModel) }
+    noinline initializer: context(HOST) CreationExtras.() -> VM
+): VM = androidxViewModel(viewModelStoreOwner, VM::class.key(keyed)) {
+    initializer(this@viewModel, this)
+}
+
+/**
+ * Similar to [androidxViewModel] but with the support of [KeyHolder]. [HOST] is also sent as argument
+ * to [initializer].
+ */
+@Composable
+public inline fun <HOST : KeyHolder, reified VM : ViewModel> HOST.viewModel(
+    viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    },
+    noinline initializer: context(HOST) CreationExtras.() -> VM
+): VM = viewModel(key, viewModelStoreOwner, initializer)
 
 public typealias Keyed = Map<String, String>
+
+public interface KeyHolder {
+    public val key: Keyed
+}
