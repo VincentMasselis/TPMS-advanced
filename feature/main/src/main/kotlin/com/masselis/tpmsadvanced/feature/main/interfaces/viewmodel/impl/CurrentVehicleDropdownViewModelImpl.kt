@@ -2,7 +2,9 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel.State
@@ -11,6 +13,7 @@ import com.masselis.tpmsadvanced.feature.main.usecase.VehicleListUseCase
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -28,8 +31,11 @@ internal class CurrentVehicleDropdownViewModelImpl(
 ) : ViewModel(), CurrentVehicleDropdownViewModel {
 
     @AssistedFactory
-    interface Factory {
+    interface Factory : ViewModelAssistedFactory {
         operator fun invoke(savedStateHandle: SavedStateHandle): CurrentVehicleDropdownViewModelImpl
+
+        override fun create(extras: CreationExtras): CurrentVehicleDropdownViewModelImpl =
+            invoke(extras.createSavedStateHandle())
     }
 
     private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>(

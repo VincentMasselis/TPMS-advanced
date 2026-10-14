@@ -27,6 +27,10 @@ public inline fun <reified T : ViewModel> KClass<T>.key(content: Map<String, Str
     }
 }
 
+public inline fun <reified T : ViewModel> KClass<T>.key(
+    vararg content: Pair<String, String>
+): String = key(content.toMap())
+
 /** Similar to [androidxViewModel] but with the support of [keyed] */
 @Composable
 public inline fun <reified VM : ViewModel> viewModel(

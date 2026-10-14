@@ -1,32 +1,32 @@
 package com.masselis.tpmsadvanced.ioc
 
-import com.masselis.tpmsadvanced.core.common.appGraph
+import androidx.lifecycle.ViewModel
 import com.masselis.tpmsadvanced.feature.main.usecase.NoveltyUseCase
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.IntoMap
 import dev.zacsweers.metro.Provides
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
-@Suppress("VariableNaming", "FunctionNaming", "unused")
+@Suppress("unused")
+@BindingContainer
 @ContributesTo(AppScope::class)
-public interface Bindings {
+public object Bindings {
 
     @Provides
-    private fun vehicleHomeViewModel(noveltyUseCase: NoveltyUseCase): VehicleHomeViewModel =
+    @IntoMap
+    @ViewModelKey(VehicleHomeViewModel::class)
+    private fun vehicleHomeViewModel(noveltyUseCase: NoveltyUseCase): ViewModel =
         VehicleHomeViewModel(noveltyUseCase)
 
-    public val appPhoneInternal: Internal
-
-    @Inject
-    public class Internal internal constructor(
-        internal val homeViewModel: HomeViewModel.Factory,
-        internal val vehicleHomeViewModel: () -> VehicleHomeViewModel
-    )
-
-    public companion object : Bindings by appGraph as Bindings {
-        internal val HomeViewModel = appPhoneInternal.homeViewModel
-        internal fun VehicleHomeViewModel() = appPhoneInternal.vehicleHomeViewModel()
-    }
+    @Provides
+    @IntoMap
+    @ManualViewModelAssistedFactoryKey(HomeViewModel.Factory::class)
+    private fun homeViewModelFactory(factory: HomeViewModel.Factory): ManualViewModelAssistedFactory =
+        factory
 }

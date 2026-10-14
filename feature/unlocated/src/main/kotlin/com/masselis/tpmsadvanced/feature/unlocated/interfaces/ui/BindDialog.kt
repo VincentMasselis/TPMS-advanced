@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.masselis.tpmsadvanced.core.ui.key
 import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle.Kind.DELTA_THREE_WHEELER
@@ -32,7 +32,8 @@ import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.BindDialogTags.
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.BindDialogTags.root
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModel
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModel.State
-import com.masselis.tpmsadvanced.feature.unlocated.ioc.Bindings.Companion.BindDialogViewModel
+import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.BindDialogViewModelImpl
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,9 +46,9 @@ internal fun BindDialog(
     tyre: Tyre,
     onBind: () -> Unit,
     onDismissRequest: () -> Unit,
-    viewModel: BindDialogViewModel = viewModel(key = "BindSensorViewModel_${vehicleUuid}_${tyre}") {
-        BindDialogViewModel(vehicleUuid, tyre)
-    }
+    viewModel: BindDialogViewModel = assistedMetroViewModel<BindDialogViewModelImpl, BindDialogViewModelImpl.Factory>(
+        key = BindDialogViewModelImpl::class.key("vehicleUuid" to "$vehicleUuid", "tyre" to "$tyre")
+    ) { invoke(vehicleUuid, tyre) }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     var selectedLocation by remember { mutableStateOf<Location?>(null) }

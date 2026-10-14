@@ -7,6 +7,7 @@ import com.masselis.tpmsadvanced.feature.main.usecase.CurrentVehicleUseCase
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -18,7 +19,7 @@ internal class HomeViewModel(
 ) : ViewModel() {
 
     @AssistedFactory
-    interface Factory {
+    interface Factory : ManualViewModelAssistedFactory {
         operator fun invoke(expectedVehicle: UUID?): HomeViewModel
     }
 

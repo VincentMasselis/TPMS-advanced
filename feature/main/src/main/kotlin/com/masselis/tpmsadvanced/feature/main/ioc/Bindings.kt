@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.feature.main.ioc
 
+import androidx.lifecycle.ViewModel
 import com.masselis.tpmsadvanced.core.common.appGraph
 import com.masselis.tpmsadvanced.data.app.interfaces.AppPreferences
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
@@ -17,10 +18,14 @@ import com.masselis.tpmsadvanced.feature.main.usecase.VehicleListUseCase
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.IntoMap
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
-@Suppress("unused", "FunctionNaming")
+@Suppress("unused")
 @ContributesTo(AppScope::class)
 public interface Bindings {
 
@@ -43,7 +48,9 @@ public interface Bindings {
         VehicleCountStateFlowUseCase(vehicleDatabase)
 
     @Provides
-    private fun preconditionsViewModel(bluetoothLeScanner: BluetoothLeScanner): PreconditionsViewModel =
+    @IntoMap
+    @ViewModelKey(PreconditionsViewModel::class)
+    private fun preconditionsViewModel(bluetoothLeScanner: BluetoothLeScanner): ViewModel =
         PreconditionsViewModel(bluetoothLeScanner)
 
     @SingleIn(AppScope::class)
@@ -57,26 +64,26 @@ public interface Bindings {
     )
 
     @Provides
-    private fun demoModeSwitchViewModel(demoOrBleScannerUseCase: DemoOrBleScannerUseCase): DemoModeSwitchViewModel =
+    @IntoMap
+    @ViewModelKey(DemoModeSwitchViewModel::class)
+    private fun demoModeSwitchViewModel(demoOrBleScannerUseCase: DemoOrBleScannerUseCase): ViewModel =
         DemoModeSwitchViewModel(demoOrBleScannerUseCase)
 
+    @Provides
+    @IntoMap
+    @ViewModelAssistedFactoryKey(CurrentVehicleDropdownViewModelImpl::class)
+    private fun currentVehicleDropdownViewModelFactory(
+        factory: CurrentVehicleDropdownViewModelImpl.Factory,
+    ): ViewModelAssistedFactory = factory
 
     public val featureMainInternal: Internal
 
     @Inject
     public class Internal internal constructor(
         internal val vehicleComponentCache: () -> VehicleComponentCacheUseCase,
-        internal val preconditionsViewModel: () -> PreconditionsViewModel,
-        internal val currentVehicleDropdownViewModel: CurrentVehicleDropdownViewModelImpl.Factory,
-        internal val demoModeSwitchViewModel: () -> DemoModeSwitchViewModel
     )
 
     public companion object : Bindings by appGraph as Bindings {
         internal val vehicleComponentCache get() = featureMainInternal.vehicleComponentCache()
-        internal fun PreconditionsViewModel() = featureMainInternal.preconditionsViewModel()
-        internal val CurrentVehicleDropdownViewModel
-            get() = featureMainInternal.currentVehicleDropdownViewModel
-
-        internal fun DemoModeSwitchViewModel() = featureMainInternal.demoModeSwitchViewModel()
     }
 }

@@ -10,21 +10,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.core.ui.EnumDropdown
-import com.masselis.tpmsadvanced.feature.unit.ioc.Bindings.Companion.UnitsViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import java.util.Locale
 
 @Composable
 public fun UnitsSettings(modifier: Modifier = Modifier): Unit =
     UnitsSettings(
         modifier,
-        viewModel { UnitsViewModel() },
+        metroViewModel(),
     )
 
 @Suppress("DEPRECATION")
 @Composable
 internal fun UnitsSettings(
     modifier: Modifier = Modifier,
-    viewModel: UnitsViewModel = viewModel { UnitsViewModel() },
+    viewModel: UnitsViewModel = metroViewModel(),
 ) {
     val pressure by viewModel.pressure.collectAsState()
     val temperature by viewModel.temperature.collectAsState()

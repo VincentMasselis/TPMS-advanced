@@ -13,6 +13,7 @@ import com.masselis.tpmsadvanced.feature.unlocated.usecase.BindSensorToVehicleUs
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +32,7 @@ internal class BindDialogViewModelImpl(
 ) : ViewModel(), BindDialogViewModel {
 
     @AssistedFactory
-    interface Factory {
+    interface Factory : ManualViewModelAssistedFactory {
         operator fun invoke(
             vehicleUuid: UUID,
             tyre: Tyre,

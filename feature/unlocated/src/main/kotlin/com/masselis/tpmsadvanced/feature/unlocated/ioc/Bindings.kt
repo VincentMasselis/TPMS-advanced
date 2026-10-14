@@ -1,6 +1,5 @@
 package com.masselis.tpmsadvanced.feature.unlocated.ioc
 
-import com.masselis.tpmsadvanced.core.common.appGraph
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -10,13 +9,17 @@ import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSens
 import com.masselis.tpmsadvanced.feature.unlocated.usecase.BindSensorToVehicleUseCase
 import com.masselis.tpmsadvanced.feature.unlocated.usecase.VehicleBindingStatusUseCase
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.IntoMap
 import dev.zacsweers.metro.Provides
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
 @Suppress("unused")
+@BindingContainer
 @ContributesTo(AppScope::class)
-public interface Bindings {
+public object Bindings {
     @Provides
     private fun vehicleBindingStatusUseCase(
         vehicleDatabase: VehicleDatabase,
@@ -32,16 +35,15 @@ public interface Bindings {
         if (demoOrBleScannerUseCase.isDemo.value) BindSensorToVehicleUseCase.NoOp
         else BindSensorToVehicleUseCase.Impl(sensorDatabase, tyreDatabase)
 
-    public val featureUnlocatedInternal: Internal
+    @Provides
+    @IntoMap
+    @ManualViewModelAssistedFactoryKey(ListSensorViewModelImpl.Factory::class)
+    private fun listSensorViewModelFactory(factory: ListSensorViewModelImpl.Factory): ManualViewModelAssistedFactory =
+        factory
 
-    @Inject
-    public class Internal internal constructor(
-        internal val listSensorViewModel: ListSensorViewModelImpl.Factory,
-        internal val bindDialogViewModel: BindDialogViewModelImpl.Factory
-    )
-
-    public companion object : Bindings by appGraph as Bindings {
-        internal val ListSensorViewModel = featureUnlocatedInternal.listSensorViewModel
-        internal val BindDialogViewModel = featureUnlocatedInternal.bindDialogViewModel
-    }
+    @Provides
+    @IntoMap
+    @ManualViewModelAssistedFactoryKey(BindDialogViewModelImpl.Factory::class)
+    private fun bindDialogViewModelFactory(factory: BindDialogViewModelImpl.Factory): ManualViewModelAssistedFactory =
+        factory
 }

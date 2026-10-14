@@ -38,7 +38,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.R
@@ -51,7 +50,8 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehic
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdownTags.dropdownEntryAddVehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.CurrentVehicleDropdownViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.Bindings.Companion.CurrentVehicleDropdownViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.CurrentVehicleDropdownViewModelImpl
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
@@ -65,7 +65,7 @@ public fun CurrentVehicleDropdown(
 ) {
     CurrentVehicleDropdown(
         modifier,
-        viewModel { CurrentVehicleDropdownViewModel(createSavedStateHandle()) }
+        assistedMetroViewModel<CurrentVehicleDropdownViewModelImpl>()
     )
 }
 
@@ -73,9 +73,7 @@ public fun CurrentVehicleDropdown(
 @Composable
 private fun CurrentVehicleDropdown(
     modifier: Modifier = Modifier,
-    viewModel: CurrentVehicleDropdownViewModel = viewModel {
-        CurrentVehicleDropdownViewModel(createSavedStateHandle())
-    }
+    viewModel: CurrentVehicleDropdownViewModel = assistedMetroViewModel<CurrentVehicleDropdownViewModelImpl>()
 ) {
     val vehicles = viewModel.stateFlow.collectAsState().value as? State.Vehicles ?: return
     var expanded by remember { mutableStateOf(false) }

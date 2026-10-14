@@ -52,7 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp.Companion.Hairline
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.masselis.tpmsadvanced.core.ui.key
 import com.masselis.tpmsadvanced.core.ui.restartApp
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit.BAR
@@ -74,7 +74,8 @@ import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensor
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.ui.UnlocatedSensorListTags.sensorUnpluggedButton
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModel
 import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModel.State
-import com.masselis.tpmsadvanced.feature.unlocated.ioc.Bindings.Companion.ListSensorViewModel
+import com.masselis.tpmsadvanced.feature.unlocated.interfaces.viewmodel.ListSensorViewModelImpl
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import io.github.fornewid.placeholder.foundation.PlaceholderHighlight
 import io.github.fornewid.placeholder.material3.placeholder
 import io.github.fornewid.placeholder.material3.shimmer
@@ -105,7 +106,9 @@ private fun Content(
     vehicleUuid: UUID,
     bindingFinished: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ListSensorViewModel = viewModel { ListSensorViewModel(vehicleUuid) }
+    viewModel: ListSensorViewModel = assistedMetroViewModel<ListSensorViewModelImpl, ListSensorViewModelImpl.Factory>(
+        key = ListSensorViewModelImpl::class.key("vehicleUuid" to "$vehicleUuid")
+    ) { invoke(vehicleUuid) }
 ) {
     val state by viewModel.stateFlow.collectAsState()
     Box(

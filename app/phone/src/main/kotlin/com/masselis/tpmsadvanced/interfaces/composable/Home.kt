@@ -52,7 +52,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -60,6 +59,7 @@ import androidx.navigation.compose.rememberNavController
 import com.masselis.tpmsadvanced.R
 import com.masselis.tpmsadvanced.core.ui.LocalHomeNavController
 import com.masselis.tpmsadvanced.core.ui.Spotlight
+import com.masselis.tpmsadvanced.core.ui.key
 import com.masselis.tpmsadvanced.feature.background.interfaces.ui.BackgroundIconButton
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.CurrentVehicleDropdown
@@ -72,16 +72,16 @@ import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.carListDropdownM
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.Event
-import com.masselis.tpmsadvanced.ioc.Bindings.Companion.HomeViewModel
-import com.masselis.tpmsadvanced.ioc.Bindings.Companion.VehicleHomeViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import java.util.UUID
 
 @Composable
 internal fun Home(
     expectedVehicle: UUID?,
-    viewModel: HomeViewModel = viewModel(key = "HomeViewModel_$expectedVehicle") {
-        HomeViewModel(expectedVehicle = expectedVehicle)
-    }
+    viewModel: HomeViewModel = assistedMetroViewModel<HomeViewModel, HomeViewModel.Factory>(
+        key = HomeViewModel::class.key("expectedVehicle" to "$expectedVehicle")
+    ) { invoke(expectedVehicle) }
 ) {
     val vehicleComponent by viewModel.vehicleComponentStateFlow.collectAsState()
     VehicleHome(
@@ -93,7 +93,7 @@ internal fun Home(
 @Composable
 internal fun VehicleHome(
     vehicleComponent: VehicleComponent,
-    viewModel: VehicleHomeViewModel = viewModel { VehicleHomeViewModel() }
+    viewModel: VehicleHomeViewModel = metroViewModel()
 ) {
     val navController = rememberNavController()
     CompositionLocalProvider(

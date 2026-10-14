@@ -21,8 +21,8 @@ import com.masselis.tpmsadvanced.core.ui.BluetoothState
 import com.masselis.tpmsadvanced.core.ui.MissingPermission
 import com.masselis.tpmsadvanced.core.ui.rememberBluetoothState
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.PreconditionsViewModel
-import com.masselis.tpmsadvanced.feature.main.ioc.Bindings.Companion.PreconditionsViewModel
 import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 public fun Preconditions(
@@ -41,7 +41,7 @@ public fun Preconditions(
 internal fun InternalPreconditions(
     @Assisted ready: @Composable () -> Unit,
     @Assisted modifier: Modifier = Modifier,
-    viewModel: PreconditionsViewModel = viewModel { PreconditionsViewModel() }
+    viewModel: PreconditionsViewModel = metroViewModel()
 ) {
     val permissionState = rememberMultiplePermissionsState(viewModel.requiredPermission())
     val bluetoothState = rememberBluetoothState()

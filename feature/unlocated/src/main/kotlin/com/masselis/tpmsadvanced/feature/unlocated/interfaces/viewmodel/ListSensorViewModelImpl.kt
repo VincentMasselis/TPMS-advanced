@@ -13,6 +13,7 @@ import com.masselis.tpmsadvanced.feature.unlocated.usecase.VehicleBindingStatusU
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +40,7 @@ internal class ListSensorViewModelImpl(
 ) : ViewModel(), ListSensorViewModel {
 
     @AssistedFactory
-    interface Factory {
+    interface Factory : ManualViewModelAssistedFactory {
         operator fun invoke(vehicleUuid: UUID): ListSensorViewModelImpl
     }
 

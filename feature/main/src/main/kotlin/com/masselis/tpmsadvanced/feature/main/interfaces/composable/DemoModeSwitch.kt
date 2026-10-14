@@ -14,15 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DemoModeSwitchViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DemoModeSwitchViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.Bindings.Companion.DemoModeSwitchViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 internal fun DemoModeSwitch(
     modifier: Modifier = Modifier,
-    viewModel: DemoModeSwitchViewModel = viewModel { DemoModeSwitchViewModel() }
+    viewModel: DemoModeSwitchViewModel = metroViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsState()
     Row(
