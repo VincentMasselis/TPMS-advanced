@@ -8,19 +8,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
-import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
-import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreIconViewModel
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 internal fun PressureInfo(
@@ -35,11 +30,9 @@ internal fun PressureInfo(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Tyre(
-                    location = Location.Side.LEFT,
+                    state = State.Alerting,
                     snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
-                    vehicleComponent = lazy { error("Shouldn't be called") },
-                    viewModel = DemoTyreIconViewModel(State.Alerting),
                 )
                 Text(
                     "If the pressure is below %s or above %s, the tyre starts to blink in red to alert you"
@@ -69,13 +62,10 @@ internal fun TemperatureInfo(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val demoTyreViewModel = remember(state) { DemoTyreIconViewModel(state) }
                 Tyre(
-                    location = Location.Side.LEFT,
+                    state = state,
                     snackbarHostState = DemoSnackbarHostState,
                     modifier = Modifier.height(150.dp),
-                    vehicleComponent = lazy { error("Shouldn't be called") },
-                    viewModel = demoTyreViewModel,
                 )
                 Text(text.format(temperature.string(unit)))
             }
@@ -83,10 +73,6 @@ internal fun TemperatureInfo(
         onDismissRequest = onDismissRequest,
         confirmButton = { TextButton(onClick = onDismissRequest) { Text(text = "OK") } }
     )
-}
-
-private class DemoTyreIconViewModel(state: State) : TyreIconViewModel {
-    override val stateFlow: StateFlow<State> = MutableStateFlow(state)
 }
 
 private val DemoSnackbarHostState = SnackbarHostState()

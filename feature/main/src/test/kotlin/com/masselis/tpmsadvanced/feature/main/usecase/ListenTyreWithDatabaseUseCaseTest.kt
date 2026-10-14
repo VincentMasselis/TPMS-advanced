@@ -4,12 +4,12 @@ import app.cash.turbine.test
 import com.masselis.tpmsadvanced.core.common.now
 import com.masselis.tpmsadvanced.core.test.mockkQueryOneOrNull
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.TyreDatabase
-import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
+import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Location.Wheel.FRONT_LEFT
+import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
-import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

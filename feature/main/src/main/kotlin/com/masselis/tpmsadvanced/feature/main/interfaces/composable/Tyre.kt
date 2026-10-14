@@ -1,4 +1,4 @@
-@file:Suppress("NAME_SHADOWING")
+@file:Suppress("NAME_SHADOWING", "TooManyFunctions")
 
 package com.masselis.tpmsadvanced.feature.main.interfaces.composable
 
@@ -46,8 +46,6 @@ import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreIconViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreBindings.Companion.TyreIconViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.keyed
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -61,10 +59,9 @@ internal fun Tyre(
     location: Location,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
-    vehicleComponent: Lazy<VehicleComponent> = lazyOf(LocalVehicleComponent.current),
-    viewModel: TyreIconViewModel = vehicleComponent.value
+    viewModel: TyreIconViewModel = LocalVehicleComponent.current
         .TyreComponent(location)
-        .let { viewModel(it.keyed()) { it.TyreIconViewModel() } },
+        .viewModel { TyreIconViewModel() },
 ) {
     val state by viewModel.stateFlow.collectAsState()
     Tyre(state, snackbarHostState, modifier)
@@ -72,7 +69,7 @@ internal fun Tyre(
 
 @Suppress("LongMethod", "CyclomaticComplexMethod", "MaxLineLength")
 @Composable
-private fun Tyre(
+internal fun Tyre(
     state: State,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,

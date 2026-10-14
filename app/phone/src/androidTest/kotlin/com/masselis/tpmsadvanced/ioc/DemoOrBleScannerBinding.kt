@@ -6,12 +6,14 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.demo.DemoLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.usecase.DemoOrBleScannerUseCase
 import com.masselis.tpmsadvanced.usecase.DefaultDemoOrBleScannerUseCase
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import com.masselis.tpmsadvanced.data.vehicle.ioc.DemoOrBleScannerBinding as OriginalDemoOrBleScannerBinding
 
+@BindingContainer
 @ContributesTo(AppScope::class, replaces = [OriginalDemoOrBleScannerBinding::class])
-public interface DemoOrBleScannerBinding {
+public object DemoOrBleScannerBinding {
 
     // Run the app without the demo mode enabled to authorize sensor bindings for tests
     @Provides

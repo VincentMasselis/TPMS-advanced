@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.feature.main.ioc.tyre
 
+import com.masselis.tpmsadvanced.core.ui.KeyHolder
 import com.masselis.tpmsadvanced.core.ui.Keyed
 import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
@@ -17,7 +18,7 @@ import dev.zacsweers.metro.Provides
 @GraphExtension(
     scope = TyreComponent.Scope::class,
 )
-public interface TyreComponent {
+public interface TyreComponent : KeyHolder {
 
     public class Scope private constructor()
 
@@ -33,11 +34,13 @@ public interface TyreComponent {
     public val tyreIconStateFlow: TyreIconStateFlow
     public val tyreStatsStateFlow: TyreStatsStateFlow
 
-    public companion object {
-        public fun TyreComponent.keyed(): Keyed = mapOf(
+    override val key: Keyed
+        get() = mapOf(
             "vehicle_id" to vehicle.uuid.toString(),
             "location" to "$location"
         )
+
+    public companion object {
 
         public fun VehicleComponent.TyreComponent(loc: Location): TyreComponent =
             findTyreComponentUseCase(loc)

@@ -27,8 +27,6 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.TyreStatsViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreBindings.Companion.TyreStatsViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.TyreComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.tyre.TyreComponent.Companion.keyed
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreStatsStateFlow.State
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,10 +36,9 @@ import kotlin.time.Duration.Companion.milliseconds
 internal fun TyreStat(
     location: Location,
     modifier: Modifier = Modifier,
-    vehicleComponent: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: TyreStatsViewModel = vehicleComponent
+    viewModel: TyreStatsViewModel = LocalVehicleComponent.current
         .TyreComponent(location)
-        .let { viewModel(it.keyed()) { it.TyreStatsViewModel() } },
+        .viewModel { TyreStatsViewModel() },
 ) {
     val state by viewModel.stateFlow.collectAsState()
     TyreStat(location, state, modifier)

@@ -170,8 +170,13 @@ public interface TyreBindings {
         private val TyreComponent.internal
             get() = (this as TyreBindings).internal
 
-        internal fun TyreComponent.TyreIconViewModel() = internal.tyreIconViewModel()
-        internal fun TyreComponent.TyreStatsViewModel() = internal.tyreStatsViewModel()
-        internal val TyreComponent.BindSensorButtonViewModel get() = internal.bindSensorButtonViewModel
+        context(comp: TyreComponent)
+        internal fun TyreIconViewModel() = comp.internal.tyreIconViewModel()
+
+        context(comp: TyreComponent)
+        internal fun TyreStatsViewModel() = comp.internal.tyreStatsViewModel()
+
+        context(comp: TyreComponent)
+        internal val BindSensorButtonViewModel get() = comp.internal.bindSensorButtonViewModel
     }
 }

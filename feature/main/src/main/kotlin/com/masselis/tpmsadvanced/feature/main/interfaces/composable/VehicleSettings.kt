@@ -34,7 +34,6 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleBindings.Companion.VehicleSettingsViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Factory.Companion.key
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase.RearPressures
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +50,7 @@ public fun VehicleSettings(
         modifier,
         backgroundSettings,
         component,
-        component.viewModel(component.key()) { it.VehicleSettingsViewModel() },
+        component.viewModel { VehicleSettingsViewModel() },
     )
 }
 
@@ -61,7 +60,7 @@ internal fun VehicleSettings(
     modifier: Modifier = Modifier,
     backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
     component: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: VehicleSettingsViewModel = component.viewModel(component.key()) { it.VehicleSettingsViewModel() },
+    viewModel: VehicleSettingsViewModel = component.viewModel { VehicleSettingsViewModel() },
 ) {
     val highTemp by viewModel.highTemp.collectAsState()
     val normalTemp by viewModel.normalTemp.collectAsState()

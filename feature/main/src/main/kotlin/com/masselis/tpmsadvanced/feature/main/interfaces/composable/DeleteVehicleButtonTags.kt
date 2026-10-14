@@ -33,13 +33,12 @@ import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicle
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.DeleteVehicleViewModel.State
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleBindings.Companion.DeleteVehicleViewModel
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent.Factory.Companion.key
 
 @Composable
 internal fun DeleteVehicleButton(
     modifier: Modifier = Modifier,
     component: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: DeleteVehicleViewModel = component.viewModel(component.key()) { it.DeleteVehicleViewModel() }
+    viewModel: DeleteVehicleViewModel = component.viewModel { DeleteVehicleViewModel() }
 ) {
     val navController = LocalHomeNavController.current
     val state by viewModel.stateFlow.collectAsState()

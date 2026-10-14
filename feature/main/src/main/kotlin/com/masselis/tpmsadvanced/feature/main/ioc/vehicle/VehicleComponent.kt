@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.feature.main.ioc.vehicle
 
+import com.masselis.tpmsadvanced.core.ui.KeyHolder
 import com.masselis.tpmsadvanced.core.ui.Keyed
 import com.masselis.tpmsadvanced.data.vehicle.model.Vehicle
 import com.masselis.tpmsadvanced.feature.main.ioc.Bindings
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 @GraphExtension(
     scope = VehicleComponent.Scope::class,
 )
-public interface VehicleComponent {
+public interface VehicleComponent : KeyHolder {
 
     public abstract class Scope private constructor()
 
@@ -23,18 +24,17 @@ public interface VehicleComponent {
     @GraphExtension.Factory
     public interface Factory {
         public fun build(@Provides vehicle: Vehicle): VehicleComponent
-
-        public companion object {
-            public fun VehicleComponent.key(): Keyed =
-                mapOf("vehicle_id" to vehicle.uuid.toString())
-        }
     }
 
     public val vehicle: Vehicle
+
     @VehicleLifecycle
     public val scope: CoroutineScope
     public val vehicleStateFlow: StateFlow<Vehicle>
     public val vehicleRangesUseCase: VehicleRangesUseCase
+
+    override val key: Keyed
+        get() = mapOf("vehicle_id" to vehicle.uuid.toString())
 
     public companion object {
         public operator fun invoke(vehicle: Vehicle): VehicleComponent =
