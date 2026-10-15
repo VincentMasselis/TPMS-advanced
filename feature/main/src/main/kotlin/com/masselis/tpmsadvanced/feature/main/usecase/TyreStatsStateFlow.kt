@@ -47,6 +47,7 @@ public class TyreStatsStateFlow internal constructor(
             if (atmosphere.pressure.hasPressure().not() ||
                 atmosphere.pressure !in lowPressure..highPressure
             ) State.Alerting(
+                atmosphere.timestamp,
                 atmosphere.pressure,
                 pressureUnit,
                 atmosphere.temperature,
@@ -54,6 +55,7 @@ public class TyreStatsStateFlow internal constructor(
             ) else
                 when (atmosphere.temperature.celsius) {
                     in Float.NEGATIVE_INFINITY..highTemp.celsius -> State.Normal(
+                        atmosphere.timestamp,
                         atmosphere.pressure,
                         pressureUnit,
                         atmosphere.temperature,
@@ -61,6 +63,7 @@ public class TyreStatsStateFlow internal constructor(
                     )
 
                     in highTemp.celsius..Float.POSITIVE_INFINITY -> State.Alerting(
+                        atmosphere.timestamp,
                         atmosphere.pressure,
                         pressureUnit,
                         atmosphere.temperature,
@@ -91,6 +94,7 @@ public class TyreStatsStateFlow internal constructor(
         // Shows the read values from the tyre
         @Parcelize
         public data class Normal(
+            public val timestamp: Double,
             public val pressure: Pressure,
             public val pressureUnit: PressureUnit,
             public val temperature: Temperature,
@@ -100,6 +104,7 @@ public class TyreStatsStateFlow internal constructor(
         // Show the read values from the tyre in red
         @Parcelize
         public data class Alerting(
+            public val timestamp: Double,
             public val pressure: Pressure,
             public val pressureUnit: PressureUnit,
             public val temperature: Temperature,
