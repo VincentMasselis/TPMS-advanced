@@ -15,22 +15,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.createSavedStateHandle
-import com.masselis.tpmsadvanced.core.ui.viewModel
+import com.masselis.tpmsadvanced.core.ui.key
 import com.masselis.tpmsadvanced.feature.main.R
 import com.masselis.tpmsadvanced.feature.main.interfaces.composable.ClearBoundSensorsButtonTags.root
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel.State
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleBindings.Companion.ClearBoundSensorsViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.ClearBoundSensorsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
 internal fun ClearBoundSensorsButton(
     modifier: Modifier = Modifier,
     component: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: ClearBoundSensorsViewModel = component.viewModel {
-        ClearBoundSensorsViewModel(createSavedStateHandle())
-    }
+    viewModel: ClearBoundSensorsViewModel = assistedMetroViewModel<ClearBoundSensorsViewModelImpl>(
+        key = ClearBoundSensorsViewModelImpl::class.key(component.key)
+    )
 ) {
     val state by viewModel.stateFlow.collectAsState()
     Box(modifier = modifier) {

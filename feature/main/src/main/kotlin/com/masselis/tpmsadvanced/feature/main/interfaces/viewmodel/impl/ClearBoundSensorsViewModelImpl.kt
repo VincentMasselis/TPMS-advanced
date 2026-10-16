@@ -2,7 +2,9 @@ package com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel.State
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.ClearBoundSensorsViewModel.State.AlreadyCleared
@@ -11,6 +13,7 @@ import com.masselis.tpmsadvanced.feature.main.usecase.ClearBoundSensorsUseCase
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -24,8 +27,11 @@ internal class ClearBoundSensorsViewModelImpl(
 ) : ViewModel(), ClearBoundSensorsViewModel {
 
     @AssistedFactory
-    interface Factory {
+    interface Factory : ViewModelAssistedFactory {
         operator fun invoke(savedStateHandle: SavedStateHandle): ClearBoundSensorsViewModelImpl
+
+        override fun create(extras: CreationExtras): ClearBoundSensorsViewModelImpl =
+            invoke(extras.createSavedStateHandle())
     }
 
     private val mutableStateFlow = savedStateHandle.getMutableStateFlow<State>(

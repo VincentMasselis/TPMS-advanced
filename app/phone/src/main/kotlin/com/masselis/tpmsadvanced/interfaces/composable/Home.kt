@@ -72,6 +72,7 @@ import com.masselis.tpmsadvanced.interfaces.composable.HomeTags.carListDropdownM
 import com.masselis.tpmsadvanced.interfaces.viewmodel.HomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel
 import com.masselis.tpmsadvanced.interfaces.viewmodel.VehicleHomeViewModel.Event
+import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import java.util.UUID
@@ -98,6 +99,7 @@ internal fun VehicleHome(
     val navController = rememberNavController()
     CompositionLocalProvider(
         LocalVehicleComponent provides vehicleComponent,
+        LocalMetroViewModelFactory provides vehicleComponent.viewModelFactory,
         LocalHomeNavController provides navController
     ) {
         var offsetToFocus by remember { mutableStateOf<Offset?>(null) }

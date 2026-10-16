@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.masselis.tpmsadvanced.core.common.Fraction
 import com.masselis.tpmsadvanced.core.ui.Separator
-import com.masselis.tpmsadvanced.core.ui.viewModel
+import com.masselis.tpmsadvanced.core.ui.key
 import com.masselis.tpmsadvanced.data.unit.model.PressureUnit
 import com.masselis.tpmsadvanced.data.unit.model.TemperatureUnit
 import com.masselis.tpmsadvanced.data.vehicle.model.Location
@@ -32,10 +32,11 @@ import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.VehicleSettingsViewModel
-import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleBindings.Companion.VehicleSettingsViewModel
+import com.masselis.tpmsadvanced.feature.main.interfaces.viewmodel.impl.VehicleSettingsViewModelImpl
 import com.masselis.tpmsadvanced.feature.main.ioc.vehicle.VehicleComponent
 import com.masselis.tpmsadvanced.feature.main.usecase.TyreIconStateFlow.State
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase.RearPressures
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -50,7 +51,9 @@ public fun VehicleSettings(
         modifier,
         backgroundSettings,
         component,
-        component.viewModel { VehicleSettingsViewModel() },
+        metroViewModel<VehicleSettingsViewModelImpl>(
+            key = VehicleSettingsViewModelImpl::class.key(component.key)
+        ),
     )
 }
 
@@ -60,7 +63,9 @@ internal fun VehicleSettings(
     modifier: Modifier = Modifier,
     backgroundSettings: @Composable (VehicleComponent) -> Unit = backgroundSettingsPlaceholder,
     component: VehicleComponent = LocalVehicleComponent.current,
-    viewModel: VehicleSettingsViewModel = component.viewModel { VehicleSettingsViewModel() },
+    viewModel: VehicleSettingsViewModel = metroViewModel<VehicleSettingsViewModelImpl>(
+        key = VehicleSettingsViewModelImpl::class.key(component.key)
+    ),
 ) {
     val highTemp by viewModel.highTemp.collectAsState()
     val normalTemp by viewModel.normalTemp.collectAsState()

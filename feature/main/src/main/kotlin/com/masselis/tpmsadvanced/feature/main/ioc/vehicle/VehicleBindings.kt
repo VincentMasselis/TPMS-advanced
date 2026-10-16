@@ -1,5 +1,6 @@
 package com.masselis.tpmsadvanced.feature.main.ioc.vehicle
 
+import androidx.lifecycle.ViewModel
 import com.masselis.tpmsadvanced.data.unit.interfaces.UnitPreferences
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.SensorDatabase
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.VehicleDatabase
@@ -16,9 +17,17 @@ import com.masselis.tpmsadvanced.feature.main.usecase.VehicleCountStateFlowUseCa
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleRangesUseCase
 import com.masselis.tpmsadvanced.feature.main.usecase.VehicleStateFlowUseCase
 import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.IntoMap
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.StateFlow
@@ -40,12 +49,35 @@ public interface VehicleBindings {
         database: VehicleDatabase
     ): VehicleRangesUseCase = VehicleRangesUseCase(vehicle, database, scope)
 
+    // Not a `MetroViewModelFactory` binding since the app graph already owns that type
+    @Suppress("MaxLineLength")
+    @SingleIn(VehicleComponent.Scope::class)
     @Provides
-    private fun vehicleSettingsViewModelImpl(
+    @ForScope(VehicleComponent.Scope::class)
+    private fun viewModelFactory(
+        viewModelProviders: Map<KClass<out ViewModel>, () -> ViewModel>,
+        assistedFactoryProviders: Map<KClass<out ViewModel>, () -> ViewModelAssistedFactory>,
+        manualAssistedFactoryProviders: Map<KClass<out ManualViewModelAssistedFactory>, () -> ManualViewModelAssistedFactory>,
+    ): MetroViewModelFactory = object : MetroViewModelFactory() {
+        override val viewModelProviders = viewModelProviders
+        override val assistedFactoryProviders = assistedFactoryProviders
+        override val manualAssistedFactoryProviders = manualAssistedFactoryProviders
+    }
+
+    @Provides
+    @IntoMap
+    @ViewModelKey(VehicleSettingsViewModelImpl::class)
+    private fun vehicleSettingsViewModel(
         vehicleRangesUseCase: VehicleRangesUseCase,
         unitPreferences: UnitPreferences,
-    ): VehicleSettingsViewModelImpl =
-        VehicleSettingsViewModelImpl(vehicleRangesUseCase, unitPreferences)
+    ): ViewModel = VehicleSettingsViewModelImpl(vehicleRangesUseCase, unitPreferences)
+
+    @Provides
+    @IntoMap
+    @ViewModelAssistedFactoryKey(ClearBoundSensorsViewModelImpl::class)
+    private fun clearBoundSensorsViewModelFactory(
+        factory: ClearBoundSensorsViewModelImpl.Factory,
+    ): ViewModelAssistedFactory = factory
 
     @Provides
     private fun swapRearFrontUseCase(
@@ -100,8 +132,6 @@ public interface VehicleBindings {
     @Inject
     public class Internal internal constructor(
         internal val swapFrontRearViewModel: () -> SwapFrontRearViewModelImpl,
-        internal val clearBoundSensorsViewModel: ClearBoundSensorsViewModelImpl.Factory,
-        internal val vehicleSettingsViewModel: () -> VehicleSettingsViewModelImpl,
         internal val deleteVehicleViewModel: () -> DeleteVehicleViewModelImpl,
     )
 
@@ -111,13 +141,6 @@ public interface VehicleBindings {
 
         context(comp: VehicleComponent)
         internal fun SwapFrontRearViewModel() = comp.internal.swapFrontRearViewModel()
-
-        context(comp: VehicleComponent)
-        internal val ClearBoundSensorsViewModel
-            get() = comp.internal.clearBoundSensorsViewModel
-
-        context(comp: VehicleComponent)
-        internal fun VehicleSettingsViewModel() = comp.internal.vehicleSettingsViewModel()
 
         context(comp: VehicleComponent)
         internal fun DeleteVehicleViewModel() = comp.internal.deleteVehicleViewModel()
