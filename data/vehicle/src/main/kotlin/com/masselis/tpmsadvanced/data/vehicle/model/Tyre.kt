@@ -17,8 +17,20 @@ public sealed interface Tyre : ScannerRecord, Parcelable {
         override val pressure: Pressure,
         override val temperature: Temperature,
         override val battery: UShort,
-        override val isAlarm: Boolean
-    ) : Tyre
+        override val isAlarm: Boolean,
+        override val infos: Set<ManufacturerSpecificInfo> = emptySet()
+    ) : Tyre {
+        public constructor(
+            timestamp: Double,
+            rssi: Int,
+            sensorId: Int,
+            pressure: Pressure,
+            temperature: Temperature,
+            battery: UShort,
+            isAlarm: Boolean,
+            vararg infos: ManufacturerSpecificInfo
+        ) : this(timestamp, rssi, sensorId, pressure, temperature, battery, isAlarm, infos.toSet())
+    }
 
     @Parcelize
     public data class Located(
@@ -29,8 +41,32 @@ public sealed interface Tyre : ScannerRecord, Parcelable {
         override val temperature: Temperature,
         override val battery: UShort,
         override val isAlarm: Boolean,
+        override val infos: Set<ManufacturerSpecificInfo> = emptySet(),
         val location: Location,
     ) : Tyre {
+
+        public constructor(
+            timestamp: Double,
+            rssi: Int,
+            sensorId: Int,
+            pressure: Pressure,
+            temperature: Temperature,
+            battery: UShort,
+            isAlarm: Boolean,
+            location: Location,
+            vararg infos: ManufacturerSpecificInfo
+        ) : this(
+            timestamp,
+            rssi,
+            sensorId,
+            pressure,
+            temperature,
+            battery,
+            isAlarm,
+            infos.toSet(),
+            location
+        )
+
         public constructor(source: Tyre, location: Location) : this(
             source.timestamp,
             source.rssi,
@@ -39,6 +75,7 @@ public sealed interface Tyre : ScannerRecord, Parcelable {
             source.temperature,
             source.battery,
             source.isAlarm,
+            source.infos,
             location
         )
     }

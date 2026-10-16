@@ -4,6 +4,7 @@ import android.content.Context
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.demo.DemoLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.BluetoothLeScannerImpl
+import com.masselis.tpmsadvanced.data.vehicle.interfaces.impl.TeslaGatt
 import com.masselis.tpmsadvanced.data.vehicle.usecase.DemoOrBleScannerUseCase
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
@@ -29,5 +30,5 @@ public object DemoOrBleScannerBinding {
         context: Context
     ): BluetoothLeScanner =
         if (demoOrBleScannerUseCase.isDemo.value) DemoLeScanner()
-        else BluetoothLeScannerImpl(context)
+        else TeslaGatt(context, BluetoothLeScannerImpl(context))
 }

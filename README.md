@@ -47,6 +47,9 @@ You can buy them on Ali*xpress, it looks like this:
 
 
 
+> [!WARNING]
+> Cheap Tesla BLE sensors sold as OEM compatible (`1490701-01-C`) report a correct pressure but can send a fixed temperature, we saw one always returning 29°C. The car only uses the pressure, so these clones don't need a working temperature measurement to pass as OEM. If your sensor always shows 29°C, the sensor itself is the cause, not the app.
+
 ## Contributing
 
 Take a look at the [contributing file](CONTRIBUTING.md).

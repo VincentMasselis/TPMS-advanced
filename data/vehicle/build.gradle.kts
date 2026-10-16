@@ -5,6 +5,7 @@ plugins {
     `android-test`
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.metro)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -16,6 +17,7 @@ dependencies {
     implementation(project(":core:ui"))
     api(project(":core:database"))
     implementation(project(":data:unit"))
+    implementation(libs.kotlinx.serialization.protobuf)
 
     testImplementation(project(":core:test"))
 

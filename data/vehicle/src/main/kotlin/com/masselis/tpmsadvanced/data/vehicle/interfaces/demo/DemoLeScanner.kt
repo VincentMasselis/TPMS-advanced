@@ -5,6 +5,7 @@ import com.masselis.tpmsadvanced.data.vehicle.interfaces.BluetoothLeScanner
 import com.masselis.tpmsadvanced.data.vehicle.model.Location
 import com.masselis.tpmsadvanced.data.vehicle.model.Pressure.CREATOR.bar
 import com.masselis.tpmsadvanced.data.vehicle.model.ScannerRecord
+import com.masselis.tpmsadvanced.data.vehicle.model.SuspiciousTeslaFixedTemperature
 import com.masselis.tpmsadvanced.data.vehicle.model.Temperature.CREATOR.celsius
 import com.masselis.tpmsadvanced.data.vehicle.model.Tyre
 import kotlinx.coroutines.awaitCancellation
@@ -24,6 +25,7 @@ public class DemoLeScanner : BluetoothLeScanner {
             100u,
             false,
             Location.Wheel.FRONT_LEFT,
+            SuspiciousTeslaFixedTemperature(15f.celsius),
         ),
         Tyre.Unlocated(
             now(),
@@ -33,7 +35,7 @@ public class DemoLeScanner : BluetoothLeScanner {
             15f.celsius,
             100u,
             false,
-        )
+        ),
     )
 
     private val frontRight = listOf<ScannerRecord>(
@@ -46,6 +48,7 @@ public class DemoLeScanner : BluetoothLeScanner {
             75u,
             false,
             Location.Wheel.FRONT_RIGHT,
+            SuspiciousTeslaFixedTemperature(15f.celsius),
         ),
         Tyre.Unlocated(
             now(),
@@ -68,6 +71,7 @@ public class DemoLeScanner : BluetoothLeScanner {
             50u,
             false,
             Location.Wheel.REAR_LEFT,
+            SuspiciousTeslaFixedTemperature(15f.celsius),
         ),
         Tyre.Unlocated(
             now(),
@@ -90,6 +94,7 @@ public class DemoLeScanner : BluetoothLeScanner {
             25u,
             false,
             Location.Wheel.REAR_RIGHT,
+            SuspiciousTeslaFixedTemperature(15f.celsius),
         ),
         Tyre.Unlocated(
             now(),
