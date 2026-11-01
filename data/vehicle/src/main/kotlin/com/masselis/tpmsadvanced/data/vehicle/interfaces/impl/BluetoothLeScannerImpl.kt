@@ -88,6 +88,11 @@ internal class BluetoothLeScannerImpl(
                 ScanFilter.Builder().setServiceUuid(it).build()
             } + MANUFACTURER_IDS.map {
                 ScanFilter.Builder().setManufacturerData(it, byteArrayOf()).build()
+            } + DEVICE_NAMES.map {
+                // The DJTPMS advertisement only carries its UUID inside an *incomplete* 16-bit
+                // list, which some controllers never match against a service UUID filter. The
+                // device name is matched in software, so it is used as a fallback.
+                ScanFilter.Builder().setDeviceName(it).build()
             },
             ScanSettings
                 .Builder()
@@ -110,6 +115,7 @@ internal class BluetoothLeScannerImpl(
                 ?: RawBekubeeKy(it)
                 ?: RawWicarlink(it)
                 ?: RawBekubeeTpms(it)
+                ?: RawDjtpms(it)
                 ?: RawSysgration(it)
                 ?: run {
                     logger.d("Sensor not parsed. Scan bytes: ${it.scanRecord?.bytes}")
@@ -154,9 +160,12 @@ internal class BluetoothLeScannerImpl(
             RawPecham.SERVICE_UUID,
             RawWicarlink.SERVICE_UUID,
             RawBekubeeKy.SERVICE_UUID,
-            RawBekubeeTpms.SERVICE_UUID
+            RawBekubeeTpms.SERVICE_UUID,
+            RawDjtpms.SERVICE_UUID
         )
 
         private val MANUFACTURER_IDS = emptyList<Int>()
+
+        private val DEVICE_NAMES = listOf(RawDjtpms.DEVICE_NAME)
     }
 }
