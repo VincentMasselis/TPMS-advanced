@@ -13,6 +13,7 @@ public class TyreAtmosphereUseCase internal constructor(
         .map { record ->
             TyreAtmosphere(
                 record.timestamp,
+                record.sensorId,
                 if (record.isAlarm) 0f.kpa else record.pressure,
                 record.temperature
             )

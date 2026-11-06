@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 public data class TyreAtmosphere(
     val timestamp: Double,
+    val sensorId: Int,
     val pressure: Pressure,
     val temperature: Temperature
 ) : Parcelable
